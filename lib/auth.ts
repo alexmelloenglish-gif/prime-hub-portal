@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     // 1. So permite entrar se o e-mail ja estiver cadastrado no banco
-    async signIn({ user, profile }) {
+    async signIn({ user }) {
       if (!user?.email) return false
 
       // Verifica se o usuario existe no banco
