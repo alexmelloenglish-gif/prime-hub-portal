@@ -23,22 +23,30 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   callbacks: {
-    // 1. So permite entrar se o e-mail ja estiver cadastrado no banco
+    // 1. Permite que qualquer usuario com Google faça login
+    // Se não existir, cria automaticamente como 'student'
     async signIn({ user }) {
       if (!user?.email) return false
 
       // Verifica se o usuario existe no banco
-      const existingUser = await prisma.user.findUnique({
+      let existingUser = await prisma.user.findUnique({
         where: { email: user.email },
       })
 
-      // Se nao existe, bloqueia o login
+      // Se não existe, cria automaticamente
       if (!existingUser) {
-        return false
+        existingUser = await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name || 'Usuário',
+            image: user.image,
+            role: 'student', // Novos usuários começam como alunos
+          },
+        })
       }
 
       return true
-    },
+    }
 
     // 2. Coloca o id e a role no JWT
     async jwt({ token, user, account }) {

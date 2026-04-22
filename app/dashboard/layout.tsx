@@ -15,6 +15,11 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
+  // Redireciona alunos novos para a página de acesso pendente
+  if (session.user.role === 'student') {
+    redirect('/dashboard/pending-access')
+  }
+
   return (
     <div className="min-h-screen bg-prime-dark">
       <Sidebar />

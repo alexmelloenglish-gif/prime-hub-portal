@@ -8,6 +8,11 @@ export default async function LoginPage() {
   const session = await getServerSession(authOptions)
 
   if (session?.user) {
+    // Redireciona para acesso pendente se for aluno novo
+    if (session.user.role === 'student') {
+      redirect('/dashboard/pending-access')
+    }
+    // Redireciona para dashboard se for admin
     redirect('/dashboard')
   }
 
@@ -29,7 +34,7 @@ export default async function LoginPage() {
           <div className="space-y-2 text-center">
             <h1 className="font-display text-2xl font-bold text-white">Acesse sua conta</h1>
             <p className="text-prime-cream/70">
-              Entre no Prime Digital Hub usando apenas sua conta Google autorizada.
+              Entre no Prime Digital Hub com sua conta Google. Novos usuários serão criados automaticamente.
             </p>
           </div>
 
@@ -40,9 +45,9 @@ export default async function LoginPage() {
           </div>
 
           <div className="text-center text-sm text-prime-cream/60">
-            Ainda não é aluno?{' '}
+            Problemas ao entrar?{' '}
             <a href="mailto:support@primedigitalhub.com" className="font-semibold text-prime-red hover:underline">
-              Fale conosco
+              Entre em contato
             </a>
           </div>
         </div>
