@@ -3,12 +3,17 @@ import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
 
-const databaseAdapter = process.env.DATABASE_URL
-  ? PrismaAdapter(getPrismaClient())
-  : undefined
+// Lista de e-mails dos administradores cadastrados
+const ADMIN_EMAILS = [
+  'alexandre@primedigitalhub.com.br',
+  'alexmello.english@gmail.com',
+  'hubprimedigital00@gmail.com',
+]
+
+const prisma = getPrismaClient()
 
 export const authOptions: NextAuthOptions = {
-  adapter: databaseAdapter,
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: 'jwt',
   },
@@ -23,6 +28,24 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   callbacks: {
+    // 1. So permite entrar se o e-mail ja estiver cadastrado no banco
+    async signIn({ user, profile }) {
+      if (!user?.email) return false
+
+      // Verifica se o usuario existe no banco
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
+      })
+
+      // Se nao existe, bloqueia o login
+      if (!existingUser) {
+        return false
+      }
+
+      return true
+    },
+
+    // 2. Coloca o id e a role no JWT
     async jwt({ token, user, account }) {
       if (user) {
         token.id =
@@ -30,21 +53,26 @@ export const authOptions: NextAuthOptions = {
           account?.providerAccountId ||
           token.sub ||
           ''
-        token.role = (user as { role?: string }).role ?? 'student'
-      }
 
+        // Busca a role atual do banco
+        if (user.email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+            select: { role: true },
+          })
+          token.role = dbUser?.role ?? 'student'
+        }
+      }
       return token
     },
+
+    // 3. Passa id e role para a session
     async session({ session, token }) {
       if (session.user) {
         session.user.id = typeof token.id === 'string' ? token.id : token.sub ?? ''
         session.user.role = typeof token.role === 'string' ? token.role : 'student'
       }
-
       return session
-    },
-    async signIn({ profile }) {
-      return Boolean(profile?.email)
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
