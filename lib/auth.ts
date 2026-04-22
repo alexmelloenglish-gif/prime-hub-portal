@@ -3,12 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
 
-// Lista de e-mails dos administradores cadastrados
-const ADMIN_EMAILS = [
-  'alexandre@primedigitalhub.com.br',
-  'alexmello.english@gmail.com',
-  'hubprimedigital00@gmail.com',
-]
+
 
 const prisma = getPrismaClient()
 
