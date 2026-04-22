@@ -3,8 +3,12 @@ import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
 
+const databaseAdapter = process.env.DATABASE_URL
+  ? PrismaAdapter(getPrismaClient())
+  : undefined
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(getPrismaClient()),
+  adapter: databaseAdapter,
   session: {
     strategy: 'jwt',
   },
@@ -19,9 +23,13 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id
+        token.id =
+          ('id' in user && typeof user.id === 'string' && user.id) ||
+          account?.providerAccountId ||
+          token.sub ||
+          ''
         token.role = (user as { role?: string }).role ?? 'student'
       }
 
