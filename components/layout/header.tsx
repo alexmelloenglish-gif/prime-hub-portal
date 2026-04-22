@@ -1,31 +1,30 @@
-'use client'
-
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface HeaderProps {
-  onEnterPortal: () => void
+  portalHref: string
 }
 
-export function Header({ onEnterPortal }: HeaderProps) {
+export function Header({ portalHref }: HeaderProps) {
   return (
     <header className="relative z-10 container py-6">
       <nav className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-prime-red flex items-center justify-center text-white font-display font-bold text-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-prime-red text-lg font-bold text-white">
             P
           </div>
-          <span className="font-display font-bold text-xl text-white">
-            Prime Digital Hub
-          </span>
+          <span className="font-display text-xl font-bold text-white">Prime Digital Hub</span>
         </Link>
-        <Button 
-          onClick={onEnterPortal}
-          variant="outline"
-          className="border-white/20 text-white hover:bg-white/10 rounded-full px-6"
+        <Link
+          href={portalHref}
+          className={cn(
+            buttonVariants({ variant: 'outline' }),
+            'rounded-full border-white/20 px-6 text-white hover:bg-white/10 hover:text-white'
+          )}
         >
-          Acessar Portal
-        </Button>
+          Acessar portal
+        </Link>
       </nav>
     </header>
   )

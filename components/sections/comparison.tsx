@@ -1,6 +1,4 @@
-'use client'
-
-import { X, Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 
 const commonSchoolPoints = [
   'Aulas soltas e pouco direcionamento',
@@ -19,40 +17,30 @@ const primePoints = [
 export function ComparisonSection() {
   return (
     <section className="relative z-10 container py-20">
-      <div className="text-center mb-16">
-        <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
-          Escolas Comuns x Prime Digital Hub
-        </h2>
-        <p className="text-lg text-prime-cream/80">
-          Como a Prime transforma o jeito de aprender
-        </p>
+      <div className="mb-16 text-center">
+        <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Escolas comuns x Prime Digital Hub</h2>
+        <p className="text-lg text-prime-cream/80">Como a Prime transforma o jeito de aprender</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Common Schools */}
+      <div className="grid gap-8 md:grid-cols-2">
         <div className="glass-card p-8">
-          <h3 className="font-display text-2xl font-bold text-white mb-6">
-            Escolas Comuns
-          </h3>
+          <h3 className="mb-6 font-display text-2xl font-bold text-white">Escolas comuns</h3>
           <ul className="space-y-4">
             {commonSchoolPoints.map((point) => (
               <li key={point} className="flex items-start gap-3">
-                <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
                 <span className="text-prime-cream/80">{point}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Prime Digital Hub */}
-        <div className="glass-card p-8 border-prime-red/50">
-          <h3 className="font-display text-2xl font-bold text-white mb-6">
-            Prime Digital Hub
-          </h3>
+        <div className="glass-card border-prime-red/50 p-8">
+          <h3 className="mb-6 font-display text-2xl font-bold text-white">Prime Digital Hub</h3>
           <ul className="space-y-4">
             {primePoints.map((point) => (
               <li key={point} className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
                 <span className="text-prime-cream/80">{point}</span>
               </li>
             ))}
@@ -60,18 +48,17 @@ export function ComparisonSection() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-8 mt-16">
+      <div className="mt-16 grid gap-8 md:grid-cols-3">
         <div className="text-center">
-          <div className="font-display text-4xl font-bold text-prime-red mb-2">40%</div>
+          <div className="mb-2 font-display text-4xl font-bold text-prime-red">40%</div>
           <p className="text-prime-cream/80">Mais retenção de conteúdo</p>
         </div>
         <div className="text-center">
-          <div className="font-display text-4xl font-bold text-prime-red mb-2">3x</div>
+          <div className="mb-2 font-display text-4xl font-bold text-prime-red">3x</div>
           <p className="text-prime-cream/80">Mais engajamento com trilhas</p>
         </div>
         <div className="text-center">
-          <div className="font-display text-4xl font-bold text-prime-red mb-2">+500</div>
+          <div className="mb-2 font-display text-4xl font-bold text-prime-red">+500</div>
           <p className="text-prime-cream/80">Alunos transformados</p>
         </div>
       </div>
