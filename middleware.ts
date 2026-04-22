@@ -8,7 +8,10 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   })
 
-  if (!token) {
+  const isLoginPage = request.nextUrl.pathname.startsWith('/login')
+
+  // se não tem token e não está no login → bloqueia
+  if (!token && !isLoginPage) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname)
     return NextResponse.redirect(loginUrl)
