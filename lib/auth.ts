@@ -1,66 +1,72 @@
 import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { getPrismaClient } from '@/lib/prisma'
 
-const prisma = getPrismaClient()
+export const isGoogleAuthConfigured = Boolean(
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+)
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-
+  debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'jwt',
   },
-
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
-  ],
-
+  providers: isGoogleAuthConfigured
+    ? [
+        GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+        }),
+      ]
+    : [],
   pages: {
     signIn: '/login',
     error: '/login',
   },
-
   callbacks: {
-    async signIn({ user }) {
-      if (!user?.email) return false
-
-      const existingUser = await prisma.user.findUnique({
-        where: { email: user.email },
-      })
-
-      if (!existingUser) {
-        await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name || 'Usuário',
-            image: user.image,
-            role: 'student',
-          },
-        })
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id =
+          ('id' in user && typeof user.id === 'string' && user.id) ||
+          account?.providerAccountId ||
+          token.sub ||
+          ''
+        token.role = (user as { role?: string }).role ?? 'student'
       }
 
-      return true
-    },
-
-    async jwt({ token, user }) {
-      if (user && (user as any).id) {
-        token.id = (user as any).id
-      }
       return token
     },
-
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
-        session.user.role = (token.role as string) || 'student'
+        session.user.id = typeof token.id === 'string' ? token.id : token.sub ?? ''
+        session.user.role = typeof token.role === 'string' ? token.role : 'student'
       }
+
       return session
     },
-  },
+    async signIn({ account, profile }) {
+      if (account?.provider !== 'google') {
+        return false
+      }
 
+      return Boolean(profile?.email)
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`
+      }
+
+      try {
+        const targetUrl = new URL(url)
+
+        if (targetUrl.origin === baseUrl) {
+          return url
+        }
+      } catch {
+        return `${baseUrl}/dashboard`
+      }
+
+      return `${baseUrl}/dashboard`
+    },
+  },
   secret: process.env.NEXTAUTH_SECRET,
 }
