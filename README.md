@@ -1,15 +1,11 @@
-# Prime Digital Hub
+# Prime Hub Portal
 
-Aplicação Next.js pronta para produção, com autenticação Google via NextAuth, dashboard protegido e base preparada para evolução SaaS.
+Next.js application with:
 
-## O que foi ajustado
-
-- Autenticação simplificada para Google OAuth only
-- Proteção de todas as rotas `/dashboard` com middleware e validação no servidor
-- Dashboard reorganizado com páginas reais para visão geral, aulas, progresso, metas, conversação e configurações
-- Schema Prisma reduzido para modelos úteis ao produto atual
-- Configuração de segurança reforçada no Next.js
-- Dependências e documentação limpas para deploy no Vercel
+- Google-only authentication through NextAuth
+- Protected `/dashboard` routes
+- PostgreSQL schema managed by Prisma
+- Safe dashboard fallback data when the database is empty
 
 ## Stack
 
@@ -21,19 +17,26 @@ Aplicação Next.js pronta para produção, com autenticação Google via NextAu
 - PostgreSQL
 - Recharts
 
-## Variáveis de ambiente
+## Environment variables
 
-Copie `.env.example` para `.env.local` e preencha:
+Copy `.env.example` to `.env.local` and fill in:
 
 ```env
 DATABASE_URL=
+DATABASE_URL_UNPOOLED=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 NEXTAUTH_SECRET=
 NEXTAUTH_URL=
 ```
 
-## Desenvolvimento local
+Notes:
+
+- `DATABASE_URL` is the primary Prisma connection string.
+- `DATABASE_URL_UNPOOLED` is recommended for direct schema operations on hosted PostgreSQL providers.
+- If both database variables are blank, authentication still starts with Google and the dashboard falls back to mock data.
+
+## Local development
 
 ```bash
 npm install
@@ -42,29 +45,30 @@ npx prisma db push
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-## Google OAuth
+## Google OAuth setup
 
-No Google Cloud Console, configure:
+Configure the following in Google Cloud Console:
 
 - Authorized JavaScript origin: `http://localhost:3000`
 - Authorized redirect URI: `http://localhost:3000/api/auth/callback/google`
 
-Para produção, adicione também a URL final do Vercel:
+For production, add:
 
-- `https://seu-dominio.vercel.app`
-- `https://seu-dominio.vercel.app/api/auth/callback/google`
+- `https://primedigitalhub.com.br`
+- `https://primedigitalhub.com.br/api/auth/callback/google`
 
-## Deploy na Vercel
+## Vercel deployment
 
-1. Importe este repositório na Vercel.
-2. Configure as variáveis de ambiente do projeto.
-3. Garanta que o banco PostgreSQL esteja acessível em produção.
-4. Rode o primeiro `prisma db push` contra o banco alvo.
+1. Import the repository into Vercel.
+2. Configure the environment variables listed above.
+3. If PostgreSQL is enabled, run `npx prisma db push` against the production database.
+4. Redeploy after database changes.
 
-## Observações
+## Current behavior
 
-- `vercel.json` não é necessário para este projeto no estado atual.
-- O login só funciona com credenciais Google válidas.
-- O `prisma db push` depende de um PostgreSQL real configurado em `DATABASE_URL`.
+- Google sign-in is the only supported authentication method.
+- `/dashboard` is protected by middleware and server-side session checks.
+- When the database is available, authenticated users can be synchronized into PostgreSQL automatically.
+- When the database is empty or unavailable, the dashboard stays usable through fallback data instead of crashing.
