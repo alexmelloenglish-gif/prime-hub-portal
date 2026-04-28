@@ -1,0 +1,73 @@
+{
+  "uid": "rafael-copolino",
+  "email": "rafael@primehub.com",
+  "name": "Rafael Copolino",
+  "status": "active",
+  "level": "B1",
+  "plan": "Individual",
+  "enrolledAt": "2025-01-15T00:00:00.000Z",
+  "nextLesson": {
+    "date": "2026-04-28T18:00:00.000Z",
+    "topic": "Past Simple vs Past Continuous",
+    "teacher": "Alex Mello",
+    "meetLink": "https://meet.google.com/prime-hub-rafael"
+  },
+  "progress": {
+    "lessonsCompleted": 24,
+    "lessonsTotal": 40,
+    "percentComplete": 60,
+    "currentUnit": "Unit 5 — Narrative Tenses",
+    "streak": 7
+  },
+  "attendance": {
+    "present": 22,
+    "absent": 2,
+    "rate": 92
+  },
+  "recentLessons": [
+    {
+      "date": "2026-04-21T18:00:00.000Z",
+      "topic": "Past Simple — Regular & Irregular Verbs",
+      "status": "completed",
+      "notes": "Excellent progress on irregular verbs. Review: go/went, see/saw, buy/bought."
+    },
+    {
+      "date": "2026-04-14T18:00:00.000Z",
+      "topic": "Present Perfect vs Past Simple",
+      "status": "completed",
+      "notes": "Good understanding of 'already/yet/just'. Keep practising 'since' vs 'for'."
+    },
+    {
+      "date": "2026-04-07T18:00:00.000Z",
+      "topic": "Modal Verbs — Obligation & Permission",
+      "status": "completed",
+      "notes": "Strong performance. Ready to move to narrative tenses."
+    }
+  ],
+  "homeworkPending": [
+    {
+      "id": "hw-001",
+      "title": "Write a short story using Past Simple",
+      "dueDate": "2026-04-28T00:00:00.000Z",
+      "status": "pending"
+    }
+  ],
+  "materials": [
+    {
+      "title": "B1 Grammar — Past Tenses Guide",
+      "type": "pdf",
+      "url": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an"
+    },
+    {
+      "title": "Irregular Verbs List",
+      "type": "pdf",
+      "url": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an"
+    }
+  ],
+  "payments": {
+    "status": "up-to-date",
+    "nextDue": "2026-05-15T00:00:00.000Z",
+    "plan": "4 aulas/mês",
+    "amount": 320
+  }
+}
