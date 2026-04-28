@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Script from 'next/script'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -20,6 +21,29 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function CTASection({ portalHref }: CTASectionProps) {
   return (
     <section className="relative z-10 container py-20">
+      <link
+        rel="stylesheet"
+        href="https://calendar.google.com/calendar/scheduling-button-script.css"
+      />
+      <Script
+        src="https://calendar.google.com/calendar/scheduling-button-script.js"
+        strategy="afterInteractive"
+      />
+      <Script id="google-calendar-scheduling-button" strategy="afterInteractive">
+        {`
+          window.addEventListener('load', function () {
+            const target = document.getElementById('prime-calendar-scheduling-button');
+            if (!target || !window.calendar?.schedulingButton) return;
+            target.innerHTML = '';
+            window.calendar.schedulingButton.load({
+              url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0wTZJTbc4VySmF2Nro3c1012BBIOuApsNa3xINFvQAx0R7Yz8F226YhxFgPqafwCjE1WnQBKIq?gv=true',
+              color: '#D50000',
+              label: 'Agendar aula experimental + teste de nivel!',
+              target,
+            });
+          });
+        `}
+      </Script>
       <div className="glass-card overflow-hidden p-12 text-center md:p-16">
         <div className="mx-auto max-w-3xl">
           <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">
@@ -41,6 +65,11 @@ export function CTASection({ portalHref }: CTASectionProps) {
           >
             Comecar agora
           </Link>
+
+          <div
+            id="prime-calendar-scheduling-button"
+            className="calendar-button-host flex min-h-[56px] min-w-[320px] items-center justify-center rounded-full border border-red-400/30 bg-red-500/10 p-1 shadow-[0_18px_42px_rgba(213,0,0,0.18)]"
+          />
 
           <Link
             href={whatsappHref}

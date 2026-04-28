@@ -33,6 +33,49 @@
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+
+  .calendar-button-host > * {
+    @apply w-full;
+  }
+
+  .calendar-button-host a,
+  .calendar-button-host button,
+  .calendar-button-host [role='button'] {
+    min-height: 56px !important;
+    width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 9999px !important;
+    border: 1px solid rgba(248, 113, 113, 0.42) !important;
+    background:
+      radial-gradient(circle at top, rgba(255, 255, 255, 0.14), transparent 58%),
+      linear-gradient(135deg, rgba(213, 0, 0, 0.92), rgba(168, 34, 23, 0.94)) !important;
+    color: #fff8f5 !important;
+    box-shadow:
+      0 16px 40px rgba(213, 0, 0, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+    font-family: var(--font-inter) !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    padding: 0 2rem !important;
+    text-decoration: none !important;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      filter 180ms ease !important;
+  }
+
+  .calendar-button-host a:hover,
+  .calendar-button-host button:hover,
+  .calendar-button-host [role='button']:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow:
+      0 20px 46px rgba(213, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
 }
 
 /* Smooth scrolling */

@@ -1,4 +1,5 @@
 import { getServerSession } from 'next-auth'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
@@ -11,22 +12,36 @@ export default async function DashboardLayout({
   children: React.ReactNode
 }) {
   const session = await getServerSession(authOptions)
+  const isDevPreview =
+    process.env.NODE_ENV === 'development' && (await cookies()).get('prime-dev-preview')?.value === '1'
 
-  if (!session?.user) {
+  const previewUser = isDevPreview
+    ? {
+        id: 'dev-preview-admin',
+        name: 'Prime Admin Preview',
+        email: 'alexandre@primedigitalhub.com.br',
+        image: null,
+        role: 'admin',
+      }
+    : null
+
+  const activeUser = session?.user ?? previewUser
+
+  if (!activeUser) {
     redirect('/login')
   }
 
-  const adminUser = isAdminUser(session.user)
-  const studentState = await getStudentDashboardState(session.user)
+  const adminUser = isAdminUser(activeUser)
+  const studentState = await getStudentDashboardState(activeUser)
 
   if (!studentState.hasAccess && !adminUser && process.env.NODE_ENV !== 'development') {
     redirect('/pending-access')
   }
 
   const topbarUser = {
-    name: studentState.student?.studentName ?? session.user.name,
-    email: studentState.student?.studentEmail ?? session.user.email,
-    image: session.user.image,
+    name: studentState.student?.studentName ?? activeUser.name,
+    email: studentState.student?.studentEmail ?? activeUser.email,
+    image: activeUser.image,
   }
 
   return (
