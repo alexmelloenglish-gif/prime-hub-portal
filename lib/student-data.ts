@@ -96,12 +96,24 @@ export type StudentDashboardState = {
   viewerEmail: string | null
 }
 
+const portfolioHrefMap: Record<string, string> = {
+  '/dashboard/aulas': '#attendance-overview',
+  '/dashboard/progresso': '#progress-tracker',
+  '/dashboard/metas': '#vocabulary-bank',
+  '/dashboard/conversacao': '#grammar-overview',
+  '/dashboard/configuracoes': '#teacher-feedback',
+}
+
+function normalizePortfolioHref(href: string) {
+  return portfolioHrefMap[href] ?? href
+}
+
 const previewManageSpace: ManageSpaceLink[] = [
   {
     id: 'portfolio',
     title: 'My Portfolio',
-    href: '#portfolio-navigation',
-    description: 'Jump to the portfolio sections with progress, attendance, vocabulary and feedback.',
+    href: 'https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE/edit?usp=sharing',
+    description: 'Open the full portfolio document with progress, attendance, vocabulary and feedback.',
     icon: 'folder-open',
   },
   {
@@ -152,27 +164,27 @@ const previewPortfolioNavigation: PortfolioNavigationLink[] = [
   {
     id: 'nav-attendance',
     title: 'Attendance Overview',
-    href: '/dashboard/aulas',
+    href: '#attendance-overview',
   },
   {
     id: 'nav-progress',
     title: 'Progress Tracker',
-    href: '/dashboard/progresso',
+    href: '#progress-tracker',
   },
   {
     id: 'nav-vocabulary',
     title: 'Vocabulary Bank',
-    href: '/dashboard/metas',
+    href: '#vocabulary-bank',
   },
   {
     id: 'nav-grammar',
     title: 'Grammar Overview',
-    href: '/dashboard/conversacao',
+    href: '#grammar-overview',
   },
   {
     id: 'nav-feedback',
     title: 'Teacher Feedback',
-    href: '/dashboard/configuracoes',
+    href: '#teacher-feedback',
   },
 ]
 
@@ -500,12 +512,12 @@ function parsePortfolioNavigation(value: unknown): PortfolioNavigationLink[] {
         return null
       }
 
-      return {
-        id: asString(entry.id, `portfolio-nav-${index + 1}`),
-        title: asString(entry.title, `Section ${index + 1}`),
-        href: asString(entry.href, '#'),
-      }
-    })
+        return {
+          id: asString(entry.id, `portfolio-nav-${index + 1}`),
+          title: asString(entry.title, `Section ${index + 1}`),
+          href: normalizePortfolioHref(asString(entry.href, '#')),
+        }
+      })
     .filter((item): item is PortfolioNavigationLink => Boolean(item))
 
   return links.length ? links : previewPortfolioNavigation

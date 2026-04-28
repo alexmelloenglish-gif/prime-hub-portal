@@ -13,8 +13,8 @@
     {
       "id": "portfolio",
       "title": "My Portfolio",
-      "href": "#portfolio-navigation",
-      "description": "Jump to the portfolio sections with progress, attendance, vocabulary and feedback.",
+      "href": "https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE/edit?usp=sharing",
+      "description": "Open the full portfolio document with progress, attendance, vocabulary and feedback.",
       "icon": "folder-open"
     },
     {
@@ -64,27 +64,27 @@
     {
       "id": "nav-attendance",
       "title": "Attendance Overview",
-      "href": "/dashboard/aulas"
+      "href": "#attendance-overview"
     },
     {
       "id": "nav-progress",
       "title": "Progress Tracker",
-      "href": "/dashboard/progresso"
+      "href": "#progress-tracker"
     },
     {
       "id": "nav-vocabulary",
       "title": "Vocabulary Bank",
-      "href": "/dashboard/metas"
+      "href": "#vocabulary-bank"
     },
     {
       "id": "nav-grammar",
       "title": "Grammar Overview",
-      "href": "/dashboard/conversacao"
+      "href": "#grammar-overview"
     },
     {
       "id": "nav-feedback",
       "title": "Teacher Feedback",
-      "href": "/dashboard/configuracoes"
+      "href": "#teacher-feedback"
     }
   ],
   "progressTracker": [

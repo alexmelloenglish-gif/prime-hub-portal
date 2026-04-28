@@ -9,6 +9,7 @@ import {
   FolderOpen,
   Headphones,
   Link as LinkIcon,
+  MessageSquareQuote,
   Video,
 } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
@@ -17,7 +18,29 @@ import {
   isAdminUser,
   type ManageSpaceLink,
   type PortfolioNavigationLink,
+  type ProgressTrackerCard,
 } from '@/lib/student-data'
+
+const progressAccentClasses: Record<ProgressTrackerCard['accent'], string> = {
+  green: 'border-emerald-300/20 bg-emerald-300/10 text-emerald-100',
+  yellow: 'border-amber-300/20 bg-amber-300/10 text-amber-100',
+  pink: 'border-pink-300/20 bg-pink-300/10 text-pink-100',
+  blue: 'border-sky-300/20 bg-sky-300/10 text-sky-100',
+}
+
+const progressBarClasses: Record<ProgressTrackerCard['accent'], string> = {
+  green: 'bg-emerald-300',
+  yellow: 'bg-amber-300',
+  pink: 'bg-pink-300',
+  blue: 'bg-sky-300',
+}
+
+const progressWidths: Record<string, string> = {
+  'Very Strong': 'w-[92%]',
+  Strong: 'w-[82%]',
+  'Active Growth': 'w-[68%]',
+  Improving: 'w-[58%]',
+}
 
 function getManageSpaceIcon(icon: string) {
   switch (icon) {
@@ -89,7 +112,7 @@ function ManageSpaceCard({ link }: { link: ManageSpaceLink }) {
 }
 
 function buildPreviewAwareHref(href: string, previewStudentEmail?: string | null) {
-  if (!previewStudentEmail || !href.startsWith('/dashboard')) {
+  if (href.startsWith('#') || !previewStudentEmail || !href.startsWith('/dashboard')) {
     return href
   }
 
@@ -197,7 +220,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="portfolio-navigation" className="glass-card space-y-4 p-5">
+      <section id="portfolio-navigation" className="glass-card space-y-4 p-5 scroll-mt-28">
         <div>
           <h3 className="text-xl font-bold text-white">Portfolio Navigation</h3>
           <p className="text-sm text-prime-cream/70">
@@ -216,17 +239,138 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section id="manage-space" className="space-y-4 scroll-mt-28">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h3 className="text-2xl font-bold text-white">My Learning Links</h3>
-            <p className="text-sm text-prime-cream/70">
-              The core links Rafael needs every week, organized for fast access.
-            </p>
-          </div>
+        <div>
+          <h3 className="text-2xl font-bold text-white">My Learning Links</h3>
+          <p className="text-sm text-prime-cream/70">
+            The core links Rafael needs every week, organized for fast access.
+          </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {student.manageSpace.map((link) => (
             <ManageSpaceCard key={link.id} link={link} />
+          ))}
+        </div>
+      </section>
+
+      <section id="attendance-overview" className="space-y-4 scroll-mt-28">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Attendance Overview</h3>
+          <p className="text-sm text-prime-cream/70">
+            Lesson dates with compact class summaries for quick academic recall.
+          </p>
+        </div>
+        <div className="space-y-4">
+          {student.attendanceOverview.map((lesson) => (
+            <article key={lesson.id} className="glass-card p-5">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <p className="text-lg font-semibold text-white">{lesson.date}</p>
+                  <p className="mt-1 text-sm uppercase tracking-[0.18em] text-emerald-200">
+                    {lesson.status}
+                  </p>
+                </div>
+                <p className="max-w-2xl text-sm font-medium text-prime-cream">{lesson.title}</p>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-prime-cream/80">{lesson.summary}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="progress-tracker" className="space-y-4 scroll-mt-28">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Progress Tracker</h3>
+          <p className="text-sm text-prime-cream/70">
+            A clear pedagogical snapshot combining fluency, grammar and analytical performance.
+          </p>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {student.progressTracker.map((item) => (
+            <article key={item.id} className="glass-card p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h4 className="text-xl font-semibold text-white">{item.title}</h4>
+                  <p className="mt-3 text-sm leading-7 text-prime-cream/80">{item.insight}</p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${progressAccentClasses[item.accent]}`}
+                >
+                  {item.status}
+                </span>
+              </div>
+              <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className={`h-full rounded-full ${progressBarClasses[item.accent]} ${progressWidths[item.status] ?? 'w-[50%]'}`}
+                />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="vocabulary-bank" className="space-y-4 scroll-mt-28">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Vocabulary Bank</h3>
+          <p className="text-sm text-prime-cream/70">
+            High-value vocabulary gathered from Rafael&apos;s lessons for active reuse.
+          </p>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {student.vocabularyBank.map((item) => (
+            <article key={item.id} className="glass-card p-6">
+              <p className="text-xl font-semibold text-white">{item.term}</p>
+              <p className="mt-3 text-sm leading-6 text-prime-cream/80">{item.meaning}</p>
+              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/65">
+                {item.example}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="grammar-overview" className="space-y-4 scroll-mt-28">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Grammar Overview</h3>
+          <p className="text-sm text-prime-cream/70">
+            Cumulative grammar focus points extracted from Rafael&apos;s portfolio and teacher review.
+          </p>
+        </div>
+        <article className="glass-card p-6">
+          <h4 className="text-xl font-semibold text-white">{student.grammarOverview.title}</h4>
+          <p className="mt-3 text-sm leading-7 text-prime-cream/80">
+            {student.grammarOverview.summary}
+          </p>
+          <ul className="mt-5 space-y-3">
+            {student.grammarOverview.focusPoints.map((point) => (
+              <li
+                key={point}
+                className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-prime-cream/80"
+              >
+                {point}
+              </li>
+            ))}
+          </ul>
+        </article>
+      </section>
+
+      <section id="teacher-feedback" className="space-y-4 scroll-mt-28">
+        <div>
+          <h3 className="text-2xl font-bold text-white">Teacher Feedback</h3>
+          <p className="text-sm text-prime-cream/70">
+            Cumulative feedback blocks extracted from Rafael&apos;s portfolio and monthly review.
+          </p>
+        </div>
+        <div className="space-y-4">
+          {student.teacherFeedback.map((feedback) => (
+            <article key={feedback.id} className="glass-card p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-prime-red/20 text-prime-cream">
+                  <MessageSquareQuote className="h-5 w-5" />
+                </div>
+                <h4 className="text-xl font-semibold text-white">{feedback.title}</h4>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-prime-cream/80">{feedback.body}</p>
+            </article>
           ))}
         </div>
       </section>
