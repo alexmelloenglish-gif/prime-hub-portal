@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
 import { authOptions } from '@/lib/auth'
+import { getStudentData } from '@/lib/student-data'
 
 export default async function DashboardLayout({
   children,
@@ -15,9 +16,17 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Redireciona alunos novos para a página de acesso pendente
-  if (session.user.role === 'student') {
-    redirect('/dashboard/pending-access')
+  const email = session.user.email ?? ''
+  const isAdmin = session.user.role === 'admin'
+
+  if (!isAdmin) {
+    const studentData = await getStudentData(email)
+
+    // null = Firebase configurado mas aluno não existe → pending-access
+    // previewMode = Firebase não configurado → permite acesso com dados de preview
+    if (studentData === null) {
+      redirect('/dashboard/pending-access')
+    }
   }
 
   return (

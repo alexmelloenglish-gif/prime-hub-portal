@@ -7,12 +7,9 @@ import { authOptions } from '@/lib/auth'
 export default async function LoginPage() {
   const session = await getServerSession(authOptions)
 
+  // Se já está autenticado, vai para o dashboard — o layout do dashboard
+  // decide se o aluno tem acesso ou redireciona para pending-access
   if (session?.user) {
-    // Redireciona para acesso pendente se for aluno novo
-    if (session.user.role === 'student') {
-      redirect('/dashboard/pending-access')
-    }
-    // Redireciona para dashboard se for admin
     redirect('/dashboard')
   }
 
@@ -34,7 +31,7 @@ export default async function LoginPage() {
           <div className="space-y-2 text-center">
             <h1 className="font-display text-2xl font-bold text-white">Acesse sua conta</h1>
             <p className="text-prime-cream/70">
-              Entre no Prime Digital Hub com sua conta Google. Novos usuários serão criados automaticamente.
+              Entre no Prime Digital Hub com sua conta Google.
             </p>
           </div>
 

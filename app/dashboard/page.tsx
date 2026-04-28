@@ -1,34 +1,55 @@
-import { BookOpen, Target, TrendingUp, Zap } from 'lucide-react'
-import { KPICard } from '@/components/dashboard/kpi-card'
-import { ProgressChart } from '@/components/dashboard/progress-chart'
-import { UpcomingLessons } from '@/components/dashboard/upcoming-lessons'
-import { dashboardMetrics } from '@/lib/dashboard-data'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { getStudentData, rafaelData } from '@/lib/student-data'
+import { ManageSpace } from '@/components/dashboard/manage-space'
+import { ProgressTracker } from '@/components/dashboard/progress-tracker'
+import { AttendanceOverview } from '@/components/dashboard/attendance-overview'
+import { VocabularyPreview } from '@/components/dashboard/vocabulary-preview'
+import { GrammarOverview } from '@/components/dashboard/grammar-overview'
+import { TeacherFeedback } from '@/components/dashboard/teacher-feedback'
+import { StudentHeader } from '@/components/dashboard/student-header'
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions)
+  const email = session?.user?.email ?? ''
+
+  // Busca dados do Firestore; se retornar null (não cadastrado), o layout já redirecionou
+  // Se retornar com previewMode=true, Firebase não está configurado ainda
+  const student = (await getStudentData(email)) ?? rafaelData
+  const isPreview = student.previewMode === true
+
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-display text-3xl font-bold text-white">Visão geral</h2>
-        <p className="max-w-2xl text-sm text-prime-cream/70">
-          Painel principal com métricas estáveis, gráfico funcional e navegação pronta para expansão.
-        </p>
-      </div>
+      {/* Banner de preview mode — visível apenas quando Firebase não está configurado */}
+      {isPreview && (
+        <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/5 px-4 py-3 text-sm text-yellow-300">
+          <span className="font-semibold">Preview Mode</span> — Firebase não configurado. Exibindo dados de demonstração do Rafael Copolillo.
+        </div>
+      )}
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <KPICard icon={BookOpen} {...dashboardMetrics[0]} />
-        <KPICard icon={TrendingUp} {...dashboardMetrics[1]} />
-        <KPICard icon={Target} {...dashboardMetrics[2]} />
-        <KPICard icon={Zap} {...dashboardMetrics[3]} />
-      </div>
+      {/* Header personalizado */}
+      <StudentHeader info={student.info} attendance={student.attendance} />
 
+      {/* Manage Space — links rápidos */}
+      <ManageSpace links={student.links} />
+
+      {/* Grid principal */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ProgressChart />
+        {/* Coluna esquerda: Progress Tracker + Grammar */}
+        <div className="lg:col-span-2 space-y-6">
+          <ProgressTracker skills={student.progressTracker} />
+          <GrammarOverview items={student.grammarOverview} />
         </div>
-        <div>
-          <UpcomingLessons />
+
+        {/* Coluna direita: Attendance + Teacher Feedback */}
+        <div className="space-y-6">
+          <AttendanceOverview attendance={student.attendance} classes={student.classes} />
+          <TeacherFeedback feedback={student.teacherFeedback} month={student.teacherFeedbackMonth} />
         </div>
       </div>
+
+      {/* Vocabulary Bank */}
+      <VocabularyPreview items={student.vocabularyBank} />
     </div>
   )
 }

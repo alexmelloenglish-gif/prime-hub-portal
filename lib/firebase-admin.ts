@@ -1,46 +1,38 @@
 import { initializeApp, getApps, cert, App } from 'firebase-admin/app'
 import { getFirestore, Firestore } from 'firebase-admin/firestore'
 
-let adminApp: App
-let adminDb: Firestore
+let adminApp: App | undefined
+let adminDb: Firestore | undefined
 
-function getFirebaseAdmin() {
-  if (!adminApp) {
-    const existingApps = getApps()
-    if (existingApps.length > 0) {
-      adminApp = existingApps[0]
-    } else {
-      const projectId = process.env.FIREBASE_PROJECT_ID
-      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
-      const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-
-      if (!projectId || !clientEmail || !privateKey) {
-        throw new Error(
-          'Missing Firebase Admin environment variables. ' +
-          'Please set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in .env.local'
-        )
-      }
-
-      adminApp = initializeApp({
-        credential: cert({
-          projectId,
-          clientEmail,
-          privateKey,
-        }),
-        projectId,
-      })
-    }
-  }
-
-  return adminApp
+export function isFirebaseAdminConfigured(): boolean {
+  return Boolean(
+    process.env.FIREBASE_PROJECT_ID &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY
+  )
 }
 
-export function getAdminDb(): Firestore {
-  if (!adminDb) {
-    const app = getFirebaseAdmin()
-    adminDb = getFirestore(app)
+export function getAdminDb(): Firestore | null {
+  if (!isFirebaseAdminConfigured()) return null
+
+  if (!adminApp) {
+    const apps = getApps()
+    adminApp = apps.length
+      ? apps[0]
+      : initializeApp({
+          credential: cert({
+            projectId: process.env.FIREBASE_PROJECT_ID!,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+            // Vercel armazena a chave privada com \n literal — precisa substituir
+            privateKey: (process.env.FIREBASE_PRIVATE_KEY ?? '').replace(/\\n/g, '\n'),
+          }),
+          storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+        })
   }
+
+  if (!adminDb) {
+    adminDb = getFirestore(adminApp)
+  }
+
   return adminDb
 }
-
-export default getFirebaseAdmin
