@@ -823,3 +823,131 @@ export async function getStudentDashboardState(
     viewerEmail,
   }
 }
+
+export type AttendanceData = {
+  total: number
+  attended: number
+  missed: number
+  consistency: string
+}
+
+export type ClassReport = {
+  date: string
+  summary: string
+  grammarFocus: string
+  goals: string[]
+  vocabulary: string[]
+}
+
+export type VocabularyItem = {
+  word: string
+  meaning: string
+  example: string
+  category: string
+}
+
+export type GrammarItem = {
+  focusArea: string
+  description: string
+  status: string
+}
+
+export type ManageLink = {
+  label: string
+  url: string
+  icon: string
+}
+
+export type ProgressSkill = {
+  skill: string
+  status: string
+  insight: string
+}
+
+export type StudentInfo = {
+  name: string
+  teacher: string
+  program: string
+  frequency: string
+  learningFocus: string
+  currentLevel: string
+  targetLevel: string
+}
+
+export type LegacyStudentData = {
+  links: Array<{
+    label: string
+    url: string
+  }>
+  vocabularyBank: VocabularyItem[]
+  grammarOverview: GrammarItem[]
+  teacherFeedback: string
+  teacherFeedbackMonth: string
+  attendance: AttendanceData
+  classReports: ClassReport[]
+}
+
+function buildLegacyStudentData(student: StudentDashboardData): LegacyStudentData {
+  const attended = student.attendanceOverview.filter((entry) => entry.status === 'present').length
+  const total = student.attendanceOverview.length
+  const missed = Math.max(total - attended, 0)
+  const consistencyMatch = student.attendanceLabel.match(/Consistency:\s*([^(]+)/i)
+  const consistency = consistencyMatch?.[1]?.trim() || student.attendanceLabel
+
+  return {
+    links: student.manageSpace.map((link) => ({
+      label: link.title,
+      url: link.href,
+    })),
+    vocabularyBank: student.vocabularyBank.map((item, index) => ({
+      word: item.term,
+      meaning: item.meaning,
+      example: item.example,
+      category: index < 3 ? 'Travel & Documentation' : 'Portfolio Vocabulary',
+    })),
+    grammarOverview: student.grammarOverview.focusPoints.map((point, index) => {
+      const [focusArea, ...descriptionParts] = point.split(':')
+      return {
+        focusArea: focusArea.trim() || `Focus Area ${index + 1}`,
+        description: descriptionParts.join(':').trim() || point,
+        status: index < 2 ? 'Improving' : 'Developing',
+      }
+    }),
+    teacherFeedback: student.teacherFeedback.map((entry) => entry.body).join(' '),
+    teacherFeedbackMonth: 'April 2026',
+    attendance: {
+      total,
+      attended,
+      missed,
+      consistency,
+    },
+    classReports: student.attendanceOverview.map((entry, index) => ({
+      date: entry.date,
+      summary: entry.summary,
+      grammarFocus:
+        student.classReports[index]?.focus.join(', ') ||
+        student.grammarOverview.focusPoints[0] ||
+        'Grammar focus pending.',
+      goals: student.goals.map((goal) => goal.title),
+      vocabulary: student.vocabularyBank.slice(0, 4).map((item) => item.term),
+    })),
+  }
+}
+
+export const rafaelData = buildLegacyStudentData(
+  buildPreviewStudent('rafael.copolillo@gmail.com', 'Rafael Copolillo')
+)
+
+export async function getStudentData(email: string): Promise<LegacyStudentData | null> {
+  const normalizedEmail = normalizeEmail(email)
+  const state = await getStudentDashboardStateCached(
+    normalizedEmail || 'rafael.copolillo@gmail.com',
+    'Rafael Copolillo'
+  )
+
+  if (!state.student) {
+    return null
+  }
+
+  return buildLegacyStudentData(state.student)
+}
