@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
@@ -54,7 +55,7 @@ model Session {
 
 model Course {
   id          String     @id @default(cuid())
-  title       String
+  title       String     @unique
   description String     @db.Text
   level       String
   createdAt   DateTime   @default(now())
@@ -76,6 +77,8 @@ model Lesson {
   updatedAt   DateTime  @updatedAt
   course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
+  @@unique([courseId, order])
+  @@index([scheduledAt])
   @@map("lessons")
 }
 

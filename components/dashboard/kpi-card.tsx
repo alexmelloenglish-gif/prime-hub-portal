@@ -1,29 +1,38 @@
-'use client'
+import { BookOpen, Target, TrendingUp, Zap } from 'lucide-react'
 
-import { LucideIcon } from 'lucide-react'
+type KPIIconName = 'book-open' | 'trending-up' | 'target' | 'zap'
 
 interface KPICardProps {
-  icon: LucideIcon
+  icon: KPIIconName
   title: string
   value: string
   subtitle: string
   trend: string
 }
 
-export function KPICard({ icon: Icon, title, value, subtitle, trend }: KPICardProps) {
+const iconMap = {
+  'book-open': BookOpen,
+  'trending-up': TrendingUp,
+  target: Target,
+  zap: Zap,
+} as const
+
+export function KPICard({ icon, title, value, subtitle, trend }: KPICardProps) {
+  const Icon = iconMap[icon]
+
   return (
-    <div className="glass-card p-6 hover:bg-white/15 transition-all duration-300">
-      <div className="flex items-start justify-between mb-4">
+    <div className="glass-card p-6 transition-all duration-300 hover:bg-white/15">
+      <div className="mb-4 flex items-start justify-between">
         <div>
-          <p className="text-prime-cream/60 text-sm font-medium">{title}</p>
-          <h3 className="font-display text-3xl font-bold text-white mt-1">{value}</h3>
+          <p className="text-sm font-medium text-prime-cream/60">{title}</p>
+          <h3 className="mt-1 font-display text-3xl font-bold text-white">{value}</h3>
         </div>
-        <div className="h-10 w-10 rounded-lg bg-prime-red/20 flex items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-prime-red/20">
           <Icon className="h-5 w-5 text-prime-red" />
         </div>
       </div>
-      <p className="text-prime-cream/70 text-xs mb-2">{subtitle}</p>
-      <p className="text-prime-red text-xs font-medium">{trend}</p>
+      <p className="mb-2 text-xs text-prime-cream/70">{subtitle}</p>
+      <p className="text-xs font-medium text-prime-red">{trend}</p>
     </div>
   )
 }

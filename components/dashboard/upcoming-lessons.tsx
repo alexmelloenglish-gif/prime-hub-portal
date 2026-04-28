@@ -1,14 +1,18 @@
 'use client'
 
 import { BookOpen, Clock } from 'lucide-react'
-import { upcomingLessons } from '@/lib/dashboard-data'
+import type { LessonItem } from '@/lib/dashboard-data'
 
-export function UpcomingLessons() {
+type UpcomingLessonsProps = {
+  lessons: LessonItem[]
+}
+
+export function UpcomingLessons({ lessons }: UpcomingLessonsProps) {
   return (
     <div className="glass-card p-6">
-      <h2 className="mb-6 font-display text-xl font-bold text-white">Próximas aulas</h2>
+      <h2 className="mb-6 font-display text-xl font-bold text-white">Upcoming lessons</h2>
       <div className="space-y-4">
-        {upcomingLessons.map((lesson) => (
+        {lessons.map((lesson) => (
           <div key={lesson.id} className="cursor-pointer rounded-lg bg-white/5 p-4 transition-colors hover:bg-white/10">
             <div className="mb-2 flex items-start justify-between">
               <div className="flex items-start gap-3">
@@ -23,7 +27,9 @@ export function UpcomingLessons() {
                   </p>
                 </div>
               </div>
-              <span className="rounded bg-prime-red/20 px-2 py-1 text-xs font-semibold text-prime-red">{lesson.level}</span>
+              <span className="rounded bg-prime-red/20 px-2 py-1 text-xs font-semibold text-prime-red">
+                {lesson.level}
+              </span>
             </div>
           </div>
         ))}

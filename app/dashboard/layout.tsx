@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
 import { authOptions } from '@/lib/auth'
-import { getStudentData } from '@/lib/student-data'
+import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
 
 export default async function DashboardLayout({
   children,
@@ -16,24 +16,24 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  const email = session.user.email ?? ''
-  const isAdmin = session.user.role === 'admin'
+  const adminUser = isAdminUser(session.user)
+  const studentState = await getStudentDashboardState(session.user)
 
-  if (!isAdmin) {
-    const studentData = await getStudentData(email)
+  if (!studentState.hasAccess && !adminUser && process.env.NODE_ENV !== 'development') {
+    redirect('/pending-access')
+  }
 
-    // null = Firebase configurado mas aluno não existe → pending-access
-    // previewMode = Firebase não configurado → permite acesso com dados de preview
-    if (studentData === null) {
-      redirect('/dashboard/pending-access')
-    }
+  const topbarUser = {
+    name: studentState.student?.studentName ?? session.user.name,
+    email: studentState.student?.studentEmail ?? session.user.email,
+    image: session.user.image,
   }
 
   return (
     <div className="min-h-screen bg-prime-dark">
-      <Sidebar />
+      <Sidebar isAdmin={adminUser} />
       <div className="min-h-screen md:ml-64">
-        <Topbar user={session.user} />
+        <Topbar user={topbarUser} />
         <main className="p-4 pb-24 md:p-6 md:pb-6">{children}</main>
       </div>
     </div>

@@ -4,18 +4,30 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 
-export function GoogleSignInButton() {
+type GoogleSignInButtonProps = {
+  callbackUrl: string
+  disabled?: boolean
+}
+
+export function GoogleSignInButton({
+  callbackUrl,
+  disabled = false,
+}: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
   const handleGoogleSignIn = async () => {
+    if (disabled) {
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
     try {
-      await signIn('google', { callbackUrl: '/dashboard' })
+      await signIn('google', { callbackUrl })
     } catch {
-      setError('Não foi possível iniciar o login com Google.')
+      setError('Nao foi possivel iniciar o login com Google.')
       setIsLoading(false)
     }
   }
@@ -24,7 +36,7 @@ export function GoogleSignInButton() {
     <div className="space-y-4">
       <Button
         onClick={handleGoogleSignIn}
-        disabled={isLoading}
+        disabled={disabled || isLoading}
         className="w-full bg-white text-prime-dark hover:bg-gray-100 font-semibold py-3 rounded-lg flex items-center justify-center gap-3"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
@@ -45,7 +57,7 @@ export function GoogleSignInButton() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        {isLoading ? 'Conectando...' : 'Continue with Google'}
+        {disabled ? 'Configure o Google OAuth' : isLoading ? 'Conectando...' : 'Continue with Google'}
       </Button>
 
       {error ? (

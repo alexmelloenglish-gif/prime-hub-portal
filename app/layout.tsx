@@ -10,8 +10,8 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Prime Digital Hub - Portal Educacional',
-  description: 'Seu ecossistema de aprendizado 100% online para inglês',
+  title: 'Prime Digital Hub - Student Portal',
+  description: 'Protected learning portal with Google authentication and PostgreSQL-ready data layer.',
 }
 
 export default function RootLayout({

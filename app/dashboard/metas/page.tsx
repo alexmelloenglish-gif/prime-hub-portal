@@ -1,38 +1,51 @@
-import { weeklyGoals } from '@/lib/dashboard-data'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
 import { SectionShell } from '@/components/dashboard/section-shell'
-import { cn } from '@/lib/utils'
+import { authOptions } from '@/lib/auth'
+import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
 
-const statusLabel: Record<(typeof weeklyGoals)[number]['status'], string> = {
-  'on-track': 'Em andamento',
-  attention: 'Requer atenção',
-  completed: 'Concluída',
+type VocabularyPageProps = {
+  searchParams?: Promise<{
+    studentEmail?: string
+  }>
 }
 
-export default function DashboardGoalsPage() {
+export default async function DashboardVocabularyPage({ searchParams }: VocabularyPageProps) {
+  const session = await getServerSession(authOptions)
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+
+  if (!session?.user) {
+    redirect('/login')
+  }
+
+  const studentState = await getStudentDashboardState(
+    session.user,
+    resolvedSearchParams?.studentEmail
+  )
+
+  if (!studentState.hasAccess || !studentState.student) {
+    if (isAdminUser(session.user)) {
+      redirect('/dashboard/admin')
+    }
+
+    redirect('/pending-access')
+  }
+
+  const student = studentState.student
+
   return (
     <SectionShell
-      title="Metas"
-      description="Metas semanais organizadas para manter clareza de execução e acompanhamento."
+      title="My Vocabulary Bank"
+      description="Cumulative vocabulary gathered from Rafael&apos;s lessons, ready for active review and reuse."
     >
-      <div className="space-y-4">
-        {weeklyGoals.map((goal) => (
-          <article key={goal.id} className="glass-card p-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-              <div>
-                <h3 className="font-display text-xl font-semibold text-white">{goal.title}</h3>
-                <p className="mt-2 text-sm text-prime-cream/70">{goal.description}</p>
-              </div>
-              <span
-                className={cn(
-                  'inline-flex rounded-full px-3 py-1 text-xs font-semibold',
-                  goal.status === 'completed' && 'bg-emerald-500/20 text-emerald-300',
-                  goal.status === 'on-track' && 'bg-sky-500/20 text-sky-300',
-                  goal.status === 'attention' && 'bg-amber-500/20 text-amber-200'
-                )}
-              >
-                {statusLabel[goal.status]}
-              </span>
-            </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        {student.vocabularyBank.map((item) => (
+          <article key={item.id} className="glass-card p-6">
+            <p className="text-xl font-semibold text-white">{item.term}</p>
+            <p className="mt-3 text-sm leading-6 text-prime-cream/80">{item.meaning}</p>
+            <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/65">
+              {item.example}
+            </p>
           </article>
         ))}
       </div>
