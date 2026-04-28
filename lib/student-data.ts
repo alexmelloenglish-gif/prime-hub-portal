@@ -682,8 +682,8 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
   return {
     studentName: name ?? 'Rafael Copolillo',
     studentEmail: email,
-    currentLevel: 'CEFR B2',
-    targetLevel: 'CEFR C1',
+    currentLevel: 'B2 Upper-Intermediate',
+    targetLevel: 'C1 Advanced',
     attendanceRate: '100%',
     attendanceLabel: 'Consistency: Excellent (6 attended, 0 missed)',
     focus: 'Fluency Development • Grammar Consolidation & Review',
@@ -719,8 +719,8 @@ function parseStudentDocument(
   return {
     studentName: asString(root.studentName, name ?? 'Prime Student'),
     studentEmail: asString(root.studentEmail, email),
-    currentLevel: asString(root.currentLevel, 'CEFR B2'),
-    targetLevel: asString(root.targetLevel, 'CEFR C1'),
+    currentLevel: asString(root.currentLevel, 'B2 Upper-Intermediate'),
+    targetLevel: asString(root.targetLevel, 'C1 Advanced'),
     attendanceRate: asString(root.attendanceRate, '0%'),
     attendanceLabel: asString(root.attendanceLabel, 'Attendance data pending.'),
     focus: asString(root.focus, 'Learning focus pending.'),

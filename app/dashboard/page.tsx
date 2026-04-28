@@ -42,6 +42,21 @@ const progressWidths: Record<string, string> = {
   Improving: 'w-[58%]',
 }
 
+const vocabularyAccentClasses = [
+  'border-amber-300/25 bg-[linear-gradient(135deg,rgba(251,191,36,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(251,191,36,0.10)]',
+  'border-emerald-300/25 bg-[linear-gradient(135deg,rgba(52,211,153,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(16,185,129,0.10)]',
+  'border-sky-300/25 bg-[linear-gradient(135deg,rgba(125,211,252,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(56,189,248,0.10)]',
+  'border-rose-300/25 bg-[linear-gradient(135deg,rgba(253,164,175,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(244,63,94,0.10)]',
+]
+
+const grammarAccentClasses = [
+  'border-amber-300/25 bg-[linear-gradient(135deg,rgba(251,191,36,0.12),rgba(255,255,255,0.03))]',
+  'border-sky-300/25 bg-[linear-gradient(135deg,rgba(125,211,252,0.12),rgba(255,255,255,0.03))]',
+  'border-emerald-300/25 bg-[linear-gradient(135deg,rgba(52,211,153,0.12),rgba(255,255,255,0.03))]',
+  'border-rose-300/25 bg-[linear-gradient(135deg,rgba(253,164,175,0.12),rgba(255,255,255,0.03))]',
+  'border-violet-300/25 bg-[linear-gradient(135deg,rgba(196,181,253,0.12),rgba(255,255,255,0.03))]',
+]
+
 function getManageSpaceIcon(icon: string) {
   switch (icon) {
     case 'folder-open':
@@ -200,11 +215,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Current level</p>
-              <p className="mt-2 text-3xl font-bold text-white">{student.currentLevel}</p>
+              <p className="mt-2 text-xl font-bold leading-tight text-white md:text-2xl">
+                {student.currentLevel}
+              </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Target level</p>
-              <p className="mt-2 text-3xl font-bold text-white">{student.targetLevel}</p>
+              <p className="mt-2 text-xl font-bold leading-tight text-white md:text-2xl">
+                {student.targetLevel}
+              </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Attendance</p>
@@ -216,7 +235,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
           <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Learning focus</p>
           <p className="mt-2 text-lg font-medium text-prime-cream">{student.focus}</p>
-          <p className="mt-2 text-sm text-prime-cream/65">{student.attendanceLabel}</p>
         </div>
       </section>
 
@@ -316,11 +334,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
-          {student.vocabularyBank.map((item) => (
-            <article key={item.id} className="glass-card p-6">
-              <p className="text-xl font-semibold text-white">{item.term}</p>
-              <p className="mt-3 text-sm leading-6 text-prime-cream/80">{item.meaning}</p>
-              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/65">
+          {student.vocabularyBank.map((item, index) => (
+            <article
+              key={item.id}
+              className={`rounded-[26px] border p-6 ${vocabularyAccentClasses[index % vocabularyAccentClasses.length]}`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-prime-cream/55">
+                    Active vocabulary
+                  </p>
+                  <p className="mt-2 text-xl font-semibold text-white">{item.term}</p>
+                </div>
+                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-prime-cream/65">
+                  Use live
+                </span>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-prime-cream/82">{item.meaning}</p>
+              <p className="mt-4 rounded-2xl border border-black/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/70">
                 {item.example}
               </p>
             </article>
@@ -335,18 +366,23 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             Cumulative grammar focus points extracted from Rafael&apos;s portfolio and teacher review.
           </p>
         </div>
-        <article className="glass-card p-6">
+        <article className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
           <h4 className="text-xl font-semibold text-white">{student.grammarOverview.title}</h4>
           <p className="mt-3 text-sm leading-7 text-prime-cream/80">
             {student.grammarOverview.summary}
           </p>
           <ul className="mt-5 space-y-3">
-            {student.grammarOverview.focusPoints.map((point) => (
+            {student.grammarOverview.focusPoints.map((point, index) => (
               <li
                 key={point}
-                className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm leading-6 text-prime-cream/80"
+                className={`rounded-2xl border px-4 py-4 text-sm leading-6 text-prime-cream/82 ${grammarAccentClasses[index % grammarAccentClasses.length]}`}
               >
-                {point}
+                <div className="flex gap-4">
+                  <span className="mt-0.5 text-xs font-semibold uppercase tracking-[0.22em] text-prime-cream/55">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span>{point}</span>
+                </div>
               </li>
             ))}
           </ul>
@@ -361,15 +397,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </p>
         </div>
         <div className="space-y-4">
-          {student.teacherFeedback.map((feedback) => (
-            <article key={feedback.id} className="glass-card p-6">
+          {student.teacherFeedback.map((feedback, index) => (
+            <article
+              key={feedback.id}
+              className={`rounded-[28px] border p-6 ${
+                index === 0
+                  ? 'border-prime-red/25 bg-[linear-gradient(140deg,rgba(168,34,23,0.16),rgba(255,255,255,0.03))] shadow-[0_20px_50px_rgba(168,34,23,0.14)]'
+                  : 'border-sky-300/20 bg-[linear-gradient(140deg,rgba(56,189,248,0.14),rgba(255,255,255,0.03))] shadow-[0_20px_50px_rgba(56,189,248,0.10)]'
+              }`}
+            >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-prime-red/20 text-prime-cream">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-black/20 text-prime-cream">
                   <MessageSquareQuote className="h-5 w-5" />
                 </div>
-                <h4 className="text-xl font-semibold text-white">{feedback.title}</h4>
+                <div>
+                  <h4 className="text-xl font-semibold text-white">{feedback.title}</h4>
+                  <p className="text-[11px] uppercase tracking-[0.24em] text-prime-cream/50">
+                    Teacher perspective
+                  </p>
+                </div>
               </div>
-              <p className="mt-4 text-sm leading-7 text-prime-cream/80">{feedback.body}</p>
+              <p className="mt-4 text-sm leading-7 text-prime-cream/86">{feedback.body}</p>
             </article>
           ))}
         </div>

@@ -18,8 +18,8 @@ const fallbackStudents: StudentDirectoryEntry[] = [
     id: 'rafael-copolillo-gmail-com',
     studentEmail: 'rafael.copolillo@gmail.com',
     studentName: 'Rafael Copolillo',
-    currentLevel: 'CEFR B2',
-    targetLevel: 'CEFR C1',
+    currentLevel: 'B2 Upper-Intermediate',
+    targetLevel: 'C1 Advanced',
     attendanceRate: '100%',
   },
 ]
@@ -55,11 +55,11 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
           currentLevel:
             typeof data.currentLevel === 'string' && data.currentLevel.trim()
               ? data.currentLevel.trim()
-              : 'CEFR B2',
+        : 'B2 Upper-Intermediate',
           targetLevel:
             typeof data.targetLevel === 'string' && data.targetLevel.trim()
               ? data.targetLevel.trim()
-              : 'CEFR C1',
+        : 'C1 Advanced',
           attendanceRate:
             typeof data.attendanceRate === 'string' && data.attendanceRate.trim()
               ? data.attendanceRate.trim()
