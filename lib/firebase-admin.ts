@@ -1,38 +1,32 @@
-import { initializeApp, getApps, cert, App } from 'firebase-admin/app'
-import { getFirestore, Firestore } from 'firebase-admin/firestore'
+import * as admin from 'firebase-admin'
 
-let adminApp: App | undefined
-let adminDb: Firestore | undefined
+if (!admin.apps.length) {
+  const projectId = process.env.FIREBASE_PROJECT_ID
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
 
-export function isFirebaseAdminConfigured(): boolean {
-  return Boolean(
-    process.env.FIREBASE_PROJECT_ID &&
-    process.env.FIREBASE_CLIENT_EMAIL &&
-    process.env.FIREBASE_PRIVATE_KEY
-  )
+  if (projectId && clientEmail && privateKey) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      } as admin.ServiceAccount),
+    })
+  } else {
+    // Firebase não configurado — preview mode ativo
+    console.warn('[firebase-admin] Variáveis de ambiente não configuradas. Preview mode ativo.')
+  }
 }
 
-export function getAdminDb(): Firestore | null {
-  if (!isFirebaseAdminConfigured()) return null
-
-  if (!adminApp) {
-    const apps = getApps()
-    adminApp = apps.length
-      ? apps[0]
-      : initializeApp({
-          credential: cert({
-            projectId: process.env.FIREBASE_PROJECT_ID!,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
-            // Vercel armazena a chave privada com \n literal — precisa substituir
-            privateKey: (process.env.FIREBASE_PRIVATE_KEY ?? '').replace(/\\n/g, '\n'),
-          }),
-          storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-        })
-  }
-
-  if (!adminDb) {
-    adminDb = getFirestore(adminApp)
-  }
-
-  return adminDb
+export const getFirestore = (): admin.firestore.Firestore | null => {
+  if (!admin.apps.length) return null
+  return admin.firestore()
 }
+
+export const getAuth = (): admin.auth.Auth | null => {
+  if (!admin.apps.length) return null
+  return admin.auth()
+}
+
+export default admin

@@ -1,73 +1,69 @@
 {
-  "uid": "rafael-copolino",
-  "email": "rafael@primehub.com",
-  "name": "Rafael Copolino",
-  "status": "active",
-  "level": "B1",
-  "plan": "Individual",
-  "enrolledAt": "2025-01-15T00:00:00.000Z",
-  "nextLesson": {
-    "date": "2026-04-28T18:00:00.000Z",
-    "topic": "Past Simple vs Past Continuous",
-    "teacher": "Alex Mello",
-    "meetLink": "https://meet.google.com/prime-hub-rafael"
-  },
-  "progress": {
-    "lessonsCompleted": 24,
-    "lessonsTotal": 40,
-    "percentComplete": 60,
-    "currentUnit": "Unit 5 — Narrative Tenses",
-    "streak": 7
+  "info": {
+    "name": "Rafael Copolino",
+    "email": "rafael.copolino@gmail.com",
+    "level": "B1",
+    "teacherName": "Alexandre Mello",
+    "startDate": "2025-08-01",
+    "goal": "Atingir B2 e preparar para entrevistas em inglês"
   },
   "attendance": {
-    "present": 22,
+    "month": "Abril 2026",
+    "present": 10,
     "absent": 2,
-    "rate": 92
+    "total": 12
   },
-  "recentLessons": [
+  "firestoreStatus": "active",
+  "progressTracker": [
+    { "skill": "Speaking",   "current": 62,  "target": 80,  "unit": "%" },
+    { "skill": "Listening",  "current": 70,  "target": 85,  "unit": "%" },
+    { "skill": "Reading",    "current": 75,  "target": 85,  "unit": "%" },
+    { "skill": "Writing",    "current": 55,  "target": 75,  "unit": "%" },
+    { "skill": "Vocabulary", "current": 480, "target": 700, "unit": "words" }
+  ],
+  "grammarOverview": [
+    { "topic": "Past Simple",             "status": "mastered",     "lastReviewed": "2026-04-10" },
+    { "topic": "Past Continuous",         "status": "mastered",     "lastReviewed": "2026-04-10" },
+    { "topic": "Present Perfect",         "status": "in-progress",  "lastReviewed": "2026-04-20" },
+    { "topic": "Conditionals (Type 1 & 2)","status": "in-progress",  "lastReviewed": "2026-04-22" },
+    { "topic": "Passive Voice",            "status": "pending" },
+    { "topic": "Reported Speech",          "status": "pending" }
+  ],
+  "vocabularyBank": [
+    { "word": "acknowledge",  "definition": "to accept or admit the existence of something",     "example": "She acknowledged her mistake gracefully.",            "category": "Business" },
+    { "word": "elaborate",    "definition": "to explain something in more detail",               "example": "Could you elaborate on that point?",                 "category": "Academic" },
+    { "word": "substantial",  "definition": "of considerable importance or size",               "example": "There was a substantial improvement in his speaking.", "category": "General" },
+    { "word": "negotiate",    "definition": "to discuss something to reach an agreement",        "example": "We need to negotiate the terms of the contract.",     "category": "Business" },
+    { "word": "perceive",     "definition": "to become aware of or understand something",        "example": "How do you perceive this situation?",                "category": "Academic" }
+  ],
+  "teacherFeedback": [
     {
-      "date": "2026-04-21T18:00:00.000Z",
-      "topic": "Past Simple — Regular & Irregular Verbs",
-      "status": "completed",
-      "notes": "Excellent progress on irregular verbs. Review: go/went, see/saw, buy/bought."
+      "date": "2026-04-22",
+      "comment": "Rafael demonstrou grande evolução no uso do Present Perfect em contextos reais. Continuar praticando em conversação.",
+      "highlight": "Excelente progresso em fluência esta semana!"
     },
     {
-      "date": "2026-04-14T18:00:00.000Z",
-      "topic": "Present Perfect vs Past Simple",
-      "status": "completed",
-      "notes": "Good understanding of 'already/yet/just'. Keep practising 'since' vs 'for'."
-    },
-    {
-      "date": "2026-04-07T18:00:00.000Z",
-      "topic": "Modal Verbs — Obligation & Permission",
-      "status": "completed",
-      "notes": "Strong performance. Ready to move to narrative tenses."
+      "date": "2026-04-15",
+      "comment": "Boa compreensão auditiva em textos B1. Foco agora em ampliar vocabulário acadêmico.",
+      "highlight": "Listening muito acima da média para o nível."
     }
   ],
-  "homeworkPending": [
-    {
-      "id": "hw-001",
-      "title": "Write a short story using Past Simple",
-      "dueDate": "2026-04-28T00:00:00.000Z",
-      "status": "pending"
-    }
+  "teacherFeedbackMonth": "Abril 2026",
+  "links": [
+    { "label": "Google Classroom", "url": "https://classroom.google.com", "icon": "GraduationCap" },
+    { "label": "Material de Aula",  "url": "https://drive.google.com",     "icon": "FileText" },
+    { "label": "Gravações",         "url": "https://drive.google.com",     "icon": "Video" },
+    { "label": "Formulário de Feedback", "url": "https://forms.google.com", "icon": "ClipboardList" }
   ],
-  "materials": [
-    {
-      "title": "B1 Grammar — Past Tenses Guide",
-      "type": "pdf",
-      "url": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an"
-    },
-    {
-      "title": "Irregular Verbs List",
-      "type": "pdf",
-      "url": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an"
-    }
-  ],
-  "payments": {
-    "status": "up-to-date",
-    "nextDue": "2026-05-15T00:00:00.000Z",
-    "plan": "4 aulas/mês",
-    "amount": 320
-  }
+  "classes": [
+    { "date": "2026-04-01", "topic": "Past Simple Review",           "attended": true },
+    { "date": "2026-04-03", "topic": "Past Continuous",              "attended": true },
+    { "date": "2026-04-08", "topic": "Vocabulary: Business English",  "attended": true },
+    { "date": "2026-04-10", "topic": "Listening Practice B1",        "attended": false, "notes": "Faltou — reagendado" },
+    { "date": "2026-04-15", "topic": "Present Perfect Intro",        "attended": true },
+    { "date": "2026-04-17", "topic": "Present Perfect Practice",     "attended": true },
+    { "date": "2026-04-22", "topic": "Conditionals Type 1",          "attended": true },
+    { "date": "2026-04-24", "topic": "Conditionals Type 2",          "attended": false, "notes": "Conflito de agenda" },
+    { "date": "2026-04-29", "topic": "Speaking: Job Interview Prep", "attended": true }
+  ]
 }
