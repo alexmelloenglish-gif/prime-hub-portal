@@ -47,8 +47,8 @@ export function Topbar({ user }: TopbarProps) {
               className="h-10 w-10 rounded-full border border-white/10 object-cover"
             />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-prime-red">
-              <User className="h-5 w-5 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-prime-red/10 border border-prime-red/20 overflow-hidden">
+              <img src="/assets/logo-p.png" alt="User" className="h-full w-full object-cover opacity-80" />
             </div>
           )}
         </div>

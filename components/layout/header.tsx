@@ -11,10 +11,7 @@ export function Header({ portalHref }: HeaderProps) {
     <header className="relative z-10 container py-6">
       <nav className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-prime-red text-lg font-bold text-white">
-            P
-          </div>
-          <span className="font-display text-xl font-bold text-white">Prime Digital Hub</span>
+          <img src="/assets/logo-full.png" alt="Prime Digital Hub" className="h-10 w-auto" />
         </Link>
         <Link
           href={portalHref}
