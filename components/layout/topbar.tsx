@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Bell, User } from 'lucide-react'
+import { Bell } from 'lucide-react'
 
 interface TopbarProps {
   user: {
@@ -48,7 +48,7 @@ export function Topbar({ user }: TopbarProps) {
             />
           ) : (
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-prime-red/10 border border-prime-red/20 overflow-hidden">
-              <img src="/assets/logo-p.png" alt="User" className="h-full w-full object-cover opacity-80" />
+              <img src="/assets/prime-logo-p-v2.png" alt="User" className="h-full w-full object-cover opacity-80" />
             </div>
           )}
         </div>

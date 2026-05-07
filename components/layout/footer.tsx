@@ -4,7 +4,7 @@ export function Footer() {
       <div className="container">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-3">
-            <img src="/assets/logo-mini.png" alt="Prime" className="h-8 w-8 object-contain" />
+            <img src="/assets/prime-logo-mini-v2.png" alt="Prime" className="h-8 w-8 object-contain" />
             <span className="text-sm text-prime-cream/60">© 2026 Prime Digital Hub. Todos os direitos reservados.</span>
           </div>
           <div className="flex items-center gap-6">

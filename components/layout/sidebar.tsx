@@ -73,7 +73,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
     <>
       <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-white/10 bg-gradient-to-b from-prime-dark to-prime-dark/95 p-6 md:flex md:flex-col">
         <Link href="/dashboard" className="mb-8 flex items-center gap-3">
-          <img src="/assets/logo-mini.png" alt="Prime" className="h-10 w-10 object-contain" />
+          <img src="/assets/prime-logo-mini-v2.png" alt="Prime" className="h-10 w-10 object-contain" />
           <span className="font-display text-lg font-bold text-white">Prime</span>
         </Link>
 

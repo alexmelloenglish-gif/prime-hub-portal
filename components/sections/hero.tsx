@@ -59,7 +59,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
 
         <div className="glass-card border-white/10 p-8 shadow-2xl">
           <div className="mb-8 flex items-center gap-4">
-            <img src="/assets/logo-mini.png" alt="Prime" className="h-14 w-14 object-contain shadow-lg shadow-prime-red/30 rounded-2xl" />
+            <img src="/assets/prime-logo-mini-v2.png" alt="Prime" className="h-14 w-14 object-contain shadow-lg shadow-prime-red/30 rounded-2xl" />
             <div>
               <h2 className="font-display text-2xl font-semibold text-white">Prime Digital Hub</h2>
               <p className="text-prime-cream/70">Portal acadêmico do aluno</p>
