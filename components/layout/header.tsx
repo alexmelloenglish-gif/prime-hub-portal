@@ -8,10 +8,14 @@ interface HeaderProps {
 
 export function Header({ portalHref }: HeaderProps) {
   return (
-    <header className="relative z-10 container py-6">
+    <header className="relative z-10 container py-8">
       <nav className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <img src="/assets/logo-p.png" alt="Prime Digital Hub" className="h-16 w-auto" />
+          <img
+            src="/assets/logotratadopara git.png"
+            alt="Prime Digital Hub"
+            className="h-24 w-auto object-contain"
+          />
         </Link>
         <Link
           href={portalHref}
