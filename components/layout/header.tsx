@@ -15,6 +15,9 @@ export function Header({ portalHref }: HeaderProps) {
             src="/assets/logo-full.png"
             alt="Prime Digital Hub"
             className="h-16 w-auto object-contain"
+            style={{
+              clipPath: 'inset(18% 0 28% 0)',
+            }}
           />
         </Link>
         <Link
