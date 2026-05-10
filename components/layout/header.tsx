@@ -15,6 +15,7 @@ export function Header({ portalHref }: HeaderProps) {
             src="/assets/logotratadopara git.png"
             alt="Prime Digital Hub"
             className="h-24 w-auto object-contain"
+            style={{ mixBlendMode: 'multiply' }}
           />
         </Link>
         <Link
