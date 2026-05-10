@@ -14,10 +14,7 @@ export function Header({ portalHref }: HeaderProps) {
           <img
             src="/assets/logo-full.png"
             alt="Prime Digital Hub"
-            className="h-16 w-auto object-contain"
-            style={{
-              clipPath: 'inset(18% 0 28% 0)',
-            }}
+            className="h-24 md:h-28 w-auto object-contain transition-transform hover:scale-105"
           />
         </Link>
         <Link
