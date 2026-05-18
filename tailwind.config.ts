@@ -13,8 +13,8 @@ const config: Config = {
         'prime-cream': '#f6ebcf',
       },
       fontFamily: {
-        'display': ['Poppins', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
+        display: ['var(--font-montserrat)', 'sans-serif'],
+        body: ['var(--font-inter)', 'sans-serif'],
       },
       backgroundImage: {
         'prime-gradient': 'linear-gradient(135deg, #000c26 0%, #1a1a3e 100%)',

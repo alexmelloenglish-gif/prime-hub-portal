@@ -20,7 +20,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
             Agora 100% online
           </div>
 
-          <h1 className="font-display text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight leading-tight md:text-5xl lg:text-6xl">
             Sua escola de idiomas <span className="text-prime-red">evoluiu</span>.
           </h1>
 
