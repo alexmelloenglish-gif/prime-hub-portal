@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { BookOpen, CalendarCheck, ChevronRight, MessageCircle, Shield, Target } from 'lucide-react'
+import { BrandLogo } from '@/components/layout/brand-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -60,11 +61,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
         <div className="glass-card border-white/10 p-4 shadow-2xl sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-4">
-              <img
-                src="/assets/logo-mini.png"
-                alt="Prime"
-                className="h-14 w-14 object-contain shadow-lg shadow-prime-red/30"
-              />
+              <BrandLogo variant="mark" className="h-14 w-14 shadow-lg shadow-prime-red/30" priority />
               <div className="min-w-0">
                 <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Prime Digital Hub</h2>
                 <p className="text-sm text-prime-cream/70 sm:text-base">Portal acadêmico do aluno</p>

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button'
+import { BrandLogo } from '@/components/layout/brand-logo'
 import { authOptions, isGoogleAuthConfigured } from '@/lib/auth'
 
 const authErrorMessages: Record<string, string> = {
@@ -70,9 +71,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <div className="glass-card space-y-6 p-8">
           <div className="mb-6 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-prime-red text-3xl font-bold text-white shadow-lg shadow-prime-red/30">
-              P
-            </div>
+            <BrandLogo variant="full" className="h-24 w-72 shadow-lg shadow-prime-red/30" priority />
           </div>
 
           <div className="space-y-2 text-center">
