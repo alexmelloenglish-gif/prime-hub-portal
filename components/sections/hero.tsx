@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ChevronRight, Shield } from 'lucide-react'
+import { BookOpen, CalendarCheck, ChevronRight, MessageCircle, Shield, Target } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -57,40 +57,72 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
           </div>
         </div>
 
-        <div className="glass-card border-white/10 p-8 shadow-2xl">
-          <div className="mb-8 flex items-center gap-4">
-                   <img src="/assets/logo-mini.png" alt="Prime" className="h-20 w-20 object-contain shadow-lg shadow-prime-red/30" />
-            <div>
-              <h2 className="font-display text-2xl font-semibold text-white">Prime Digital Hub</h2>
-              <p className="text-prime-cream/70">Portal acadêmico do aluno</p>
-            </div>
-          </div>
-
-          <div className="mb-8 grid grid-cols-2 gap-4">
-            <div className="cursor-pointer rounded-2xl bg-white/10 p-4 transition-colors hover:bg-white/15">
-              <p className="mb-1 text-sm text-prime-cream/60">Próxima aula</p>
-              <p className="text-lg font-medium text-white">Speaking & Confidence</p>
-            </div>
-            <div className="cursor-pointer rounded-2xl bg-white/10 p-4 transition-colors hover:bg-white/15">
-              <p className="mb-1 text-sm text-prime-cream/60">Seu progresso</p>
-              <p className="text-lg font-medium text-white">68% completo</p>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-prime-red" style={{ width: '68%' }}></div>
+        <div className="glass-card border-white/10 p-4 shadow-2xl sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <img
+                src="/assets/logo-mini.png"
+                alt="Prime"
+                className="h-14 w-14 object-contain shadow-lg shadow-prime-red/30"
+              />
+              <div className="min-w-0">
+                <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Prime Digital Hub</h2>
+                <p className="text-sm text-prime-cream/70 sm:text-base">Portal acadêmico do aluno</p>
               </div>
             </div>
-            <div className="cursor-pointer rounded-2xl bg-white/10 p-4 transition-colors hover:bg-white/15">
-              <p className="mb-1 text-sm text-prime-cream/60">Material novo</p>
-              <p className="text-lg font-medium text-white">Liberado hoje</p>
+            <span className="hidden rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100 sm:inline-flex">
+              Online
+            </span>
+          </div>
+
+          <div className="mb-4 rounded-xl border border-white/10 bg-black/20 p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-prime-cream/70">
+                <CalendarCheck className="h-4 w-4 text-prime-red" />
+                Próxima aula
+              </div>
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-prime-cream/70">Hoje</span>
             </div>
-            <div className="cursor-pointer rounded-2xl bg-white/10 p-4 transition-colors hover:bg-white/15">
-              <p className="mb-1 text-sm text-prime-cream/60">Meta da semana</p>
-              <p className="text-lg font-medium text-white">Conversação</p>
+            <p className="text-lg font-semibold text-white">Speaking & Confidence</p>
+            <p className="mt-1 text-sm text-prime-cream/60">19:00 - foco em conversação guiada</p>
+          </div>
+
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="rounded-xl bg-white/10 p-4">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-prime-red/20">
+                <Target className="h-5 w-5 text-prime-red" />
+              </div>
+              <p className="text-sm text-prime-cream/60">Meta</p>
+              <p className="mt-1 font-semibold text-white">Conversação</p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-sky-400/15">
+                <BookOpen className="h-5 w-5 text-sky-200" />
+              </div>
+              <p className="text-sm text-prime-cream/60">Material</p>
+              <p className="mt-1 font-semibold text-white">Liberado</p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-amber-300/15">
+                <MessageCircle className="h-5 w-5 text-amber-100" />
+              </div>
+              <p className="text-sm text-prime-cream/60">Feedback</p>
+              <p className="mt-1 font-semibold text-white">Atualizado</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-prime-cream/60">Agora 100% online</span>
-            <span className="text-prime-cream/60">100% digital</span>
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="mb-3 flex items-center justify-between text-sm">
+              <span className="font-medium text-white">Progresso da jornada</span>
+              <span className="text-prime-cream/60">68%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full rounded-full bg-prime-red" style={{ width: '68%' }}></div>
+            </div>
+            <div className="mt-3 flex items-center justify-between text-xs text-prime-cream/50">
+              <span>Vocabulário</span>
+              <span>Fluência</span>
+            </div>
           </div>
         </div>
       </div>
