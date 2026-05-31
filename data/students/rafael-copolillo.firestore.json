@@ -8,7 +8,7 @@
   "targetLevel": "C1 Advanced",
   "focus": "Fluency Development • Grammar Consolidation & Review",
   "attendanceRate": "100%",
-  "attendanceLabel": "Consistency: Excellent (6 attended, 0 missed)",
+  "attendanceLabel": "Consistency: Excellent (7 attended, 0 missed)",
   "manageSpace": [
     {
       "id": "portfolio",
@@ -167,7 +167,15 @@
       "title": "Homes, cooking processes and complex political explanation",
       "summary": "The class combined house and kitchen vocabulary with discussion of a complex political scenario at Alerj. Rafael explained a difficult real-world topic with very few gaps and showed stronger consolidation of the past simple."
     },
+        {
+      "id": "class-2026-05-26",
+      "date": "May 26, 2026",
+      "status": "present",
+      "title": "Rumours, conditionals and advanced expression in context",
+      "summary": "The class developed third conditional structures and speculative language through real conversations and the song Rumour Has It. Rafael produced natural expressions with nuance and showed strong engagement with advanced grammar in authentic use."
+    }
   ],
+  
   "goals": [
     {
       "id": "goal-1",
@@ -315,6 +323,15 @@
         "Complex political explanation"
       ],
       "teacherInsight": "Rafael showed significant progress explaining a highly complex political situation in English with very few gaps, while also consolidating the past simple through self-correction."
-    }  
+    }  ,
+    {
+      "date": "May 26, 2026",
+      "focus": [
+        "Third conditional and speculative language",
+        "Rumour Has It - song-based vocabulary and expression",
+        "Advanced grammar in authentic context"
+      ],
+      "teacherInsight": "Rafael produced natural third conditional structures and speculative expressions with strong engagement. His ability to connect grammar with authentic context reflects real advancement toward C1 expression."
+    }
   ]
 }
