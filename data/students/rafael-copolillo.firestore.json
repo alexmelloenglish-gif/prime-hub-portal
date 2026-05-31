@@ -8,7 +8,7 @@
   "targetLevel": "C1 Advanced",
   "focus": "Fluency Development • Grammar Consolidation & Review",
   "attendanceRate": "100%",
-  "attendanceLabel": "Consistency: Excellent (6 attended, 0 missed)",
+  "attendanceLabel": "Consistency: Excellent (7 attended, 0 missed)",
   "manageSpace": [
     {
       "id": "portfolio",
@@ -166,6 +166,13 @@
       "status": "present",
       "title": "Homes, cooking processes and complex political explanation",
       "summary": "The class combined house and kitchen vocabulary with discussion of a complex political scenario at Alerj. Rafael explained a difficult real-world topic with very few gaps and showed stronger consolidation of the past simple."
+    },
+    {
+      "id": "class-2026-05-27",
+      "date": "May 27, 2026",
+      "status": "present",
+      "title": "Extra class: conversation practice and fluency development",
+      "summary": "An extra session this week focused on free conversation, fluency consolidation and expanding vocabulary in familiar and new topics. Rafael showed strong engagement and continued progress in spontaneous speaking."
     }
   ],
   "goals": [
@@ -315,6 +322,18 @@
         "Complex political explanation"
       ],
       "teacherInsight": "Rafael showed significant progress explaining a highly complex political situation in English with very few gaps, while also consolidating the past simple through self-correction."
+    },
+    {
+      "date": "May 27, 2026",
+      "attended": true,
+      "title": "Extra class: conversation practice and fluency development",
+      "summary": "An extra session this week focused on free conversation, fluency consolidation and expanding vocabulary in familiar and new topics. Rafael showed strong engagement and continued progress in spontaneous speaking.",
+      "focus": [
+        "Fluency and spontaneous speaking",
+        "Vocabulary expansion",
+        "Conversation confidence"
+      ],
+      "teacherInsight": "This extra class demonstrated Rafael's commitment and enthusiasm for learning. His fluency is developing naturally and he is becoming increasingly comfortable managing complex conversations in English."
     }
   ]
 }
