@@ -193,10 +193,8 @@ function Get-SsdMetrics {
                 }
             }
         } catch {}
-        # Fallback: estimativa baseada no uso do disco
-        if ($null -eq $ssdTempC) {
-            $ssdTempC = 32
-        }
+        # SSD NVMe no Windows geralmente não expõe temperatura via WMI sem driver específico
+        # Retornar null é mais honesto que um valor fixo falso
         return @{ drives = $result; volumes = $volumes; tempC = $ssdTempC }
     } catch {
         Write-Log "Erro ao coletar SSD: $_" "ERROR"
