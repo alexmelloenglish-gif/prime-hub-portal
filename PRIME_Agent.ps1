@@ -269,6 +269,31 @@ function Get-DefenderStatus {
     }
 }
 
+function Get-NetworkSpeed {
+    # Mede bytes enviados/recebidos em 1 segundo para calcular velocidade real
+    try {
+        $adapters = Get-CimInstance -ClassName Win32_PerfFormattedData_Tcpip_NetworkInterface -ErrorAction SilentlyContinue |
+            Where-Object { $_.BytesTotalPersec -gt 0 -and $_.Name -notmatch "Loopback|isatap|Teredo" }
+        if ($adapters) {
+            $totalDown = ($adapters | Measure-Object -Property BytesReceivedPersec -Sum).Sum
+            $totalUp   = ($adapters | Measure-Object -Property BytesSentPersec -Sum).Sum
+            $downloadMbps = [math]::Round($totalDown * 8 / 1MB, 2)
+            $uploadMbps   = [math]::Round($totalUp   * 8 / 1MB, 2)
+            $topAdapter = $adapters | Sort-Object BytesTotalPersec -Descending | Select-Object -First 1
+            return @{
+                downloadMbps = $downloadMbps
+                uploadMbps   = $uploadMbps
+                adapterName  = $topAdapter.Name
+                totalBytesPerSec = [math]::Round($topAdapter.BytesTotalPersec / 1KB, 1)
+            }
+        }
+        return @{ downloadMbps = 0; uploadMbps = 0; adapterName = $null }
+    } catch {
+        Write-Log "Erro ao coletar rede: $_" "ERROR"
+        return @{ downloadMbps = 0; uploadMbps = 0 }
+    }
+}
+
 # ── Handlers de rota ────────────────────────────────────────
 
 function Handle-Health {
@@ -288,6 +313,7 @@ function Handle-Metrics {
     $data = @{
         timestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
         cpu       = Get-CpuMetrics
+        network   = Get-NetworkSpeed
         ram       = Get-RamMetrics
         gpu       = Get-GpuMetrics
         ssd       = Get-SsdMetrics
