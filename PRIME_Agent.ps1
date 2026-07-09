@@ -689,56 +689,83 @@ if ($NgrokProcess) {
 
 Write-Log "PRIME Agent $AgentVersion iniciando na porta $Port..."
 
-$listener = New-Object System.Net.HttpListener
-# Usar http://+:Port/ para aceitar qualquer hostname (necessario para tunel ngrok/cloudflare)
-# A reserva de URL foi feita via: netsh http add urlacl url=http://+:Port/ user=<usuario>
-$listener.Prefixes.Add("http://+:$Port/")
+# Loop externo: reinicia o listener automaticamente se cair por erro de rede
+$maxRestarts = 999
+$restartCount = 0
 
-try {
-    $listener.Start()
-    Write-Log "Servidor HTTP ativo em http://localhost:$Port/"
-    Write-Host "PRIME Agent online: http://localhost:$Port/health" -ForegroundColor Cyan
+while ($restartCount -lt $maxRestarts) {
+    $listener = New-Object System.Net.HttpListener
+    $listener.Prefixes.Add("http://+:$Port/")
 
-    while ($listener.IsListening) {
-        $context = $listener.GetContext()
-        $method  = $context.Request.HttpMethod
-        $path    = $context.Request.Url.AbsolutePath.TrimEnd("/").ToLower()
+    try {
+        $listener.Start()
+        Write-Log "Servidor HTTP ativo em http://localhost:$Port/ (tentativa $($restartCount + 1))"
+        Write-Host "PRIME Agent online: http://localhost:$Port/health" -ForegroundColor Cyan
 
-        Write-Log "$method $path"
+        while ($listener.IsListening) {
+            try {
+                $context = $listener.GetContext()
+            } catch {
+                # GetContext pode falhar se o listener for parado externamente
+                Write-Log "GetContext falhou: $_ - reiniciando listener..." "WARN"
+                break
+            }
 
-        # CORS preflight
-        if ($method -eq "OPTIONS") {
-            $context.Response.StatusCode = 204
-            $context.Response.Headers.Add("Access-Control-Allow-Origin", "*")
-            $context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-            $context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
-            $context.Response.OutputStream.Close()
-            continue
-        }
+            $method  = $context.Request.HttpMethod
+            $path    = $context.Request.Url.AbsolutePath.TrimEnd("/").ToLower()
 
-        switch ($path) {
-            "/health"    { Handle-Health    $context }
-            "/metrics"   { Handle-Metrics   $context }
-            "/processes" { Handle-Processes $context }
-            "/mode"      { Handle-Mode      $context }
-            "/audit"     { Handle-Audit     $context }
-            "/services"  { Handle-Services  $context }
-            "/webcam"    { Handle-Webcam    $context }
-            "/drivers"   { Handle-Drivers   $context }
-            "/chrome"    { Handle-Chrome    $context }
-            "/edge"      { Handle-Edge      $context }
-            default {
-                Send-JsonResponse $context @{
-                    error     = "Rota nao encontrada: $path"
-                    available = @("/health", "/metrics", "/processes", "/mode", "/audit", "/services", "/webcam", "/drivers", "/chrome", "/edge")
-                } 404
+            Write-Log "$method $path"
+
+            # CORS preflight
+            if ($method -eq "OPTIONS") {
+                try {
+                    $context.Response.StatusCode = 204
+                    $context.Response.Headers.Add("Access-Control-Allow-Origin", "*")
+                    $context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                    $context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
+                    $context.Response.OutputStream.Close()
+                } catch {}
+                continue
+            }
+
+            try {
+                switch ($path) {
+                    "/health"    { Handle-Health    $context }
+                    "/metrics"   { Handle-Metrics   $context }
+                    "/processes" { Handle-Processes $context }
+                    "/mode"      { Handle-Mode      $context }
+                    "/audit"     { Handle-Audit     $context }
+                    "/services"  { Handle-Services  $context }
+                    "/webcam"    { Handle-Webcam    $context }
+                    "/drivers"   { Handle-Drivers   $context }
+                    "/chrome"    { Handle-Chrome    $context }
+                    "/edge"      { Handle-Edge      $context }
+                    default {
+                        Send-JsonResponse $context @{
+                            error     = "Rota nao encontrada: $path"
+                            available = @("/health", "/metrics", "/processes", "/mode", "/audit", "/services", "/webcam", "/drivers", "/chrome", "/edge")
+                        } 404
+                    }
+                }
+            } catch {
+                Write-Log "Erro ao processar $path: $_ - continuando..." "WARN"
+                try { $context.Response.OutputStream.Close() } catch {}
             }
         }
+    } catch {
+        Write-Log "Erro no listener: $_" "ERROR"
+    } finally {
+        try { if ($listener.IsListening) { $listener.Stop() } } catch {}
+        try { $listener.Close() } catch {}
     }
-} catch {
-    Write-Log "Erro fatal: $_" "ERROR"
-    Write-Host "Erro: $_" -ForegroundColor Red
-} finally {
-    if ($listener.IsListening) { $listener.Stop() }
-    Write-Log "PRIME Agent encerrado."
+
+    $restartCount++
+    if ($restartCount -lt $maxRestarts) {
+        Write-Log "Reiniciando listener em 3 segundos... (restart $restartCount)" "WARN"
+        Write-Host "[PRIME] Listener reiniciando em 3s..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 3
+    }
 }
+
+Write-Log "PRIME Agent encerrado apos $restartCount restarts."
+Write-Host "PRIME Agent encerrado." -ForegroundColor Red
