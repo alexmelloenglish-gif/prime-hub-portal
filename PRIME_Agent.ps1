@@ -632,57 +632,76 @@ function Handle-Edge {
 # -- Autostart ngrok e registro de URL no dashboard ----------
 $NgrokPath    = Join-Path $PSScriptRoot "ngrok.exe"
 $DashboardUrl = "https://painel.primedigitalhub.com.br"
-$NgrokProcess = $null
-
-function Start-NgrokTunnel {
-    param([int]$LocalPort)
-    if (-not (Test-Path $NgrokPath)) {
-        Write-Log "ngrok.exe nao encontrado em $NgrokPath - pulando autostart" "WARN"
-        return $null
-    }
-    Write-Log "Iniciando ngrok para porta $LocalPort..."
-    $proc = Start-Process -FilePath $NgrokPath -ArgumentList "http $LocalPort" -PassThru -WindowStyle Hidden
-    Start-Sleep -Seconds 4
-    return $proc
-}
 
 function Get-NgrokPublicUrl {
-    try {
-        $api = Invoke-RestMethod "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 5 -ErrorAction Stop
-        $tunnel = $api.tunnels | Where-Object { $_.proto -eq "https" } | Select-Object -First 1
-        if ($tunnel) { return $tunnel.public_url }
-    } catch {}
+    # Tenta ate 10 vezes com 2s de intervalo
+    for ($i = 0; $i -lt 10; $i++) {
+        try {
+            $api = Invoke-RestMethod "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 5 -ErrorAction Stop
+            $tunnel = $api.tunnels | Where-Object { $_.proto -eq "https" } | Select-Object -First 1
+            if ($tunnel) { return $tunnel.public_url }
+        } catch {}
+        Start-Sleep -Seconds 2
+    }
     return $null
 }
 
 function Register-AgentUrl {
     param([string]$PublicUrl)
-    try {
-        $body = @{ url = $PublicUrl; secret = "prime-agent-autoregister" } | ConvertTo-Json -Compress
-        $result = Invoke-RestMethod "$DashboardUrl/api/agent/register" `
-            -Method POST `
-            -Body $body `
-            -ContentType "application/json" `
-            -TimeoutSec 10 `
-            -ErrorAction Stop
-        Write-Log "URL registrada no dashboard: $PublicUrl" "INFO"
-        Write-Host "Dashboard atualizado: $PublicUrl" -ForegroundColor Green
-        return $true
-    } catch {
-        Write-Log "Falha ao registrar URL no dashboard: $_" "WARN"
-        return $false
+    # Tenta ate 5 vezes com 3s de intervalo
+    for ($i = 0; $i -lt 5; $i++) {
+        try {
+            $body = @{ url = $PublicUrl; secret = "prime-agent-autoregister" } | ConvertTo-Json -Compress
+            $result = Invoke-RestMethod "$DashboardUrl/api/agent/register" `
+                -Method POST `
+                -Body $body `
+                -ContentType "application/json" `
+                -TimeoutSec 15 `
+                -ErrorAction Stop
+            Write-Log "URL registrada no dashboard: $PublicUrl" "INFO"
+            Write-Host "[PRIME] Dashboard atualizado: $PublicUrl" -ForegroundColor Green
+            return $true
+        } catch {
+            Write-Log "Tentativa $($i+1) falhou ao registrar URL: $_" "WARN"
+            Start-Sleep -Seconds 3
+        }
+    }
+    Write-Log "Falha definitiva ao registrar URL no dashboard" "ERROR"
+    return $false
+}
+
+# Verificar se ngrok ja esta rodando
+$ngrokJaAtivo = $false
+try {
+    $check = Invoke-RestMethod "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 3 -ErrorAction Stop
+    if ($check.tunnels.Count -gt 0) {
+        $ngrokJaAtivo = $true
+        Write-Log "ngrok ja esta ativo - reutilizando tunel existente" "INFO"
+        Write-Host "[PRIME] ngrok ja ativo, reutilizando..." -ForegroundColor Cyan
+    }
+} catch {}
+
+# Iniciar ngrok apenas se nao estiver rodando
+if (-not $ngrokJaAtivo) {
+    if (Test-Path $NgrokPath) {
+        Write-Log "Iniciando ngrok para porta $Port..."
+        Write-Host "[PRIME] Iniciando ngrok..." -ForegroundColor Cyan
+        Start-Process -FilePath $NgrokPath -ArgumentList "http $Port" -WindowStyle Hidden
+        Start-Sleep -Seconds 5
+    } else {
+        Write-Log "ngrok.exe nao encontrado em $NgrokPath - pulando autostart" "WARN"
+        Write-Host "[PRIME] ngrok.exe nao encontrado - sem tunel" -ForegroundColor Yellow
     }
 }
 
-# Iniciar ngrok em background
-$NgrokProcess = Start-NgrokTunnel -LocalPort $Port
-if ($NgrokProcess) {
-    $PublicUrl = Get-NgrokPublicUrl
-    if ($PublicUrl) {
-        Register-AgentUrl -PublicUrl $PublicUrl
-    } else {
-        Write-Log "Nao foi possivel obter URL publica do ngrok" "WARN"
-    }
+# Obter URL publica e registrar no dashboard
+$PublicUrl = Get-NgrokPublicUrl
+if ($PublicUrl) {
+    Write-Host "[PRIME] URL publica: $PublicUrl" -ForegroundColor Cyan
+    Register-AgentUrl -PublicUrl $PublicUrl
+} else {
+    Write-Log "Nao foi possivel obter URL publica do ngrok" "WARN"
+    Write-Host "[PRIME] AVISO: nao foi possivel obter URL do ngrok" -ForegroundColor Yellow
 }
 
 # -- Servidor HTTP -------------------------------------------
