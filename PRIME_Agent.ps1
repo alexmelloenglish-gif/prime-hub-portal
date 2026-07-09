@@ -61,16 +61,21 @@ function Write-Audit {
 
 function Send-JsonResponse {
     param($Context, $Data, [int]$StatusCode = 200)
-    $json = $Data | ConvertTo-Json -Depth 10 -Compress
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
-    $Context.Response.StatusCode = $StatusCode
-    $Context.Response.ContentType = "application/json; charset=utf-8"
-    $Context.Response.Headers.Add("Access-Control-Allow-Origin", "*")
-    $Context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    $Context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
-    $Context.Response.ContentLength64 = $bytes.Length
-    $Context.Response.OutputStream.Write($bytes, 0, $bytes.Length)
-    $Context.Response.OutputStream.Close()
+    try {
+        $json = $Data | ConvertTo-Json -Depth 10 -Compress
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
+        $Context.Response.StatusCode = $StatusCode
+        $Context.Response.ContentType = "application/json; charset=utf-8"
+        $Context.Response.Headers.Add("Access-Control-Allow-Origin", "*")
+        $Context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        $Context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
+        $Context.Response.ContentLength64 = $bytes.Length
+        $Context.Response.OutputStream.Write($bytes, 0, $bytes.Length)
+        $Context.Response.OutputStream.Close()
+    } catch {
+        Write-Log "Send-JsonResponse falhou (conexao encerrada pelo cliente): $_" "WARN"
+        try { $Context.Response.OutputStream.Close() } catch {}
+    }
 }
 
 # -- Coleta de dados reais -----------------------------------
@@ -238,12 +243,14 @@ function Get-TopProcesses {
             Select-Object -First $Top
         $result = @()
         foreach ($p in $procs) {
+            $priorityStr = "Normal"
+            try { if ($p.PriorityClass -ne $null) { $priorityStr = $p.PriorityClass.ToString() } } catch {}
             $result += @{
                 name     = $p.ProcessName
                 pid      = $p.Id
                 cpuSec   = [math]::Round($p.CPU, 2)
                 ramMB    = [math]::Round($p.WorkingSet64 / 1MB, 1)
-                priority = $p.PriorityClass.ToString()
+                priority = $priorityStr
             }
         }
         return $result
