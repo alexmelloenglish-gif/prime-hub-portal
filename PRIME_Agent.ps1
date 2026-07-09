@@ -73,7 +73,7 @@ function Send-JsonResponse {
         $Context.Response.OutputStream.Write($bytes, 0, $bytes.Length)
         $Context.Response.OutputStream.Close()
     } catch {
-        Write-Log "Send-JsonResponse falhou (conexao encerrada pelo cliente): $_" "WARN"
+        Write-Log "Send-JsonResponse falhou (conexao encerrada pelo cliente): $($_.ToString())" "WARN"
         try { $Context.Response.OutputStream.Close() } catch {}
     }
 }
@@ -117,7 +117,7 @@ function Get-CpuMetrics {
             tempC       = $temp
         }
     } catch {
-        Write-Log "Erro ao coletar CPU: $_" "ERROR"
+        Write-Log "Erro ao coletar CPU: $($_.ToString())" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -136,7 +136,7 @@ function Get-RamMetrics {
             usedPct   = $usedPct
         }
     } catch {
-        Write-Log "Erro ao coletar RAM: $_" "ERROR"
+        Write-Log "Erro ao coletar RAM: $($_.ToString())" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -159,7 +159,7 @@ function Get-GpuMetrics {
         }
         return $result
     } catch {
-        Write-Log "Erro ao coletar GPU: $_" "ERROR"
+        Write-Log "Erro ao coletar GPU: $($_.ToString())" "ERROR"
         return @()
     }
 }
@@ -202,7 +202,7 @@ function Get-SsdMetrics {
         # Retornar null e mais honesto que um valor fixo falso
         return @{ drives = $result; volumes = $volumes; tempC = $ssdTempC }
     } catch {
-        Write-Log "Erro ao coletar SSD: $_" "ERROR"
+        Write-Log "Erro ao coletar SSD: $($_.ToString())" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -229,7 +229,7 @@ function Get-SystemInfo {
             lastBoot    = $os.LastBootUpTime.ToString("yyyy-MM-ddTHH:mm:ss")
         }
     } catch {
-        Write-Log "Erro ao coletar SystemInfo: $_" "ERROR"
+        Write-Log "Erro ao coletar SystemInfo: $($_.ToString())" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -255,7 +255,7 @@ function Get-TopProcesses {
         }
         return $result
     } catch {
-        Write-Log "Erro ao coletar processos: $_" "ERROR"
+        Write-Log "Erro ao coletar processos: $($_.ToString())" "ERROR"
         return @()
     }
 }
@@ -271,7 +271,7 @@ function Get-DefenderStatus {
             threatStatus    = $defender.AMRunningMode
         }
     } catch {
-        Write-Log "Defender nao disponivel: $_" "WARN"
+        Write-Log "Defender nao disponivel: $($_.ToString())" "WARN"
         return @{ available = $false }
     }
 }
@@ -296,7 +296,7 @@ function Get-NetworkSpeed {
         }
         return @{ downloadMbps = 0; uploadMbps = 0; adapterName = $null }
     } catch {
-        Write-Log "Erro ao coletar rede: $_" "ERROR"
+        Write-Log "Erro ao coletar rede: $($_.ToString())" "ERROR"
         return @{ downloadMbps = 0; uploadMbps = 0 }
     }
 }
@@ -669,7 +669,7 @@ function Register-AgentUrl {
             Write-Host "[PRIME] Dashboard atualizado: $PublicUrl" -ForegroundColor Green
             return $true
         } catch {
-            Write-Log "Tentativa $($i+1) falhou ao registrar URL: $_" "WARN"
+            Write-Log "Tentativa $($i+1) falhou ao registrar URL: $($_.ToString())" "WARN"
             Start-Sleep -Seconds 3
         }
     }
@@ -733,7 +733,7 @@ while ($restartCount -lt $maxRestarts) {
                 $context = $listener.GetContext()
             } catch {
                 # GetContext pode falhar se o listener for parado externamente
-                Write-Log "GetContext falhou: $_ - reiniciando listener..." "WARN"
+                Write-Log "GetContext falhou: $($_.ToString()) - reiniciando listener..." "WARN"
                 break
             }
 
@@ -774,12 +774,12 @@ while ($restartCount -lt $maxRestarts) {
                     }
                 }
             } catch {
-                Write-Log "Erro ao processar $path: $_ - continuando..." "WARN"
+                Write-Log "Erro ao processar $($path): $($_.ToString()) - continuando..." "WARN"
                 try { $context.Response.OutputStream.Close() } catch {}
             }
         }
     } catch {
-        Write-Log "Erro no listener: $_" "ERROR"
+        Write-Log "Erro no listener: $($_.ToString())" "ERROR"
     } finally {
         try { if ($listener.IsListening) { $listener.Stop() } } catch {}
         try { $listener.Close() } catch {}
