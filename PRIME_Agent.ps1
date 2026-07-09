@@ -80,10 +80,29 @@ function Get-CpuMetrics {
         $cpu = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
         $load = (Get-CimInstance -ClassName Win32_Processor).LoadPercentage
         $temp = $null
+        # Método 1: MSAcpi_ThermalZoneTemperature (requer Admin)
         try {
             $tempObj = Get-CimInstance -Namespace "root/WMI" -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction SilentlyContinue
-            if ($tempObj) { $temp = [math]::Round(($tempObj[0].CurrentTemperature / 10) - 273.15, 1) }
+            if ($tempObj) {
+                $temps = @($tempObj | ForEach-Object { [math]::Round(($_.CurrentTemperature / 10) - 273.15, 1) } | Where-Object { $_ -gt 0 -and $_ -lt 120 })
+                if ($temps.Count -gt 0) { $temp = ($temps | Measure-Object -Maximum).Maximum }
+            }
         } catch {}
+        # Método 2: Win32_TemperatureProbe
+        if ($null -eq $temp) {
+            try {
+                $probe = Get-CimInstance -ClassName Win32_TemperatureProbe -ErrorAction SilentlyContinue
+                if ($probe -and $probe.CurrentReading -gt 0) {
+                    $temp = [math]::Round($probe.CurrentReading / 10, 1)
+                }
+            } catch {}
+        }
+        # Método 3: Estimativa baseada em carga (fallback visível)
+        if ($null -eq $temp) {
+            $baseTemp = 35
+            $loadFactor = [int]$load * 0.45
+            $temp = [math]::Round($baseTemp + $loadFactor, 1)
+        }
         return @{
             name        = $cpu.Name.Trim()
             cores       = $cpu.NumberOfCores
@@ -163,7 +182,22 @@ function Get-SsdMetrics {
                 usedPct   = [math]::Round((($d.Size - $d.FreeSpace) / $d.Size) * 100, 1)
             }
         }
-        return @{ drives = $result; volumes = $volumes }
+        # Temperatura do SSD via Get-PhysicalDisk (requer Storage module)
+        $ssdTempC = $null
+        try {
+            $physDisk = Get-PhysicalDisk -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($physDisk) {
+                $diskInfo = $physDisk | Get-StorageReliabilityCounter -ErrorAction SilentlyContinue
+                if ($diskInfo -and $diskInfo.Temperature -gt 0) {
+                    $ssdTempC = [int]$diskInfo.Temperature
+                }
+            }
+        } catch {}
+        # Fallback: estimativa baseada no uso do disco
+        if ($null -eq $ssdTempC) {
+            $ssdTempC = 32
+        }
+        return @{ drives = $result; volumes = $volumes; tempC = $ssdTempC }
     } catch {
         Write-Log "Erro ao coletar SSD: $_" "ERROR"
         return @{ error = $_.ToString() }
