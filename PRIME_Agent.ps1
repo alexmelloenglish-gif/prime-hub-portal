@@ -1,11 +1,11 @@
-# ============================================================
-# PRIME Command Center vNEXT — PRIME Agent
+﻿# ============================================================
+# PRIME Command Center vNEXT - PRIME Agent
 # Servidor HTTP local para coleta de dados reais do sistema
 # Dell Inspiron 3501 | Windows 11
 # Porta: 9876
 # ============================================================
-# Execução: powershell.exe -ExecutionPolicy Bypass -File PRIME_Agent.ps1
-# Instalação como serviço: Execute PRIME_Agent_Installer.ps1 como Admin
+# Execucao: powershell.exe -ExecutionPolicy Bypass -File PRIME_Agent.ps1
+# Instalacao como servico: Execute PRIME_Agent_Installer.ps1 como Admin
 # ============================================================
 
 param(
@@ -18,14 +18,14 @@ $AgentVersion = "vNEXT-1.0"
 $DeviceName   = "Dell Inspiron 3501"
 $StartTime    = Get-Date
 
-# ── Garantir diretório de logs ──────────────────────────────
+# -- Garantir diretorio de logs ------------------------------
 if (-not (Test-Path $LogPath)) {
     New-Item -ItemType Directory -Path $LogPath -Force | Out-Null
 }
 $LogFile = Join-Path $LogPath "prime_agent_$(Get-Date -Format 'yyyy-MM-dd').log"
 $AuditFile = Join-Path $LogPath "prime_audit.json"
 
-# ── Funções auxiliares ──────────────────────────────────────
+# -- Funcoes auxiliares --------------------------------------
 function Write-Log {
     param([string]$Message, [string]$Level = "INFO")
     $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -54,7 +54,7 @@ function Write-Audit {
     }
     if ($audit -isnot [System.Collections.IList]) { $audit = @($audit) }
     $audit += $entry
-    # Manter apenas últimas 500 entradas
+    # Manter apenas ultimas 500 entradas
     if ($audit.Count -gt 500) { $audit = $audit[-500..-1] }
     $audit | ConvertTo-Json -Depth 5 | Set-Content $AuditFile -Encoding UTF8
 }
@@ -73,14 +73,14 @@ function Send-JsonResponse {
     $Context.Response.OutputStream.Close()
 }
 
-# ── Coleta de dados reais ───────────────────────────────────
+# -- Coleta de dados reais -----------------------------------
 
 function Get-CpuMetrics {
     try {
         $cpu = Get-CimInstance -ClassName Win32_Processor -ErrorAction Stop
         $load = (Get-CimInstance -ClassName Win32_Processor).LoadPercentage
         $temp = $null
-        # Método 1: MSAcpi_ThermalZoneTemperature (requer Admin)
+        # Metodo 1: MSAcpi_ThermalZoneTemperature (requer Admin)
         try {
             $tempObj = Get-CimInstance -Namespace "root/WMI" -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction SilentlyContinue
             if ($tempObj) {
@@ -88,7 +88,7 @@ function Get-CpuMetrics {
                 if ($temps.Count -gt 0) { $temp = ($temps | Measure-Object -Maximum).Maximum }
             }
         } catch {}
-        # Método 2: Win32_TemperatureProbe
+        # Metodo 2: Win32_TemperatureProbe
         if ($null -eq $temp) {
             try {
                 $probe = Get-CimInstance -ClassName Win32_TemperatureProbe -ErrorAction SilentlyContinue
@@ -97,7 +97,7 @@ function Get-CpuMetrics {
                 }
             } catch {}
         }
-        # Método 3: Estimativa baseada em carga (fallback visível)
+        # Metodo 3: Estimativa baseada em carga (fallback visivel)
         if ($null -eq $temp) {
             $baseTemp = 35
             $loadFactor = [int]$load * 0.45
@@ -193,8 +193,8 @@ function Get-SsdMetrics {
                 }
             }
         } catch {}
-        # SSD NVMe no Windows geralmente não expõe temperatura via WMI sem driver específico
-        # Retornar null é mais honesto que um valor fixo falso
+        # SSD NVMe no Windows geralmente nao expoe temperatura via WMI sem driver especifico
+        # Retornar null e mais honesto que um valor fixo falso
         return @{ drives = $result; volumes = $volumes; tempC = $ssdTempC }
     } catch {
         Write-Log "Erro ao coletar SSD: $_" "ERROR"
@@ -264,7 +264,7 @@ function Get-DefenderStatus {
             threatStatus    = $defender.AMRunningMode
         }
     } catch {
-        Write-Log "Defender não disponível: $_" "WARN"
+        Write-Log "Defender nao disponivel: $_" "WARN"
         return @{ available = $false }
     }
 }
@@ -294,7 +294,7 @@ function Get-NetworkSpeed {
     }
 }
 
-# ── Handlers de rota ────────────────────────────────────────
+# -- Handlers de rota ----------------------------------------
 
 function Handle-Health {
     param($Context)
@@ -333,7 +333,7 @@ function Handle-Processes {
 
 function Handle-Mode {
     param($Context)
-    # Ler body da requisição
+    # Ler body da requisicao
     $body = $null
     try {
         $reader = New-Object System.IO.StreamReader($Context.Request.InputStream)
@@ -355,87 +355,87 @@ function Handle-Mode {
                 $results += @{ action="PowerPlan"; target="Alto Desempenho"; result="FAILED"; detail=$_.ToString() }
                 Write-Audit "PowerPlan" "Alto Desempenho" "FAILED" $_.ToString()
             }
-            # Chrome → High
+            # Chrome -> High
             $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
             if ($chromeProcs) {
                 try { $chromeProcs | ForEach-Object { $_.PriorityClass = "High" }
                     $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to High" }
-                    Write-Audit "Priority" "chrome → High" "SUCCESS"
+                    Write-Audit "Priority" "chrome -> High" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
-                    Write-Audit "Priority" "chrome → High" "FAILED" $_.ToString()
+                    Write-Audit "Priority" "chrome -> High" "FAILED" $_.ToString()
                 }
             } else {
                 $results += @{ action="Priority"; target="chrome"; result="SKIPPED"; detail="Process not running" }
             }
-            # Edge → BelowNormal
+            # Edge -> BelowNormal
             $edgeProcs = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
             if ($edgeProcs) {
                 try { $edgeProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
                     $results += @{ action="Priority"; target="msedge"; result="SUCCESS"; detail="Set to BelowNormal" }
-                    Write-Audit "Priority" "msedge → BelowNormal" "SUCCESS"
+                    Write-Audit "Priority" "msedge -> BelowNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="msedge"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # ChatGPT → BelowNormal (nunca encerrar)
+            # ChatGPT -> BelowNormal (nunca encerrar)
             $chatgptProcs = Get-Process -Name "ChatGPT" -ErrorAction SilentlyContinue
             if ($chatgptProcs) {
                 try { $chatgptProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
                     $results += @{ action="Priority"; target="ChatGPT"; result="SUCCESS"; detail="Set to BelowNormal (not killed)" }
-                    Write-Audit "Priority" "ChatGPT → BelowNormal" "SUCCESS"
+                    Write-Audit "Priority" "ChatGPT -> BelowNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="ChatGPT"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # Spooler → Desativado
+            # Spooler -> Desativado
             try {
                 Stop-Service -Name "Spooler" -Force -ErrorAction SilentlyContinue
                 Set-Service -Name "Spooler" -StartupType Disabled -ErrorAction SilentlyContinue
                 $results += @{ action="Service"; target="Spooler"; result="SUCCESS"; detail="Stopped and Disabled" }
-                Write-Audit "Service" "Spooler → Disabled" "SUCCESS"
+                Write-Audit "Service" "Spooler -> Disabled" "SUCCESS"
             } catch {
                 $results += @{ action="Service"; target="Spooler"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "Service" "Spooler → Disabled" "FAILED" $_.ToString()
+                Write-Audit "Service" "Spooler -> Disabled" "FAILED" $_.ToString()
             }
         }
         "fluido" {
-            # Chrome → High
+            # Chrome -> High
             $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
             if ($chromeProcs) {
                 try { $chromeProcs | ForEach-Object { $_.PriorityClass = "High" }
                     $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to High" }
-                    Write-Audit "Priority" "chrome → High" "SUCCESS"
+                    Write-Audit "Priority" "chrome -> High" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # Telegram → AboveNormal
+            # Telegram -> AboveNormal
             $telegramProcs = Get-Process -Name "Telegram" -ErrorAction SilentlyContinue
             if ($telegramProcs) {
                 try { $telegramProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
                     $results += @{ action="Priority"; target="Telegram"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "Telegram → AboveNormal" "SUCCESS"
+                    Write-Audit "Priority" "Telegram -> AboveNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="Telegram"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # iVCam → AboveNormal
+            # iVCam -> AboveNormal
             $ivcamProcs = Get-Process -Name "iVCam" -ErrorAction SilentlyContinue
             if ($ivcamProcs) {
                 try { $ivcamProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
                     $results += @{ action="Priority"; target="iVCam"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "iVCam → AboveNormal" "SUCCESS"
+                    Write-Audit "Priority" "iVCam -> AboveNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="iVCam"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # Edge → BelowNormal
+            # Edge -> BelowNormal
             $edgeProcs = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
             if ($edgeProcs) {
                 try { $edgeProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
                     $results += @{ action="Priority"; target="msedge"; result="SUCCESS"; detail="Set to BelowNormal" }
-                    Write-Audit "Priority" "msedge → BelowNormal" "SUCCESS"
+                    Write-Audit "Priority" "msedge -> BelowNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="msedge"; result="FAILED"; detail=$_.ToString() }
                 }
@@ -451,25 +451,25 @@ function Handle-Mode {
                 $results += @{ action="PowerPlan"; target="Balanceado"; result="FAILED"; detail=$_.ToString() }
                 Write-Audit "PowerPlan" "Balanceado" "FAILED" $_.ToString()
             }
-            # Chrome → AboveNormal
+            # Chrome -> AboveNormal
             $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
             if ($chromeProcs) {
                 try { $chromeProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
                     $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "chrome → AboveNormal" "SUCCESS"
+                    Write-Audit "Priority" "chrome -> AboveNormal" "SUCCESS"
                 } catch {
                     $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
                 }
             }
-            # Spooler → Automático
+            # Spooler -> Automatico
             try {
                 Set-Service -Name "Spooler" -StartupType Automatic -ErrorAction SilentlyContinue
                 Start-Service -Name "Spooler" -ErrorAction SilentlyContinue
                 $results += @{ action="Service"; target="Spooler"; result="SUCCESS"; detail="Started and set to Automatic" }
-                Write-Audit "Service" "Spooler → Automatic" "SUCCESS"
+                Write-Audit "Service" "Spooler -> Automatic" "SUCCESS"
             } catch {
                 $results += @{ action="Service"; target="Spooler"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "Service" "Spooler → Automatic" "FAILED" $_.ToString()
+                Write-Audit "Service" "Spooler -> Automatic" "FAILED" $_.ToString()
             }
         }
         default {
@@ -548,7 +548,7 @@ function Handle-Webcam {
                 manufacturer = $wc.Manufacturer
             }
         }
-        # Verificar se iVCam está em uso
+        # Verificar se iVCam esta em uso
         $ivcamRunning = $null -ne (Get-Process -Name "iVCam" -ErrorAction SilentlyContinue)
         Send-JsonResponse $Context @{ timestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); webcams = $result; ivcamActive = $ivcamRunning }
     } catch {
@@ -629,7 +629,7 @@ function Handle-Edge {
 }
 
 
-# ── Autostart ngrok e registro de URL no dashboard ──────────
+# -- Autostart ngrok e registro de URL no dashboard ----------
 $NgrokPath    = Join-Path $PSScriptRoot "ngrok.exe"
 $DashboardUrl = "https://painel.primedigitalhub.com.br"
 $NgrokProcess = $null
@@ -637,7 +637,7 @@ $NgrokProcess = $null
 function Start-NgrokTunnel {
     param([int]$LocalPort)
     if (-not (Test-Path $NgrokPath)) {
-        Write-Log "ngrok.exe não encontrado em $NgrokPath — pulando autostart" "WARN"
+        Write-Log "ngrok.exe nao encontrado em $NgrokPath - pulando autostart" "WARN"
         return $null
     }
     Write-Log "Iniciando ngrok para porta $LocalPort..."
@@ -681,16 +681,16 @@ if ($NgrokProcess) {
     if ($PublicUrl) {
         Register-AgentUrl -PublicUrl $PublicUrl
     } else {
-        Write-Log "Não foi possível obter URL pública do ngrok" "WARN"
+        Write-Log "Nao foi possivel obter URL publica do ngrok" "WARN"
     }
 }
 
-# ── Servidor HTTP ───────────────────────────────────────────
+# -- Servidor HTTP -------------------------------------------
 
 Write-Log "PRIME Agent $AgentVersion iniciando na porta $Port..."
 
 $listener = New-Object System.Net.HttpListener
-# Usar http://+:Port/ para aceitar qualquer hostname (necessário para túnel ngrok/cloudflare)
+# Usar http://+:Port/ para aceitar qualquer hostname (necessario para tunel ngrok/cloudflare)
 # A reserva de URL foi feita via: netsh http add urlacl url=http://+:Port/ user=<usuario>
 $listener.Prefixes.Add("http://+:$Port/")
 
@@ -729,7 +729,7 @@ try {
             "/edge"      { Handle-Edge      $context }
             default {
                 Send-JsonResponse $context @{
-                    error     = "Rota não encontrada: $path"
+                    error     = "Rota nao encontrada: $path"
                     available = @("/health", "/metrics", "/processes", "/mode", "/audit", "/services", "/webcam", "/drivers", "/chrome", "/edge")
                 } 404
             }
