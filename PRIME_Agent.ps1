@@ -628,6 +628,63 @@ function Handle-Edge {
     }
 }
 
+
+# ── Autostart ngrok e registro de URL no dashboard ──────────
+$NgrokPath    = Join-Path $PSScriptRoot "ngrok.exe"
+$DashboardUrl = "https://painel.primedigitalhub.com.br"
+$NgrokProcess = $null
+
+function Start-NgrokTunnel {
+    param([int]$LocalPort)
+    if (-not (Test-Path $NgrokPath)) {
+        Write-Log "ngrok.exe não encontrado em $NgrokPath — pulando autostart" "WARN"
+        return $null
+    }
+    Write-Log "Iniciando ngrok para porta $LocalPort..."
+    $proc = Start-Process -FilePath $NgrokPath -ArgumentList "http $LocalPort" -PassThru -WindowStyle Hidden
+    Start-Sleep -Seconds 4
+    return $proc
+}
+
+function Get-NgrokPublicUrl {
+    try {
+        $api = Invoke-RestMethod "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 5 -ErrorAction Stop
+        $tunnel = $api.tunnels | Where-Object { $_.proto -eq "https" } | Select-Object -First 1
+        if ($tunnel) { return $tunnel.public_url }
+    } catch {}
+    return $null
+}
+
+function Register-AgentUrl {
+    param([string]$PublicUrl)
+    try {
+        $body = @{ url = $PublicUrl; secret = "prime-agent-autoregister" } | ConvertTo-Json -Compress
+        $result = Invoke-RestMethod "$DashboardUrl/api/agent/register" `
+            -Method POST `
+            -Body $body `
+            -ContentType "application/json" `
+            -TimeoutSec 10 `
+            -ErrorAction Stop
+        Write-Log "URL registrada no dashboard: $PublicUrl" "INFO"
+        Write-Host "Dashboard atualizado: $PublicUrl" -ForegroundColor Green
+        return $true
+    } catch {
+        Write-Log "Falha ao registrar URL no dashboard: $_" "WARN"
+        return $false
+    }
+}
+
+# Iniciar ngrok em background
+$NgrokProcess = Start-NgrokTunnel -LocalPort $Port
+if ($NgrokProcess) {
+    $PublicUrl = Get-NgrokPublicUrl
+    if ($PublicUrl) {
+        Register-AgentUrl -PublicUrl $PublicUrl
+    } else {
+        Write-Log "Não foi possível obter URL pública do ngrok" "WARN"
+    }
+}
+
 # ── Servidor HTTP ───────────────────────────────────────────
 
 Write-Log "PRIME Agent $AgentVersion iniciando na porta $Port..."
