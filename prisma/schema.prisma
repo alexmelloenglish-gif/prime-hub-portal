@@ -98,21 +98,25 @@ model Progress {
 }
 
 model PipelineRun {
-  id                     String      @id @default(cuid())
-  idempotencyKey         String      @unique
-  studentEmail           String
-  lessonId               String
-  status                 String      @default("received")
-  promptOneSchemaVersion String?
-  promptOneArtifact      Json?
-  authorityStatus        String      @default("non_authoritative")
-  errorCode              String?
-  errorMessage           String?     @db.Text
-  startedAt              DateTime    @default(now())
-  completedAt            DateTime?
-  createdAt              DateTime    @default(now())
-  updatedAt              DateTime    @updatedAt
-  transcript             Transcript?
+  id                       String      @id @default(cuid())
+  idempotencyKey           String      @unique
+  studentEmail             String
+  lessonId                 String
+  status                   String      @default("received")
+  promptOneSchemaVersion   String?
+  promptOneArtifact        Json?
+  promptThreeSchemaVersion String?
+  promptThreeArtifact      Json?
+  portfolioPatchId         String?
+  portfolioApplyStatus     String?
+  authorityStatus          String      @default("non_authoritative")
+  errorCode                String?
+  errorMessage             String?     @db.Text
+  startedAt                DateTime    @default(now())
+  completedAt              DateTime?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+  transcript               Transcript?
 
   @@index([studentEmail, createdAt])
   @@index([status])
@@ -224,13 +228,19 @@ model PortfolioProjection {
 }
 
 model CoachingGuidance {
-  id                   String   @id @default(cuid())
-  pipelineRunId        String
-  studentEmail         String
-  content              Json
-  recommendationStatus String   @default("ai_proposed")
-  requiresHumanReview  Boolean  @default(true)
-  createdAt            DateTime @default(now())
+  id                    String   @id @default(cuid())
+  pipelineRunId         String
+  studentEmail          String
+  studentId             String?
+  teacherId             String?
+  content               Json
+  recommendationStatus  String   @default("ai_proposed")
+  isPedagogicalDecision Boolean  @default(false)
+  requiresHumanReview   Boolean  @default(true)
+  sourceReferences      Json?
+  documentStatus        String   @default("draft")
+  implementationStatus  String   @default("not_proven")
+  createdAt             DateTime @default(now())
 
   @@unique([pipelineRunId])
   @@map("coaching_guidance")

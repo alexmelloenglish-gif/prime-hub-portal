@@ -217,27 +217,98 @@ export type ClassReportOutput = {
   implementationStatus: 'not_proven'
 }
 
+export type ProjectionSourceReference = {
+  source_type: string
+  source_id: string
+}
+
+export type PortfolioPatchOperation = {
+  operation_id: string
+  type: 'upsert_attendance_projection' | 'append_unique_date' | 'append_class_report_reference' | 'merge_unique_vocabulary_item' | 'merge_unique_correction' | 'conditional_update_projection'
+  target: string
+  precondition?: string
+  parameters: Record<string, unknown>
+  idempotent: true
+}
+
+export type ExcludedProjectionOperation = {
+  type: string
+  status: 'rejected'
+  reason: string
+}
+
 export type PortfolioPatchOutput = {
-  operations: Array<{
-    op: 'append_class_report' | 'merge_vocabulary_item' | 'update_feedback_projection'
-    key: string
-    value: unknown
-    sourceIds: string[]
-  }>
+  patch_schema_version: 'portfolio-projection-patch.v3'
+  patch_id: string
+  operation_key: string
+  portfolio_id: string
+  student_id: string
+  base_projection_version: number
+  expected_projection_version: number
+  idempotency: {
+    strategy: 'operation_key'
+    duplicate_behavior: 'return_noop_without_reapplying_operations'
+  }
+  source_references: ProjectionSourceReference[]
+  operations: PortfolioPatchOperation[]
+  excluded_operations: ExcludedProjectionOperation[]
+  validation: {
+    authorization: 'passed' | 'rejected'
+    projection_version: 'checked'
+    idempotency_key: 'checked'
+    deduplication: 'checked'
+    ordering: 'checked'
+    history_preserved: 'checked'
+    referential_integrity: 'checked'
+  }
   documentStatus: 'draft'
   implementationStatus: 'not_proven'
 }
 
+export type CoachingSourceReference = {
+  source_type: 'Evidence' | 'LearningSignal' | 'TeacherInsight' | 'ClassReportProjection' | 'PortfolioProjection'
+  source_id: string
+}
+
+export type CoachingPriority = {
+  priority_id: string
+  text: string
+  basis: string[]
+  authority: 'recommendation_only'
+}
+
+export type CoachingProposedAction = {
+  action_proposal_id: string
+  text: string
+  state: 'proposal_only'
+  educational_action_created: false
+  requires_teacher_decision: true
+}
+
 export type CoachingGuidanceOutput = {
+  coaching_guidance_id: string
+  student_id: string
+  teacher_id?: string
   studentSnapshot: string[]
-  topTeachingPriorities: Array<{ text: string; sourceIds: string[] }>
+  topTeachingPriorities: CoachingPriority[]
   recurringErrorsToRecycle: Array<{ text: string; sourceIds: string[] }>
   vocabularyToRecycle: string[]
   recommendedNextClassStrategy: string
   suggestedHomeworkStrategy?: string
   teacherAlert?: string
   recommendationStatus: 'ai_proposed'
+  is_pedagogical_decision: false
   requiresHumanReview: true
+  source_references: CoachingSourceReference[]
+  proposed_actions: CoachingProposedAction[]
+  domain_events_emitted: []
+  pedagogical_decision_created: false
+  educational_action_created: false
+  ser_changed: false
+  learning_journey_changed: false
+  institutional_memory_changed: false
+  documentStatus: 'draft'
+  implementationStatus: 'not_proven'
 }
 
 export type PipelineResult = {

@@ -208,53 +208,152 @@ export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOu
   )
 }
 
+const PROMPT_THREE_CONTRACT = `
+PROMPT 3 — LEARNING PORTFOLIO PROJECTION — CANONICAL / LOCKED v3
+
+Você está operando exclusivamente na camada de projeção do Learning Portfolio.
+Transforme registros autorizados em operações idempotentes de atualização de uma
+read model/projection. O Learning Portfolio não é fonte de verdade do domínio.
+
+Não crie, valide, publique, execute ou altere Evidence, Learning Signals, Teacher
+Insights, Pedagogical Decisions, Educational Actions, SER, Learning Journey,
+Institutional Memory, Domain Events ou estados oficiais. Não trate o texto do
+Class Report como fonte de verdade.
+
+Uma LessonCompleted não prova presença. Só projete presença quando houver registro
+de attendance explicitamente autorizado. Teacher Insight só pode alimentar uma
+síntese oficial quando state=InsightPublished. Não modifique versões anteriores,
+não sobrescreva histórico e não assuma que o patch foi aplicado.
+
+Cada operação deve ter operation_id, target, source autorizada, justificativa/precondition
+e idempotent=true. Use patch_schema_version=portfolio-projection-patch.v3,
+operation_key, base_projection_version e expected_projection_version. Se uma operação
+não tiver autoridade suficiente, inclua-a em excluded_operations com status=rejected.
+A aplicação efetiva será realizada por serviço determinístico com controle de versão,
+idempotência, deduplicação, ordenação, preservação histórica e integridade referencial.
+`
+
 export async function runPromptThree(input: {
   lesson: LessonTranscriptInput
   report: ClassReportOutput
   promptOne: PromptOneOutput
+  portfolio_projection_context: { portfolio_id: string; student_id: string; projection_version: number; last_applied_source_event_id?: string; requested_by: string }
+  authorized_source_records: Record<string, unknown>
 }): Promise<PortfolioPatchOutput> {
+  const context = input.portfolio_projection_context
+  const operationKey = `${context.student_id}|${input.lesson.lessonId}|${input.report.reportId}`
+  const sourceReferences = [
+    { source_type: 'class_report_projection', source_id: input.report.reportId },
+    ...(input.authorized_source_records.attendance ? [{ source_type: 'attendance_record', source_id: String((input.authorized_source_records.attendance as { source?: string }).source || '') }] : []),
+  ].filter((item) => item.source_id)
   const fallback: PortfolioPatchOutput = {
-    operations: [
-      {
-        op: 'append_class_report',
-        key: `${input.lesson.lessonId}:${input.lesson.transcriptId || 'current'}`,
-        value: input.report,
-        sourceIds: input.report.sourceEvidenceIds,
-      },
+    patch_schema_version: 'portfolio-projection-patch.v3',
+    patch_id: `patch-${operationKey.split('|').join('-')}-v1`,
+    operation_key: operationKey,
+    portfolio_id: context.portfolio_id,
+    student_id: context.student_id,
+    base_projection_version: context.projection_version,
+    expected_projection_version: context.projection_version + 1,
+    idempotency: { strategy: 'operation_key', duplicate_behavior: 'return_noop_without_reapplying_operations' },
+    source_references: sourceReferences,
+    operations: [{
+      operation_id: 'op-class-report',
+      type: 'append_class_report_reference',
+      target: 'class_reports',
+      precondition: 'class_report.state == projection_published',
+      parameters: { report_id: input.report.reportId, lesson_id: input.lesson.lessonId, class_report_state: input.report.documentStatus === 'published' ? 'projection_published' : 'projection_draft', content_reference: `${input.report.reportId}#content-v1`, ordering_key: input.lesson.effectiveAt || input.lesson.classDate || new Date().toISOString() },
+      idempotent: true,
+    }],
+    excluded_operations: [
+      { type: 'create_ser_version', status: 'rejected', reason: 'Prompt 3 não possui autoridade para criar ou publicar SER.' },
+      { type: 'update_learning_journey', status: 'rejected', reason: 'Learning Journey pertence ao domínio e não pode ser alterada pela projeção.' },
+      { type: 'create_pedagogical_decision', status: 'rejected', reason: 'Nenhuma decisão pedagógica pode ser criada pela projeção.' },
+      { type: 'execute_educational_action', status: 'rejected', reason: 'Prompt 3 não executa Educational Actions.' },
     ],
+    validation: { authorization: 'passed', projection_version: 'checked', idempotency_key: 'checked', deduplication: 'checked', ordering: 'checked', history_preserved: 'checked', referential_integrity: 'checked' },
     documentStatus: 'draft',
     implementationStatus: 'not_proven',
   }
   return invokeJson<PortfolioPatchOutput>(
-    'PROMPT 3 — Produce only an idempotent PortfolioProjectionPatch. The portfolio is a read model, not domain truth. Attendance may be projected only from authorized metadata. Never rewrite the complete portfolio.',
+    'PROMPT 3 — Produce only an idempotent PortfolioProjectionPatch v3 from authorized projection inputs.',
     input,
     fallback,
+    PROMPT_THREE_CONTRACT,
   )
 }
+
+const PROMPT_FOUR_CONTRACT = `
+PROMPT 4 — PEDAGOGICAL COACHING & RECOMMENDATION — CANONICAL / LOCKED
+
+Produza somente orientação interna para consideração de um professor autorizado.
+A saída é uma AI Coaching Recommendation, não uma Pedagogical Decision, Educational
+Action, SER, Learning Journey ou Institutional Memory update.
+
+Use exclusivamente Evidence com estado EvidencePersisted, Learning Signals com
+estado LearningSignalValidated e validação autorizada, Teacher Insight com estado
+InsightPublished e validation_event_id correspondente, além de projeções e Class
+Reports fornecidos como contexto. Não infira presença, progresso oficial, mudança de
+nível, MaterialChange, diagnóstico definitivo ou aceitação humana.
+
+Não crie, aprove, execute ou declare decisões, ações, eventos de domínio ou mudanças
+de domínio. Não trate o portfólio ou o texto narrativo do Class Report como fonte de
+verdade. Toda prioridade deve possuir basis rastreável e authority=recommendation_only.
+Toda ação deve permanecer proposal_only, educational_action_created=false e
+requires_teacher_decision=true. Mantenha recommendation_status=ai_proposed,
+is_pedagogical_decision=false, requires_human_review=true, domain_events_emitted=[]
+e documentStatus/implementationStatus independentes. Se os dados forem insuficientes,
+reduza a força da recomendação ou omita-a.
+`
 
 export async function runPromptFour(input: {
   lesson: LessonTranscriptInput
   report: ClassReportOutput
   promptOne: PromptOneOutput
-  publishedTeacherInsight?: string
+  portfolio_projection?: Record<string, unknown>
+  validated_evidence?: Array<Record<string, unknown>>
+  validated_learning_signals?: Array<Record<string, unknown>>
+  published_teacher_insight?: Record<string, unknown> | null
+  class_report_reference?: Record<string, unknown>
 }): Promise<CoachingGuidanceOutput> {
+  const evidence = input.validated_evidence || []
+  const signals = input.validated_learning_signals || []
+  const insight = input.published_teacher_insight
+  const sourceReferences = [
+    { source_type: 'ClassReportProjection' as const, source_id: input.report.reportId },
+    ...evidence.flatMap((item) => typeof item.evidence_id === 'string' ? [{ source_type: 'Evidence' as const, source_id: item.evidence_id }] : []),
+    ...signals.flatMap((item) => typeof item.signal_id === 'string' ? [{ source_type: 'LearningSignal' as const, source_id: item.signal_id }] : []),
+    ...(insight && typeof insight.insight_id === 'string' ? [{ source_type: 'TeacherInsight' as const, source_id: insight.insight_id }] : []),
+  ]
+  const priorities = signals.filter((item) => item.state === 'LearningSignalValidated').slice(0, 4).map((item, index) => ({
+    priority_id: `priority-${String(index + 1).padStart(3, '0')}`,
+    text: String(item.text || item.signal || 'Verify this pattern across subsequent lessons.'),
+    basis: Array.isArray(item.evidence_reference_ids) ? item.evidence_reference_ids.filter((id): id is string => typeof id === 'string') : [],
+    authority: 'recommendation_only' as const,
+  }))
   const fallback: CoachingGuidanceOutput = {
-    studentSnapshot: [input.report.summary],
-    topTeachingPriorities: input.promptOne.learning_signal_proposals.map((item) => ({
-      text: item.signal,
-      sourceIds: item.evidence_reference_ids,
-    })),
+    coaching_guidance_id: `coaching-${input.lesson.lessonId}-v1`,
+    student_id: input.lesson.studentId || input.lesson.studentEmail,
+    teacher_id: input.lesson.teacherId,
+    studentSnapshot: [input.report.summary, 'Continue observing whether the identified patterns recur across subsequent lessons.'],
+    topTeachingPriorities: priorities,
     recurringErrorsToRecycle: [],
     vocabularyToRecycle: input.report.vocabulary,
-    recommendedNextClassStrategy: input.report.homeworkRecommendation || 'Review the proposal with the teacher before selecting the next strategy.',
-    suggestedHomeworkStrategy: input.report.homeworkRecommendation,
-    teacherAlert: 'This is an AI recommendation and requires human review.',
+    recommendedNextClassStrategy: priorities.length ? 'Consider a short contextual retrieval activity based on the validated learning signals.' : 'Consider reviewing the available evidence with the teacher before selecting a next-class strategy.',
+    suggestedHomeworkStrategy: priorities.length ? 'Consider a short practice task that reuses the validated target in a new context.' : undefined,
+    teacherAlert: 'This is an AI recommendation only. Verify the pattern with the teacher; no decision or action has been created.',
     recommendationStatus: 'ai_proposed',
+    is_pedagogical_decision: false,
     requiresHumanReview: true,
+    source_references: sourceReferences,
+    proposed_actions: [{ action_proposal_id: `action-proposal-${input.lesson.lessonId}`, text: 'Consider a contextual learning activity in a future lesson.', state: 'proposal_only', educational_action_created: false, requires_teacher_decision: true }],
+    domain_events_emitted: [],
+    pedagogical_decision_created: false,
+    educational_action_created: false,
+    ser_changed: false,
+    learning_journey_changed: false,
+    institutional_memory_changed: false,
+    documentStatus: 'draft',
+    implementationStatus: 'not_proven',
   }
-  return invokeJson<CoachingGuidanceOutput>(
-    'PROMPT 4 — Produce internal teacher coaching only. Recommendations are non-binding and must not become a Pedagogical Decision, Educational Action, SER or Learning Journey update.',
-    input,
-    fallback,
-  )
+  return invokeJson<CoachingGuidanceOutput>('PROMPT 4 — Produce only an internal, non-binding AI coaching recommendation.', input, fallback, PROMPT_FOUR_CONTRACT)
 }

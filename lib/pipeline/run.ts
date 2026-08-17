@@ -101,26 +101,55 @@ async function persistPromptOne(runId: string, transcriptId: string, promptOne: 
 async function applyPortfolioPatch(input: LessonTranscriptInput, runId: string, patch: Awaited<ReturnType<typeof runPromptThree>>) {
   const prisma = getPrismaClient()
   const projectionKey = 'student-dashboard'
-  const current = await prisma.portfolioProjection.findUnique({
-    where: { studentEmail_projectionKey: { studentEmail: normalizeEmail(input.studentEmail), projectionKey } },
-  })
-  const state = current?.projection && typeof current.projection === 'object' && !Array.isArray(current.projection)
-    ? current.projection as { classReports?: Record<string, unknown>; vocabulary?: Record<string, unknown>; feedback?: unknown }
-    : {}
-  const next = {
-    ...state,
-    classReports: { ...(state.classReports || {}) },
-    vocabulary: { ...(state.vocabulary || {}) },
-  }
-  for (const operation of patch.operations) {
-    if (operation.op === 'append_class_report') next.classReports[operation.key] = operation.value
-    if (operation.op === 'merge_vocabulary_item') next.vocabulary[operation.key] = operation.value
-    if (operation.op === 'update_feedback_projection') next.feedback = operation.value
-  }
-  await prisma.portfolioProjection.upsert({
-    where: { studentEmail_projectionKey: { studentEmail: normalizeEmail(input.studentEmail), projectionKey } },
-    update: { projection: next as Prisma.InputJsonValue, sourceRunId: runId, version: { increment: 1 } },
-    create: { studentEmail: normalizeEmail(input.studentEmail), projectionKey, projection: next as Prisma.InputJsonValue, sourceRunId: runId },
+  return prisma.$transaction(async (tx) => {
+    const current = await tx.portfolioProjection.findUnique({
+      where: { studentEmail_projectionKey: { studentEmail: normalizeEmail(input.studentEmail), projectionKey } },
+    })
+    const currentVersion = current?.version || 0
+    const currentState = current?.projection && typeof current.projection === 'object' && !Array.isArray(current.projection)
+      ? current.projection as Record<string, unknown>
+      : {}
+    const appliedKeys = Array.isArray(currentState.appliedOperationKeys) ? currentState.appliedOperationKeys.filter((key): key is string => typeof key === 'string') : []
+    if (appliedKeys.includes(patch.operation_key)) return { status: 'duplicate_ignored' as const, version: currentVersion }
+    if (currentVersion !== patch.base_projection_version) return { status: 'version_rejected' as const, version: currentVersion }
+
+    const next: Record<string, unknown> = {
+      ...currentState,
+      classReports: { ...(currentState.classReports && typeof currentState.classReports === 'object' && !Array.isArray(currentState.classReports) ? currentState.classReports as Record<string, unknown> : {}) },
+      attendedClasses: Array.isArray(currentState.attendedClasses) ? [...currentState.attendedClasses] : [],
+      vocabulary: { ...(currentState.vocabulary && typeof currentState.vocabulary === 'object' && !Array.isArray(currentState.vocabulary) ? currentState.vocabulary as Record<string, unknown> : {}) },
+      corrections: { ...(currentState.corrections && typeof currentState.corrections === 'object' && !Array.isArray(currentState.corrections) ? currentState.corrections as Record<string, unknown> : {}) },
+      appliedOperationKeys: [...appliedKeys, patch.operation_key],
+    }
+    for (const operation of patch.operations) {
+      const parameters = operation.parameters
+      if (operation.type === 'append_class_report_reference') {
+        if (parameters.class_report_state !== 'projection_published') continue
+        const reportId = String(parameters.report_id)
+        ;(next.classReports as Record<string, unknown>)[reportId] = parameters
+      }
+      if (operation.type === 'append_unique_date') {
+        const key = String(parameters.deduplication_key || parameters.date)
+        if (!(next.attendedClasses as unknown[]).some((entry) => typeof entry === 'object' && entry !== null && (entry as Record<string, unknown>).deduplication_key === key)) next.attendedClasses = [...(next.attendedClasses as unknown[]), parameters]
+      }
+      if (operation.type === 'merge_unique_vocabulary_item') (next.vocabulary as Record<string, unknown>)[String(parameters.normalized_key || parameters.item)] = parameters
+      if (operation.type === 'merge_unique_correction') (next.corrections as Record<string, unknown>)[String(parameters.normalized_key || parameters.original)] = parameters
+      if (operation.type === 'conditional_update_projection') next[operation.target] = parameters
+      if (operation.type === 'upsert_attendance_projection') next.attendance = parameters
+    }
+    const nextVersion = patch.expected_projection_version
+    if (current) {
+      const updated = await tx.portfolioProjection.updateMany({
+        where: { id: current.id, version: currentVersion },
+        data: { projection: next as Prisma.InputJsonValue, sourceRunId: runId, version: nextVersion },
+      })
+      if (updated.count !== 1) return { status: 'version_rejected' as const, version: currentVersion }
+    } else {
+      await tx.portfolioProjection.create({
+        data: { studentEmail: normalizeEmail(input.studentEmail), projectionKey, projection: next as Prisma.InputJsonValue, sourceRunId: runId, version: nextVersion },
+      })
+    }
+    return { status: 'applied' as const, version: nextVersion }
   })
 }
 
@@ -223,19 +252,49 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
         implementationStatus: report.implementationStatus,
       },
     })
-    const patch = await runPromptThree({ lesson: normalizedInput, report, promptOne })
-    await applyPortfolioPatch(normalizedInput, run.id, patch)
-    const coaching = await runPromptFour({ lesson: normalizedInput, report, promptOne })
+    const currentPortfolio = await prisma.portfolioProjection.findUnique({
+      where: { studentEmail_projectionKey: { studentEmail: normalizedInput.studentEmail, projectionKey: 'student-dashboard' } },
+    })
+    const projectionVersion = currentPortfolio?.version || 0
+    const patch = await runPromptThree({
+      lesson: normalizedInput,
+      report,
+      promptOne,
+      portfolio_projection_context: {
+        portfolio_id: currentPortfolio?.id || `portfolio-${normalizedInput.studentEmail}`,
+        student_id: normalizedInput.studentId || normalizedInput.studentEmail,
+        projection_version: projectionVersion,
+        last_applied_source_event_id: undefined,
+        requested_by: 'portfolio-projection-service',
+      },
+      authorized_source_records: {
+        lesson: { lesson_id: normalizedInput.lessonId, state: 'LessonCompleted', source_event: 'LessonCompleted', source_event_id: `evt-lesson-completed-${normalizedInput.lessonId}` },
+        ...(normalizedInput.attendanceSource && normalizedInput.attendanceStatus !== 'unknown' ? { attendance: { attendance_status: normalizedInput.attendanceStatus, source: normalizedInput.attendanceSource, is_authorized: true } } : {}),
+        class_report: { report_id: report.reportId, lesson_id: report.lessonId, state: report.documentStatus === 'published' ? 'projection_published' : 'projection_draft', content_reference: `${report.reportId}#content-v1`, generated_at: report.generatedAt },
+      },
+    })
+    const portfolioApply = await applyPortfolioPatch(normalizedInput, run.id, patch)
+    await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptThreeSchemaVersion: patch.patch_schema_version, promptThreeArtifact: patch as unknown as Prisma.InputJsonValue, portfolioPatchId: patch.patch_id, portfolioApplyStatus: portfolioApply.status } })
+    const coaching = await runPromptFour({
+      lesson: normalizedInput,
+      report,
+      promptOne,
+      portfolio_projection: currentPortfolio?.projection && typeof currentPortfolio.projection === 'object' && !Array.isArray(currentPortfolio.projection) ? currentPortfolio.projection as Record<string, unknown> : undefined,
+      validated_evidence: [],
+      validated_learning_signals: [],
+      published_teacher_insight: null,
+      class_report_reference: { report_id: report.reportId, state: report.documentStatus === 'published' ? 'projection_published' : 'projection_draft', content_reference: `${report.reportId}#content-v1` },
+    })
     await prisma.coachingGuidance.upsert({
       where: { pipelineRunId: run.id },
-      update: { studentEmail: normalizedInput.studentEmail, content: coaching, recommendationStatus: 'ai_proposed', requiresHumanReview: true },
-      create: { pipelineRunId: run.id, studentEmail: normalizedInput.studentEmail, content: coaching, recommendationStatus: 'ai_proposed', requiresHumanReview: true },
+      update: { studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
+      create: { pipelineRunId: run.id, studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
     })
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'completed', completedAt: new Date() } })
     await prisma.pipelineEvent.createMany({ data: [
-      { pipelineRunId: run.id, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus } },
-      { pipelineRunId: run.id, eventType: 'PortfolioProjectionUpdated', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length } },
-      { pipelineRunId: run.id, eventType: 'CoachingGuidanceCreated', aggregateType: 'CoachingGuidance', aggregateId: run.id, payload: { recommendationStatus: 'ai_proposed' } },
+      { pipelineRunId: run.id, eventType: 'ClassReportProjectionPersisted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus } },
+      { pipelineRunId: run.id, eventType: 'PortfolioProjectionUpdated', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: portfolioApply.status, projectionVersion: portfolioApply.version } },
+      { pipelineRunId: run.id, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: run.id, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
     ], skipDuplicates: true })
     return { pipelineRunId: run.id, status: 'completed', duplicate: false, report, coaching }
   } catch (error) {
