@@ -4,6 +4,8 @@ import {
   getFirebaseFirestore,
   isFirebaseConfigured,
 } from '@/lib/firebase-admin'
+import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
+import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
 import { normalizeEmail } from '@/lib/student-data'
 
 type AuthenticatedUser = Session['user'] | null | undefined
@@ -17,10 +19,34 @@ export type StudentDirectoryEntry = {
   attendanceRate: string
 }
 
+const repositoryStudentDirectory: StudentDirectoryEntry[] = [
+  {
+    id: 'rafael-copolillo-gmail-com',
+    studentEmail: normalizeEmail(String(rafaelProfile.studentEmail)),
+    studentName: String(rafaelProfile.studentName),
+    currentLevel: String(rafaelProfile.currentLevel),
+    targetLevel: String(rafaelProfile.targetLevel),
+    attendanceRate: String(rafaelProfile.attendanceRate),
+  },
+  {
+    id: 'louise-nogueira-hotmail-com',
+    studentEmail: normalizeEmail(String(louiseProfile.studentEmail)),
+    studentName: String(louiseProfile.studentName),
+    currentLevel: String(louiseProfile.currentLevel),
+    targetLevel: String(louiseProfile.targetLevel),
+    attendanceRate: String(louiseProfile.attendanceRate),
+  },
+]
+
+function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] {
+  console.warn(`[admin-dashboard] Using the two-student repository directory: ${reason}`)
+  return repositoryStudentDirectory.map((student) => ({ ...student }))
+}
+
 export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<StudentDirectoryEntry[]> {
   if (!isFirebaseConfigured) {
-    console.error('[admin-dashboard] Firebase configuration incomplete', getFirebaseConfigStatus())
-    return []
+    console.error('[admin-dashboard] Firebase is disabled or unavailable for the current runtime', getFirebaseConfigStatus())
+    return getRepositoryStudentDirectory('Firebase is not configured')
   }
 
   try {
@@ -65,7 +91,7 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
 
     if (!students.length) {
       console.error('[admin-dashboard] Firestore returned no valid student documents')
-      return []
+      return getRepositoryStudentDirectory('Firestore returned no valid documents')
     }
     return students
   } catch (error) {
@@ -74,6 +100,6 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
       errorName: error instanceof Error ? error.name : 'UnknownError',
       errorMessage: error instanceof Error ? error.message : String(error),
     })
-    return []
+    return getRepositoryStudentDirectory('Firestore directory read failed')
   }
 }

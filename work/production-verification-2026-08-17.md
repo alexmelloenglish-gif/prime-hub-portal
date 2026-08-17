@@ -57,3 +57,9 @@ The first real request reached the new runtime and contacted Google STS. Runtime
 Root cause: `GCP_AUDIENCE` was supplied in URL form (`https://iam.googleapis.com/projects/...`), while the external-account STS exchange requires the resource-name form (`//iam.googleapis.com/projects/...`).
 
 Correction applied in `lib/firebase-admin.ts`: normalize URL-form and bare-host audiences to `//iam.googleapis.com/...`, while preserving an already normalized value. The local production build passed after the correction. A new deployment is required for the second runtime proof.
+
+## Recovery checkpoint — stable production restored
+
+At the user's explicit confirmation, Vercel deployment `EBCMHpWQPNGbaCskjbt9RVZsWpjw` (`6536901`, status READY) was promoted to the official production domains. Vercel displayed `Promoted Deployment successfully.` The public domain `https://www.primedigitalhub.com.br/` loaded normally, and the authenticated `/dashboard/admin` route loaded without a 504 or infinite spinner. The restored deployment showed the preserved Rafael reference dashboard. No Firestore write, seed, key creation, or environment-secret change was performed during the recovery.
+
+A separate unpromoted recovery patch adds `PRIME_FIREBASE_MODE` gating and an 8-second timeout around Firestore student lookups. It passed `npm run build` locally and remains isolated from production until the WIF path is independently proven.

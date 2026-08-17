@@ -420,6 +420,19 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
   }
 }
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
+  })
+
+  try {
+    return await Promise.race([promise, timeout])
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle)
+  }
+}
+
 async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<StudentDashboardData> {
   try {
     const projection = await getPrismaClient().portfolioProjection.findUnique({
@@ -504,10 +517,11 @@ const getStudentDashboardStateCached = cache(
       const firestore = getFirebaseFirestore()
       const collectionName = process.env.FIREBASE_STUDENT_COLLECTION || 'students'
       const normalizedEmail = email.trim().toLowerCase()
-      const directDoc = await firestore
-        .collection(collectionName)
-        .doc(normalizeEmailToDocId(normalizedEmail))
-        .get()
+      const directDoc = await withTimeout(
+        firestore.collection(collectionName).doc(normalizeEmailToDocId(normalizedEmail)).get(),
+        8000,
+        'Firestore direct student lookup'
+      )
 
       if (directDoc.exists) {
         return {
@@ -519,11 +533,11 @@ const getStudentDashboardStateCached = cache(
         }
       }
 
-      const querySnapshot = await firestore
-        .collection(collectionName)
-        .where('studentEmail', '==', normalizedEmail)
-        .limit(1)
-        .get()
+      const querySnapshot = await withTimeout(
+        firestore.collection(collectionName).where('studentEmail', '==', normalizedEmail).limit(1).get(),
+        8000,
+        'Firestore email student lookup'
+      )
 
       if (!querySnapshot.empty) {
         return {
