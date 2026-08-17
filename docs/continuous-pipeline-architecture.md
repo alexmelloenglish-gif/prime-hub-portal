@@ -110,7 +110,7 @@ The recommended baseline is the **hosted timer plus a GitHub recovery workflow**
 
 ## 7. Security and access
 
-The browser login is not the automation mechanism. Human access must use Google 2-Step Verification and recovery methods. A second trusted human account should be granted an explicitly approved project role. Runtime automation must use a restricted service identity or OAuth refresh token stored only in Vercel/GitHub secret storage, never in the repository, transcript documents, or chat messages.
+The browser login is not the automation mechanism. Human access must use Google 2-Step Verification and recovery methods. A second trusted human account should be granted an explicitly approved project role. Runtime automation must use Vercel OIDC exchanged through Google Workload Identity Federation and a dedicated, least-privilege service identity. The implementation must not depend on creating new Service Account keys. A static key may exist only as a pre-approved, temporary emergency rollback credential stored in secret storage with a documented key ID, minimum scope, rotation date, and immediate revocation condition; it must never be stored in the repository, transcript documents, or chat messages.
 
 The Vercel project must be connected to the intended GitHub repository and `main` branch. The current failed deployment was blocked because the project required verified commits while the current commit was unverified. The team must either configure verified Git commits or consciously disable that protection; this is a deployment-governance decision, not a code fix.
 
