@@ -1,0 +1,3 @@
+[2026-08-16T14:00:00.000Z] Teacher: Today we will practise asking follow-up questions in English.
+[2026-08-16T14:02:10.000Z] Student: I asked one question, but I did not ask for more detail.
+[2026-08-16T14:03:00.000Z] Teacher: Try using why, how, or what happened next.
