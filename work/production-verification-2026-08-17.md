@@ -47,3 +47,13 @@ The Vercel project details also reported the project Node.js setting as `20.x`, 
 ## Confirmação estruturada do redeploy
 
 A consulta estruturada da Vercel confirmou que o deployment `dpl_8wUNSu3o3ZNoaLus3ubjY2AdXpFx` está em `READY`, com target `production`, a partir do commit `b4fb1533fdee6dbe0190c8cb1dc0be70735900b7`. O deployment recebeu os aliases `www.primedigitalhub.com.br`, `primedigitalhub.com.br` e os aliases internos da Vercel. O deployment foi criado como `redeploy` e não apresentou `aliasError`.
+
+## WIF runtime test after external-account ADC
+
+Deployment tested: `dpl_EJuXThuJr1qWJ2QD7MLNvVvVwPys`, commit `9ef2c41`, with the official production aliases.
+
+The first real request reached the new runtime and contacted Google STS. Runtime error: `Invalid value for "audience". This value should be the full resource name of the Identity Provider.`
+
+Root cause: `GCP_AUDIENCE` was supplied in URL form (`https://iam.googleapis.com/projects/...`), while the external-account STS exchange requires the resource-name form (`//iam.googleapis.com/projects/...`).
+
+Correction applied in `lib/firebase-admin.ts`: normalize URL-form and bare-host audiences to `//iam.googleapis.com/...`, while preserving an already normalized value. The local production build passed after the correction. A new deployment is required for the second runtime proof.

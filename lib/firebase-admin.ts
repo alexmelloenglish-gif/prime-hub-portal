@@ -26,6 +26,17 @@ type FederationConfig = {
   audience: string
 }
 
+function normalizeWorkloadIdentityAudience(value: string) {
+  if (value.startsWith('//iam.googleapis.com/')) return value
+  if (value.startsWith('https://iam.googleapis.com/')) {
+    return `//iam.googleapis.com/${value.slice('https://iam.googleapis.com/'.length)}`
+  }
+  if (value.startsWith('iam.googleapis.com/')) {
+    return `//${value}`
+  }
+  return value
+}
+
 function getFederationConfig(): FederationConfig | undefined {
   const projectId = getEnv('GCP_PROJECT_ID') ?? getEnv('FIREBASE_PROJECT_ID')
   const projectNumber = getEnv('GCP_PROJECT_NUMBER')
@@ -37,9 +48,10 @@ function getFederationConfig(): FederationConfig | undefined {
     return undefined
   }
 
-  const audience =
+  const audience = normalizeWorkloadIdentityAudience(
     getEnv('GCP_AUDIENCE') ??
-    `https://iam.googleapis.com/projects/${projectNumber}/locations/global/workloadIdentityPools/${poolId}/providers/${providerId}`
+      `//iam.googleapis.com/projects/${projectNumber}/locations/global/workloadIdentityPools/${poolId}/providers/${providerId}`
+  )
 
   return {
     projectId,
