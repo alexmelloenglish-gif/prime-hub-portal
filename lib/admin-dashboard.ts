@@ -17,21 +17,10 @@ export type StudentDirectoryEntry = {
   attendanceRate: string
 }
 
-const fallbackStudents: StudentDirectoryEntry[] = [
-  {
-    id: 'rafael-copolillo-gmail-com',
-    studentEmail: 'rafael.copolillo@gmail.com',
-    studentName: 'Rafael Copolillo',
-    currentLevel: 'B2 Upper-Intermediate',
-    targetLevel: 'C1 Advanced',
-    attendanceRate: '100%',
-  },
-]
-
 export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<StudentDirectoryEntry[]> {
   if (!isFirebaseConfigured) {
     console.error('[admin-dashboard] Firebase configuration incomplete', getFirebaseConfigStatus())
-    return fallbackStudents
+    return []
   }
 
   try {
@@ -74,13 +63,17 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
       .filter((student): student is StudentDirectoryEntry => Boolean(student))
       .sort((a, b) => a.studentName.localeCompare(b.studentName))
 
-    return students.length ? students : fallbackStudents
+    if (!students.length) {
+      console.error('[admin-dashboard] Firestore returned no valid student documents')
+      return []
+    }
+    return students
   } catch (error) {
     console.error('[admin-dashboard] Firestore student directory unavailable', {
       ...getFirebaseConfigStatus(),
       errorName: error instanceof Error ? error.name : 'UnknownError',
       errorMessage: error instanceof Error ? error.message : String(error),
     })
-    return fallbackStudents
+    return []
   }
 }

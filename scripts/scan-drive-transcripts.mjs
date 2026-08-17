@@ -3,6 +3,16 @@ import { readFile, writeFile } from 'node:fs/promises'
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3'
 const DEFAULT_STATE = '.runtime/drive-transcript-state.json'
+const INSUFFICIENT_PATTERNS = [
+  /insufficient conversation/i,
+  /not enough conversation/i,
+  /no conversation/i,
+  /no transcript/i,
+  /transcript (?:is )?not available/i,
+  /could not generate (?:a )?transcript/i,
+  /couldn't generate (?:a )?transcript/i,
+  /transcription unavailable/i,
+]
 
 function arg(name) {
   const index = process.argv.indexOf(`--${name}`)
@@ -20,6 +30,65 @@ function required(name, value) {
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex')
+}
+
+function normalizeForMatch(value) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function slug(value) {
+  return normalizeForMatch(value).replace(/\s+/g, '-')
+}
+
+function extractDate(value) {
+  const match = value.match(/(20\d{2})[-_/](\d{2})[-_/](\d{2})/)
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : undefined
+}
+
+function getIdentityTokens(config) {
+  const emailLocalPart = config.studentEmail.split('@')[0]
+  return [...new Set(`${config.studentName} ${emailLocalPart}`
+    .split(/[^a-zA-ZÀ-ÿ0-9]+/)
+    .map((token) => normalizeForMatch(token))
+    .filter((token) => token.length >= 4))]
+}
+
+function classifyTranscript(file, transcript, config) {
+  const normalizedName = normalizeForMatch(file.name)
+  const identityTokens = getIdentityTokens(config)
+  const identityMatches = identityTokens.filter((token) => normalizedName.includes(token))
+  const identityVerified = identityMatches.length > 0
+  const trimmed = transcript.trim()
+
+  if (!trimmed || trimmed.length < 800 || INSUFFICIENT_PATTERNS.some((pattern) => pattern.test(trimmed))) {
+    return {
+      status: 'insufficient_transcript',
+      identityVerified,
+      identityMatches,
+      reason: 'The source has no usable conversation body or is below the minimum transcript-content threshold.',
+    }
+  }
+
+  if (!identityVerified) {
+    return {
+      status: 'ambiguous_identity',
+      identityVerified: false,
+      identityMatches: [],
+      reason: 'The configured student identity was not found in the Drive filename; the source is quarantined for human routing.',
+    }
+  }
+
+  return {
+    status: 'usable_transcript',
+    identityVerified: true,
+    identityMatches,
+    reason: 'Transcript content and filename identity checks passed; submission remains non-authoritative and review-gated downstream.',
+  }
 }
 
 function jsonHeaders(token) {
@@ -89,33 +158,39 @@ async function downloadTranscript(token, file) {
   return null
 }
 
-function buildPayload(file, transcript, config) {
+function buildPayload(file, transcript, config, triage) {
   const sourceHash = sha256(transcript)
+  const classDate = config.classDate || extractDate(file.name)
   const lessonId = `lesson_${sha256(`${config.studentId}|${file.id}`).slice(0, 16)}`
   return {
     lessonId,
     studentId: config.studentId,
     studentEmail: config.studentEmail,
+    studentName: config.studentName,
     teacherId: config.teacherId,
     teacherName: config.teacherName,
     program: config.program,
-    lessonDate: file.createdTime?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+    classDate,
     transcriptId: file.id,
-    transcript: transcript,
-    source: {
-      provider: 'google_drive',
-      sourceType: 'drive_transcript_file',
+    transcript,
+    source: 'google_meet',
+    effectiveAt: config.effectiveAt || undefined,
+    recordedAt: file.modifiedTime || file.createdTime || undefined,
+    attendanceSource: 'google_meet',
+    metadata: {
       sourceFileId: file.id,
+      driveFolderId: config.folderId,
       sourceDocumentId: file.id,
       sourceName: file.name,
       sourceMimeType: file.mimeType,
       sourceUrl: file.webViewLink || null,
       sourceHash,
-    },
-    metadata: {
       driveModifiedTime: file.modifiedTime || null,
       driveCreatedTime: file.createdTime || null,
       ingestionMode: 'drive-folder-scanner',
+      triageStatus: triage.status,
+      identityVerified: triage.identityVerified,
+      identityMatches: triage.identityMatches,
     },
   }
 }
@@ -127,15 +202,27 @@ async function main() {
   const submit = hasFlag('submit')
   const state = await loadState(statePath)
   const config = {
+    folderId,
     studentId: required('DRIVE_TRANSCRIPT_STUDENT_ID', process.env.DRIVE_TRANSCRIPT_STUDENT_ID),
     studentEmail: required('DRIVE_TRANSCRIPT_STUDENT_EMAIL', process.env.DRIVE_TRANSCRIPT_STUDENT_EMAIL).toLowerCase(),
+    studentName: process.env.DRIVE_TRANSCRIPT_STUDENT_NAME || process.env.DRIVE_TRANSCRIPT_STUDENT_EMAIL?.split('@')[0] || 'Unknown student',
     teacherId: required('DRIVE_TRANSCRIPT_TEACHER_ID', process.env.DRIVE_TRANSCRIPT_TEACHER_ID),
     teacherName: process.env.DRIVE_TRANSCRIPT_TEACHER_NAME || 'Teacher',
     program: process.env.DRIVE_TRANSCRIPT_PROGRAM || 'Prime Digital Hub',
+    classDate: process.env.DRIVE_TRANSCRIPT_CLASS_DATE,
+    effectiveAt: process.env.DRIVE_TRANSCRIPT_EFFECTIVE_AT,
   }
 
   const files = await listFiles(token, folderId)
-  const report = { dryRun: !submit, folderId, scanned: files.length, skipped: 0, candidates: [], submitted: [] }
+  const report = {
+    dryRun: !submit,
+    folderId,
+    scanned: files.length,
+    skipped: 0,
+    triageCounts: {},
+    candidates: [],
+    submitted: [],
+  }
   const ingestUrl = process.env.PRIME_PIPELINE_INGEST_URL
   const ingestSecret = process.env.PRIME_PIPELINE_INGEST_SECRET
 
@@ -147,24 +234,45 @@ async function main() {
       continue
     }
 
-    const transcript = await downloadTranscript(token, file)
-    if (!transcript) {
-      report.candidates.push({ fileId: file.id, name: file.name, status: 'unsupported_mime_type', mimeType: file.mimeType })
+    let transcript
+    try {
+      transcript = await downloadTranscript(token, file)
+    } catch (error) {
+      const candidate = {
+        fileId: file.id,
+        name: file.name,
+        status: 'source_read_error',
+        reason: error instanceof Error ? error.message : 'Unable to read source file',
+      }
+      report.candidates.push(candidate)
+      report.triageCounts[candidate.status] = (report.triageCounts[candidate.status] || 0) + 1
       continue
     }
 
-    const payload = buildPayload(file, transcript, config)
+    if (!transcript) {
+      const candidate = { fileId: file.id, name: file.name, status: 'unsupported_mime_type', mimeType: file.mimeType }
+      report.candidates.push(candidate)
+      report.triageCounts[candidate.status] = (report.triageCounts[candidate.status] || 0) + 1
+      continue
+    }
+
+    const triage = classifyTranscript(file, transcript, config)
+    const payload = buildPayload(file, transcript, config, triage)
     const summary = {
       fileId: file.id,
       name: file.name,
       lessonId: payload.lessonId,
-      sourceHash: payload.source.sourceHash,
+      sourceHash: payload.metadata.sourceHash,
       characterCount: transcript.length,
-      status: submit ? 'ready_to_submit' : 'dry_run_validated',
+      status: triage.status,
+      reason: triage.reason,
+      identityVerified: triage.identityVerified,
+      identityMatches: triage.identityMatches,
     }
     report.candidates.push(summary)
+    report.triageCounts[triage.status] = (report.triageCounts[triage.status] || 0) + 1
 
-    if (submit) {
+    if (submit && triage.status === 'usable_transcript') {
       if (!ingestUrl || !ingestSecret) throw new Error('PRIME_PIPELINE_INGEST_URL and PRIME_PIPELINE_INGEST_SECRET are required with --submit')
       const response = await fetch(ingestUrl, {
         method: 'POST',
@@ -173,7 +281,16 @@ async function main() {
       })
       const body = await response.text()
       if (!response.ok) throw new Error(`Pipeline ingest failed for ${file.id}: HTTP ${response.status} ${body.slice(0, 300)}`)
-      state.files[file.id] = { fingerprint, sourceHash: payload.source.sourceHash, lessonId: payload.lessonId, status: 'submitted', submittedAt: new Date().toISOString() }
+      let parsedBody = null
+      try { parsedBody = JSON.parse(body) } catch { /* Preserve raw response in the report. */ }
+      state.files[file.id] = {
+        fingerprint,
+        sourceHash: payload.metadata.sourceHash,
+        lessonId: payload.lessonId,
+        status: 'submitted',
+        pipelineStatus: parsedBody?.status || 'accepted',
+        submittedAt: new Date().toISOString(),
+      }
       report.submitted.push({ ...summary, response: body.slice(0, 500) })
     }
   }

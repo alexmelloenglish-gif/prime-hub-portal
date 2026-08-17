@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",

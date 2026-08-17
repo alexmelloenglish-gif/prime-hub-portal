@@ -60,31 +60,35 @@ Prompt 1 may propose. It may not publish, mutate a student profile, decide atten
 
 ## 4. Human review experience
 
-The teacher will use one internal review queue rather than editing raw JSON or running terminal commands. Each incoming lesson receives a review card with the transcript identity, student, date, source link, extracted candidates, confidence, supporting spans, proposed class report, proposed portfolio changes, and recommendation-only coaching.
+The teacher uses one internal review queue rather than editing raw JSON or running terminal commands. Each incoming lesson receives an **identity review** card with the transcript identity, student, date, source link, and Prompt 1 evidence candidates. Prompt 2–4 do not run until this first decision is approved.
+
+After identity approval, Prompts 2–4 generate draft-only class-report, portfolio-patch, and coaching artifacts. The same pipeline then creates a separate **publication review** task. Until that second decision is approved, the class report remains `draft`, the portfolio patch remains `pending_publication_review`, and the student dashboard ignores the projection.
 
 The review actions are intentionally explicit:
 
 | Review action | Resulting state | Does it publish to the student dashboard? |
 |---|---|---|
-| Accept/reject evidence candidate | Candidate becomes accepted or rejected | No, not by itself |
-| Accept/reject learning signal | Signal becomes validated or rejected | No, not by itself |
-| Publish teacher insight | Official teacher insight exists | Supports later projections |
-| Publish class report | Report changes from draft to published | Yes, as a lesson-report input |
-| Approve portfolio patch | Patch is applied idempotently to `PortfolioProjection` | Yes |
-| Approve coaching guidance | Guidance becomes published/visible to the teacher | Only the allowed teacher-facing area |
-| Reject or return for revision | Run remains auditable and does not publish | No |
+| Approve identity/source review | Prompts 2–4 may run; artifacts remain draft | No |
+| Reject identity/source review | Run becomes auditable and stopped | No |
+| Review publication draft | Teacher inspects the generated class report and proposed patch | No |
+| Approve publication | Report becomes `published` and the idempotent portfolio patch is applied | Yes, for the allowed lesson-report and portfolio projection |
+| Reject publication | Draft remains non-authoritative and no student-facing projection is applied | No |
+| Approve coaching guidance | Guidance remains teacher-facing and subject to its own status contract | No student-facing authority |
 
-Every action must record reviewer identity, timestamp, previous state, next state, reason, and the source pipeline run. No button may directly write arbitrary JSON to Firestore.
+Every action records reviewer identity, timestamp, previous state, next state, reason, and the source pipeline run. No button directly writes arbitrary JSON to Firestore. The dashboard loader also applies a defensive `projection_published` filter, so an accidental draft reference cannot become student-visible.
 
 ## 5. Operational states
 
 The minimum workflow states are:
 
 ```text
-RECEIVED → PROCESSING → PROPOSALS_READY → AWAITING_REVIEW
-        → EVIDENCE_VALIDATED → REPORT_DRAFTED
-        → REPORT_PUBLISHED → PROJECTION_APPLIED
-        → COACHING_REVIEW → PUBLISHED
+RECEIVED → PROCESSING → IDENTITY_REVIEW_REQUIRED
+        → PROCESSING_APPROVED → REPORT_DRAFTED
+        → PUBLICATION_REVIEW_REQUIRED → PUBLISHING
+        → COMPLETED
+
+Any review stage may transition to REVIEW_REJECTED or PUBLICATION_REJECTED.
+A failed continuation remains auditable as PROCESSING_APPROVED and can be retried from the queue without re-ingesting the transcript.
 ```
 
 Failure, rejection, and retry are separate states and must not be represented by silent fallback:

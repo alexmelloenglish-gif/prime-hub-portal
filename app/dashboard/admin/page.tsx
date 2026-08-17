@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Eye, Plus, Shield } from 'lucide-react'
+import { ClipboardCheck, Eye, Plus, Shield } from 'lucide-react'
 import { SectionShell } from '@/components/dashboard/section-shell'
 import { authOptions } from '@/lib/auth'
 import { listStudentsForAdmin } from '@/lib/admin-dashboard'
@@ -27,6 +27,18 @@ export default async function DashboardAdminPage() {
     >
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
         <article className="glass-card p-6">
+          <div className="mb-6 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-amber-100/70">Publication boundary</p>
+                <p className="mt-2 text-sm leading-6 text-amber-50/85">New transcripts stop after Prompt 1 until a teacher reviews identity and source evidence.</p>
+              </div>
+              <Link href="/dashboard/admin/review" className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-amber-200/90 px-3 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-100">
+                <ClipboardCheck className="h-4 w-4" />
+                Review queue
+              </Link>
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-prime-red/15 p-3 text-prime-cream">
               <Shield className="h-5 w-5" />
@@ -43,10 +55,10 @@ export default async function DashboardAdminPage() {
                 How to add more students
               </p>
               <ol className="mt-3 space-y-2 text-sm leading-6 text-prime-cream/80">
-                <li>1. Create a new document in Firestore under the `students` collection.</li>
-                <li>2. Use the student&apos;s Google email in `studentEmail`.</li>
-                <li>3. Add the portfolio fields used by Rafael as the base model.</li>
-                <li>4. Open the preview link below to see exactly what the student will see.</li>
+                <li>1. Create or update an approved document in Firestore under the `students` collection.</li>
+                <li>2. Use the student&apos;s canonical Google email in `studentEmail`.</li>
+                <li>3. Preserve the student&apos;s own IDs, links, history, and source records.</li>
+                <li>4. Use the review queue before opening any newly generated student-facing projection.</li>
               </ol>
             </div>
 
@@ -55,8 +67,7 @@ export default async function DashboardAdminPage() {
                 Current model
               </p>
               <p className="mt-3 text-sm leading-6 text-prime-cream/80">
-                Rafael is now the reference model. New students should reuse the same Firestore
-                structure and replace only the portfolio-specific data.
+                Firestore is the source of truth for student identity and profile data. Each student must remain isolated, with no cross-student fallback or copied portfolio history.
               </p>
             </div>
           </div>

@@ -98,29 +98,50 @@ model Progress {
 }
 
 model PipelineRun {
-  id                       String      @id @default(cuid())
-  idempotencyKey           String      @unique
+  id                       String       @id @default(cuid())
+  idempotencyKey           String       @unique
   studentEmail             String
   lessonId                 String
-  status                   String      @default("received")
+  status                   String       @default("received")
   promptOneSchemaVersion   String?
   promptOneArtifact        Json?
   promptThreeSchemaVersion String?
   promptThreeArtifact      Json?
   portfolioPatchId         String?
   portfolioApplyStatus     String?
-  authorityStatus          String      @default("non_authoritative")
+  authorityStatus          String       @default("non_authoritative")
   errorCode                String?
-  errorMessage             String?     @db.Text
-  startedAt                DateTime    @default(now())
+  errorMessage             String?      @db.Text
+  startedAt                DateTime     @default(now())
   completedAt              DateTime?
-  createdAt                DateTime    @default(now())
-  updatedAt                DateTime    @updatedAt
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
   transcript               Transcript?
+  reviewTasks              ReviewTask[]
 
   @@index([studentEmail, createdAt])
   @@index([status])
   @@map("pipeline_runs")
+}
+
+model ReviewTask {
+  id            String      @id @default(cuid())
+  pipelineRunId String
+  studentEmail  String
+  lessonId      String
+  stage         String      @default("identity_review_required")
+  reviewerId    String?
+  reviewedAt    DateTime?
+  decision      String?
+  reason        String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+
+  @@unique([pipelineRunId, stage])
+  @@index([stage, createdAt])
+  @@index([studentEmail, createdAt])
+  @@map("review_tasks")
 }
 
 model Transcript {

@@ -428,17 +428,20 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
     const root = asObject(projection?.projection)
     const reports = asObject(root?.classReports)
     if (!reports) return student
-    const derivedReports = Object.entries(reports).map(([key, value]) => {
-      const report = asObject(value)
-      return {
-        id: `pipeline-${key}`,
-        date: asString(report?.date, key.split(':')[0] || 'Date pending'),
-        focus: asStringArray(report?.grammarFocus).length
-          ? asStringArray(report?.grammarFocus)
-          : asStringArray(report?.evidenceHighlights),
-        teacherInsight: asString(report?.teacherInsight, 'Teacher insight pending human review.'),
-      }
-    })
+    const derivedReports = Object.entries(reports)
+      .map(([key, value]) => {
+        const report = asObject(value)
+        if (report?.class_report_state !== 'projection_published') return null
+        return {
+          id: `pipeline-${key}`,
+          date: asString(report?.date, key.split(':')[0] || 'Date pending'),
+          focus: asStringArray(report?.grammarFocus).length
+            ? asStringArray(report?.grammarFocus)
+            : asStringArray(report?.evidenceHighlights),
+          teacherInsight: asString(report?.teacherInsight, 'Teacher insight pending human review.'),
+        }
+      })
+      .filter((item): item is { id: string; date: string; focus: string[]; teacherInsight: string } => Boolean(item))
     return {
       ...student,
       classReports: [...student.classReports, ...derivedReports.filter((item) => !student.classReports.some((existing) => existing.id === item.id))],

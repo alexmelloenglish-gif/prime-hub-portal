@@ -315,6 +315,8 @@ export type PipelineResult = {
   pipelineRunId: string
   status: string
   duplicate: boolean
-  report: ClassReportOutput
-  coaching: CoachingGuidanceOutput
+  reviewTaskId?: string
+  nextReviewStage?: string
+  report?: ClassReportOutput
+  coaching?: CoachingGuidanceOutput
 }
