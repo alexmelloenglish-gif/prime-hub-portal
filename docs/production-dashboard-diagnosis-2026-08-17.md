@@ -160,3 +160,42 @@ The authenticated Google Cloud Workload Identity Federation page is reachable un
 
 
 The second scroll of the authenticated WIF page did not expose a create-pool control; extracted controls remain navigation-only while the main content still shows the empty setup wizard. This suggests the console UI is rendering an onboarding illustration/CTA outside the current accessible DOM or the account lacks the required `roles/iam.workloadIdentityPoolAdmin` permission. No mutation was made.
+
+## 2026-08-17 07:33 UTC — Post-deploy runtime validation
+
+Deployment `dpl_4cEGP6S5y4MkhayjPFXUeZRY4U7p` (commit `0f89973`, READY, production) is live on `www.primedigitalhub.com.br`. A GET to `/dashboard/admin` still returned only Rafael. Vercel runtime diagnostics show `federatedAuthConfigured: false`, all five federation identifiers absent, `authMode: static-key`, and the unchanged Firebase error `16 UNAUTHENTICATED: Request had invalid authentication credentials`. This proves the repository implementation is deployed, but the Google WIF resources and corresponding Vercel production environment variables are not configured yet. No service-account key was created and no organization policy was changed.
+
+Next required boundary: create the WIF pool/provider and dedicated service-account binding in Google Cloud, then add the five non-secret federation variables in Vercel Production and redeploy before retesting.
+
+Source: Vercel runtime log query `admin-dashboard`, 2026-08-17 07:33 UTC.
+
+## 2026-08-17 — WIF implementation attempt
+
+The authenticated Google Cloud page for project `prime-hub-portal` shows the Workload Identity Federation empty-state wizard (`Vamos começar`) with no existing pools/providers listed. The extracted page exposes no create control or permission error. No WIF resource has been created yet in this browser sequence. The next safe check is the project IAM role `roles/iam.workloadIdentityPoolAdmin`; `roles/resourcemanager.organizationAdmin` alone is not sufficient evidence of that permission.
+
+Source: https://console.cloud.google.com/iam-admin/workload-identity-pools?project=prime-hub-portal
+
+## Production regression evidence — official dashboard verification 2026-08-17
+
+The official production URL `https://www.primedigitalhub.com.br/dashboard?studentEmail=rafael.copolillo%40gmail.com` currently renders exactly six Rafael lessons: March 5, March 12, March 23, March 26, April 6, and April 9, 2026. This confirms the user-reported regression from the previously expected ten-lesson state.
+
+The official URL `https://www.primedigitalhub.com.br/dashboard?studentEmail=louise.nogueira%40hotmail.com` accepts Louise’s preview parameter but renders Rafael’s complete six-lesson content, Rafael’s links, Rafael’s vocabulary, Rafael’s grammar, and Rafael’s teacher feedback. This is stronger than “Louise is absent”: the current dashboard selection/fallback path is serving Rafael data for Louise’s requested email.
+
+The regression must be traced before any overwrite by comparing: (1) current `main` Git history and student JSON files, (2) the exact Firestore documents in `students`, (3) the deployed commit and runtime configuration, and (4) the dashboard selection/fallback code. GitHub/Vercel deployment does not automatically update Firestore documents.
+
+Do not treat a PDF-to-JSON edit as canonical publication unless it passed the Phase B B1.1 Prompt 1–4 contracts, human review gate, identity validation, and Firestore publication verification.
+
+Captured from the official production domain on 2026-08-17.
+
+
+## Live regression evidence — 2026-08-17
+
+Source URL: https://www.primedigitalhub.com.br/dashboard?studentEmail=louise.nogueira%40hotmail.com
+
+The official domain displays `Source: Preview mode` while the authenticated admin user is viewing Louise's requested email. The page renders Rafael Copolillo's identity, Rafael-specific links, six attendance records dated March 5, March 12, March 23, March 26, April 6, and April 9, and Rafael-specific vocabulary/grammar/feedback. This confirms that a Firebase read failure is being converted into the hard-coded Rafael preview rather than returning Louise's Firestore profile.
+
+The current repository payload still contains Rafael's ten attendance records and Louise's distinct profile; the regression is in the production authentication/fallback path, not confirmed deletion of the GitHub JSON payloads. The relevant code path is `getStudentDashboardStateCached()` in `lib/student-data.ts`: Firestore errors are caught and return `buildPreviewStudent(email, name)`, whose fixed preview contains six Rafael lessons. `lib/firebase-admin.ts` reports `federatedAuthConfigured=false` when the Vercel `GCP_*` WIF variables are absent, then falls back to the invalid static-key configuration.
+
+Recorded for incident investigation; no production data was overwritten in this step.
+
+Action: preserve. Source type: official production dashboard. Observed state: Preview mode; Rafael displayed for Louise URL; six lessons visible. Inference: Firebase authentication failure triggers stale hard-coded fallback. Confidence: verified.

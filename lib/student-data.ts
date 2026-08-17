@@ -1,6 +1,8 @@
 import { cache } from 'react'
 import type { Session } from 'next-auth'
 import type { DocumentData } from 'firebase-admin/firestore'
+import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
+import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
 
@@ -94,7 +96,7 @@ export type StudentDashboardData = {
 
 export type StudentDashboardState = {
   hasAccess: boolean
-  source: 'firestore' | 'preview'
+  source: 'firestore' | 'repository' | 'preview'
   student: StudentDashboardData | null
   isPreviewingAnotherStudent: boolean
   viewerEmail: string | null
@@ -425,6 +427,12 @@ export function normalizeEmail(email?: string | null) {
   return typeof email === 'string' ? email.trim().toLowerCase() : ''
 }
 
+const verifiedRepositoryProfiles: Record<string, DocumentData> = {
+  'rafael.copolillo@gmail.com': rafaelProfile as unknown as DocumentData,
+  'louise_nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
+  'louise.nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
+}
+
 function getAdminPreviewEmails() {
   return new Set(
     (process.env.ADMIN_PREVIEW_EMAILS || '')
@@ -682,6 +690,16 @@ function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
   return Array.isArray(value) ? entries : previewTeacherFeedback
 }
 
+function buildRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
+  const normalizedEmail = normalizeEmail(email)
+  const profile = verifiedRepositoryProfiles[normalizedEmail]
+  if (!profile) return null
+
+  const profileEmail = asString(profile.studentEmail, normalizedEmail)
+  const profileName = asString(profile.studentName, name ?? 'Prime Student')
+  return parseStudentDocument(profile, profileEmail, profileName)
+}
+
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
   return {
     studentName: name ?? 'Rafael Copolillo',
@@ -780,10 +798,11 @@ function parseStudentDocument(
 const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
     if (!isFirebaseConfigured) {
+      const repositoryStudent = buildRepositoryStudent(email, name)
       return {
-        hasAccess: true,
-        source: 'preview',
-        student: buildPreviewStudent(email, name),
+        hasAccess: Boolean(repositoryStudent),
+        source: repositoryStudent ? 'repository' : 'preview',
+        student: repositoryStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
@@ -832,10 +851,11 @@ const getStudentDashboardStateCached = cache(
         viewerEmail: email,
       }
     } catch {
+      const repositoryStudent = buildRepositoryStudent(email, name)
       return {
-        hasAccess: true,
-        source: 'preview',
-        student: buildPreviewStudent(email, name),
+        hasAccess: Boolean(repositoryStudent),
+        source: repositoryStudent ? 'repository' : 'preview',
+        student: repositoryStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
