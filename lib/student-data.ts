@@ -34,7 +34,7 @@ export type ProgressTrackerCard = {
 export type AttendanceEntry = {
   id: string
   date: string
-  status: 'present' | 'scheduled'
+  status: 'present' | 'scheduled' | 'pending'
   title: string
   summary: string
 }
@@ -67,6 +67,9 @@ export type ClassReportEntry = {
 }
 
 export type StudentDashboardData = {
+  studentId?: string
+  profileStatus?: string
+  identityVersion?: string
   studentName: string
   studentEmail: string
   currentLevel: string
@@ -570,14 +573,14 @@ function parseAttendance(value: unknown): AttendanceEntry[] {
       return {
         id: asString(entry.id, `attendance-${index + 1}`),
         date: asString(entry.date, 'Date pending'),
-        status: status === 'scheduled' ? 'scheduled' : 'present',
+        status: status === 'scheduled' ? 'scheduled' : status === 'pending' ? 'pending' : 'present',
         title: asString(entry.title, `Lesson ${index + 1}`),
         summary: asString(entry.summary, 'Summary pending.'),
       }
     })
     .filter((item): item is AttendanceEntry => Boolean(item))
 
-  return entries.length ? entries : previewAttendance
+  return Array.isArray(value) ? entries : previewAttendance
 }
 
 function parseClassReports(value: unknown): ClassReportEntry[] {
@@ -601,7 +604,7 @@ function parseClassReports(value: unknown): ClassReportEntry[] {
     })
     .filter((item): item is ClassReportEntry => Boolean(item))
 
-  return reports.length ? reports : previewClassReports
+  return Array.isArray(value) ? reports : previewClassReports
 }
 
 function parseGoals(value: unknown): GoalEntry[] {
@@ -629,7 +632,7 @@ function parseGoals(value: unknown): GoalEntry[] {
     })
     .filter((item): item is GoalEntry => Boolean(item))
 
-  return goals.length ? goals : previewGoals
+  return Array.isArray(value) ? goals : previewGoals
 }
 
 function parseVocabulary(value: unknown): VocabularyEntry[] {
@@ -653,7 +656,7 @@ function parseVocabulary(value: unknown): VocabularyEntry[] {
     })
     .filter((item): item is VocabularyEntry => Boolean(item))
 
-  return vocabulary.length ? vocabulary : previewVocabulary
+  return Array.isArray(value) ? vocabulary : previewVocabulary
 }
 
 function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
@@ -676,7 +679,7 @@ function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
     })
     .filter((item): item is TeacherFeedbackEntry => Boolean(item))
 
-  return entries.length ? entries : previewTeacherFeedback
+  return Array.isArray(value) ? entries : previewTeacherFeedback
 }
 
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
@@ -746,6 +749,9 @@ function parseStudentDocument(
   const root = asObject(data.dashboard) ?? (data as Record<string, unknown>)
 
   return {
+    studentId: asString(root.studentId, normalizeEmailToDocId(email)),
+    profileStatus: asString(root.profileStatus, 'active'),
+    identityVersion: asString(root.identityVersion, 'legacy-email-v1'),
     studentName: asString(root.studentName, name ?? 'Prime Student'),
     studentEmail: asString(root.studentEmail, email),
     currentLevel: asString(root.currentLevel, 'B2 Upper-Intermediate'),

@@ -1,0 +1,69 @@
+{
+  "studentId": "stu_c5930e6e76ae",
+  "studentName": "Louise D. Silva Nogueira",
+  "studentEmail": "louise_nogueira@hotmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "canonical_name_email",
+  "profileStatus": "draft",
+  "profileSource": {
+    "sourceType": "google_docs_transcript",
+    "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
+    "sourceUrl": "https://docs.google.com/document/d/102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94/edit",
+    "sourceHash": "a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50",
+    "sourceDate": "2026-08-10",
+    "sourceAuthority": "transcript_observation_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "Prime Digital Hub",
+  "classFrequency": "Not yet established",
+  "currentLevel": "Assessment pending",
+  "targetLevel": "Not yet established",
+  "focus": "Initial baseline pending human review",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "One transcript-linked session found; official attendance requires validation.",
+  "manageSpace": [],
+  "portfolioNavigation": [
+    { "id": "nav-attendance", "title": "Attendance Overview", "href": "#attendance-overview" },
+    { "id": "nav-progress", "title": "Progress Tracker", "href": "#progress-tracker" },
+    { "id": "nav-vocabulary", "title": "Vocabulary Bank", "href": "#vocabulary-bank" },
+    { "id": "nav-grammar", "title": "Grammar Overview", "href": "#grammar-overview" },
+    { "id": "nav-feedback", "title": "Teacher Feedback", "href": "#teacher-feedback" }
+  ],
+  "progressTracker": [],
+  "attendanceOverview": [
+    {
+      "id": "class-2026-08-10-louise-initial",
+      "lessonId": "lesson_7fb6ee4263fd1731",
+      "date": "August 10, 2026",
+      "status": "pending",
+      "title": "Initial conversation: politics, economic challenges and cultural events",
+      "summary": "Transcript-linked lesson awaiting canonical pipeline processing and human review.",
+      "sourceType": "google_docs_transcript",
+      "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
+      "sourceHash": "a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50",
+      "authorityStatus": "proposed"
+    }
+  ],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting validated Evidence and published Teacher Insight.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [
+    {
+      "lessonId": "lesson_7fb6ee4263fd1731",
+      "studentId": "stu_c5930e6e76ae",
+      "sourceType": "google_docs_transcript",
+      "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
+      "sourceHash": "a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50",
+      "lessonDate": "2026-08-10",
+      "artifactStatus": "draft",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "not_proven"
+    }
+  ]
+}

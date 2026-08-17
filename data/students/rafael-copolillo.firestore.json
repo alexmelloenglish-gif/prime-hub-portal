@@ -1,6 +1,10 @@
 {
+  "studentId": "stu_cce1337c71da",
   "studentEmail": "rafael.copolillo@gmail.com",
   "studentName": "Rafael Copolillo",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "canonical_name_email",
+  "profileStatus": "active",
   "teacherName": "Alexandre Mello",
   "program": "Prime Upper",
   "classFrequency": "Once a week",
