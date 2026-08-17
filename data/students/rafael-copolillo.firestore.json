@@ -175,29 +175,29 @@
       "id": "class-2026-05-26",
       "date": "May 26, 2026",
       "status": "present",
-      "title": "Third Conditional and Political Discussion",
-      "summary": "Rafael demonstrated strong fluency and confidence when discussing highly complex political and social issues. The main development area remains grammatical precision with advanced hypothetical structures."
+      "title": "Rumours, conditionals and advanced expression in context",
+      "summary": "The class developed third conditional structures and speculative language through real conversations and the song Rumour Has It. Rafael produced natural expressions with nuance and showed strong engagement with advanced grammar in authentic use."
     },
     {
       "id": "class-2026-06-18",
       "date": "June 18, 2026",
       "status": "present",
-      "title": "Education, Family and Career Challenges",
-      "summary": "Rafael showed progress in narrating personal events clearly and in using professional vocabulary related to law and public administration. Focus on past simple for personal narratives."
+      "title": "Education, career challenges and public administration vocabulary",
+      "summary": "Rafael discussed education, family responsibilities, and career paths with a focus on professional development. The lesson integrated tax law and public administration vocabulary, while consolidating past simple usage in personal narratives."
     },
     {
       "id": "class-2026-07-02",
       "date": "July 2, 2026",
       "status": "present",
-      "title": "Pets, Home and Lifestyle Differences",
-      "summary": "Rafael showed strong willingness to speak and excellent conversational stamina. His fluency is increasingly supported by descriptive ability, curiosity, and readiness to engage with authentic topics."
+      "title": "Home decoration, antique shopping and lifestyle differences",
+      "summary": "The class explored personalized topics like a new puppy, home decoration, and antique shopping. Rafael practiced spontaneous speaking and expanded his vocabulary related to furniture, antiques, and business culture, while focusing on the present perfect vs simple past."
     },
     {
       "id": "class-2026-07-14",
       "date": "July 14, 2026",
       "status": "present",
-      "title": "Reflective Speaking and Life Responsibility",
-      "summary": "Rafael performed very strongly because the topic matched his deepest communicative strengths: reflective, meaningful, real-life discussion. Expressed values, memory, and family identity with sincerity."
+      "title": "Reflective discussion on politics, resilience and lifelong learning",
+      "summary": "This reflective session combined political context, family duty, and personal resilience. Rafael expressed complex values and life transitions with depth, reinforcing vocabulary for emotional states, leadership, and professional growth."
     }
   ],
   "goals": [
@@ -242,7 +242,7 @@
     { "id": "v19", "term": "missile", "meaning": "noun — guided weapon", "example": "The missile hit the ship.", "category": "Geopolitics & Public Affairs" },
     { "id": "v20", "term": "drone", "meaning": "noun — unmanned aircraft", "example": "The drone collected data.", "category": "Geopolitics & Public Affairs" },
     { "id": "v21", "term": "Strait of Hormuz", "meaning": "noun — strategic waterway", "example": "Ships passed through the Strait of Hormuz.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v22", "term": "plenary session", "meaning": "noun — formal meeting", "example": "The vote happened in a plenary session.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v22", "term": "plenary session", "meaning": "noun — formal meeting", "example": "The vote happened in a plenary session.", "category": "Work & Institutions" },
     { "id": "v23", "term": "AI", "meaning": "noun — artificial intelligence systems", "example": "AI is transforming industries.", "category": "AI & Business" },
     { "id": "v24", "term": "data", "meaning": "noun — information for analysis", "example": "The system uses data.", "category": "AI & Business" },
     { "id": "v25", "term": "patterns", "meaning": "noun — repeated behaviors or trends", "example": "AI detects patterns.", "category": "AI & Business" },
@@ -291,24 +291,94 @@
   ],
   "classReports": [
     {
+      "date": "March 5, 2026",
+      "focus": [
+        "Italy trip storytelling",
+        "BBC news listening and retelling",
+        "Simple past review"
+      ],
+      "teacherInsight": "Language used in real life stays alive. Rafael showed strong communicative instinct, focusing on meaning and interaction instead of perfection."
+    },
+    {
+      "date": "March 12, 2026",
+      "focus": [
+        "Advanced conversation fluency",
+        "Geopolitics and international relations",
+        "Analytical discussion of current events"
+      ],
+      "teacherInsight": "Rafael is already capable of discussing professional experiences, international news and geopolitical analysis with excellent potential for advanced fluency development."
+    },
+    {
+      "date": "March 23, 2026",
+      "focus": [
+        "Lifestyle and health vocabulary",
+        "Technology and education",
+        "Political and institutional discussion"
+      ],
+      "teacherInsight": "His fluency allows him to engage in complex discussions connected to his real life. The next step is grammatical precision while maintaining this level of communication."
+    },
+    {
+      "date": "March 26, 2026",
+      "focus": [
+        "Storytelling using past events",
+        "AI and business vocabulary",
+        "Say vs tell"
+      ],
+      "teacherInsight": "Rafael shows strong analytical thinking and can interpret challenging real-world content effectively. With more precision, his communication will become even stronger."
+    },
+    {
+      "date": "April 6, 2026",
+      "focus": [
+        "Structured storytelling",
+        "Emotional vocabulary",
+        "Past simple vs past continuous"
+      ],
+      "teacherInsight": "His emotional awareness and reflective thinking add depth to his communication. With structure, his speech becomes clearer, more organized and more natural."
+    },
+    {
+      "date": "April 9, 2026",
+      "focus": [
+        "Types of houses and cooking vocabulary",
+        "Past simple consolidation",
+        "Complex political explanation"
+      ],
+      "teacherInsight": "Rafael showed significant progress explaining a highly complex political situation in English with very few gaps, while also consolidating the past simple through self-correction."
+    },
+    {
       "date": "May 26, 2026",
-      "focus": ["Third conditional structures", "Political polarization in Brazil", "Civic participation and voting systems"],
-      "teacherInsight": "Rafael demonstrated strong fluency and confidence when discussing highly complex political and social issues."
+      "focus": [
+        "Third conditional and speculative language",
+        "Rumour Has It - song-based vocabulary and expression",
+        "Advanced grammar in authentic context"
+      ],
+      "teacherInsight": "Rafael produced natural third conditional structures and speculative expressions with strong engagement. His ability to connect grammar with authentic context reflects real advancement toward C1 expression."
     },
     {
       "date": "June 18, 2026",
-      "focus": ["Education and career narratives", "Family responsibilities", "Tax law and public administration vocabulary"],
-      "teacherInsight": "Showed progress in narrating personal events clearly and using professional vocabulary related to law."
+      "focus": [
+        "Education and career challenges",
+        "Tax law and public administration vocabulary",
+        "Past simple consolidation in personal narratives"
+      ],
+      "teacherInsight": "Rafael showed progress in narrating personal events clearly and in using professional vocabulary related to law and public administration."
     },
     {
       "date": "July 2, 2026",
-      "focus": ["Conversational fluency", "New puppy and home updates", "Study strategy coaching (constancy)"],
-      "teacherInsight": "Fluency is increasingly supported by descriptive ability and readiness to engage with authentic topics."
+      "focus": [
+        "Home decoration and antique shopping",
+        "Present perfect vs simple past",
+        "Spontaneous speaking and vocabulary expansion"
+      ],
+      "teacherInsight": "Rafael showed strong willingness to speak and excellent conversational stamina. The main need now is sharper control of vocabulary and grammar in highly spontaneous moments."
     },
     {
       "date": "July 14, 2026",
-      "focus": ["Reflective speaking", "Life transitions and resilience", "Memory, loss and responsibility"],
-      "teacherInsight": "Performed very strongly because the topic matched his deepest communicative strengths: reflective, meaningful discussion."
+      "focus": [
+        "Political context and family responsibility",
+        "Reflective speaking and identity",
+        "Natural reflective framing in past and present"
+      ],
+      "teacherInsight": "Rafael performed very strongly in this lesson; his ability to express values, memory, and emotional tension with sincerity and depth reflects a major communicative strength."
     }
   ]
 }
