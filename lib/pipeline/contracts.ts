@@ -143,16 +143,77 @@ export type PromptOneOutput = {
   }
 }
 
+export type PromptTwoInput = {
+  report_context: {
+    lesson_id: string
+    student_id: string
+    student_name?: string
+    teacher_id?: string
+    teacher_name?: string
+    program?: string
+    class_date?: string
+    attendance_status?: AttendanceStatus
+    attendance_source?: string
+    transcript_id?: string
+    report_id: string
+    effective_at?: string
+    generated_at: string
+  }
+  source_status: {
+    lesson_status: string
+    evidence_status: string | null
+    evidence_classification_status: string | null
+    evidence_persistence_status: string | null
+    teacher_insight_status: string | null
+    pedagogical_decision_status: string | null
+    educational_action_status: string | null
+    ser_status: string | null
+  }
+  authorized_facts: string[]
+  validated_evidence: Array<{ evidence_id: string; content: string; source_reference: string }>
+  published_teacher_insight: {
+    insight_id: string
+    state: 'InsightPublished'
+    event_that_confirmed_publication: string
+    text: string
+    evidence_ids: string[]
+    author: { teacher_id?: string; teacher_name?: string; author_type: 'human_teacher' }
+    published_at?: string
+  } | null
+  non_authoritative_proposals: {
+    evidence_candidates: EvidenceCandidateOutput[]
+    learning_signal_proposals: LearningSignalProposalOutput[]
+    teacher_insight_proposals: TeacherInsightProposalOutput[]
+  }
+  validated_learning_content: {
+    vocabulary: Array<{ category: string; item: string; type?: string; meaning: string; example?: string; source: string }>
+    corrections: Array<{ type: string; original: string; improved: string; explanation: string; evidence_ids: string[]; status: string }>
+    grammar_focus: string[]
+    questions: string[]
+  }
+}
+
 export type ClassReportOutput = {
+  reportId: string
+  lessonId: string
+  studentId: string
+  generatedAt: string
+  promptVersion: 'prompt-2.v2.0'
+  projectionVersion: string
+  authorityStatus: 'non_authoritative'
+  sourceReferences: string[]
   title: string
+  markdown: string
   summary: string
   evidenceHighlights: string[]
   grammarFocus: string[]
   vocabulary: string[]
+  corrections: Array<{ original: string; improved: string; explanation: string; evidenceIds: string[] }>
   homeworkRecommendation?: string
   teacherInsight: string | null
+  teacherInsightStatus: 'published' | 'omitted' | 'non_official_observation'
   sourceEvidenceIds: string[]
-  documentStatus: 'draft'
+  documentStatus: 'draft' | 'published'
   implementationStatus: 'not_proven'
 }
 

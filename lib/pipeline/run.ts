@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import { runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
-import type { LessonTranscriptInput, PipelineResult, PromptOneOutput } from './contracts'
+import type { LessonTranscriptInput, PipelineResult, PromptOneOutput, PromptTwoInput } from './contracts'
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase()
@@ -152,11 +152,76 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     const promptOne = await runPromptOne(normalizedInput, transcript.id)
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
     await persistPromptOne(run.id, transcript.id, promptOne)
-    const report = await runPromptTwo({ lesson: normalizedInput, promptOne })
+    const promptTwoInput: PromptTwoInput = {
+      report_context: {
+        lesson_id: normalizedInput.lessonId,
+        student_id: normalizedInput.studentId || normalizedInput.studentEmail,
+        student_name: normalizedInput.studentName,
+        teacher_id: normalizedInput.teacherId,
+        teacher_name: normalizedInput.teacherName,
+        program: normalizedInput.program,
+        class_date: normalizedInput.classDate,
+        attendance_status: normalizedInput.attendanceStatus,
+        attendance_source: normalizedInput.attendanceSource,
+        transcript_id: normalizedInput.transcriptId || transcript.id,
+        report_id: `class-report-${normalizedInput.lessonId}`,
+        effective_at: normalizedInput.effectiveAt,
+        generated_at: new Date().toISOString(),
+      },
+      source_status: {
+        lesson_status: 'LessonCompleted',
+        evidence_status: null,
+        evidence_classification_status: null,
+        evidence_persistence_status: null,
+        teacher_insight_status: null,
+        pedagogical_decision_status: null,
+        educational_action_status: null,
+        ser_status: null,
+      },
+      authorized_facts: [],
+      validated_evidence: [],
+      published_teacher_insight: null,
+      non_authoritative_proposals: {
+        evidence_candidates: promptOne.evidence_candidates,
+        learning_signal_proposals: promptOne.learning_signal_proposals,
+        teacher_insight_proposals: promptOne.teacher_insight_proposals,
+      },
+      validated_learning_content: {
+        vocabulary: [],
+        corrections: [],
+        grammar_focus: [],
+        questions: [],
+      },
+    }
+    const report = await runPromptTwo(promptTwoInput)
     await prisma.classReportProjection.upsert({
       where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
-      update: { content: report, pipelineRunId: run.id, documentStatus: report.documentStatus, implementationStatus: report.implementationStatus },
-      create: { pipelineRunId: run.id, studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId, content: report, documentStatus: report.documentStatus, implementationStatus: report.implementationStatus },
+      update: {
+        pipelineRunId: run.id,
+        studentId: report.studentId,
+        generatedAt: new Date(report.generatedAt),
+        promptVersion: report.promptVersion,
+        projectionVersion: report.projectionVersion,
+        sourceReferences: report.sourceReferences as unknown as Prisma.InputJsonValue,
+        content: report as unknown as Prisma.InputJsonValue,
+        documentStatus: report.documentStatus,
+        implementationStatus: report.implementationStatus,
+      },
+      create: {
+        pipelineRunId: run.id,
+        reportId: report.reportId,
+        studentEmail: normalizedInput.studentEmail,
+        studentId: report.studentId,
+        lessonId: normalizedInput.lessonId,
+        generatedAt: new Date(report.generatedAt),
+        promptVersion: report.promptVersion,
+        projectionVersion: report.projectionVersion,
+        sourceReferences: report.sourceReferences as unknown as Prisma.InputJsonValue,
+        sourceSnapshot: promptTwoInput as unknown as Prisma.InputJsonValue,
+        content: report as unknown as Prisma.InputJsonValue,
+        documentStatus: report.documentStatus,
+        implementationStatus: report.implementationStatus,
+      },
     })
     const patch = await runPromptThree({ lesson: normalizedInput, report, promptOne })
     await applyPortfolioPatch(normalizedInput, run.id, patch)

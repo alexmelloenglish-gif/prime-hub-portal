@@ -190,12 +190,20 @@ model TeacherInsightProposal {
 model ClassReportProjection {
   id                   String   @id @default(cuid())
   pipelineRunId        String
+  reportId             String   @unique
   studentEmail         String
+  studentId            String
   lessonId             String
+  generatedAt          DateTime @default(now())
+  promptVersion        String   @default("prompt-2.v2.0")
+  projectionVersion    String   @default("projection-1")
+  sourceReferences     Json
+  sourceSnapshot       Json?
   content              Json
   documentStatus       String   @default("draft")
   implementationStatus String   @default("not_proven")
   createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@unique([studentEmail, lessonId])
   @@map("class_report_projections")

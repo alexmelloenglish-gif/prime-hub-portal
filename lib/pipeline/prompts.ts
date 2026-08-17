@@ -4,6 +4,7 @@ import type {
   LessonTranscriptInput,
   PortfolioPatchOutput,
   PromptOneOutput,
+  PromptTwoInput,
 } from './contracts'
 
 const CANONICAL_CONTRACT = `
@@ -29,11 +30,37 @@ A saída deve ser exatamente artifact_status=draft, authority_status=non_authori
 implementation_status=not_proven, sem mutação canônica.
 `
 
-function buildRequest(system: string, input: unknown): string {
-  return `${system}\n\n${CANONICAL_CONTRACT}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
+const PROMPT_TWO_CONTRACT = `
+PROMPT 2 — CLASS REPORT GENERATION — CANONICAL / LOCKED v2.0
+
+Você está na camada de apresentação student-facing do PRIME.
+Transforme somente dados educacionais autorizados em um Class Report claro, fiel,
+compreensível e auditável. O Class Report é uma projeção documental, não uma fonte
+ de verdade do domínio.
+
+Apresente como fato somente aquilo que estiver explicitamente marcado como autorizado,
+validado, persistido, publicado ou fornecido como fato de domínio. Evidence Candidates,
+Learning Signals propostos/detectados, Teacher Insights em draft, decisões não validadas,
+ações não executadas, SER não autorizado e mudanças de Learning Journey não podem ser
+apresentados como fatos oficiais.
+
+Teacher Insight somente pode ser apresentado como oficial quando o input contiver
+teacher_insight.state=InsightPublished e a confirmação canônica correspondente.
+Action Steps, Homework e Practice Suggestions são recomendações student-facing; nunca
+os chame de EducationalAction ou EducationalActionExecuted sem registro autorizado.
+Não infira presença, progresso, mudança de nível, MaterialChange, atualização de
+portfólio ou qualquer mutação de domínio. Não crie estados ou eventos.
+
+Preserve autoria, sourceReferences, reportId, lessonId, studentId, generatedAt,
+promptVersion=prompt-2.v2.0, projectionVersion e authorityStatus=non_authoritative.
+A saída é uma projeção idempotente e versionável.
+`
+
+function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTRACT): string {
+  return `${system}\n\n${contract}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
 }
 
-async function invokeJson<T>(system: string, input: unknown, fallback: T): Promise<T> {
+async function invokeJson<T>(system: string, input: unknown, fallback: T, contract = CANONICAL_CONTRACT): Promise<T> {
   const apiKey = process.env.OPENAI_API_KEY
   const baseUrl = process.env.OPENAI_API_BASE || 'https://api.openai.com/v1'
   const model = process.env.PRIME_PIPELINE_MODEL || 'gpt-4o-mini'
@@ -48,7 +75,7 @@ async function invokeJson<T>(system: string, input: unknown, fallback: T): Promi
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: system },
-        { role: 'user', content: buildRequest('', input) },
+        { role: 'user', content: buildRequest('', input, contract) },
       ],
     }),
   })
@@ -131,27 +158,53 @@ export async function runPromptOne(input: LessonTranscriptInput, transcriptId: s
   )
 }
 
-export async function runPromptTwo(input: {
-  lesson: LessonTranscriptInput
-  promptOne: PromptOneOutput
-  publishedTeacherInsight?: string
-}): Promise<ClassReportOutput> {
+export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOutput> {
+  const context = input.report_context
+  const publishedInsight = input.published_teacher_insight
+  const evidence = input.validated_evidence
+  const vocabulary = input.validated_learning_content.vocabulary
+  const corrections = input.validated_learning_content.corrections
+  const teacherInsightStatus = publishedInsight ? 'published' : 'omitted'
+  const summary = input.authorized_facts.join(' ') || (evidence.length ? 'The lesson included validated learning content.' : 'Class report pending authorized source records.')
+  const markdown = [
+    `# Class Report — ${context.class_date || 'Lesson'}`,
+    '',
+    '## Lesson Summary',
+    `- ${summary}`,
+    evidence.length ? `- ${evidence.map((item) => item.content).join(' ')}` : '- No validated Evidence was supplied for this projection.',
+    '',
+    '## Action Steps',
+    '- Review the authorized lesson content and practice the supplied examples.',
+    publishedInsight ? '' : '## Lesson Observation\n\nThis section is based only on authorized lesson content; no published Teacher Insight was supplied.',
+  ].filter(Boolean).join('\n')
   const fallback: ClassReportOutput = {
+    reportId: context.report_id,
+    lessonId: context.lesson_id,
+    studentId: context.student_id,
+    generatedAt: context.generated_at,
+    promptVersion: 'prompt-2.v2.0',
+    projectionVersion: 'projection-1',
+    authorityStatus: 'non_authoritative',
+    sourceReferences: [...evidence.map((item) => item.source_reference), ...corrections.flatMap((item) => item.evidence_ids)],
     title: 'Class Report',
-    summary: input.promptOne.presentation_candidates.class_report_facts.join(' ') || 'Class report pending teacher review.',
-    evidenceHighlights: input.promptOne.evidence_candidates.map((item) => item.content),
-    grammarFocus: input.promptOne.presentation_candidates.grammar_focus_candidates,
-    vocabulary: input.promptOne.presentation_candidates.vocabulary_candidates,
-    homeworkRecommendation: input.promptOne.presentation_candidates.homework_recommendation?.task,
-    teacherInsight: input.publishedTeacherInsight || null,
-    sourceEvidenceIds: input.promptOne.evidence_candidates.map((item) => item.evidence_candidate_id),
+    markdown,
+    summary,
+    evidenceHighlights: evidence.map((item) => item.content),
+    grammarFocus: input.validated_learning_content.grammar_focus,
+    vocabulary: vocabulary.map((item) => item.item),
+    corrections: corrections.map((item) => ({ original: item.original, improved: item.improved, explanation: item.explanation, evidenceIds: item.evidence_ids })),
+    homeworkRecommendation: 'Review the authorized lesson content and practice the supplied examples.',
+    teacherInsight: publishedInsight?.text || null,
+    teacherInsightStatus,
+    sourceEvidenceIds: evidence.map((item) => item.evidence_id),
     documentStatus: 'draft',
     implementationStatus: 'not_proven',
   }
   return invokeJson<ClassReportOutput>(
-    'PROMPT 2 — Produce a student-facing Class Report projection only. Use supplied non-authoritative facts and authorized published insight when present. Do not claim official progress, attendance, decision, action or SER change.',
+    'PROMPT 2 — Produce only the student-facing Class Report projection. Respect source_status and never elevate proposal authority.',
     input,
     fallback,
+    PROMPT_TWO_CONTRACT,
   )
 }
 
