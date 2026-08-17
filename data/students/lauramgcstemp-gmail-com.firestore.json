@@ -1,0 +1,105 @@
+{
+  "studentId": "stu_b5a6b9640498",
+  "studentName": "Laura Maria Galvão Costa Stempniewski",
+  "studentEmail": "lauramgcstemp@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "teacher_intake_and_calendar_booking",
+  "profileStatus": "active",
+  "profileCompleteness": "schedule_mapped_pending_academic_history",
+  "profileSource": {
+    "sourceType": "google_calendar_booking",
+    "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+    "sourceAuthority": "booking_identity_and_scheduled_lesson_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "VIP English Lesson Program",
+  "classFrequency": "Twice a week",
+  "currentLevel": "CEFR B1",
+  "targetLevel": "CEFR B2",
+  "focus": "Learning focus pending teacher input.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "Scheduled lessons are not authoritative attendance; teacher confirmation is required.",
+  "manageSpace": [
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/ogt-ubat-jan",
+      "description": "Current Google Meet link from onboarding or a scheduled calendar event.",
+      "icon": "video"
+    },
+    {
+      "id": "calendar",
+      "title": "My Lesson Calendar",
+      "href": "#attendance-overview",
+      "description": "Your scheduled lessons and attendance history appear here.",
+      "icon": "calendar-days"
+    }
+  ],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [
+    {
+      "id": "scheduled-2026-08-25-lauramgcstemp-gmail-com-1",
+      "lessonId": "cal_20260825T1600000300_lauramgcstemp-gmail-com",
+      "date": "August 25, 2026",
+      "status": "scheduled",
+      "title": "Scheduled lesson",
+      "summary": "Calendar booking found; attendance and class-report publication require teacher confirmation.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    },
+    {
+      "id": "scheduled-2026-08-28-lauramgcstemp-gmail-com-2",
+      "lessonId": "cal_20260828T1600000300_lauramgcstemp-gmail-com",
+      "date": "August 28, 2026",
+      "status": "scheduled",
+      "title": "Scheduled lesson",
+      "summary": "Calendar booking found; attendance and class-report publication require teacher confirmation.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    }
+  ],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting validated teacher evidence and student history.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [
+    {
+      "lessonId": "cal_20260825T1600000300_lauramgcstemp-gmail-com",
+      "studentId": "stu_b5a6b9640498",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-25",
+      "startsAt": "2026-08-25T16:00:00-03:00",
+      "endsAt": "2026-08-25T17:00:00-03:00",
+      "meetUrl": "https://meet.google.com/ogt-ubat-jan",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    },
+    {
+      "lessonId": "cal_20260828T1600000300_lauramgcstemp-gmail-com",
+      "studentId": "stu_b5a6b9640498",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-28",
+      "startsAt": "2026-08-28T16:00:00-03:00",
+      "endsAt": "2026-08-28T17:00:00-03:00",
+      "meetUrl": "https://meet.google.com/ogt-ubat-jan",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    }
+  ],
+  "identityAliases": [
+    "lauramgcstemp@gmail.com"
+  ],
+  "notes": "Calendar booking found; attendance and class-report publication require teacher confirmation. Missing links and historical academic data remain pending and must not be guessed."
+}

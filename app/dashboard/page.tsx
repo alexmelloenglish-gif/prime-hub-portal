@@ -248,7 +248,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div>
           <h3 className="text-xl font-bold text-white">Portfolio Navigation</h3>
           <p className="text-sm text-prime-cream/70">
-            Fast jump links to the core sections extracted from Rafael&apos;s portfolio.
+            Fast jump links to the core sections of this student&apos;s learning portfolio.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -266,7 +266,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div>
           <h3 className="text-2xl font-bold text-white">My Learning Links</h3>
           <p className="text-sm text-prime-cream/70">
-            The core links Rafael needs every week, organized for fast access.
+            The core learning links organized for fast access.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -336,7 +336,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div>
           <h3 className="text-2xl font-bold text-white">Vocabulary Bank</h3>
           <p className="text-sm text-prime-cream/70">
-            High-value vocabulary gathered from Rafael&apos;s lessons for active reuse.
+            High-value vocabulary gathered from this student&apos;s lessons for active reuse.
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -369,7 +369,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div>
           <h3 className="text-2xl font-bold text-white">Grammar Overview</h3>
           <p className="text-sm text-prime-cream/70">
-            Cumulative grammar focus points extracted from Rafael&apos;s portfolio and teacher review.
+            Cumulative grammar focus points extracted from this student&apos;s portfolio and teacher review.
           </p>
         </div>
         <article className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
@@ -399,7 +399,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div>
           <h3 className="text-2xl font-bold text-white">Teacher Feedback</h3>
           <p className="text-sm text-prime-cream/70">
-            Cumulative feedback blocks extracted from Rafael&apos;s portfolio and monthly review.
+            Cumulative feedback blocks extracted from this student&apos;s portfolio and teacher review.
           </p>
         </div>
         <div className="space-y-4">

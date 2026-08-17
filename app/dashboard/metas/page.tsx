@@ -42,7 +42,7 @@ export default async function DashboardVocabularyPage({ searchParams }: Vocabula
   return (
     <SectionShell
       title="My Vocabulary Bank"
-      description="Cumulative vocabulary gathered from Rafael&apos;s lessons, ready for active review and reuse."
+      description="Cumulative vocabulary gathered from this student&apos;s lessons, ready for active review and reuse."
     >
       <div className="grid gap-4 lg:grid-cols-2">
         {student.vocabularyBank.map((item, index) => (

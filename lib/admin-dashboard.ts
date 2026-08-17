@@ -6,6 +6,14 @@ import {
 } from '@/lib/firebase-admin'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
 import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
+import italoProfile from '@/data/students/italo-pires-gmail-com.firestore.json'
+import eduardaProfile from '@/data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json'
+import lauraProfile from '@/data/students/lauramgcstemp-gmail-com.firestore.json'
+import mariaFernandaProfile from '@/data/students/galvaonanda28-gmail-com.firestore.json'
+import diegoProfile from '@/data/students/diegodasiro-gmail-com.firestore.json'
+import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
+import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
+import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
 import { normalizeEmail } from '@/lib/student-data'
 
 type AuthenticatedUser = Session['user'] | null | undefined
@@ -36,10 +44,74 @@ const repositoryStudentDirectory: StudentDirectoryEntry[] = [
     targetLevel: String(louiseProfile.targetLevel),
     attendanceRate: String(louiseProfile.attendanceRate),
   },
+  {
+    id: 'italo-pires-gmail-com',
+    studentEmail: normalizeEmail(String(italoProfile.studentEmail)),
+    studentName: String(italoProfile.studentName),
+    currentLevel: String(italoProfile.currentLevel),
+    targetLevel: String(italoProfile.targetLevel),
+    attendanceRate: String(italoProfile.attendanceRate),
+  },
+  {
+    id: 'eduarda-coelho-gabriel-hotmail-com',
+    studentEmail: normalizeEmail(String(eduardaProfile.studentEmail)),
+    studentName: String(eduardaProfile.studentName),
+    currentLevel: String(eduardaProfile.currentLevel),
+    targetLevel: String(eduardaProfile.targetLevel),
+    attendanceRate: String(eduardaProfile.attendanceRate),
+  },
+  {
+    id: 'lauramgcstemp-gmail-com',
+    studentEmail: normalizeEmail(String(lauraProfile.studentEmail)),
+    studentName: String(lauraProfile.studentName),
+    currentLevel: String(lauraProfile.currentLevel),
+    targetLevel: String(lauraProfile.targetLevel),
+    attendanceRate: String(lauraProfile.attendanceRate),
+  },
+  {
+    id: 'galvaonanda28-gmail-com',
+    studentEmail: normalizeEmail(String(mariaFernandaProfile.studentEmail)),
+    studentName: String(mariaFernandaProfile.studentName),
+    currentLevel: String(mariaFernandaProfile.currentLevel),
+    targetLevel: String(mariaFernandaProfile.targetLevel),
+    attendanceRate: String(mariaFernandaProfile.attendanceRate),
+  },
+  {
+    id: 'diegodasiro-gmail-com',
+    studentEmail: normalizeEmail(String(diegoProfile.studentEmail)),
+    studentName: String(diegoProfile.studentName),
+    currentLevel: String(diegoProfile.currentLevel),
+    targetLevel: String(diegoProfile.targetLevel),
+    attendanceRate: String(diegoProfile.attendanceRate),
+  },
+  {
+    id: 'claudio-bit-gmail-com',
+    studentEmail: normalizeEmail(String(claudioProfile.studentEmail)),
+    studentName: String(claudioProfile.studentName),
+    currentLevel: String(claudioProfile.currentLevel),
+    targetLevel: String(claudioProfile.targetLevel),
+    attendanceRate: String(claudioProfile.attendanceRate),
+  },
+  {
+    id: 'vcrlima89-gmail-com',
+    studentEmail: normalizeEmail(String(valeriaProfile.studentEmail)),
+    studentName: String(valeriaProfile.studentName),
+    currentLevel: String(valeriaProfile.currentLevel),
+    targetLevel: String(valeriaProfile.targetLevel),
+    attendanceRate: String(valeriaProfile.attendanceRate),
+  },
+  {
+    id: 'carolvdrummond-gmail-com',
+    studentEmail: normalizeEmail(String(gustavoProfile.studentEmail)),
+    studentName: String(gustavoProfile.studentName),
+    currentLevel: String(gustavoProfile.currentLevel),
+    targetLevel: String(gustavoProfile.targetLevel),
+    attendanceRate: String(gustavoProfile.attendanceRate),
+  },
 ]
 
 function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] {
-  console.warn(`[admin-dashboard] Using the two-student repository directory: ${reason}`)
+  console.warn(`[admin-dashboard] Using the repository student directory: ${reason}`)
   return repositoryStudentDirectory.map((student) => ({ ...student }))
 }
 

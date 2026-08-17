@@ -38,7 +38,7 @@ export default async function DashboardTeacherFeedbackPage({
   return (
     <SectionShell
       title="Teacher Feedback"
-      description="Cumulative feedback blocks extracted from Rafael&apos;s portfolio and monthly review."
+      description="Cumulative feedback blocks extracted from this student&apos;s portfolio and teacher review."
     >
       <div className="space-y-4">
         {student.teacherFeedback.map((feedback, index) => (

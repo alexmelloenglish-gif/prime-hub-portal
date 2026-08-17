@@ -1,0 +1,40 @@
+{
+  "studentId": "stu_01dc6d208c8b",
+  "studentName": "Valéria Cristina Rangel de Lima",
+  "studentEmail": "vcrlima89@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "teacher_student_intake",
+  "profileStatus": "active",
+  "profileCompleteness": "onboarding_pending_links_and_history",
+  "profileSource": {
+    "sourceType": "teacher_student_intake",
+    "sourceDocumentId": "teacher_intake_google_sheet",
+    "sourceAuthority": "teacher_intake_identity_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "VIP English Lesson Program",
+  "classFrequency": "Once a week",
+  "currentLevel": "CEFR B1",
+  "targetLevel": "CEFR B2",
+  "focus": "Learning focus pending teacher input.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "Scheduled lessons are not authoritative attendance; teacher confirmation is required.",
+  "manageSpace": [],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting validated teacher evidence and student history.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [],
+  "identityAliases": [
+    "vcrlima89@gmail.com"
+  ],
+  "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+}

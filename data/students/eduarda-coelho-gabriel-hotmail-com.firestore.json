@@ -1,0 +1,163 @@
+{
+  "studentId": "stu_e8661006824a",
+  "studentName": "Eduarda Coelho Gabriel",
+  "studentEmail": "midias83@hotmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "calendar_booking_teacher_confirmation",
+  "profileStatus": "active",
+  "profileSource": {
+    "sourceType": "google_calendar_booking",
+    "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+    "sourceUrl": "https://docs.google.com/spreadsheets/d/1H2ZHBnqw6jr_Br7h_mnnEKjIcRWJXoq9DG_0-n6-TEI/edit?usp=sharing",
+    "sourceDate": "2026-08-17",
+    "sourceAuthority": "booking_identity_and_scheduled_lesson_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "Prime Remedial English and English-medium Geography Support",
+  "classFrequency": "Episodic on demand; short remedial blocks",
+  "currentLevel": "Assessment pending",
+  "targetLevel": "School-task performance target pending",
+  "focus": "English as a foreign language; Geography taught in English; current unit appears to involve primary, secondary and tertiary economic sectors.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "Bookings establish scheduled lessons only; official attendance requires teacher confirmation.",
+  "manageSpace": [
+    {
+      "id": "live-class",
+      "title": "Join Current Remedial Lesson",
+      "href": "https://meet.google.com/shx-eofk-axz",
+      "description": "Event-specific Google Meet link for the current booked remedial lesson; later lessons use their own event links.",
+      "icon": "video"
+    }
+  ],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [
+    {
+      "id": "scheduled-2026-08-17-eduarda",
+      "lessonId": "cal_20260817_1800_midias83_hotmail_com",
+      "date": "August 17, 2026",
+      "status": "scheduled",
+      "title": "Remedial lesson: Geography in English",
+      "summary": "Scheduled school-support lesson; the teacher plans to work on economic sectors.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    },
+    {
+      "id": "scheduled-2026-08-18-eduarda",
+      "lessonId": "cal_20260818_1800_midias83_hotmail_com",
+      "date": "August 18, 2026",
+      "status": "scheduled",
+      "title": "Remedial lesson block",
+      "summary": "Booking record indicates a second lesson in the short remedial block.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    },
+    {
+      "id": "scheduled-2026-08-19-eduarda",
+      "lessonId": "cal_20260819_1500_midias83_hotmail_com",
+      "date": "August 19, 2026",
+      "status": "scheduled",
+      "title": "Remedial lesson block",
+      "summary": "Booking record indicates a third lesson in the short remedial block.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    },
+    {
+      "id": "scheduled-2026-08-20-eduarda",
+      "lessonId": "cal_20260820_1800_midias83_hotmail_com",
+      "date": "August 20, 2026",
+      "status": "scheduled",
+      "title": "Remedial lesson block",
+      "summary": "Booking record indicates a fourth lesson in the short remedial block.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    }
+  ],
+  "classReports": [],
+  "goals": [
+    {
+      "id": "goal-geography-economic-sectors",
+      "title": "Explain economic sectors in English",
+      "status": "active",
+      "description": "Classify examples as primary, secondary or tertiary and explain the production chain using short English sentences."
+    }
+  ],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Grammar support should be selected from the school task and not taught as an unrelated regular syllabus.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [
+    {
+      "lessonId": "cal_20260817_1800_midias83_hotmail_com",
+      "studentId": "stu_e8661006824a",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-17",
+      "startsAt": "2026-08-17T18:00:00-03:00",
+      "endsAt": "2026-08-17T19:00:00-03:00",
+      "meetUrl": "https://meet.google.com/shx-eofk-axz",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    },
+    {
+      "lessonId": "cal_20260818_1800_midias83_hotmail_com",
+      "studentId": "stu_e8661006824a",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-18",
+      "startsAt": "2026-08-18T18:00:00-03:00",
+      "endsAt": "2026-08-18T19:00:00-03:00",
+      "meetUrl": "https://meet.google.com/xvy-qavf-nqt",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    },
+    {
+      "lessonId": "cal_20260819_1500_midias83_hotmail_com",
+      "studentId": "stu_e8661006824a",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-19",
+      "startsAt": "2026-08-19T15:00:00-03:00",
+      "endsAt": "2026-08-19T16:00:00-03:00",
+      "meetUrl": "https://meet.google.com/awb-ghjw-mhb",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    },
+    {
+      "lessonId": "cal_20260820_1800_midias83_hotmail_com",
+      "studentId": "stu_e8661006824a",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-20",
+      "startsAt": "2026-08-20T18:00:00-03:00",
+      "endsAt": "2026-08-20T19:00:00-03:00",
+      "meetUrl": "https://meet.google.com/gwo-otpp-eqp",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    }
+  ],
+  "identityAliases": [
+    "Eduarda Dias",
+    "Eduarda Jesus"
+  ],
+  "studentContext": {
+    "ageBand": "teenager; exact age and grade to be confirmed",
+    "school": "Colégio Notre Dame, Rio de Janeiro",
+    "schoolSupportMode": "episodic remedial block",
+    "subjectContext": "English as a foreign language plus Geography taught in English",
+    "currentSchoolTopic": "Economic sectors: primary, secondary and tertiary"
+  },
+  "notes": "Teacher confirmed that Eduarda Coelho Gabriel is the same student represented by the booking names Eduarda Dias and Eduarda Jesus at midias83@hotmail.com. She is a returning former physical-school student and is not a regular weekly PRIME student. She books short remedial blocks, currently four lessons in the same week, when school support is needed. The profile must not be treated as a weekly subscription or used to infer recurring attendance. Because she is a teenager, exact grade, age and any guardian/contact policy must be confirmed separately and should not be guessed.",
+  "profileCompleteness": "onboarding_pending_links_and_history"
+}

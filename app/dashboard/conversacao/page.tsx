@@ -43,7 +43,7 @@ export default async function DashboardGrammarPage({ searchParams }: GrammarPage
   return (
     <SectionShell
       title="My Grammar Overview"
-      description="Cumulative grammar focus points extracted from Rafael&apos;s portfolio and teacher review."
+      description="Cumulative grammar focus points extracted from this student&apos;s portfolio and teacher review."
     >
       <article className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
         <h3 className="text-xl font-semibold text-white">{student.grammarOverview.title}</h3>

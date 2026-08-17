@@ -1,0 +1,50 @@
+{
+  "studentId": "stu_e01adc4e23d0",
+  "studentName": "Diego da Silva Rodrigues",
+  "studentEmail": "diegodasiro@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "teacher_student_intake",
+  "profileStatus": "active",
+  "profileCompleteness": "onboarding_pending_links_and_history",
+  "profileSource": {
+    "sourceType": "teacher_student_intake",
+    "sourceDocumentId": "teacher_intake_google_sheet",
+    "sourceAuthority": "teacher_intake_identity_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "VIP English Lesson Program",
+  "classFrequency": "Every two weeks",
+  "currentLevel": "CEFR A2",
+  "targetLevel": "CEFR B1",
+  "focus": "Learning focus pending teacher input.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "Scheduled lessons are not authoritative attendance; teacher confirmation is required.",
+  "manageSpace": [
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/ocz-zoig-jhr",
+      "description": "Current Google Meet link from onboarding or a scheduled calendar event.",
+      "icon": "video"
+    }
+  ],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting validated teacher evidence and student history.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [],
+  "identityAliases": [
+    "diegodasiro@gmail.com",
+    "Diego Da Zero",
+    "Diego Dasiro"
+  ],
+  "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+}

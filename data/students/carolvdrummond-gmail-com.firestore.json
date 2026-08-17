@@ -1,0 +1,40 @@
+{
+  "studentId": "stu_4c4da6c04ac4",
+  "studentName": "Gustavo Drummond De Andrade Salgado",
+  "studentEmail": "carolvdrummond@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "teacher_student_intake",
+  "profileStatus": "active",
+  "profileCompleteness": "onboarding_pending_links_and_history",
+  "profileSource": {
+    "sourceType": "teacher_student_intake",
+    "sourceDocumentId": "teacher_intake_google_sheet",
+    "sourceAuthority": "teacher_intake_identity_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "VIP English Lesson Program",
+  "classFrequency": "Twice a week",
+  "currentLevel": "Assessment pending",
+  "targetLevel": "Not yet established",
+  "focus": "Learning focus pending teacher input.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "Scheduled lessons are not authoritative attendance; teacher confirmation is required.",
+  "manageSpace": [],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting validated teacher evidence and student history.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [],
+  "identityAliases": [
+    "carolvdrummond@gmail.com"
+  ],
+  "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+}

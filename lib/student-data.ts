@@ -3,6 +3,14 @@ import type { Session } from 'next-auth'
 import type { DocumentData } from 'firebase-admin/firestore'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
 import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
+import italoProfile from '@/data/students/italo-pires-gmail-com.firestore.json'
+import eduardaProfile from '@/data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json'
+import lauraProfile from '@/data/students/lauramgcstemp-gmail-com.firestore.json'
+import mariaFernandaProfile from '@/data/students/galvaonanda28-gmail-com.firestore.json'
+import diegoProfile from '@/data/students/diegodasiro-gmail-com.firestore.json'
+import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
+import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
+import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
 
@@ -126,6 +134,14 @@ const verifiedRepositoryProfiles: Record<string, DocumentData> = {
   'rafael.copolillo@gmail.com': rafaelProfile as unknown as DocumentData,
   'louise_nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
   'louise.nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
+  'itallopires17@gmail.com': italoProfile as unknown as DocumentData,
+  'midias83@hotmail.com': eduardaProfile as unknown as DocumentData,
+  'lauramgcstemp@gmail.com': lauraProfile as unknown as DocumentData,
+  'galvaonanda28@gmail.com': mariaFernandaProfile as unknown as DocumentData,
+  'diegodasiro@gmail.com': diegoProfile as unknown as DocumentData,
+  'claudio.bit@gmail.com': claudioProfile as unknown as DocumentData,
+  'vcrlima89@gmail.com': valeriaProfile as unknown as DocumentData,
+  'carolvdrummond@gmail.com': gustavoProfile as unknown as DocumentData,
 }
 
 function getAdminPreviewEmails() {

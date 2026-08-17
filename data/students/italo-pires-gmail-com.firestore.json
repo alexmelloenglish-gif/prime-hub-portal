@@ -1,0 +1,74 @@
+{
+  "studentId": "stu_fb5b64e3437e",
+  "studentName": "Italo Pires",
+  "studentEmail": "itallopires17@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "calendar_booking_teacher_confirmation",
+  "profileStatus": "active",
+  "profileSource": {
+    "sourceType": "google_calendar_booking",
+    "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+    "sourceUrl": "https://docs.google.com/spreadsheets/d/1H2ZHBnqw6jr_Br7h_mnnEKjIcRWJXoq9DG_0-n6-TEI/edit?usp=sharing",
+    "sourceDate": "2026-08-17",
+    "sourceAuthority": "booking_identity_and_scheduled_lesson_only"
+  },
+  "teacherName": "Alexandre Mello",
+  "program": "Prime Digital Hub",
+  "classFrequency": "Once a week",
+  "currentLevel": "Assessment pending",
+  "targetLevel": "Not yet established",
+  "focus": "Returning student; historical profile and learning goals pending recovery.",
+  "attendanceRate": "Pending verification",
+  "attendanceLabel": "The booking confirms a scheduled lesson, not authoritative attendance.",
+  "manageSpace": [
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/yvr-xrvs-gaw",
+      "description": "Event-specific Google Meet link for the booked lesson; confirm whether it should become the stable class link.",
+      "icon": "video"
+    }
+  ],
+  "portfolioNavigation": [],
+  "progressTracker": [],
+  "attendanceOverview": [
+    {
+      "id": "scheduled-2026-08-18-italo",
+      "lessonId": "cal_20260818_1500_itallopires17_gmail_com",
+      "date": "August 18, 2026",
+      "status": "scheduled",
+      "title": "Scheduled returning-student lesson",
+      "summary": "Calendar booking found; teacher confirmation remains required before attendance or class-report publication.",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "authorityStatus": "scheduled_not_attendance"
+    }
+  ],
+  "classReports": [],
+  "goals": [],
+  "vocabularyBank": [],
+  "grammarOverview": {
+    "title": "Grammar Overview",
+    "summary": "Awaiting recovery of the historical student profile and teacher baseline.",
+    "focusPoints": []
+  },
+  "teacherFeedback": [],
+  "lessonRecords": [
+    {
+      "lessonId": "cal_20260818_1500_itallopires17_gmail_com",
+      "studentId": "stu_fb5b64e3437e",
+      "sourceType": "google_calendar_booking",
+      "sourceDocumentId": "calendar_students_2026-08-17_to_2026-08-30",
+      "lessonDate": "2026-08-18",
+      "startsAt": "2026-08-18T15:00:00-03:00",
+      "endsAt": "2026-08-18T16:00:00-03:00",
+      "meetUrl": "https://meet.google.com/yvr-xrvs-gaw",
+      "artifactStatus": "scheduled",
+      "authorityStatus": "non_authoritative",
+      "implementationStatus": "staged_pending_profile_validation"
+    }
+  ],
+  "returningStudent": true,
+  "notes": "Teacher confirmed that Italo Pires is an old student returning for once-weekly lessons. Booking record supplied name, email, phone listed in booking, date, time and event-specific Meet link. Phone is retained only in the onboarding source, not copied into this profile until independently confirmed as a student contact number. Historical portfolio, class materials, homework and prior records are pending recovery.",
+  "profileCompleteness": "onboarding_pending_links_and_history"
+}
