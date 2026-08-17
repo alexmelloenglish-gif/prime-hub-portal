@@ -1,5 +1,9 @@
 import type { Session } from 'next-auth'
-import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
+import {
+  getFirebaseConfigStatus,
+  getFirebaseFirestore,
+  isFirebaseConfigured,
+} from '@/lib/firebase-admin'
 import { normalizeEmail } from '@/lib/student-data'
 
 type AuthenticatedUser = Session['user'] | null | undefined
@@ -26,6 +30,7 @@ const fallbackStudents: StudentDirectoryEntry[] = [
 
 export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<StudentDirectoryEntry[]> {
   if (!isFirebaseConfigured) {
+    console.error('[admin-dashboard] Firebase configuration incomplete', getFirebaseConfigStatus())
     return fallbackStudents
   }
 
@@ -70,7 +75,12 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
       .sort((a, b) => a.studentName.localeCompare(b.studentName))
 
     return students.length ? students : fallbackStudents
-  } catch {
+  } catch (error) {
+    console.error('[admin-dashboard] Firestore student directory unavailable', {
+      ...getFirebaseConfigStatus(),
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage: error instanceof Error ? error.message : String(error),
+    })
     return fallbackStudents
   }
 }

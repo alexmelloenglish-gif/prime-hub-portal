@@ -5,6 +5,22 @@ function readPrivateKey() {
   return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
 }
 
+export function getFirebaseConfigStatus() {
+  const projectId = process.env.FIREBASE_PROJECT_ID ?? ''
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL ?? ''
+  const privateKey = readPrivateKey() ?? ''
+
+  return {
+    projectIdPresent: Boolean(projectId),
+    clientEmailPresent: Boolean(clientEmail),
+    clientEmailLooksLikeServiceAccount: /@[^@]+\\.iam\\.gserviceaccount\\.com$/.test(clientEmail),
+    privateKeyPresent: Boolean(privateKey),
+    privateKeyHasPemMarkers:
+      privateKey.includes('-----BEGIN PRIVATE KEY-----') &&
+      privateKey.includes('-----END PRIVATE KEY-----'),
+  }
+}
+
 export const isFirebaseConfigured = Boolean(
   process.env.FIREBASE_PROJECT_ID &&
     process.env.FIREBASE_CLIENT_EMAIL &&
