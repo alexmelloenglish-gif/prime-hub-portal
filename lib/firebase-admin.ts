@@ -1,6 +1,7 @@
-import { getVercelOidcToken } from '@vercel/oidc'
-import { ExternalAccountClient } from 'google-auth-library'
-import { cert, getApps, initializeApp, type Credential } from 'firebase-admin/app'
+import { getVercelOidcTokenSync } from '@vercel/oidc'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { applicationDefault, cert, getApps, initializeApp, type Credential } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 function readPrivateKey() {
@@ -50,11 +51,32 @@ function getFederationConfig(): FederationConfig | undefined {
   }
 }
 
-function createFederatedCredential(): Credential | undefined {
+/**
+ * Firebase Admin v13 accepts only its own ServiceAccountCredential or
+ * ApplicationDefaultCredential for Firestore. A generic Credential object
+ * wrapping ExternalAccountClient is valid for some Admin services but is
+ * rejected by firestore-internal.ts before the first request.
+ *
+ * The supported bridge is a short-lived external-account ADC configuration:
+ * the subject token is written to /tmp for this serverless instance and the
+ * JSON configuration contains no private key. Google Auth then performs STS
+ * exchange and service-account impersonation through the existing WIF setup.
+ */
+function createFederatedApplicationDefault(): Credential | undefined {
   const config = getFederationConfig()
   if (!config) return undefined
 
-  const authClient = ExternalAccountClient.fromJSON({
+  const directory = join(
+    '/tmp',
+    `prime-hub-portal-wif-${config.projectNumber}-${config.poolId}-${config.providerId}`
+  )
+  const subjectTokenPath = join(directory, 'subject-token')
+  const credentialsPath = join(directory, 'external-account.json')
+
+  mkdirSync(directory, { recursive: true, mode: 0o700 })
+  writeFileSync(subjectTokenPath, getVercelOidcTokenSync(), { encoding: 'utf8', mode: 0o600 })
+
+  const externalAccountConfig = {
     type: 'external_account',
     audience: config.audience,
     subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
@@ -62,29 +84,21 @@ function createFederatedCredential(): Credential | undefined {
     service_account_impersonation_url:
       `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/` +
       `${encodeURIComponent(config.serviceAccountEmail)}:generateAccessToken`,
-    subject_token_supplier: {
-      getSubjectToken: ({ audience }) => getVercelOidcToken({ audience }),
+    credential_source: {
+      file: subjectTokenPath,
+      format: { type: 'text' },
     },
+  }
+
+  writeFileSync(credentialsPath, JSON.stringify(externalAccountConfig), {
+    encoding: 'utf8',
+    mode: 0o600,
   })
 
-  if (!authClient) {
-    throw new Error('Google Auth did not create an external-account client for Vercel OIDC.')
-  }
-
-  return {
-    async getAccessToken() {
-      const response = await authClient.getAccessToken()
-      if (!response.token) {
-        throw new Error('Google STS did not return an access token for Vercel OIDC.')
-      }
-
-      const expiresIn = Number(response.res?.data?.expires_in ?? 3600)
-      return {
-        access_token: response.token,
-        expires_in: Number.isFinite(expiresIn) && expiresIn > 0 ? expiresIn : 3600,
-      }
-    },
-  }
+  // applicationDefault() reads this external-account file and returns the
+  // Firebase Admin ApplicationDefaultCredential class that Firestore accepts.
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath
+  return applicationDefault()
 }
 
 const staticKeyConfigured = Boolean(
@@ -131,7 +145,9 @@ export function getFirebaseAdminApp() {
   }
 
   if (!getApps().length) {
-    const federatedCredential = createFederatedCredential()
+    const federatedCredential = federatedAuthConfigured
+      ? createFederatedApplicationDefault()
+      : undefined
     const credential =
       federatedCredential ??
       cert({
