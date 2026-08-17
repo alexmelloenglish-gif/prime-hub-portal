@@ -2,7 +2,12 @@ import { cert, getApps, initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 function readPrivateKey() {
-  return process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+  const raw = process.env.FIREBASE_PRIVATE_KEY?.trim()
+  if (!raw) return undefined
+
+  return raw
+    .replace(/^"|"$/g, '')
+    .replace(/\\+n/g, '\n')
 }
 
 export function getFirebaseConfigStatus() {
@@ -13,7 +18,7 @@ export function getFirebaseConfigStatus() {
   return {
     projectIdPresent: Boolean(projectId),
     clientEmailPresent: Boolean(clientEmail),
-    clientEmailLooksLikeServiceAccount: /@[^@]+\\.iam\\.gserviceaccount\\.com$/.test(clientEmail),
+    clientEmailLooksLikeServiceAccount: /@[^@]+\.iam\.gserviceaccount\.com$/.test(clientEmail),
     privateKeyPresent: Boolean(privateKey),
     privateKeyHasPemMarkers:
       privateKey.includes('-----BEGIN PRIVATE KEY-----') &&

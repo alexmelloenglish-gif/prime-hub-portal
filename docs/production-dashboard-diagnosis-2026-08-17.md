@@ -85,3 +85,13 @@ The Production environment contains `FIREBASE_STUDENT_COLLECTION` alongside the 
 ## 2026-08-17 — Canonical collection variable saved
 
 The Vercel Production variable `FIREBASE_STUDENT_COLLECTION` was saved as `students` and is marked `Updated just now`. The Vercel UI now presents the `Redeploy` action so the new value can be applied to Production.
+
+## 2026-08-17 — Deployment do diagnóstico seguro
+
+O commit `83a2072c663ccff0dcb9e44cb121ff31a8d2e07d` criou o deployment Vercel `dpl_CKZ9fmjx5di4NXwF9h8kV5PbcQSC`, com alvo Production e URL temporária `prime-hub-portal-5i270dwxp-prime-digital-hun-dasboard.vercel.app`. No momento da consulta, o estado era `BUILDING`. O código local passou em `npm run build` antes do push.
+
+O diagnóstico de runtime de `/dashboard/admin` nas últimas 24 horas retornou `No runtime errors found`. Como o código anterior capturava exceções silenciosamente, o commit `83a2072` adiciona apenas indicadores booleanos de configuração e nome/mensagem de erro ao log, sem valores de chaves ou dados dos alunos.
+
+O domínio oficial `https://www.primedigitalhub.com.br` continua abrindo normalmente. O `redirect_uri_mismatch` observado pertence ao callback da URL temporária de preview e não deve ser corrigido adicionando cada preview ao OAuth de produção.
+
+O Vercel também informou que Node.js 20.x ficará incompatível com novos builds a partir de 1 Oct 2026; a migração para Node.js 24.x permanece como manutenção posterior e não é a causa do fallback Rafael-only.
