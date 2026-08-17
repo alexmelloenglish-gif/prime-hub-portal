@@ -78,9 +78,12 @@
   }
 }
 
-/* Smooth scrolling */
+/* Keep the Tailwind rem scale stable across browsers and client accessibility defaults. */
 html {
+  font-size: 16px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Remove default scrollbar styling for webkit browsers */
