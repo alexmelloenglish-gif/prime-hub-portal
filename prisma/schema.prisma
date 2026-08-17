@@ -3,20 +3,20 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
-  role          String    @default("student")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          String     @default("student")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   accounts      Account[]
   sessions      Session[]
   progress      Progress[]
@@ -95,4 +95,149 @@ model Progress {
 
   @@unique([userId, courseId])
   @@map("progress")
+}
+
+model PipelineRun {
+  id                     String      @id @default(cuid())
+  idempotencyKey         String      @unique
+  studentEmail           String
+  lessonId               String
+  status                 String      @default("received")
+  promptOneSchemaVersion String?
+  promptOneArtifact      Json?
+  authorityStatus        String      @default("non_authoritative")
+  errorCode              String?
+  errorMessage           String?     @db.Text
+  startedAt              DateTime    @default(now())
+  completedAt            DateTime?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+  transcript             Transcript?
+
+  @@index([studentEmail, createdAt])
+  @@index([status])
+  @@map("pipeline_runs")
+}
+
+model Transcript {
+  id            String              @id @default(cuid())
+  pipelineRunId String              @unique
+  externalId    String?
+  studentEmail  String
+  lessonId      String
+  source        String
+  effectiveAt   DateTime?
+  recordedAt    DateTime?
+  content       String              @db.Text
+  metadata      Json?
+  createdAt     DateTime            @default(now())
+  pipelineRun   PipelineRun         @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+  evidence      EvidenceCandidate[]
+
+  @@index([studentEmail, effectiveAt])
+  @@map("transcripts")
+}
+
+model EvidenceCandidate {
+  id             String     @id @default(cuid())
+  transcriptId   String
+  candidateKey   String
+  sourceSpan     String?
+  observation    String     @db.Text
+  category       String
+  confidence     Float?
+  state          String     @default("proposed")
+  requiresReview Boolean    @default(true)
+  createdAt      DateTime   @default(now())
+  transcript     Transcript @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+
+  @@unique([transcriptId, candidateKey])
+  @@index([state])
+  @@map("evidence_candidates")
+}
+
+model LearningSignalProposal {
+  id             String   @id @default(cuid())
+  pipelineRunId  String
+  proposalKey    String
+  signal         String   @db.Text
+  rationale      String   @db.Text
+  evidenceIds    Json
+  proposedState  String   @default("proposed")
+  requiresReview Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@unique([pipelineRunId, proposalKey])
+  @@map("learning_signal_proposals")
+}
+
+model TeacherInsightProposal {
+  id             String   @id @default(cuid())
+  pipelineRunId  String
+  text           String   @db.Text
+  evidenceIds    Json
+  signalIds      Json
+  authorType     String   @default("ai")
+  isOfficial     Boolean  @default(false)
+  requiresReview Boolean  @default(true)
+  status         String   @default("proposed")
+  createdAt      DateTime @default(now())
+
+  @@unique([pipelineRunId])
+  @@map("teacher_insight_proposals")
+}
+
+model ClassReportProjection {
+  id                   String   @id @default(cuid())
+  pipelineRunId        String
+  studentEmail         String
+  lessonId             String
+  content              Json
+  documentStatus       String   @default("draft")
+  implementationStatus String   @default("not_proven")
+  createdAt            DateTime @default(now())
+
+  @@unique([studentEmail, lessonId])
+  @@map("class_report_projections")
+}
+
+model PortfolioProjection {
+  id            String   @id @default(cuid())
+  studentEmail  String
+  projectionKey String
+  projection    Json
+  version       Int      @default(1)
+  sourceRunId   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentEmail, projectionKey])
+  @@map("portfolio_projections")
+}
+
+model CoachingGuidance {
+  id                   String   @id @default(cuid())
+  pipelineRunId        String
+  studentEmail         String
+  content              Json
+  recommendationStatus String   @default("ai_proposed")
+  requiresHumanReview  Boolean  @default(true)
+  createdAt            DateTime @default(now())
+
+  @@unique([pipelineRunId])
+  @@map("coaching_guidance")
+}
+
+model PipelineEvent {
+  id            String   @id @default(cuid())
+  pipelineRunId String
+  eventType     String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  createdAt     DateTime @default(now())
+
+  @@unique([pipelineRunId, eventType, aggregateId])
+  @@index([aggregateType, aggregateId])
+  @@map("pipeline_events")
 }

@@ -2,6 +2,7 @@ import { cache } from 'react'
 import type { Session } from 'next-auth'
 import type { DocumentData } from 'firebase-admin/firestore'
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
+import { getPrismaClient } from '@/lib/prisma'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -709,6 +710,34 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
   }
 }
 
+async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<StudentDashboardData> {
+  try {
+    const projection = await getPrismaClient().portfolioProjection.findUnique({
+      where: { studentEmail_projectionKey: { studentEmail: email, projectionKey: 'student-dashboard' } },
+    })
+    const root = asObject(projection?.projection)
+    const reports = asObject(root?.classReports)
+    if (!reports) return student
+    const derivedReports = Object.entries(reports).map(([key, value]) => {
+      const report = asObject(value)
+      return {
+        id: `pipeline-${key}`,
+        date: asString(report?.date, key.split(':')[0] || 'Date pending'),
+        focus: asStringArray(report?.grammarFocus).length
+          ? asStringArray(report?.grammarFocus)
+          : asStringArray(report?.evidenceHighlights),
+        teacherInsight: asString(report?.teacherInsight, 'Teacher insight pending human review.'),
+      }
+    })
+    return {
+      ...student,
+      classReports: [...student.classReports, ...derivedReports.filter((item) => !student.classReports.some((existing) => existing.id === item.id))],
+    }
+  } catch {
+    return student
+  }
+}
+
 function parseStudentDocument(
   data: DocumentData,
   email: string,
@@ -767,7 +796,7 @@ const getStudentDashboardStateCached = cache(
         return {
           hasAccess: true,
           source: 'firestore',
-          student: parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name),
+          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name)),
           isPreviewingAnotherStudent: false,
           viewerEmail: email,
         }
@@ -783,7 +812,7 @@ const getStudentDashboardStateCached = cache(
         return {
           hasAccess: true,
           source: 'firestore',
-          student: parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name),
+          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name)),
           isPreviewingAnotherStudent: false,
           viewerEmail: email,
         }
