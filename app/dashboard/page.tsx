@@ -199,7 +199,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 Personalized Learning Hub
               </span>
               <span className="rounded-full border border-prime-red/30 bg-prime-red/15 px-3 py-1 text-prime-cream">
-                Source: {studentState.source === 'firestore' ? 'Firestore' : 'Preview mode'}
+                Source: {
+                  studentState.source === 'firestore'
+                    ? 'Firestore'
+                    : studentState.source === 'repository'
+                      ? 'Repository fallback'
+                      : 'Neutral preview'
+                }
               </span>
             </div>
             <div className="space-y-3">

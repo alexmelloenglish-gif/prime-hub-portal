@@ -114,311 +114,6 @@ function normalizePortfolioHref(href: string) {
   return portfolioHrefMap[href] ?? href
 }
 
-const previewManageSpace: ManageSpaceLink[] = [
-  {
-    id: 'portfolio',
-    title: 'My Portfolio',
-    href: 'https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE/edit?usp=sharing',
-    description: 'Open the full portfolio document with progress, attendance, vocabulary and feedback.',
-    icon: 'folder-open',
-  },
-  {
-    id: 'live-class',
-    title: 'Join My Live Class',
-    href: 'https://meet.google.com/xjj-yqcc-wxb',
-    description: 'Fast access to the live lesson room and weekly session flow.',
-    icon: 'video',
-  },
-  {
-    id: 'class-materials',
-    title: 'Class Materials',
-    href: 'https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link',
-    description: 'Slides, lesson files and supporting resources organized for each class.',
-    icon: 'book-open',
-  },
-  {
-    id: 'homework',
-    title: 'My Homework Page',
-    href: 'https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link',
-    description: 'Action items, post-class practice and self-study tasks.',
-    icon: 'clipboard-list',
-  },
-  {
-    id: 'ai-mentor',
-    title: 'My AI Speaking Mentor',
-    href: 'https://chatgpt.com/gg/v/69d6f22fc1f481948eae7f49b44ace22?token=WUpdcx1iECMkOtDQnAyV6g',
-    description: 'Practice speaking prompts and reflection support between classes.',
-    icon: 'bot',
-  },
-  {
-    id: 'calendar',
-    title: 'My Lesson Calendar',
-    href: 'https://stride.microsoft.com/agents/b1a8a526-7535-4cfb-a685-4ea39f3557f4#',
-    description: 'Track your rhythm, dates and upcoming sessions in one place.',
-    icon: 'calendar-days',
-  },
-  {
-    id: 'support',
-    title: 'Prime Support',
-    href: 'https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F',
-    description: 'Get help with links, platform questions or class logistics.',
-    icon: 'headphones',
-  },
-]
-
-const previewPortfolioNavigation: PortfolioNavigationLink[] = [
-  {
-    id: 'nav-attendance',
-    title: 'Attendance Overview',
-    href: '#attendance-overview',
-  },
-  {
-    id: 'nav-progress',
-    title: 'Progress Tracker',
-    href: '#progress-tracker',
-  },
-  {
-    id: 'nav-vocabulary',
-    title: 'Vocabulary Bank',
-    href: '#vocabulary-bank',
-  },
-  {
-    id: 'nav-grammar',
-    title: 'Grammar Overview',
-    href: '#grammar-overview',
-  },
-  {
-    id: 'nav-feedback',
-    title: 'Teacher Feedback',
-    href: '#teacher-feedback',
-  },
-]
-
-const previewProgressTracker: ProgressTrackerCard[] = [
-  {
-    id: 'fluency',
-    title: 'Fluency',
-    status: 'Strong',
-    insight: 'Improved structure and clarity in extended speaking, especially when retelling trips, experiences and current events.',
-    accent: 'green',
-  },
-  {
-    id: 'listening',
-    title: 'Listening',
-    status: 'Strong',
-    insight: 'Understands complex real-world input such as BBC news, AI discussions and political topics with effective verification strategies.',
-    accent: 'green',
-  },
-  {
-    id: 'vocabulary',
-    title: 'Vocabulary',
-    status: 'Active Growth',
-    insight: 'Expanding with better nuance, emotional expression and precision across travel, geopolitics, business, cooking and daily life.',
-    accent: 'yellow',
-  },
-  {
-    id: 'grammar',
-    title: 'Grammar',
-    status: 'Improving',
-    insight: 'Clear progress in past tense accuracy, self-correction and sentence completion, with ongoing work on natural phrasing and consistency.',
-    accent: 'pink',
-  },
-  {
-    id: 'analytical-discussion',
-    title: 'Analytical Discussion',
-    status: 'Very Strong',
-    insight: 'Explains, connects and evaluates complex ideas effectively, especially in geopolitics, public affairs and AI in business.',
-    accent: 'blue',
-  },
-]
-
-const previewAttendance: AttendanceEntry[] = [
-  {
-    id: 'class-2026-03-05',
-    date: 'March 5, 2026',
-    status: 'present',
-    title: 'Italy trip storytelling and BBC current events',
-    summary: 'Rafael shared his recent trip to Italy with clear chronological storytelling and strong communicative instinct. The lesson also introduced a BBC report about Iran, strengthening listening comprehension, memory recall and real-world retelling.',
-  },
-  {
-    id: 'class-2026-03-12',
-    date: 'March 12, 2026',
-    status: 'present',
-    title: 'Advanced fluency, geopolitics and international relations',
-    summary: 'The class focused on advanced conversation fluency, narrative skills and geopolitical vocabulary. Rafael showed strong curiosity about global events and strong potential for advanced fluency development.',
-  },
-  {
-    id: 'class-2026-03-23',
-    date: 'March 23, 2026',
-    status: 'present',
-    title: 'Lifestyle, technology and political institutions',
-    summary: 'The lesson moved from health, nutrition and technology into public institutions and political developments in Rio. Rafael communicated with confidence in familiar real-life topics while grammar precision became the next growth target.',
-  },
-  {
-    id: 'class-2026-03-26',
-    date: 'March 26, 2026',
-    status: 'present',
-    title: 'Dream storytelling plus AI in business and society',
-    summary: 'Rafael handled spontaneous speaking, listening and interpretation around AI and business with strong analytical thinking. The key priority was improving verb accuracy and core sentence patterns without losing communicative power.',
-  },
-  {
-    id: 'class-2026-04-06',
-    date: 'April 6, 2026',
-    status: 'present',
-    title: 'Structured storytelling, emotions and family language dynamics',
-    summary: 'This lesson developed guided speaking with scaffolding, emotional vocabulary and clarity in past forms. Rafael showed noticeable improvement in self-correction and stronger narrative organization when supported by structure.',
-  },
-  {
-    id: 'class-2026-04-09',
-    date: 'April 9, 2026',
-    status: 'present',
-    title: 'Homes, cooking processes and complex political explanation',
-    summary: 'The class combined house and kitchen vocabulary with discussion of a complex political scenario at Alerj. Rafael explained a difficult real-world topic with very few gaps and showed stronger consolidation of the past simple.',
-  },
-]
-
-const previewGoals: GoalEntry[] = [
-  {
-    id: 'goal-1',
-    title: 'Increase structural precision without losing fluency',
-    description: 'Keep the current communicative confidence while improving sentence control, clearer connectors and more refined vocabulary choices.',
-    status: 'on-track',
-  },
-  {
-    id: 'goal-2',
-    title: 'Consolidate past tense consistency in storytelling',
-    description: 'Strengthen past simple accuracy, reduce overuse of continuous forms and keep self-correction active in real speaking situations.',
-    status: 'on-track',
-  },
-  {
-    id: 'goal-3',
-    title: 'Expand active vocabulary in high-value topics',
-    description: 'Use cumulative vocabulary from travel, geopolitics, business, emotions and daily life more naturally during live classes.',
-    status: 'on-track',
-  },
-]
-
-const previewVocabulary: VocabularyEntry[] = [
-  {
-    id: 'vocab-1',
-    term: 'birth certificate',
-    meaning: 'official document proving birth',
-    example: 'She needed her birth certificate to apply for a passport.',
-  },
-  {
-    id: 'vocab-2',
-    term: 'citizenship',
-    meaning: 'legal status of belonging to a country',
-    example: 'He applied for dual citizenship.',
-  },
-  {
-    id: 'vocab-3',
-    term: 'luggage',
-    meaning: 'bags used for travel',
-    example: 'We checked in our luggage before boarding.',
-  },
-  {
-    id: 'vocab-4',
-    term: 'asymmetry',
-    meaning: 'lack of equality between sides',
-    example: 'The conflict showed asymmetry.',
-  },
-  {
-    id: 'vocab-5',
-    term: 'demand forecasting',
-    meaning: 'predicting customer demand',
-    example: 'Demand forecasting improves planning.',
-  },
-  {
-    id: 'vocab-6',
-    term: 'sentimental',
-    meaning: 'prompted by feelings of tenderness, sadness or nostalgia',
-    example: "I felt sentimental when I visited my grandfather's hometown.",
-  },
-  {
-    id: 'vocab-7',
-    term: 'holiday home',
-    meaning: 'vacation house used on weekends or holidays',
-    example: 'We usually go to our holiday home in Teresopolis on weekends.',
-  },
-  {
-    id: 'vocab-8',
-    term: 'pizza dough',
-    meaning: 'the prepared mixture used to make pizza',
-    example: 'I make the pizza dough and leave it to rest for a few hours.',
-  },
-]
-
-const previewTeacherFeedback: TeacherFeedbackEntry[] = [
-  {
-    id: 'feedback-1',
-    title: 'Monthly teacher feedback',
-    body: 'Rafael continues to demonstrate strong communicative ability and confidence when discussing complex real-world topics. His fluency and analytical thinking remain major strengths, and recent lessons show clear progress in grammatical awareness, particularly with past tense usage and self-correction.',
-  },
-  {
-    id: 'feedback-2',
-    title: 'Current growth priority',
-    body: 'The next step is increasing consistency and precision in structure and vocabulary choice so his communication becomes more refined and advanced without losing spontaneity.',
-  },
-]
-
-const previewClassReports: ClassReportEntry[] = [
-  {
-    id: 'report-2026-03-05',
-    date: 'March 5, 2026',
-    focus: ['Italy trip storytelling', 'BBC news listening and retelling', 'Simple past review'],
-    teacherInsight:
-      'Language used in real life stays alive. Rafael showed strong communicative instinct, focusing on meaning and interaction instead of perfection.',
-  },
-  {
-    id: 'report-2026-03-12',
-    date: 'March 12, 2026',
-    focus: [
-      'Advanced conversation fluency',
-      'Geopolitics and international relations',
-      'Analytical discussion of current events',
-    ],
-    teacherInsight:
-      'Rafael is already capable of discussing professional experiences, international news and geopolitical analysis with excellent potential for advanced fluency development.',
-  },
-  {
-    id: 'report-2026-03-23',
-    date: 'March 23, 2026',
-    focus: [
-      'Lifestyle and health vocabulary',
-      'Technology and education',
-      'Political and institutional discussion',
-    ],
-    teacherInsight:
-      'His fluency allows him to engage in complex discussions connected to his real life. The next step is grammatical precision while maintaining this level of communication.',
-  },
-  {
-    id: 'report-2026-03-26',
-    date: 'March 26, 2026',
-    focus: ['Storytelling using past events', 'AI and business vocabulary', 'Say vs tell'],
-    teacherInsight:
-      'Rafael shows strong analytical thinking and can interpret challenging real-world content effectively. With more precision, his communication will become even stronger.',
-  },
-  {
-    id: 'report-2026-04-06',
-    date: 'April 6, 2026',
-    focus: ['Structured storytelling', 'Emotional vocabulary', 'Past simple vs past continuous'],
-    teacherInsight:
-      'His emotional awareness and reflective thinking add depth to his communication. With structure, his speech becomes clearer, more organized and more natural.',
-  },
-  {
-    id: 'report-2026-04-09',
-    date: 'April 9, 2026',
-    focus: [
-      'Types of houses and cooking vocabulary',
-      'Past simple consolidation',
-      'Complex political explanation',
-    ],
-    teacherInsight:
-      'Rafael showed significant progress explaining a highly complex political situation in English with very few gaps, while also consolidating the past simple through self-correction.',
-  },
-]
-
 function normalizeEmailToDocId(email: string) {
   return email.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
@@ -489,7 +184,7 @@ function asObject(value: unknown): Record<string, unknown> | null {
 
 function parseManageSpace(value: unknown): ManageSpaceLink[] {
   if (!Array.isArray(value)) {
-    return previewManageSpace
+    return []
   }
 
   const links = value
@@ -509,12 +204,12 @@ function parseManageSpace(value: unknown): ManageSpaceLink[] {
     })
     .filter((item): item is ManageSpaceLink => Boolean(item))
 
-  return links.length ? links : previewManageSpace
+  return links
 }
 
 function parsePortfolioNavigation(value: unknown): PortfolioNavigationLink[] {
   if (!Array.isArray(value)) {
-    return previewPortfolioNavigation
+    return []
   }
 
   const links = value
@@ -532,12 +227,12 @@ function parsePortfolioNavigation(value: unknown): PortfolioNavigationLink[] {
       })
     .filter((item): item is PortfolioNavigationLink => Boolean(item))
 
-  return links.length ? links : previewPortfolioNavigation
+  return links
 }
 
 function parseProgressTracker(value: unknown): ProgressTrackerCard[] {
   if (!Array.isArray(value)) {
-    return previewProgressTracker
+    return []
   }
 
   const cards = value
@@ -561,12 +256,12 @@ function parseProgressTracker(value: unknown): ProgressTrackerCard[] {
     })
     .filter((item): item is ProgressTrackerCard => Boolean(item))
 
-  return cards.length ? cards : previewProgressTracker
+  return cards
 }
 
 function parseAttendance(value: unknown): AttendanceEntry[] {
   if (!Array.isArray(value)) {
-    return previewAttendance
+    return []
   }
 
   const entries = value
@@ -588,12 +283,12 @@ function parseAttendance(value: unknown): AttendanceEntry[] {
     })
     .filter((item): item is AttendanceEntry => Boolean(item))
 
-  return Array.isArray(value) ? entries : previewAttendance
+  return entries
 }
 
 function parseClassReports(value: unknown): ClassReportEntry[] {
   if (!Array.isArray(value)) {
-    return previewClassReports
+    return []
   }
 
   const reports = value
@@ -612,12 +307,12 @@ function parseClassReports(value: unknown): ClassReportEntry[] {
     })
     .filter((item): item is ClassReportEntry => Boolean(item))
 
-  return Array.isArray(value) ? reports : previewClassReports
+  return reports
 }
 
 function parseGoals(value: unknown): GoalEntry[] {
   if (!Array.isArray(value)) {
-    return previewGoals
+    return []
   }
 
   const goals = value
@@ -640,12 +335,12 @@ function parseGoals(value: unknown): GoalEntry[] {
     })
     .filter((item): item is GoalEntry => Boolean(item))
 
-  return Array.isArray(value) ? goals : previewGoals
+  return goals
 }
 
 function parseVocabulary(value: unknown): VocabularyEntry[] {
   if (!Array.isArray(value)) {
-    return previewVocabulary
+    return []
   }
 
   const vocabulary = value
@@ -664,12 +359,12 @@ function parseVocabulary(value: unknown): VocabularyEntry[] {
     })
     .filter((item): item is VocabularyEntry => Boolean(item))
 
-  return Array.isArray(value) ? vocabulary : previewVocabulary
+  return vocabulary
 }
 
 function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
   if (!Array.isArray(value)) {
-    return previewTeacherFeedback
+    return []
   }
 
   const entries = value
@@ -687,7 +382,7 @@ function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
     })
     .filter((item): item is TeacherFeedbackEntry => Boolean(item))
 
-  return Array.isArray(value) ? entries : previewTeacherFeedback
+  return entries
 }
 
 function buildRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
@@ -702,32 +397,26 @@ function buildRepositoryStudent(email: string, name?: string | null): StudentDas
 
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
   return {
-    studentName: name ?? 'Rafael Copolillo',
+    studentName: name ?? 'Prime Student',
     studentEmail: email,
-    currentLevel: 'B2 Upper-Intermediate',
-    targetLevel: 'C1 Advanced',
-    attendanceRate: '100%',
-    attendanceLabel: 'Consistency: Excellent (6 attended, 0 missed)',
-    focus: 'Fluency Development • Grammar Consolidation & Review',
-    manageSpace: previewManageSpace,
-    portfolioNavigation: previewPortfolioNavigation,
-    progressTracker: previewProgressTracker,
-    attendanceOverview: previewAttendance,
-    classReports: previewClassReports,
-    goals: previewGoals,
-    vocabularyBank: previewVocabulary,
+    currentLevel: 'Assessment pending',
+    targetLevel: 'Not yet established',
+    attendanceRate: 'Pending verification',
+    attendanceLabel: 'Attendance data pending.',
+    focus: 'Learning focus pending human review',
+    manageSpace: [],
+    portfolioNavigation: [],
+    progressTracker: [],
+    attendanceOverview: [],
+    classReports: [],
+    goals: [],
+    vocabularyBank: [],
     grammarOverview: {
       title: 'Grammar Overview',
-      summary: 'Rafael is moving from developing to improving in the most visible speaking structures. The portfolio shows real gains in self-correction, especially in past forms, while the next step is consistency and precision.',
-      focusPoints: [
-        'Past tense consistency: accurate use of past simple in storytelling with reduced overuse of continuous forms',
-        'Sentence structure and completion: building complete, connected sentences without interruption',
-        'Natural phrasing and comparatives: avoiding literal translation and choosing more natural English structures',
-        'Passive voice for reporting: using more formal and news-style communication when discussing institutions and current events',
-        'Say vs tell: using the correct structure for listener and message',
-      ],
+      summary: 'Awaiting validated evidence and published teacher insight.',
+      focusPoints: [],
     },
-    teacherFeedback: previewTeacherFeedback,
+    teacherFeedback: [],
   }
 }
 
@@ -789,7 +478,7 @@ function parseStudentDocument(
       summary: asString(asObject(root.grammarOverview)?.summary, 'Grammar focus pending.'),
       focusPoints: asStringArray(asObject(root.grammarOverview)?.focusPoints).length
         ? asStringArray(asObject(root.grammarOverview)?.focusPoints)
-        : buildPreviewStudent(email, name).grammarOverview.focusPoints,
+        : [],
     },
     teacherFeedback: parseTeacherFeedback(root.teacherFeedback),
   }
