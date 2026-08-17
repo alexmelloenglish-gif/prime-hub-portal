@@ -4,7 +4,7 @@
   "studentEmail": "louise_nogueira@hotmail.com",
   "identityVersion": "prime-student-id-v1",
   "identitySource": "canonical_name_email",
-  "profileStatus": "draft",
+  "profileStatus": "active",
   "profileSource": {
     "sourceType": "google_docs_transcript",
     "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
@@ -21,7 +21,50 @@
   "focus": "Initial baseline pending human review",
   "attendanceRate": "Pending verification",
   "attendanceLabel": "One transcript-linked session found; official attendance requires validation.",
-  "manageSpace": [],
+  "manageSpace": [
+    {
+      "id": "portfolio",
+      "title": "My Portfolio",
+      "href": "https://docs.google.com/document/d/1hm7mYRHFmhEeXSrhovcCRan7lu0ZlU2aQ23BTi5skN0/edit?usp=sharing",
+      "description": "Open the full portfolio document with progress, attendance, vocabulary and feedback.",
+      "icon": "folder-open"
+    },
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/kfk-fnbh-odk",
+      "description": "Fast access to the live lesson room and weekly session flow.",
+      "icon": "video"
+    },
+    {
+      "id": "class-materials",
+      "title": "Class Materials",
+      "href": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
+      "description": "Slides, lesson files and supporting resources organized for each class.",
+      "icon": "book-open"
+    },
+    {
+      "id": "ai-mentor",
+      "title": "My AI Speaking Mentor",
+      "href": "https://chatgpt.com/gg/v/69d6f22fc1f481948eae7f49b44ace22?token=WUpdcx1iECMkOtDQnAyV6g",
+      "description": "Practice speaking prompts and reflection support between classes.",
+      "icon": "bot"
+    },
+    {
+      "id": "calendar",
+      "title": "My Lesson Calendar",
+      "href": "https://stride.microsoft.com/agents/b1a8a526-7535-4cfb-a685-4ea39f3557f4#",
+      "description": "Track your rhythm, dates and upcoming sessions in one place.",
+      "icon": "calendar-days"
+    },
+    {
+      "id": "support",
+      "title": "Prime Support",
+      "href": "https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F",
+      "description": "Get help with links, platform questions or class logistics.",
+      "icon": "headphones"
+    }
+  ],
   "portfolioNavigation": [
     { "id": "nav-attendance", "title": "Attendance Overview", "href": "#attendance-overview" },
     { "id": "nav-progress", "title": "Progress Tracker", "href": "#progress-tracker" },
