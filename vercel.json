@@ -6,12 +6,12 @@
       "destination": "/api/ingest"
     },
     {
-      "source": "/api/learning-engine",
-      "destination": "/api/learning-engine"
+      "source": "/api/ingest",
+      "destination": "/api/ingest"
     },
     {
-      "source": "/api/dashboard-data",
-      "destination": "/api/dashboard-data"
+      "source": "/api/lessons",
+      "destination": "/api/lessons"
     },
     {
       "source": "/api/(.*)",
