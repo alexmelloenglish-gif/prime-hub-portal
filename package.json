@@ -4,7 +4,7 @@
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "next dev",
