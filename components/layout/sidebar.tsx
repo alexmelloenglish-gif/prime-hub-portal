@@ -71,12 +71,12 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-white/10 bg-gradient-to-b from-prime-dark to-prime-dark/95 p-6 md:flex md:flex-col">
-        <Link href="/dashboard" className="mb-8 flex items-center justify-center">
-          <img src="/assets/logo-mini.png" alt="Prime Digital Hub" className="h-16 w-16 object-contain" />
+      <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-white/10 bg-gradient-to-b from-prime-dark to-prime-dark/95 p-4 md:flex md:flex-col">
+        <Link href="/dashboard" className="mb-5 flex shrink-0 items-center justify-center">
+          <img src="/assets/logo-mini.png" alt="Prime Digital Hub" className="h-12 w-12 object-contain" />
         </Link>
 
-        <nav className="flex-1 space-y-2">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
           {menuItems.map((item) => {
             const Icon = item.icon
             const isActive =
@@ -87,7 +87,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                 key={item.href}
                 href={buildHref(item.href)}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors',
+                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                   isActive ? 'bg-prime-red text-white' : 'text-prime-cream/70 hover:bg-white/10'
                 )}
               >
@@ -101,7 +101,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-prime-cream/70 transition-colors hover:bg-white/10"
+          className="mt-3 flex w-full shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-prime-cream/70 transition-colors hover:bg-white/10"
         >
           <LogOut className="h-5 w-5" />
           <span className="font-medium">Sign out</span>

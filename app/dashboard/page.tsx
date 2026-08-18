@@ -183,7 +183,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const student = studentState.student
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {studentState.isPreviewingAnotherStudent ? (
         <section className="rounded-2xl border border-amber-300/25 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
           Admin preview active. You are logged in as {studentState.viewerEmail}, but viewing the
@@ -191,9 +191,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </section>
       ) : null}
 
-      <section className="overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(246,235,207,0.12),_transparent_35%),linear-gradient(135deg,_rgba(255,255,255,0.08),_rgba(255,255,255,0.02))] p-6 shadow-2xl shadow-black/30 md:p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-4">
+      <section className="overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(246,235,207,0.12),_transparent_35%),linear-gradient(135deg,_rgba(255,255,255,0.08),_rgba(255,255,255,0.02))] p-5 shadow-2xl shadow-black/30 md:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl space-y-3">
             <div className="flex flex-wrap items-center gap-3 text-sm">
               <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-prime-cream/70">
                 Personalized Learning Hub
@@ -209,42 +209,42 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               </span>
             </div>
             <div className="space-y-3">
-              <p className="text-sm uppercase tracking-[0.35em] text-prime-cream/50">Prime Digital Hub</p>
-              <h2 className="text-4xl font-bold text-white md:text-5xl">Welcome back, {student.studentName}!</h2>
-              <p className="max-w-2xl text-base leading-7 text-prime-cream/80">
+              <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Prime Digital Hub</p>
+              <h2 className="text-3xl font-bold leading-tight text-white md:text-4xl">Welcome back, {student.studentName}!</h2>
+              <p className="max-w-2xl text-sm leading-6 text-prime-cream/80">
                 This is your central learning hub with class access, progress indicators, attendance
                 history and the key feedback points guiding your next level jump.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Current level</p>
-              <p className="mt-2 text-xl font-bold leading-tight text-white md:text-2xl">
+              <p className="mt-2 text-lg font-bold leading-tight text-white md:text-xl">
                 {student.currentLevel}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Target level</p>
-              <p className="mt-2 text-xl font-bold leading-tight text-white md:text-2xl">
+              <p className="mt-2 text-lg font-bold leading-tight text-white md:text-xl">
                 {student.targetLevel}
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Attendance</p>
-              <p className="mt-2 text-3xl font-bold text-white">{student.attendanceRate}</p>
+              <p className="mt-2 text-2xl font-bold text-white">{student.attendanceRate}</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
+        <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-3">
           <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Learning focus</p>
-          <p className="mt-2 text-lg font-medium text-prime-cream">{student.focus}</p>
+          <p className="mt-2 text-base font-medium text-prime-cream">{student.focus}</p>
         </div>
       </section>
 
-      <section id="portfolio-navigation" className="glass-card space-y-4 p-5 scroll-mt-28">
+      <section id="portfolio-navigation" className="glass-card space-y-3 p-4 scroll-mt-28">
         <div>
           <h3 className="text-xl font-bold text-white">Portfolio Navigation</h3>
           <p className="text-sm text-prime-cream/70">
@@ -262,9 +262,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="manage-space" className="space-y-4 scroll-mt-28">
+      <section id="manage-space" className="space-y-3 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">My Learning Links</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">My Learning Links</h3>
           <p className="text-sm text-prime-cream/70">
             The core learning links organized for fast access.
           </p>
@@ -276,16 +276,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="attendance-overview" className="space-y-4 scroll-mt-28">
+      <section id="attendance-overview" className="space-y-3 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">Attendance Overview</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">Attendance Overview</h3>
           <p className="text-sm text-prime-cream/70">
             Lesson dates with compact class summaries for quick academic recall.
           </p>
         </div>
         <div className="space-y-4">
           {student.attendanceOverview.map((lesson) => (
-            <article key={lesson.id} className="glass-card p-5">
+            <article key={lesson.id} className="glass-card p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <p className="text-lg font-semibold text-white">{lesson.date}</p>
@@ -301,16 +301,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="progress-tracker" className="space-y-4 scroll-mt-28">
+      <section id="progress-tracker" className="space-y-3 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">Progress Tracker</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">Progress Tracker</h3>
           <p className="text-sm text-prime-cream/70">
             A clear pedagogical snapshot combining fluency, grammar and analytical performance.
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           {student.progressTracker.map((item) => (
-            <article key={item.id} className="glass-card p-6">
+            <article key={item.id} className="glass-card p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h4 className="text-xl font-semibold text-white">{item.title}</h4>
@@ -332,9 +332,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="vocabulary-bank" className="space-y-4 scroll-mt-28">
+      <section id="vocabulary-bank" className="space-y-3 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">Vocabulary Bank</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">Vocabulary Bank</h3>
           <p className="text-sm text-prime-cream/70">
             High-value vocabulary gathered from this student&apos;s lessons for active reuse.
           </p>
@@ -343,7 +343,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {student.vocabularyBank.map((item, index) => (
             <article
               key={item.id}
-              className={`rounded-[26px] border p-6 ${vocabularyAccentClasses[index % vocabularyAccentClasses.length]}`}
+              className={`rounded-2xl border p-5 ${vocabularyAccentClasses[index % vocabularyAccentClasses.length]}`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -365,14 +365,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="grammar-overview" className="space-y-4 scroll-mt-28">
+      <section id="grammar-overview" className="space-y-3 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">Grammar Overview</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">Grammar Overview</h3>
           <p className="text-sm text-prime-cream/70">
             Cumulative grammar focus points extracted from this student&apos;s portfolio and teacher review.
           </p>
         </div>
-        <article className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+        <article className="rounded-2xl border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
           <h4 className="text-xl font-semibold text-white">{student.grammarOverview.title}</h4>
           <p className="mt-3 text-sm leading-7 text-prime-cream/80">
             {student.grammarOverview.summary}
@@ -397,7 +397,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       <section id="teacher-feedback" className="space-y-4 scroll-mt-28">
         <div>
-          <h3 className="text-2xl font-bold text-white">Teacher Feedback</h3>
+          <h3 className="text-xl font-bold leading-tight text-white">Teacher Feedback</h3>
           <p className="text-sm text-prime-cream/70">
             Cumulative feedback blocks extracted from this student&apos;s portfolio and teacher review.
           </p>

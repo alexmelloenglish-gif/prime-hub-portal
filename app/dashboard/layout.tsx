@@ -45,11 +45,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-prime-dark">
+    <div className="min-h-dvh overflow-x-hidden bg-prime-dark">
       <Sidebar isAdmin={adminUser} />
-      <div className="min-h-screen md:ml-64">
+      <div className="min-h-dvh md:ml-64">
         <Topbar user={topbarUser} />
-        <main className="p-4 pb-24 md:p-6 md:pb-6">{children}</main>
+        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-5">{children}</main>
       </div>
     </div>
   )
