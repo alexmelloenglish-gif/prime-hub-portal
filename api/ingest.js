@@ -5,8 +5,20 @@ const SHEET_ID = process.env.PRIME_SHEETS_ID || process.env.GOOGLE_SHEET_ID;
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 async function getSheets() {
+  let credentials;
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+  } else {
+    // Fallback to individual Firebase/GCP variables
+    credentials = {
+      client_email: process.env.FIREBASE_CLIENT_EMAIL || process.env.GCP_SERVICE_ACCOUNT_EMAIL,
+      private_key: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, '\n'),
+      project_id: process.env.FIREBASE_PROJECT_ID || process.env.GCP_PROJECT_ID
+    };
+  }
+  
   const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+    credentials,
     scopes: SCOPES,
   });
   return google.sheets({ version: 'v4', auth });
