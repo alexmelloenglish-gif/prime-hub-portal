@@ -1,3 +1,21 @@
 {
-  "buildCommand": "prisma generate && next build"
+  "buildCommand": "prisma generate && next build",
+  "rewrites": [
+    {
+      "source": "/api/pipeline/ingest",
+      "destination": "/api/ingest"
+    },
+    {
+      "source": "/api/learning-engine",
+      "destination": "/api/learning-engine"
+    },
+    {
+      "source": "/api/dashboard-data",
+      "destination": "/api/dashboard-data"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
 }
