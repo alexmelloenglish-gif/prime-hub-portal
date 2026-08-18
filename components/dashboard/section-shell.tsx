@@ -8,10 +8,10 @@ interface SectionShellProps {
 
 export function SectionShell({ title, description, children }: SectionShellProps) {
   return (
-    <section className="space-y-5">
-      <div className="space-y-1.5">
-        <h2 className="font-display text-2xl font-bold leading-tight text-white">{title}</h2>
-        <p className="max-w-2xl text-sm text-prime-cream/70">{description}</p>
+    <section className="space-y-4 md:space-y-5">
+      <div className="space-y-1">
+        <h2 className="font-display text-xl font-bold leading-tight tracking-[-0.01em] text-white md:text-[1.35rem]">{title}</h2>
+        <p className="max-w-2xl text-xs leading-5 text-prime-cream/65">{description}</p>
       </div>
       {children}
     </section>

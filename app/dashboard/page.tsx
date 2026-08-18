@@ -89,16 +89,16 @@ function isHashLink(href: string) {
 function ManageSpaceCard({ link }: { link: ManageSpaceLink }) {
   const Icon = getManageSpaceIcon(link.icon)
   const className =
-    'glass-card group flex h-full flex-col gap-3 p-5 transition-transform duration-200 hover:-translate-y-1 hover:border-white/30'
+    'glass-card group flex h-full flex-col gap-2.5 p-4 transition-transform duration-200 hover:-translate-y-1 hover:border-white/30'
 
   const content = (
     <>
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-prime-red/20 text-prime-cream">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-prime-red/20 text-prime-cream">
         <Icon className="h-5 w-5" />
       </div>
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold text-white">{link.title}</h3>
-        <p className="text-sm leading-6 text-prime-cream/70">{link.description}</p>
+        <h3 className="text-base font-semibold text-white">{link.title}</h3>
+        <p className="text-xs leading-5 text-prime-cream/65">{link.description}</p>
       </div>
     </>
   )
@@ -146,7 +146,7 @@ function PortfolioNavigationChip({
   return (
     <a
       href={buildPreviewAwareHref(item.href, previewStudentEmail)}
-      className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-prime-cream/80 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
+      className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-prime-cream/80 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
     >
       {item.title}
     </a>
@@ -183,7 +183,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const student = studentState.student
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 md:space-y-5">
       {studentState.isPreviewingAnotherStudent ? (
         <section className="rounded-2xl border border-amber-300/25 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
           Admin preview active. You are logged in as {studentState.viewerEmail}, but viewing the
@@ -191,14 +191,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </section>
       ) : null}
 
-      <section className="overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(246,235,207,0.12),_transparent_35%),linear-gradient(135deg,_rgba(255,255,255,0.08),_rgba(255,255,255,0.02))] p-5 shadow-2xl shadow-black/30 md:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-3">
-            <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-prime-cream/70">
+      <section className="overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(246,235,207,0.12),_transparent_35%),linear-gradient(135deg,_rgba(255,255,255,0.08),_rgba(255,255,255,0.02))] p-4 shadow-xl shadow-black/30 md:p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl space-y-2.5">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-prime-cream/70">
                 Personalized Learning Hub
               </span>
-              <span className="rounded-full border border-prime-red/30 bg-prime-red/15 px-3 py-1 text-prime-cream">
+              <span className="rounded-full border border-prime-red/30 bg-prime-red/15 px-2.5 py-1 text-prime-cream">
                 Source: {
                   studentState.source === 'firestore'
                     ? 'Firestore'
@@ -208,46 +208,46 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 }
               </span>
             </div>
-            <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Prime Digital Hub</p>
-              <h2 className="text-3xl font-bold leading-tight text-white md:text-4xl">Welcome back, {student.studentName}!</h2>
-              <p className="max-w-2xl text-sm leading-6 text-prime-cream/80">
+            <div className="space-y-2">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-prime-cream/50">Prime Digital Hub</p>
+              <h2 className="max-w-2xl text-[1.7rem] font-bold leading-[1.1] tracking-[-0.02em] text-white sm:text-3xl md:text-[2rem]">Welcome back, {student.studentName}!</h2>
+              <p className="max-w-xl text-[13px] leading-5 text-prime-cream/75">
                 This is your central learning hub with class access, progress indicators, attendance
                 history and the key feedback points guiding your next level jump.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Current level</p>
-              <p className="mt-2 text-lg font-bold leading-tight text-white md:text-xl">
+          <div className="grid gap-2.5 sm:grid-cols-3 lg:min-w-[23rem]">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-2.5 shadow-sm shadow-black/20">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-prime-cream/50">Current level</p>
+              <p className="mt-1.5 text-base font-bold leading-tight text-white md:text-lg">
                 {student.currentLevel}
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Target level</p>
-              <p className="mt-2 text-lg font-bold leading-tight text-white md:text-xl">
+            <div className="rounded-xl border border-white/10 bg-black/20 p-2.5 shadow-sm shadow-black/20">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-prime-cream/50">Target level</p>
+              <p className="mt-1.5 text-base font-bold leading-tight text-white md:text-lg">
                 {student.targetLevel}
               </p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Attendance</p>
-              <p className="mt-2 text-2xl font-bold text-white">{student.attendanceRate}</p>
+            <div className="rounded-xl border border-white/10 bg-black/20 p-2.5 shadow-sm shadow-black/20">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-prime-cream/50">Attendance</p>
+              <p className="mt-1.5 text-xl font-bold leading-tight text-white">{student.attendanceRate}</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-3">
+        <div className="mt-4 rounded-xl border border-sky-200/10 bg-sky-300/[0.04] p-2.5">
           <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Learning focus</p>
-          <p className="mt-2 text-base font-medium text-prime-cream">{student.focus}</p>
+          <p className="mt-1.5 text-sm font-medium leading-5 text-prime-cream">{student.focus}</p>
         </div>
       </section>
 
-      <section id="portfolio-navigation" className="glass-card space-y-3 p-4 scroll-mt-28">
+      <section id="portfolio-navigation" className="glass-card space-y-2.5 p-3.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold text-white">Portfolio Navigation</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold text-white">Portfolio Navigation</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             Fast jump links to the core sections of this student&apos;s learning portfolio.
           </p>
         </div>
@@ -262,10 +262,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="manage-space" className="space-y-3 scroll-mt-28">
+      <section id="manage-space" className="space-y-2.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold leading-tight text-white">My Learning Links</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold leading-tight text-white">My Learning Links</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             The core learning links organized for fast access.
           </p>
         </div>
@@ -276,45 +276,45 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="attendance-overview" className="space-y-3 scroll-mt-28">
+      <section id="attendance-overview" className="space-y-2.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold leading-tight text-white">Attendance Overview</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold leading-tight text-white">Attendance Overview</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             Lesson dates with compact class summaries for quick academic recall.
           </p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {student.attendanceOverview.map((lesson) => (
-            <article key={lesson.id} className="glass-card p-4">
+            <article key={lesson.id} className="glass-card p-3.5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <p className="text-lg font-semibold text-white">{lesson.date}</p>
+                  <p className="text-base font-semibold text-white">{lesson.date}</p>
                   <p className="mt-1 text-sm uppercase tracking-[0.18em] text-emerald-200">
                     {lesson.status}
                   </p>
                 </div>
                 <p className="max-w-2xl text-sm font-medium text-prime-cream">{lesson.title}</p>
               </div>
-              <p className="mt-4 text-sm leading-7 text-prime-cream/80">{lesson.summary}</p>
+              <p className="mt-3 text-sm leading-6 text-prime-cream/75">{lesson.summary}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="progress-tracker" className="space-y-3 scroll-mt-28">
+      <section id="progress-tracker" className="space-y-2.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold leading-tight text-white">Progress Tracker</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold leading-tight text-white">Progress Tracker</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             A clear pedagogical snapshot combining fluency, grammar and analytical performance.
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           {student.progressTracker.map((item) => (
-            <article key={item.id} className="glass-card p-5">
+            <article key={item.id} className="glass-card p-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h4 className="text-xl font-semibold text-white">{item.title}</h4>
-                  <p className="mt-3 text-sm leading-7 text-prime-cream/80">{item.insight}</p>
+                  <h4 className="text-lg font-semibold text-white">{item.title}</h4>
+                  <p className="mt-2.5 text-sm leading-6 text-prime-cream/75">{item.insight}</p>
                 </div>
                 <span
                   className={`shrink-0 rounded-full border px-3 py-1 text-xs uppercase tracking-[0.2em] ${progressAccentClasses[item.accent]}`}
@@ -322,7 +322,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                   {item.status}
                 </span>
               </div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
                 <div
                   className={`h-full rounded-full ${progressBarClasses[item.accent]} ${progressWidths[item.status] ?? 'w-[50%]'}`}
                 />
@@ -332,10 +332,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="vocabulary-bank" className="space-y-3 scroll-mt-28">
+      <section id="vocabulary-bank" className="space-y-2.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold leading-tight text-white">Vocabulary Bank</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold leading-tight text-white">Vocabulary Bank</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             High-value vocabulary gathered from this student&apos;s lessons for active reuse.
           </p>
         </div>
@@ -343,21 +343,21 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           {student.vocabularyBank.map((item, index) => (
             <article
               key={item.id}
-              className={`rounded-2xl border p-5 ${vocabularyAccentClasses[index % vocabularyAccentClasses.length]}`}
+              className={`rounded-2xl border p-4 ${vocabularyAccentClasses[index % vocabularyAccentClasses.length]}`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-prime-cream/55">
                     Active vocabulary
                   </p>
-                  <p className="mt-2 text-xl font-semibold text-white">{item.term}</p>
+                  <p className="mt-1.5 text-lg font-semibold text-white">{item.term}</p>
                 </div>
                 <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-prime-cream/65">
                   Use live
                 </span>
               </div>
-              <p className="mt-4 text-sm leading-6 text-prime-cream/82">{item.meaning}</p>
-              <p className="mt-4 rounded-2xl border border-black/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/70">
+              <p className="mt-3 text-sm leading-6 text-prime-cream/78">{item.meaning}</p>
+              <p className="mt-3 rounded-xl border border-black/10 bg-black/20 px-3 py-2.5 text-sm italic text-prime-cream/70">
                 {item.example}
               </p>
             </article>
@@ -365,10 +365,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
-      <section id="grammar-overview" className="space-y-3 scroll-mt-28">
+      <section id="grammar-overview" className="space-y-2.5 scroll-mt-28">
         <div>
-          <h3 className="text-xl font-bold leading-tight text-white">Grammar Overview</h3>
-          <p className="text-sm text-prime-cream/70">
+          <h3 className="text-lg font-bold leading-tight text-white">Grammar Overview</h3>
+          <p className="text-xs leading-5 text-prime-cream/65">
             Cumulative grammar focus points extracted from this student&apos;s portfolio and teacher review.
           </p>
         </div>
@@ -398,11 +398,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <section id="teacher-feedback" className="space-y-4 scroll-mt-28">
         <div>
           <h3 className="text-xl font-bold leading-tight text-white">Teacher Feedback</h3>
-          <p className="text-sm text-prime-cream/70">
+          <p className="text-xs leading-5 text-prime-cream/65">
             Cumulative feedback blocks extracted from this student&apos;s portfolio and teacher review.
           </p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {student.teacherFeedback.map((feedback, index) => (
             <article
               key={feedback.id}
