@@ -592,6 +592,19 @@ export function parseTranscriptPayload(body: unknown): LessonTranscriptInput {
   const studentEmail = typeof payload.studentEmail === 'string' ? payload.studentEmail : ''
   const transcript = typeof payload.transcript === 'string' ? payload.transcript : ''
   if (!lessonId || !studentEmail || !transcript) throw new Error('lessonId, studentEmail and transcript are required')
+  const source = payload.source === 'manual_upload' || payload.source === 'api' ? payload.source : 'google_meet'
+  const metadata = payload.metadata && typeof payload.metadata === 'object' && !Array.isArray(payload.metadata)
+    ? payload.metadata as Record<string, unknown>
+    : undefined
+  const sourceFileId = asOptionalString(metadata?.sourceFileId)
+  const sourceMimeType = asOptionalString(metadata?.sourceMimeType)
+  const triageStatus = asOptionalString(metadata?.triageStatus)
+  const carriesDriveProvenance = Boolean(sourceFileId || sourceMimeType || triageStatus)
+  if (source === 'google_meet' && carriesDriveProvenance) {
+    if (!sourceFileId) throw new Error('metadata.sourceFileId is required for Drive-origin Google Meet ingestion')
+    if (sourceMimeType !== 'application/vnd.google-apps.document') throw new Error('Only Google Docs transcripts may enter the Drive-origin ingestion path')
+    if (triageStatus !== 'usable_transcript') throw new Error('Only triageStatus=usable_transcript may enter the Drive-origin ingestion path')
+  }
   return {
     lessonId,
     studentEmail,
@@ -603,13 +616,13 @@ export function parseTranscriptPayload(body: unknown): LessonTranscriptInput {
     classDate: typeof payload.classDate === 'string' ? payload.classDate : typeof payload.lessonDate === 'string' ? payload.lessonDate : undefined,
     transcriptId: typeof payload.transcriptId === 'string' ? payload.transcriptId : undefined,
     transcript,
-    source: payload.source === 'manual_upload' || payload.source === 'api' ? payload.source : 'google_meet',
+    source,
     effectiveAt: typeof payload.effectiveAt === 'string' ? payload.effectiveAt : undefined,
     recordedAt: typeof payload.recordedAt === 'string' ? payload.recordedAt : undefined,
     attendanceStatus: payload.attendanceStatus === 'attended' || payload.attendanceStatus === 'missed' || payload.attendanceStatus === 'cancelled' || payload.attendanceStatus === 'rescheduled' ? payload.attendanceStatus : 'unknown',
     attendanceSource: typeof payload.attendanceSource === 'string' ? payload.attendanceSource : undefined,
     externalMeetingId: typeof payload.externalMeetingId === 'string' ? payload.externalMeetingId : undefined,
-    metadata: payload.metadata && typeof payload.metadata === 'object' ? payload.metadata as Record<string, unknown> : undefined,
+    metadata,
   }
 }
 

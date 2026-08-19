@@ -273,6 +273,13 @@ async function main() {
     report.triageCounts[triage.status] = (report.triageCounts[triage.status] || 0) + 1
 
     if (submit && triage.status === 'usable_transcript') {
+      if (file.mimeType !== 'application/vnd.google-apps.document') {
+        const rejected = { ...summary, status: 'non_google_doc_rejected', reason: 'Automatic ingestion accepts only Google Docs from the PRIME Meet Recordings folder.', mimeType: file.mimeType }
+        report.candidates[report.candidates.length - 1] = rejected
+        report.triageCounts[triage.status] -= 1
+        report.triageCounts[rejected.status] = (report.triageCounts[rejected.status] || 0) + 1
+        continue
+      }
       if (!ingestUrl || !ingestSecret) throw new Error('PRIME_PIPELINE_INGEST_URL and PRIME_PIPELINE_INGEST_SECRET are required with --submit')
       const response = await fetch(ingestUrl, {
         method: 'POST',

@@ -20,7 +20,8 @@ export async function POST(request: Request) {
     return NextResponse.json(result, { status: result.duplicate ? 200 : 202 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Invalid pipeline request'
-    const status = message.includes('required') || message.includes('Invalid JSON') ? 400 : 500
+    const isClientContractError = message.includes('required') || message.includes('Invalid JSON') || message.includes('Drive-origin') || message.includes('Only Google Docs') || message.includes('triageStatus=usable_transcript')
+    const status = isClientContractError ? 400 : 500
     return NextResponse.json({ error: message }, { status })
   }
 }
