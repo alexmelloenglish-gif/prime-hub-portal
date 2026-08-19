@@ -4,7 +4,7 @@
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",
@@ -28,7 +28,6 @@
     "clsx": "^2.0.0",
     "firebase-admin": "^13.8.0",
     "google-auth-library": "10.6.2",
-    "googleapis": "^175.0.0",
     "lucide-react": "^0.344.0",
     "next": "^15.0.0",
     "next-auth": "^4.24.0",
