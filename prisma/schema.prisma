@@ -148,6 +148,7 @@ model Transcript {
   id            String              @id @default(cuid())
   pipelineRunId String              @unique
   externalId    String?
+  sourceFileId  String?              @unique
   studentEmail  String
   lessonId      String
   source        String
