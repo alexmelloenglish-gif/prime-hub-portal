@@ -413,7 +413,7 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
   const idempotencyKey = createIdempotencyKey(normalizedInput)
   const existingBySourceFile = sourceFileId
     ? await prisma.transcript.findFirst({
-        where: { externalId: sourceFileId, source: 'google_meet' },
+        where: { sourceFileId, source: 'google_meet' },
         include: { pipelineRun: true },
       })
     : null
