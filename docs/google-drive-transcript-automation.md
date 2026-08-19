@@ -69,6 +69,8 @@ O perfil do Rafael recebeu apenas os metadados `studentId`, `identityVersion`, `
 
 A implementação atual é um **scanner controlado por execução**. Ela não cria automaticamente uma assinatura de eventos nem um cron no ambiente publicado. Para execução contínua, há duas opções:
 
+A rota canônica também aplica uma segunda barreira de idempotência: quando o payload inclui `metadata.sourceFileId`, o pipeline usa `drive:<sourceFileId>` como chave estável e consulta o transcript já vinculado ao arquivo antes de executar qualquer prompt. O mesmo `sourceFileId` não pode ser reassociado a outro aluno. Essa proteção evita que uma nova chamada para o mesmo arquivo gere uma nova execução, mas não substitui o filtro do Flow: o Flow ainda precisa observar somente a pasta de entrada e nunca tratar documentos gerados como novos transcripts.
+
 1. Um worker persistente ou job agendado executa `npm run scan:drive-transcripts` em intervalos curtos. O estado e os retries precisam estar em armazenamento persistente, não no filesystem efêmero.
 2. Uma assinatura do Google Workspace Events/Drive notifica um endpoint público de webhook quando um arquivo é adicionado ou alterado na pasta. O webhook deve validar a origem, enfileirar o `fileId` e deixar o scanner buscar o conteúdo de forma idempotente.
 

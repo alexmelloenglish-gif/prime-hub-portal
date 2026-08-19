@@ -15,7 +15,14 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase()
 }
 
+function getStableSourceFileId(input: LessonTranscriptInput): string | undefined {
+  const metadata = asRecord(input.metadata)
+  return asOptionalString(metadata.sourceFileId)
+}
+
 function createIdempotencyKey(input: LessonTranscriptInput): string {
+  const sourceFileId = getStableSourceFileId(input)
+  if (sourceFileId) return `drive:${sourceFileId}`
   return `${normalizeEmail(input.studentEmail)}:${input.lessonId}:${input.transcriptId || input.externalMeetingId || 'transcript'}`
 }
 
@@ -402,8 +409,18 @@ async function createReviewTask(runId: string, input: LessonTranscriptInput, sta
 export async function processLessonTranscript(input: LessonTranscriptInput): Promise<PipelineResult> {
   const prisma = getPrismaClient()
   const normalizedInput = { ...input, studentEmail: normalizeEmail(input.studentEmail), source: input.source ?? 'google_meet' as const }
+  const sourceFileId = getStableSourceFileId(normalizedInput)
   const idempotencyKey = createIdempotencyKey(normalizedInput)
-  const existing = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+  const existingBySourceFile = sourceFileId
+    ? await prisma.transcript.findFirst({
+        where: { externalId: sourceFileId, source: 'google_meet' },
+        include: { pipelineRun: true },
+      })
+    : null
+  if (existingBySourceFile && existingBySourceFile.pipelineRun.studentEmail !== normalizedInput.studentEmail) {
+    throw new Error('sourceFileId is already bound to a different student')
+  }
+  const existing = existingBySourceFile?.pipelineRun || await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
   if (existing?.status === 'completed') {
     const storedReport = await prisma.classReportProjection.findUnique({ where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } } })
     const storedCoaching = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: existing.id } })
