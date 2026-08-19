@@ -26,6 +26,10 @@ function createIdempotencyKey(input: LessonTranscriptInput): string {
   return `${normalizeEmail(input.studentEmail)}:${input.lessonId}:${input.transcriptId || input.externalMeetingId || 'transcript'}`
 }
 
+function isUniqueConstraintError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002'
+}
+
 function safeArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
 }
@@ -436,7 +440,23 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     const task = await prisma.reviewTask.findFirst({ where: { pipelineRunId: existing.id, stage: 'identity_review_required' } })
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true, reviewTaskId: task?.id, nextReviewStage: task?.stage }
   }
-  const run = existing || await prisma.pipelineRun.create({ data: { idempotencyKey, studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId, status: 'received' } })
+  if (existing && existing.status !== 'failed') {
+    return { pipelineRunId: existing.id, status: existing.status, duplicate: true }
+  }
+  let run = existing
+  if (!run) {
+    try {
+      run = await prisma.pipelineRun.create({ data: { idempotencyKey, studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId, status: 'received' } })
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) throw error
+      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+      if (!concurrent) throw error
+      if (concurrent.studentEmail !== normalizedInput.studentEmail) {
+        throw new Error('idempotency key is already bound to a different student')
+      }
+      return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
+    }
+  }
   try {
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
     const metadata = buildStoredInputMetadata(normalizedInput)
@@ -451,6 +471,15 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     const reviewTask = await createReviewTask(run.id, normalizedInput, 'identity_review_required')
     return { pipelineRunId: run.id, status: 'awaiting_review', duplicate: false, reviewTaskId: reviewTask.id, nextReviewStage: reviewTask.stage }
   } catch (error) {
+    if (isUniqueConstraintError(error) && sourceFileId) {
+      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+      if (concurrent && concurrent.id !== run.id) {
+        if (concurrent.studentEmail !== normalizedInput.studentEmail) {
+          throw new Error('sourceFileId is already bound to a different student')
+        }
+        return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
+      }
+    }
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure'
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'failed', errorCode: 'PIPELINE_FAILED', errorMessage: message } })
     throw error
