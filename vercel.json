@@ -1,5 +1,28 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
   "installCommand": "npm ci",
-  "buildCommand": "prisma generate && next build"
+  "buildCommand": "prisma generate && next build",
+  "rewrites": [
+    {
+      "source": "/api/pipeline/ingest",
+      "destination": "/api/ingest"
+    },
+    {
+      "source": "/api/ingest",
+      "destination": "/api/ingest"
+    },
+    {
+      "source": "/api/lessons",
+      "destination": "/api/lessons"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/dashboard/student",
+      "destination": "/dashboard"
+    }
+  ]
 }
