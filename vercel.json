@@ -5,20 +5,8 @@
   "buildCommand": "prisma generate && next build",
   "rewrites": [
     {
-      "source": "/api/pipeline/ingest",
-      "destination": "/api/ingest"
-    },
-    {
       "source": "/api/ingest",
-      "destination": "/api/ingest"
-    },
-    {
-      "source": "/api/lessons",
-      "destination": "/api/lessons"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api/pipeline/ingest"
     },
     {
       "source": "/dashboard/student",
