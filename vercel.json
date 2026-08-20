@@ -1,8 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "installCommand": "npm ci",
-  "buildCommand": "prisma generate && next build",
   "rewrites": [
     {
       "source": "/api/ingest",
