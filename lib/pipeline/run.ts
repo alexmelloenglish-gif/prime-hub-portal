@@ -92,6 +92,29 @@ function rebuildInput(run: { studentEmail: string; lessonId: string }, transcrip
   }
 }
 
+// ---------------------------------------------------------------------------
+// Trusted-source heuristic
+// A run is trusted (no identity gate) when:
+//   1. Prompt 1 declared authority_status === 'authoritative', OR
+//   2. Source is google_meet with valid Drive provenance (sourceFileId present)
+// Any other combination goes to the identity review queue as before.
+// ---------------------------------------------------------------------------
+function isTrustedSource(input: LessonTranscriptInput, authorityStatus: string): boolean {
+  if (authorityStatus === 'authoritative') return true
+  if (input.source === 'google_meet' && !!getStableSourceFileId(input)) return true
+  return false
+}
+
+// ---------------------------------------------------------------------------
+// Publication policy
+// Normal (non-high-risk) runs are auto-published.
+// A run requires human publication review when coaching marks it as a
+// pedagogical decision that also requires human review.
+// ---------------------------------------------------------------------------
+function shouldRequirePublicationReview(coaching: CoachingGuidanceOutput): boolean {
+  return coaching.is_pedagogical_decision === true && coaching.requiresHumanReview === true
+}
+
 async function persistPromptOne(runId: string, transcriptId: string, promptOne: PromptOneOutput) {
   const prisma = getPrismaClient()
   await prisma.$transaction(async (tx) => {
@@ -230,6 +253,13 @@ async function applyPortfolioPatch(input: LessonTranscriptInput, runId: string, 
   })
 }
 
+// ---------------------------------------------------------------------------
+// continueAfterReview
+// Runs Prompts 2-4, persists artifacts.
+// After Prompt 4:
+//   - Normal path  → calls publishAfterReview internally (no human gate)
+//   - Exception    → creates publication_review_required task as before
+// ---------------------------------------------------------------------------
 async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput): Promise<{ report: ClassReportOutput; coaching: CoachingGuidanceOutput }> {
   const prisma = getPrismaClient()
   const promptTwoInput: PromptTwoInput = {
@@ -324,7 +354,7 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
       class_report: { report_id: report.reportId, lesson_id: report.lessonId, state: report.documentStatus === 'published' ? 'projection_published' : 'projection_draft', content_reference: `${report.reportId}#content-v1`, generated_at: report.generatedAt },
     },
   })
-  await prisma.pipelineRun.update({ where: { id: runId }, data: { promptThreeSchemaVersion: patch.patch_schema_version, promptThreeArtifact: patch as unknown as Prisma.InputJsonValue, portfolioPatchId: patch.patch_id, portfolioApplyStatus: 'pending_publication_review' } })
+  await prisma.pipelineRun.update({ where: { id: runId }, data: { promptThreeSchemaVersion: patch.patch_schema_version, promptThreeArtifact: patch as unknown as Prisma.InputJsonValue, portfolioPatchId: patch.patch_id, portfolioApplyStatus: 'pending_publication' } })
   const coaching = await runPromptFour({
     lesson: normalizedInput,
     report,
@@ -340,12 +370,26 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
     update: { studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
     create: { pipelineRunId: runId, studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
   })
-  const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')
+
+  // Publication policy: exception path only
+  if (shouldRequirePublicationReview(coaching)) {
+    const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')
+    await prisma.pipelineEvent.createMany({ data: [
+      { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },
+      { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
+      { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
+    ], skipDuplicates: true })
+    return { report, coaching }
+  }
+
+  // Normal path: auto-publish without human gate
   await prisma.pipelineEvent.createMany({ data: [
-    { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },
-    { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
-    { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
+    { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: false, autoPublish: true } },
+    { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_auto_publish' } },
+    { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: false } },
   ], skipDuplicates: true })
+  // Publish directly — synthetic task id keeps the same code path in publishAfterReview
+  await publishAfterReview(runId, normalizedInput, `auto-publish-${runId}`, 'system', 'auto-publish: trusted source, non-pedagogical-decision')
   return { report, coaching }
 }
 
@@ -378,9 +422,15 @@ async function publishAfterReview(runId: string, normalizedInput: LessonTranscri
   if (portfolioApply.status === 'version_rejected') throw new Error('Portfolio projection version conflict; publication was not applied')
 
   await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'completed', completedAt: new Date(), promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue, portfolioApplyStatus: portfolioApply.status } })
-  await prisma.reviewTask.update({ where: { id: reviewTaskId }, data: { decision: 'approved', reviewerId, reviewedAt: new Date(), reason: reason?.trim() || null, stage: 'completed' } })
+
+  // Only update the ReviewTask record when this was triggered by a real human review task
+  const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
+  if (isHumanReview) {
+    await prisma.reviewTask.update({ where: { id: reviewTaskId }, data: { decision: 'approved', reviewerId, reviewedAt: new Date(), reason: reason?.trim() || null, stage: 'completed' } })
+  }
+
   await prisma.pipelineEvent.createMany({ data: [
-    { pipelineRunId: runId, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: projection.reportId, payload: { reviewerId, reviewTaskId, documentStatus: 'published', reason: reason || null } },
+    { pipelineRunId: runId, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: projection.reportId, payload: { reviewerId, reviewTaskId, documentStatus: 'published', reason: reason || null, autoPublished: !isHumanReview } },
     { pipelineRunId: runId, eventType: 'PortfolioProjectionUpdated', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { reviewerId, reviewTaskId, patchId: publishedPatch.patch_id, operationKey: publishedPatch.operation_key, applyStatus: portfolioApply.status, projectionVersion: portfolioApply.version } },
   ], skipDuplicates: true })
   return { report: publishedReport, coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined }
@@ -468,6 +518,21 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     const promptOne = await runPromptOne(normalizedInput, transcript.id)
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
     await persistPromptOne(run.id, transcript.id, promptOne)
+
+    // Identity check: trusted sources skip the identity review queue
+    if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
+      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne)
+      // If continueAfterReview routed to publication_review_required (exception path), status is already updated
+      const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
+      const finalStatus = updatedRun?.status || 'completed'
+      if (finalStatus === 'awaiting_publication_review') {
+        const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
+        return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
+      }
+      return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
+    }
+
+    // Ambiguous identity: send to review queue (unchanged behaviour)
     const reviewTask = await createReviewTask(run.id, normalizedInput, 'identity_review_required')
     return { pipelineRunId: run.id, status: 'awaiting_review', duplicate: false, reviewTaskId: reviewTask.id, nextReviewStage: reviewTask.stage }
   } catch (error) {
@@ -575,8 +640,13 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
 
   try {
     const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne)
-    const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
-    return { pipelineRunId: run.id, status: 'awaiting_publication_review', duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
+    const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
+    const finalStatus = updatedRun?.status || 'completed'
+    if (finalStatus === 'awaiting_publication_review') {
+      const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
+      return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
+    }
+    return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure after identity review'
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'failed', errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED', errorMessage: message } })
