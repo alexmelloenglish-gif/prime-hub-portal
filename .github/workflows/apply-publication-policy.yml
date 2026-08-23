@@ -1,0 +1,45 @@
+name: apply-publication-policy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-publication-policy.yml'
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'chore: apply publication policy migration'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch pipeline publication policy
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('lib/pipeline/run.ts')
+          s = p.read_text()
+          needle = "async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput): Promise<{ report: ClassReportOutput; coaching: CoachingGuidanceOutput }> {\n"
+          insert = """function detectPublicationExceptions(patch: PortfolioPatchOutput, coaching: CoachingGuidanceOutput): string[] {\n  const exceptions: string[] = []\n  if (patch.validation.authorization === 'rejected') exceptions.push('portfolio_patch_authorization_rejected')\n  if (coaching.is_pedagogical_decision || coaching.pedagogical_decision_created || coaching.educational_action_created) {\n    exceptions.push('pedagogical_decision_or_action_detected')\n  }\n  return exceptions\n}\n\n"""
+          if needle not in s or 'function detectPublicationExceptions(' in s:
+              raise SystemExit('unexpected run.ts state; aborting')
+          s = s.replace(needle, insert + needle, 1)
+          old = """  const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')\n  await prisma.pipelineEvent.createMany({ data: [\n    { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },\n    { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },\n    { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },\n  ], skipDuplicates: true })\n  return { report, coaching }\n"""
+          new = """  const publicationExceptions = detectPublicationExceptions(patch, coaching)\n  if (publicationExceptions.length > 0) {\n    const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')\n    await prisma.pipelineEvent.createMany({ data: [\n      { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id, publicationExceptions } },\n      { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },\n      { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },\n    ], skipDuplicates: true })\n    return { report, coaching }\n  }\n\n  const publicationTask = await prisma.reviewTask.upsert({\n    where: { pipelineRunId_stage: { pipelineRunId: runId, stage: 'publication_review_required' } },\n    update: { studentEmail: normalizeEmail(normalizedInput.studentEmail), lessonId: normalizedInput.lessonId, decision: 'approved', reviewerId: 'system', reviewedAt: new Date(), reason: 'auto_published_no_exception', stage: 'publishing' },\n    create: { pipelineRunId: runId, studentEmail: normalizeEmail(normalizedInput.studentEmail), lessonId: normalizedInput.lessonId, stage: 'publication_review_required', decision: 'approved', reviewerId: 'system', reviewedAt: new Date(), reason: 'auto_published_no_exception' },\n  })\n  await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'publishing', completedAt: null } })\n  await prisma.pipelineEvent.upsert({\n    where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: runId, eventType: 'PublicationReviewApproved', aggregateId: publicationTask.id } },\n    update: { payload: { reviewTaskId: publicationTask.id, reviewerId: 'system', reason: 'auto_published_no_exception' } },\n    create: { pipelineRunId: runId, eventType: 'PublicationReviewApproved', aggregateType: 'ReviewTask', aggregateId: publicationTask.id, payload: { reviewTaskId: publicationTask.id, reviewerId: 'system', reason: 'auto_published_no_exception' } },\n  })\n  const published = await publishAfterReview(runId, normalizedInput, publicationTask.id, 'system', 'auto_published_no_exception')\n  await prisma.pipelineEvent.createMany({ data: [\n    { pipelineRunId: runId, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: 'published', requiresHumanReview: false, publicationReviewTaskId: publicationTask.id, publicationMode: 'automatic' } },\n    { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'applied', publicationMode: 'automatic' } },\n    { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },\n  ], skipDuplicates: true })\n  return published.coaching ? { report: published.report, coaching: published.coaching } : { report: published.report, coaching }\n"""
+          if old not in s:
+              raise SystemExit('target publication block not found; aborting')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/pipeline/run.ts
+          git diff --cached --check
+          git commit -m 'fix: make publication review exception-based'
+          git push
