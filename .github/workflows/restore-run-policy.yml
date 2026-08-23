@@ -8,7 +8,6 @@ on:
 
 jobs:
   restore:
-    if: github.event.head_commit.message == 'fix(pipeline): unblock production build for publication policy'
     runs-on: ubuntu-latest
     permissions:
       contents: write
