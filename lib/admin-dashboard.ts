@@ -15,6 +15,7 @@ import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json
 import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
 import { normalizeEmail } from '@/lib/student-data'
+import { getPrismaClient } from '@/lib/prisma'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -25,6 +26,21 @@ export type StudentDirectoryEntry = {
   currentLevel: string
   targetLevel: string
   attendanceRate: string
+  publishedReportCount?: number
+  latestPipelineStatus?: string | null
+  dataSource?: 'firestore' | 'repository'
+}
+
+export type PipelineActivityEntry = {
+  id: string
+  studentEmail: string
+  lessonId: string
+  status: string
+  source: string
+  createdAt: string
+  completedAt: string | null
+  portfolioApplyStatus: string | null
+  publishedReport: boolean
 }
 
 const repositoryStudentDirectory: StudentDirectoryEntry[] = [
@@ -112,13 +128,98 @@ const repositoryStudentDirectory: StudentDirectoryEntry[] = [
 
 function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] {
   console.warn(`[admin-dashboard] Using the repository student directory: ${reason}`)
-  return repositoryStudentDirectory.map((student) => ({ ...student }))
+  return repositoryStudentDirectory.map((student) => ({ ...student, dataSource: 'repository' as const }))
+}
+
+function mergeKnownStudents(students: StudentDirectoryEntry[]) {
+  const byEmail = new Map<string, StudentDirectoryEntry>(
+    students.map((student) => [student.studentEmail, { ...student, dataSource: 'firestore' as const }])
+  )
+  for (const student of repositoryStudentDirectory) {
+    if (!byEmail.has(student.studentEmail)) {
+      byEmail.set(student.studentEmail, { ...student, dataSource: 'repository' as const })
+    }
+  }
+  return [...byEmail.values()].sort((a, b) => a.studentName.localeCompare(b.studentName))
+}
+
+async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
+  try {
+    const prisma = getPrismaClient()
+    return await Promise.all(
+      students.map(async (student) => {
+        const [publishedReportCount, latestRun] = await Promise.all([
+          prisma.classReportProjection.count({
+            where: { studentEmail: student.studentEmail, documentStatus: 'published' },
+          }),
+          prisma.pipelineRun.findFirst({
+            where: { studentEmail: student.studentEmail },
+            orderBy: { createdAt: 'desc' },
+            select: { status: true },
+          }),
+        ])
+
+        return {
+          ...student,
+          publishedReportCount,
+          latestPipelineStatus: latestRun?.status ?? null,
+        }
+      })
+    )
+  } catch (error) {
+    console.warn('[admin-dashboard] Pipeline status unavailable', {
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    })
+    return students
+  }
+}
+
+export async function listRecentPipelineActivity(limit = 12): Promise<PipelineActivityEntry[]> {
+  try {
+    const prisma = getPrismaClient()
+    const runs = await prisma.pipelineRun.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        studentEmail: true,
+        lessonId: true,
+        status: true,
+        createdAt: true,
+        completedAt: true,
+        portfolioApplyStatus: true,
+        transcript: { select: { source: true } },
+      },
+    })
+    const publishedReports = await prisma.classReportProjection.findMany({
+      where: { pipelineRunId: { in: runs.map((run) => run.id) }, documentStatus: 'published' },
+      select: { pipelineRunId: true },
+    })
+    const publishedRunIds = new Set(publishedReports.map((report) => report.pipelineRunId))
+
+    return runs.map((run) => ({
+      id: run.id,
+      studentEmail: run.studentEmail,
+      lessonId: run.lessonId,
+      status: run.status,
+      source: run.transcript?.source || 'unknown',
+      createdAt: run.createdAt.toISOString(),
+      completedAt: run.completedAt?.toISOString() || null,
+      portfolioApplyStatus: run.portfolioApplyStatus,
+      publishedReport: publishedRunIds.has(run.id),
+    }))
+  } catch (error) {
+    console.warn('[admin-dashboard] Pipeline activity unavailable', {
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    })
+    return []
+  }
 }
 
 export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<StudentDirectoryEntry[]> {
   if (!isFirebaseConfigured) {
     console.error('[admin-dashboard] Firebase is disabled or unavailable for the current runtime', getFirebaseConfigStatus())
-    return getRepositoryStudentDirectory('Firebase is not configured')
+    return enrichWithPipelineState(getRepositoryStudentDirectory('Firebase is not configured'))
   }
 
   try {
@@ -163,15 +264,15 @@ export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<St
 
     if (!students.length) {
       console.error('[admin-dashboard] Firestore returned no valid student documents')
-      return getRepositoryStudentDirectory('Firestore returned no valid documents')
+      return enrichWithPipelineState(getRepositoryStudentDirectory('Firestore returned no valid documents'))
     }
-    return students
+    return enrichWithPipelineState(mergeKnownStudents(students))
   } catch (error) {
     console.error('[admin-dashboard] Firestore student directory unavailable', {
       ...getFirebaseConfigStatus(),
       errorName: error instanceof Error ? error.name : 'UnknownError',
       errorMessage: error instanceof Error ? error.message : String(error),
     })
-    return getRepositoryStudentDirectory('Firestore directory read failed')
+    return enrichWithPipelineState(getRepositoryStudentDirectory('Firestore directory read failed'))
   }
 }

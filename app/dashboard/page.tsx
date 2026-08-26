@@ -244,6 +244,23 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
+      {student.cumulativeImpact.evidence.length ? (
+        <section className="glass-card space-y-3 p-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.25em] text-prime-cream/50">Portfolio signal</p>
+            <h3 className="mt-1 text-lg font-bold text-white">{student.cumulativeImpact.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-prime-cream/75">{student.cumulativeImpact.summary}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            {student.cumulativeImpact.evidence.map((item) => (
+              <div key={item} className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-sm text-prime-cream/80">
+                {item}
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section id="portfolio-navigation" className="glass-card space-y-2.5 p-3.5 scroll-mt-28">
         <div>
           <h3 className="text-lg font-bold text-white">Portfolio Navigation</h3>

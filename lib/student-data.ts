@@ -69,6 +69,12 @@ export type TeacherFeedbackEntry = {
   body: string
 }
 
+export type CumulativeImpactData = {
+  title: string
+  summary: string
+  evidence: string[]
+}
+
 export type ClassReportEntry = {
   id: string
   date: string
@@ -100,6 +106,7 @@ export type StudentDashboardData = {
     focusPoints: string[]
   }
   teacherFeedback: TeacherFeedbackEntry[]
+  cumulativeImpact: CumulativeImpactData
 }
 
 export type StudentDashboardState = {
@@ -401,6 +408,15 @@ function parseTeacherFeedback(value: unknown): TeacherFeedbackEntry[] {
   return entries
 }
 
+function parseCumulativeImpact(value: unknown): CumulativeImpactData {
+  const entry = asObject(value)
+  return {
+    title: asString(entry?.title, 'Cumulative Learning Impact'),
+    summary: asString(entry?.summary, 'Published learning impact will appear here.'),
+    evidence: asStringArray(entry?.evidence),
+  }
+}
+
 function buildRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
   const normalizedEmail = normalizeEmail(email)
   const profile = verifiedRepositoryProfiles[normalizedEmail]
@@ -433,6 +449,11 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
       focusPoints: [],
     },
     teacherFeedback: [],
+    cumulativeImpact: {
+      title: 'Cumulative Learning Impact',
+      summary: 'Published learning impact will appear here.',
+      evidence: [],
+    },
   }
 }
 
@@ -451,29 +472,234 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: str
 
 async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<StudentDashboardData> {
   try {
-    const projection = await getPrismaClient().portfolioProjection.findUnique({
-      where: { studentEmail_projectionKey: { studentEmail: email, projectionKey: 'student-dashboard' } },
-    })
-    const root = asObject(projection?.projection)
-    const reports = asObject(root?.classReports)
-    if (!reports) return student
-    const derivedReports = Object.entries(reports)
-      .map(([key, value]) => {
-        const report = asObject(value)
-        if (report?.class_report_state !== 'projection_published') return null
+    const normalizedEmail = normalizeEmail(email)
+    const prisma = getPrismaClient()
+    const [portfolioProjection, publishedReports] = await Promise.all([
+      prisma.portfolioProjection.findUnique({
+        where: { studentEmail_projectionKey: { studentEmail: normalizedEmail, projectionKey: 'student-dashboard' } },
+      }),
+      prisma.classReportProjection.findMany({
+        where: { studentEmail: normalizedEmail, documentStatus: 'published' },
+        orderBy: [{ generatedAt: 'asc' }, { createdAt: 'asc' }],
+        select: {
+          id: true,
+          reportId: true,
+          lessonId: true,
+          generatedAt: true,
+          content: true,
+          sourceSnapshot: true,
+          documentStatus: true,
+        },
+      }),
+    ])
+
+    const root = asObject(portfolioProjection?.projection)
+    const reportRecords = publishedReports
+      .map((projection) => {
+        const content = asObject(projection.content)
+        if (!content || projection.documentStatus !== 'published') return null
+        const snapshot = asObject(projection.sourceSnapshot)
+        const reportContext = asObject(snapshot?.report_context)
+        const reportId = asString(content.reportId, projection.reportId)
+        const focus = asStringArray(content.grammarFocus)
+        const evidenceHighlights = asStringArray(content.evidenceHighlights)
+        const vocabulary = asStringArray(content.vocabulary)
+        const teacherInsightIsPublished = asString(content.teacherInsightStatus) === 'published'
         return {
-          id: `pipeline-${key}`,
-          date: asString(report?.date, key.split(':')[0] || 'Date pending'),
-          focus: asStringArray(report?.grammarFocus).length
-            ? asStringArray(report?.grammarFocus)
-            : asStringArray(report?.evidenceHighlights),
-          teacherInsight: asString(report?.teacherInsight, 'Teacher insight pending human review.'),
+          id: `pipeline-${reportId}`,
+          reportId,
+          lessonId: projection.lessonId,
+          date: asString(
+            reportContext?.class_date,
+            asString(content.classDate, projection.generatedAt.toISOString().slice(0, 10))
+          ),
+          title: asString(content.title, `Lesson ${projection.lessonId}`),
+          summary: asString(content.summary, 'Published class report available.'),
+          focus: focus.length ? focus : evidenceHighlights,
+          vocabulary,
+          teacherInsight: teacherInsightIsPublished ? asString(content.teacherInsight) : '',
+          attendanceStatus: asString(reportContext?.attendance_status),
+          attendanceSource: asString(reportContext?.attendance_source),
         }
       })
-      .filter((item): item is { id: string; date: string; focus: string[]; teacherInsight: string } => Boolean(item))
+      .filter(
+        (
+          item
+        ): item is {
+          id: string
+          reportId: string
+          lessonId: string
+          date: string
+          title: string
+          summary: string
+          focus: string[]
+          vocabulary: string[]
+          teacherInsight: string
+          attendanceStatus: string
+          attendanceSource: string
+        } => Boolean(item)
+      )
+
+    const reportEntries = reportRecords.map((report) => ({
+      id: report.id,
+      date: report.date,
+      focus: report.focus,
+      teacherInsight: report.teacherInsight || 'Teacher insight is pending authorized publication.',
+    }))
+    const newClassReports = reportEntries.filter(
+      (report) => !student.classReports.some((existing) => existing.id === report.id)
+    )
+    const classReports = [...student.classReports, ...newClassReports]
+
+    const pipelineAttendance = reportRecords.map((report) => ({
+      id: `pipeline-attendance-${report.reportId}`,
+      date: report.date,
+      status: report.attendanceStatus === 'attended' && report.attendanceSource ? ('present' as const) : ('pending' as const),
+      title: report.title,
+      summary: report.summary,
+    }))
+    const newAttendance = pipelineAttendance.filter(
+      (lesson) => !student.attendanceOverview.some((existing) => existing.id === lesson.id)
+    )
+    const attendanceOverview = [...student.attendanceOverview, ...newAttendance]
+
+    const projectionVocabulary = Object.values(asObject(root?.vocabulary) ?? {})
+      .map((value, index) => {
+        const entry = asObject(value)
+        const term = asString(entry?.item, asString(entry?.term, asString(entry?.word)))
+        if (!term) return null
+        return {
+          id: `pipeline-vocabulary-${index + 1}-${term.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          term,
+          meaning: asString(entry?.meaning, 'Recorded in the published class report.'),
+          example: asString(entry?.example, 'Reuse this item in a future class context.'),
+        }
+      })
+      .filter((item): item is VocabularyEntry => Boolean(item))
+    const reportVocabulary = reportRecords.flatMap((report) =>
+      report.vocabulary.map((term) => ({
+        id: `pipeline-report-vocabulary-${report.reportId}-${term}`,
+        term,
+        meaning: 'Recorded in the published class report.',
+        example: 'Reuse this item in a future class context.',
+      }))
+    )
+    const vocabularyBank = [...student.vocabularyBank]
+    for (const item of [...projectionVocabulary, ...reportVocabulary]) {
+      if (!vocabularyBank.some((existing) => existing.term.toLowerCase() === item.term.toLowerCase())) {
+        vocabularyBank.push(item)
+      }
+    }
+
+    const projectionCorrections = Object.values(asObject(root?.corrections) ?? {})
+      .map((value) => asObject(value))
+      .filter((value): value is Record<string, unknown> => Boolean(value))
+    const reportCorrections = publishedReports.flatMap((projection) => {
+      const content = asObject(projection.content)
+      return Array.isArray(content?.corrections) ? content.corrections : []
+    })
+    const correctionCount = projectionCorrections.length + reportCorrections.length
+    const grammarFocus = Array.from(
+      new Set([
+        ...student.grammarOverview.focusPoints,
+        ...reportRecords.flatMap((report) => report.focus),
+      ])
+    )
+    const progressTracker = student.progressTracker.length
+      ? student.progressTracker
+      : [
+          reportRecords.length
+            ? {
+                id: 'pipeline-published-classes',
+                title: 'Published class reports',
+                status: 'Active Growth',
+                insight: `${reportRecords.length} published class report${reportRecords.length === 1 ? '' : 's'} connected to this student portfolio.`,
+                accent: 'green' as const,
+              }
+            : null,
+          vocabularyBank.length
+            ? {
+                id: 'pipeline-vocabulary',
+                title: 'Vocabulary',
+                status: 'Active Growth',
+                insight: `${vocabularyBank.length} vocabulary item${vocabularyBank.length === 1 ? '' : 's'} recorded from published learning content.`,
+                accent: 'yellow' as const,
+              }
+            : null,
+          grammarFocus.length
+            ? {
+                id: 'pipeline-grammar',
+                title: 'Grammar focus',
+                status: 'Improving',
+                insight: `${grammarFocus.length} grammar focus point${grammarFocus.length === 1 ? '' : 's'} connected to published class content.`,
+                accent: 'pink' as const,
+              }
+            : null,
+          correctionCount
+            ? {
+                id: 'pipeline-corrections',
+                title: 'Corrections to recycle',
+                status: 'Improving',
+                insight: `${correctionCount} correction${correctionCount === 1 ? '' : 's'} recorded for future teacher-led practice.`,
+                accent: 'blue' as const,
+              }
+            : null,
+        ].filter((item): item is ProgressTrackerCard => Boolean(item))
+
+    const publishedFeedback = reportRecords
+      .filter((report) => report.teacherInsight)
+      .map((report) => ({
+        id: `pipeline-feedback-${report.reportId}`,
+        title: `Teacher insight — ${report.date}`,
+        body: report.teacherInsight,
+      }))
+    const teacherFeedback = [...student.teacherFeedback]
+    for (const feedback of publishedFeedback) {
+      if (!teacherFeedback.some((existing) => existing.id === feedback.id)) teacherFeedback.push(feedback)
+    }
+
+    if (!reportRecords.length && !projectionVocabulary.length && !correctionCount) return student
+
+    const presentCount = attendanceOverview.filter((lesson) => lesson.status === 'present').length
+    const pipelineSummary = `${reportRecords.length} published class report${reportRecords.length === 1 ? '' : 's'}, ${vocabularyBank.length} vocabulary item${vocabularyBank.length === 1 ? '' : 's'} and ${correctionCount} correction${correctionCount === 1 ? '' : 's'} connected to the longitudinal projection.`
+    const cumulativeImpact: CumulativeImpactData = {
+      title: 'Cumulative Learning Impact',
+      summary: pipelineSummary,
+      evidence: [
+        reportRecords.length
+          ? `${reportRecords.length} published class report${reportRecords.length === 1 ? '' : 's'} available`
+          : 'No published class report available',
+        `${vocabularyBank.length} vocabulary item${vocabularyBank.length === 1 ? '' : 's'} recorded`,
+        `${correctionCount} correction${correctionCount === 1 ? '' : 's'} recorded for teacher-led recycling`,
+      ],
+    }
+
     return {
       ...student,
-      classReports: [...student.classReports, ...derivedReports.filter((item) => !student.classReports.some((existing) => existing.id === item.id))],
+      attendanceRate:
+        student.attendanceRate.toLowerCase().includes('pending') && attendanceOverview.length
+          ? `${presentCount}/${attendanceOverview.length} confirmed`
+          : student.attendanceRate,
+      attendanceLabel:
+        student.attendanceLabel.toLowerCase().includes('pending') && attendanceOverview.length
+          ? `Consistency: ${presentCount} of ${attendanceOverview.length} pipeline-linked lessons confirmed`
+          : student.attendanceLabel,
+      focus: student.focus.toLowerCase().includes('pending')
+        ? 'Published class reports are now feeding the longitudinal student portfolio.'
+        : student.focus,
+      progressTracker,
+      attendanceOverview,
+      classReports,
+      vocabularyBank,
+      grammarOverview: {
+        ...student.grammarOverview,
+        summary: student.grammarOverview.summary.toLowerCase().includes('awaiting') && grammarFocus.length
+          ? `Grammar focus consolidated from ${reportRecords.length} published class report${reportRecords.length === 1 ? '' : 's'}.`
+          : student.grammarOverview.summary,
+        focusPoints: grammarFocus,
+      },
+      teacherFeedback,
+      cumulativeImpact,
     }
   } catch {
     return student
@@ -513,6 +739,7 @@ function parseStudentDocument(
         : [],
     },
     teacherFeedback: parseTeacherFeedback(root.teacherFeedback),
+    cumulativeImpact: parseCumulativeImpact(root.cumulativeImpact),
   }
 }
 
@@ -520,10 +747,11 @@ const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
     if (!isFirebaseConfigured) {
       const repositoryStudent = buildRepositoryStudent(email, name)
+      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
       return {
-        hasAccess: Boolean(repositoryStudent),
-        source: repositoryStudent ? 'repository' : 'preview',
-        student: repositoryStudent,
+        hasAccess: Boolean(mergedStudent),
+        source: mergedStudent ? 'repository' : 'preview',
+        student: mergedStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
@@ -565,19 +793,22 @@ const getStudentDashboardStateCached = cache(
         }
       }
 
+      const repositoryStudent = buildRepositoryStudent(normalizedEmail, name)
+      const mergedStudent = repositoryStudent ? await mergePipelineProjection(normalizedEmail, repositoryStudent) : null
       return {
-        hasAccess: false,
-        source: 'firestore',
-        student: null,
+        hasAccess: Boolean(mergedStudent),
+        source: mergedStudent ? 'repository' : 'firestore',
+        student: mergedStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
     } catch {
       const repositoryStudent = buildRepositoryStudent(email, name)
+      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
       return {
-        hasAccess: Boolean(repositoryStudent),
-        source: repositoryStudent ? 'repository' : 'preview',
-        student: repositoryStudent,
+        hasAccess: Boolean(mergedStudent),
+        source: mergedStudent ? 'repository' : 'preview',
+        student: mergedStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }

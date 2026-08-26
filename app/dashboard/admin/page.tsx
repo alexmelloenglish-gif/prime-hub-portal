@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ClipboardCheck, Eye, Plus, Shield } from 'lucide-react'
 import { SectionShell } from '@/components/dashboard/section-shell'
+import { ProcessDriveButton } from './process-drive-button'
 import { authOptions } from '@/lib/auth'
-import { listStudentsForAdmin } from '@/lib/admin-dashboard'
+import { listRecentPipelineActivity, listStudentsForAdmin } from '@/lib/admin-dashboard'
 import { isAdminUser } from '@/lib/student-data'
 
 export default async function DashboardAdminPage() {
@@ -18,7 +19,10 @@ export default async function DashboardAdminPage() {
     redirect('/pending-access')
   }
 
-  const students = await listStudentsForAdmin(session.user)
+  const [students, pipelineActivity] = await Promise.all([
+    listStudentsForAdmin(session.user),
+    listRecentPipelineActivity(),
+  ])
 
   return (
     <SectionShell
@@ -50,6 +54,19 @@ export default async function DashboardAdminPage() {
           </div>
 
           <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border border-sky-300/20 bg-sky-300/10 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-sky-100/70">
+                Drive processing
+              </p>
+              <h3 className="mt-2 text-lg font-semibold text-white">Process new transcripts</h3>
+              <p className="mt-2 text-sm leading-6 text-prime-cream/75">
+                Use this only after a new Google Meet transcript is available in the canonical Drive folder.
+              </p>
+              <div className="mt-4">
+                <ProcessDriveButton />
+              </div>
+            </div>
+
             <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">
                 How to add more students
@@ -91,11 +108,20 @@ export default async function DashboardAdminPage() {
                       <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-emerald-100">
                         Attendance {student.attendanceRate}
                       </span>
+                      <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-sky-100">
+                        Reports {student.publishedReportCount ?? 0}
+                      </span>
                     </div>
 
                     <div>
                       <h3 className="text-xl font-semibold text-white">{student.studentName}</h3>
                       <p className="text-sm text-prime-cream/65">{student.studentEmail}</p>
+                      <p className="mt-2 text-xs uppercase tracking-[0.16em] text-prime-cream/45">
+                        Pipeline: {student.latestPipelineStatus ?? 'no run'}
+                      </p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.16em] text-prime-cream/45">
+                        Profile source: {student.dataSource ?? 'unknown'}
+                      </p>
                     </div>
                   </div>
 
@@ -121,6 +147,43 @@ export default async function DashboardAdminPage() {
           })}
         </div>
       </div>
+
+      <section className="glass-card space-y-4 p-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Operational visibility</p>
+          <h3 className="mt-2 text-xl font-semibold text-white">Recent processing activity</h3>
+          <p className="mt-2 text-sm leading-6 text-prime-cream/65">
+            This is the same persisted pipeline state that feeds the student portfolio. It does not expose transcript content.
+          </p>
+        </div>
+        {pipelineActivity.length ? (
+          <div className="space-y-3">
+            {pipelineActivity.map((activity) => (
+              <article key={activity.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-white">{activity.studentEmail}</p>
+                    <p className="mt-1 text-xs text-prime-cream/55">Lesson: {activity.lessonId} · Source: {activity.source}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.14em]">
+                    <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-sky-100">{activity.status}</span>
+                    <span className={`rounded-full border px-2.5 py-1 ${activity.publishedReport ? 'border-emerald-300/20 bg-emerald-300/10 text-emerald-100' : 'border-amber-300/20 bg-amber-300/10 text-amber-100'}`}>
+                      {activity.publishedReport ? 'report published' : 'report not published'}
+                    </span>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-prime-cream/55">
+                  Started: {new Date(activity.createdAt).toLocaleString('en-GB')} · Portfolio: {activity.portfolioApplyStatus || 'not applied'}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+            Pipeline activity is currently unavailable. The student directory is still shown separately.
+          </p>
+        )}
+      </section>
     </SectionShell>
   )
 }
