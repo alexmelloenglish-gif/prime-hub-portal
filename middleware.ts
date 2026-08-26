@@ -11,6 +11,7 @@ const allowedDashboardPaths = new Set([
   '/dashboard/conversacao',
   '/dashboard/configuracoes',
   '/dashboard/admin',
+  '/dashboard/admin/review',
 ])
 
 function normalizeDashboardPath(pathname: string) {
