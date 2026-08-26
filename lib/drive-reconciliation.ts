@@ -99,12 +99,33 @@ function hasBodyIdentityMatch(student: RegistryStudent, transcript: string): boo
   return normalizedBody.includes(canonicalName) || normalizedBody.includes(canonicalEmail) || normalizedBody.includes(emailLocalPart)
 }
 
+function hasStrongFileNameMatch(student: RegistryStudent, fileName: string): boolean {
+  const fileTokens = new Set(normalizeForMatch(fileName).split(' ').filter((token) => token.length >= 4))
+  const canonicalTokens = normalizeForMatch(student.studentName).split(' ').filter((token) => token.length >= 4)
+  const matchedTokens = canonicalTokens.filter((token) => fileTokens.has(token))
+  return canonicalTokens.length >= 2 && matchedTokens.length >= Math.ceil(canonicalTokens.length * 0.75)
+}
+
+function hasSpeakerLabelMatch(student: RegistryStudent, transcript: string): boolean {
+  const firstName = normalizeForMatch(student.studentName.split(/\s+/)[0] || '')
+  if (!firstName) return false
+  return transcript.split(/\r?\n/).some((line) => {
+    const separator = line.indexOf(':')
+    if (separator <= 0 || separator > 80) return false
+    return normalizeForMatch(line.slice(0, separator)) === firstName
+  })
+}
+
 function classifyTranscript(file: DriveFile, transcript: string): TriageResult {
   const normalizedName = normalizeForMatch(file.name)
   const nameMatches = studentRegistry.students.filter((student) =>
     studentNameTokens(student).some((token) => normalizedName.includes(token))
   )
-  const bodyMatches = nameMatches.filter((student) => hasBodyIdentityMatch(student, transcript))
+  const strongFileMatches = nameMatches.filter((student) => hasStrongFileNameMatch(student, file.name))
+  const bodyMatches = nameMatches.filter((student) =>
+    hasBodyIdentityMatch(student, transcript) ||
+    (strongFileMatches.length === 1 && strongFileMatches[0].studentId === student.studentId && hasSpeakerLabelMatch(student, transcript))
+  )
   const trimmed = transcript.trim()
 
   if (!trimmed || trimmed.length < 800 || INSUFFICIENT_PATTERNS.some((pattern) => pattern.test(trimmed))) {
