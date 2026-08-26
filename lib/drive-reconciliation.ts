@@ -145,6 +145,7 @@ function getDriveAuth() {
   const auth = ExternalAccountClient.fromJSON({
     type: 'external_account',
     audience: stsAudience,
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
     token_url: 'https://sts.googleapis.com/v1/token',
     service_account_impersonation_url:
