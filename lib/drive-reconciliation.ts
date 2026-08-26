@@ -131,15 +131,20 @@ function classifyTranscript(file: DriveFile, transcript: string): TriageResult {
   }
 }
 
-function getAudience(): string {
+function getProviderAudience(): string {
+  return `https://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${WIF_POOL_ID}/providers/${WIF_PROVIDER_ID}`
+}
+
+function getStsAudience(): string {
   return `//iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${WIF_POOL_ID}/providers/${WIF_PROVIDER_ID}`
 }
 
 function getDriveAuth() {
-  const audience = getAudience()
+  const providerAudience = getProviderAudience()
+  const stsAudience = getStsAudience()
   const auth = ExternalAccountClient.fromJSON({
     type: 'external_account',
-    audience,
+    audience: stsAudience,
     subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
     token_url: 'https://sts.googleapis.com/v1/token',
     service_account_impersonation_url:
@@ -147,7 +152,7 @@ function getDriveAuth() {
       `${encodeURIComponent(DRIVE_SERVICE_ACCOUNT)}:generateAccessToken`,
     subject_token_supplier: {
       getSubjectToken: async () => getVercelOidcToken({
-        audience,
+        audience: providerAudience,
         team: VERCEL_TEAM_SLUG,
         project: VERCEL_PROJECT_SLUG,
       }),
