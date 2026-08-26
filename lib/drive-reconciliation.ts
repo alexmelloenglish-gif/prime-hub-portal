@@ -1,0 +1,314 @@
+import { createHash } from 'node:crypto'
+import { ExternalAccountClient } from 'google-auth-library'
+import { getVercelOidcToken } from '@vercel/oidc'
+import studentRegistry from '@/data/students/student-core-registry.json'
+import { getPrismaClient } from '@/lib/prisma'
+
+const DRIVE_API = 'https://www.googleapis.com/drive/v3'
+const DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() || '1p7u86xfGCRkbSBiNgSZMnUNO5j4S5vMw'
+const INGEST_URL = process.env.PRIME_PIPELINE_INGEST_URL?.trim() || 'https://www.primedigitalhub.com.br/api/pipeline/ingest'
+const PROJECT_NUMBER = '567332591101'
+const VERCEL_TEAM_SLUG = 'prime-digital-hun-dasboard'
+const VERCEL_PROJECT_SLUG = 'prime-hub-portal'
+const WIF_POOL_ID = 'vercel-prod'
+const WIF_PROVIDER_ID = 'vercel'
+const DRIVE_SERVICE_ACCOUNT = 'prime-drive-pipeline-worker@prime-hub-portal.iam.gserviceaccount.com'
+const GOOGLE_DOC_MIME = 'application/vnd.google-apps.document'
+const MAX_SOURCE_READS_PER_RUN = 10
+
+const INSUFFICIENT_PATTERNS = [
+  /insufficient conversation/i,
+  /not enough conversation/i,
+  /no conversation/i,
+  /no transcript/i,
+  /could not generate (?:a )?transcript/i,
+  /couldn't generate (?:a )?transcript/i,
+  /transcription unavailable/i,
+]
+
+type DriveFile = {
+  id: string
+  name: string
+  mimeType: string
+  modifiedTime?: string
+  md5Checksum?: string
+  webViewLink?: string
+  createdTime?: string
+}
+
+type DriveListResponse = {
+  files?: DriveFile[]
+  nextPageToken?: string
+}
+
+type RegistryStudent = (typeof studentRegistry.students)[number]
+
+type TriageResult = {
+  status: 'usable_transcript' | 'ambiguous_identity' | 'insufficient_transcript'
+  student?: RegistryStudent
+  identityMatches: string[]
+  reason: string
+}
+
+type ReconciliationResult = {
+  folderId: string
+  scanned: number
+  alreadyIngested: number
+  sourceReads: number
+  submitted: number
+  duplicates: number
+  quarantined: number
+}
+
+function normalizeForMatch(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function sha256(value: string): string {
+  return createHash('sha256').update(value).digest('hex')
+}
+
+function safeFileRef(fileId: string): string {
+  return sha256(fileId).slice(0, 12)
+}
+
+function extractDate(value: string): string | undefined {
+  const match = value.match(/(20\d{2})[-_/](\d{2})[-_/](\d{2})/)
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : undefined
+}
+
+function studentNameTokens(student: RegistryStudent): string[] {
+  return [...new Set(
+    `${student.studentName} ${student.canonicalEmail} ${student.emailAliases.join(' ')}`
+      .split(/[^a-zA-ZÀ-ÿ0-9@.]+/)
+      .map(normalizeForMatch)
+      .filter((token) => token.length >= 4)
+  )]
+}
+
+function hasBodyIdentityMatch(student: RegistryStudent, transcript: string): boolean {
+  const normalizedBody = normalizeForMatch(transcript)
+  const canonicalName = normalizeForMatch(student.studentName)
+  const canonicalEmail = normalizeForMatch(student.canonicalEmail)
+  const emailLocalPart = normalizeForMatch(student.canonicalEmail.split('@')[0] || '')
+  return normalizedBody.includes(canonicalName) || normalizedBody.includes(canonicalEmail) || normalizedBody.includes(emailLocalPart)
+}
+
+function classifyTranscript(file: DriveFile, transcript: string): TriageResult {
+  const normalizedName = normalizeForMatch(file.name)
+  const nameMatches = studentRegistry.students.filter((student) =>
+    studentNameTokens(student).some((token) => normalizedName.includes(token))
+  )
+  const bodyMatches = nameMatches.filter((student) => hasBodyIdentityMatch(student, transcript))
+  const trimmed = transcript.trim()
+
+  if (!trimmed || trimmed.length < 800 || INSUFFICIENT_PATTERNS.some((pattern) => pattern.test(trimmed))) {
+    return {
+      status: 'insufficient_transcript',
+      identityMatches: nameMatches.map((student) => student.studentId),
+      reason: 'Transcript content is empty, below the minimum threshold, or explicitly unavailable.',
+    }
+  }
+
+  if (bodyMatches.length !== 1) {
+    return {
+      status: 'ambiguous_identity',
+      identityMatches: bodyMatches.map((student) => student.studentId),
+      reason: 'The worker requires exactly one registry identity confirmed by both filename and transcript content.',
+    }
+  }
+
+  return {
+    status: 'usable_transcript',
+    student: bodyMatches[0],
+    identityMatches: [bodyMatches[0].studentId],
+    reason: 'Filename and transcript content identify one canonical student; downstream review remains mandatory.',
+  }
+}
+
+function getAudience(): string {
+  return `//iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${WIF_POOL_ID}/providers/${WIF_PROVIDER_ID}`
+}
+
+function getDriveAuth() {
+  const audience = getAudience()
+  const auth = ExternalAccountClient.fromJSON({
+    type: 'external_account',
+    audience,
+    subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
+    token_url: 'https://sts.googleapis.com/v1/token',
+    service_account_impersonation_url:
+      `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/` +
+      `${encodeURIComponent(DRIVE_SERVICE_ACCOUNT)}:generateAccessToken`,
+    subject_token_supplier: {
+      getSubjectToken: async () => getVercelOidcToken({
+        audience,
+        team: VERCEL_TEAM_SLUG,
+        project: VERCEL_PROJECT_SLUG,
+      }),
+    },
+  })
+
+  if (!auth) throw new Error('drive_wif_client_unavailable')
+  return auth
+}
+
+async function driveRequest<T>(auth: ReturnType<typeof getDriveAuth>, url: string): Promise<T> {
+  const authHeaders = await auth.getRequestHeaders()
+  const headers = new Headers(authHeaders)
+  headers.set('Accept', 'application/json')
+  const response = await fetch(url, { headers, cache: 'no-store' })
+  if (!response.ok) throw new Error(`drive_http_${response.status}`)
+  return response.json() as Promise<T>
+}
+
+async function listDriveFiles(auth: ReturnType<typeof getDriveAuth>, folderId: string): Promise<DriveFile[]> {
+  const files: DriveFile[] = []
+  let pageToken: string | undefined
+
+  do {
+    const params = new URLSearchParams({
+      q: `'${folderId}' in parents and trashed = false and mimeType = '${GOOGLE_DOC_MIME}'`,
+      pageSize: '100',
+      orderBy: 'modifiedTime desc',
+      fields: 'files(id,name,mimeType,modifiedTime,md5Checksum,webViewLink,createdTime),nextPageToken',
+    })
+    if (pageToken) params.set('pageToken', pageToken)
+    const result = await driveRequest<DriveListResponse>(auth, `${DRIVE_API}/files?${params.toString()}`)
+    files.push(...(result.files || []))
+    pageToken = result.nextPageToken
+  } while (pageToken)
+
+  return files
+}
+
+async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: string): Promise<string> {
+  const url = `${DRIVE_API}/files/${encodeURIComponent(fileId)}/export?mimeType=text%2Fplain`
+  const authHeaders = await auth.getRequestHeaders()
+  const headers = new Headers(authHeaders)
+  const response = await fetch(url, { headers, cache: 'no-store' })
+  if (!response.ok) throw new Error(`drive_export_http_${response.status}`)
+  return response.text()
+}
+
+function buildPayload(file: DriveFile, transcript: string, triage: TriageResult) {
+  if (!triage.student) throw new Error('identity_not_resolved')
+  const student = triage.student
+  const sourceHash = sha256(transcript)
+  const lessonId = `lesson_${sha256(`${student.studentId}|${file.id}`).slice(0, 16)}`
+  const classDate = extractDate(file.name) || file.modifiedTime?.slice(0, 10)
+
+  return {
+    lessonId,
+    studentId: student.studentId,
+    studentEmail: student.canonicalEmail,
+    studentName: student.studentName,
+    teacherId: studentRegistry.teacher.teacherId,
+    teacherName: studentRegistry.teacher.teacherName,
+    program: 'Prime Digital Hub',
+    classDate,
+    transcriptId: file.id,
+    transcript,
+    source: 'google_meet' as const,
+    recordedAt: file.modifiedTime || file.createdTime,
+    attendanceStatus: 'attended' as const,
+    attendanceSource: 'google_meet',
+    metadata: {
+      sourceFileId: file.id,
+      sourceDocumentId: file.id,
+      driveFolderId: DRIVE_FOLDER_ID,
+      sourceName: file.name,
+      sourceMimeType: file.mimeType,
+      sourceUrl: file.webViewLink || null,
+      sourceHash,
+      driveModifiedTime: file.modifiedTime || null,
+      driveCreatedTime: file.createdTime || null,
+      ingestionMode: 'drive-reconciliation-cron',
+      triageStatus: triage.status,
+      identityVerified: true,
+      identityMatches: triage.identityMatches,
+    },
+  }
+}
+
+function sanitizeError(error: unknown): string {
+  if (error instanceof Error) return error.message.replace(/[^a-zA-Z0-9_ -]/g, '').slice(0, 80) || 'unknown_error'
+  return 'unknown_error'
+}
+
+export async function reconcileDriveTranscripts(): Promise<ReconciliationResult> {
+  const auth = getDriveAuth()
+  const files = await listDriveFiles(auth, DRIVE_FOLDER_ID)
+  const prisma = getPrismaClient()
+  const result: ReconciliationResult = {
+    folderId: DRIVE_FOLDER_ID,
+    scanned: files.length,
+    alreadyIngested: 0,
+    sourceReads: 0,
+    submitted: 0,
+    duplicates: 0,
+    quarantined: 0,
+  }
+
+  for (const file of files) {
+    const existing = await prisma.transcript.findUnique({
+      where: { sourceFileId: file.id },
+      select: { id: true },
+    })
+    if (existing) {
+      result.alreadyIngested += 1
+      continue
+    }
+
+    if (result.sourceReads >= MAX_SOURCE_READS_PER_RUN) break
+    result.sourceReads += 1
+
+    let transcript: string
+    try {
+      transcript = await exportGoogleDoc(auth, file.id)
+    } catch (error) {
+      result.quarantined += 1
+      console.warn(JSON.stringify({ event: 'drive_source_read_failed', fileRef: safeFileRef(file.id), error: sanitizeError(error) }))
+      continue
+    }
+
+    const triage = classifyTranscript(file, transcript)
+    if (triage.status !== 'usable_transcript') {
+      result.quarantined += 1
+      console.warn(JSON.stringify({ event: 'drive_transcript_quarantined', fileRef: safeFileRef(file.id), status: triage.status, matchCount: triage.identityMatches.length }))
+      continue
+    }
+
+    const payload = buildPayload(file, transcript, triage)
+    const ingestSecret = process.env.PRIME_PIPELINE_INGEST_SECRET
+    if (!ingestSecret) throw new Error('ingest_secret_not_configured')
+
+    const response = await fetch(INGEST_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-prime-pipeline-secret': ingestSecret,
+      },
+      body: JSON.stringify(payload),
+      cache: 'no-store',
+    })
+
+    if (!response.ok) throw new Error(`ingest_http_${response.status}`)
+    const body = await response.json() as { duplicate?: boolean }
+    if (body.duplicate) {
+      result.duplicates += 1
+      console.log(JSON.stringify({ event: 'drive_ingest_duplicate', fileRef: safeFileRef(file.id), sourceHash: payload.metadata.sourceHash.slice(0, 12) }))
+    } else {
+      result.submitted += 1
+      console.log(JSON.stringify({ event: 'drive_ingest_accepted', fileRef: safeFileRef(file.id), sourceHash: payload.metadata.sourceHash.slice(0, 12) }))
+    }
+    break
+  }
+
+  return result
+}
