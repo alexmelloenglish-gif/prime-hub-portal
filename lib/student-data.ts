@@ -84,6 +84,7 @@ export type ClassReportEntry = {
   vocabulary: string[]
   teacherInsight: string
   status: 'published' | 'legacy'
+  contentStatus: 'published' | 'draft' | 'awaiting_validation' | 'legacy'
 }
 
 export type StudentDashboardData = {
@@ -334,6 +335,7 @@ function parseClassReports(value: unknown): ClassReportEntry[] {
         vocabulary: asStringArray(entry.vocabulary),
         teacherInsight: asString(entry.teacherInsight, 'Teacher insight pending.'),
         status: 'legacy' as 'published' | 'legacy',
+        contentStatus: 'legacy' as 'published' | 'draft' | 'awaiting_validation' | 'legacy',
       }
     })
     .filter((item): item is ClassReportEntry => Boolean(item))
@@ -482,7 +484,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
   try {
     const normalizedEmail = normalizeEmail(email)
     const prisma = getPrismaClient()
-    const [portfolioProjection, publishedReports] = await Promise.all([
+    const [portfolioProjection, publishedReports, pipelineRuns] = await Promise.all([
       prisma.portfolioProjection.findUnique({
         where: { studentEmail_projectionKey: { studentEmail: normalizedEmail, projectionKey: 'student-dashboard' } },
       }),
@@ -499,6 +501,11 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
           documentStatus: true,
         },
       }),
+      prisma.pipelineRun.findMany({
+        where: { studentEmail: normalizedEmail },
+        orderBy: [{ startedAt: 'asc' }, { createdAt: 'asc' }],
+        select: { id: true, lessonId: true, startedAt: true, promptOneArtifact: true },
+      }),
     ])
 
     const root = asObject(portfolioProjection?.projection)
@@ -512,6 +519,15 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         const focus = asStringArray(content.grammarFocus)
         const evidenceHighlights = asStringArray(content.evidenceHighlights)
         const vocabulary = asStringArray(content.vocabulary)
+        const corrections = Array.isArray(content.corrections) ? content.corrections : []
+        const summary = asString(content.summary, 'Published class report available.')
+        const hasPublishedContent = Boolean(
+          (summary && !summary.toLowerCase().includes('pending authorized source records')) ||
+          focus.length ||
+          evidenceHighlights.length ||
+          vocabulary.length ||
+          corrections.length
+        )
         const teacherInsightIsPublished = asString(content.teacherInsightStatus) === 'published'
         return {
           id: `pipeline-${reportId}`,
@@ -522,10 +538,11 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
             asString(content.classDate, projection.generatedAt.toISOString().slice(0, 10))
           ),
           title: asString(content.title, `Lesson ${projection.lessonId}`),
-          summary: asString(content.summary, 'Published class report available.'),
+          summary,
           focus: focus.length ? focus : evidenceHighlights,
           vocabulary,
           teacherInsight: teacherInsightIsPublished ? asString(content.teacherInsight) : '',
+          contentStatus: hasPublishedContent ? ('published' as const) : ('awaiting_validation' as const),
           attendanceStatus: asString(reportContext?.attendance_status),
           attendanceSource: asString(reportContext?.attendance_source),
         }
@@ -543,21 +560,76 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
           focus: string[]
           vocabulary: string[]
           teacherInsight: string
+          contentStatus: 'published' | 'awaiting_validation'
           attendanceStatus: string
           attendanceSource: string
         } => Boolean(item)
       )
 
-    const reportEntries = reportRecords.map((report) => ({
-      id: report.id,
-      date: report.date,
-      title: report.title,
-      summary: report.summary,
-      focus: report.focus,
-      vocabulary: report.vocabulary,
-      teacherInsight: report.teacherInsight || 'Teacher insight is pending authorized publication.',
-      status: 'published' as const,
-    }))
+    const draftRecords = pipelineRuns
+      .map((run) => {
+        const artifact = asObject(run.promptOneArtifact)
+        const lessonInput = asObject(artifact?.lesson_input)
+        const presentation = asObject(artifact?.presentation_candidates)
+        const facts = asStringArray(presentation?.class_report_facts)
+        const vocabulary = asStringArray(presentation?.vocabulary_candidates)
+        const grammar = asStringArray(presentation?.grammar_focus_candidates)
+        const proposalList = Array.isArray(artifact?.teacher_insight_proposals) ? artifact.teacher_insight_proposals : []
+        const teacherInsight = asString(asObject(proposalList[0])?.insight)
+        const summary = asString(presentation?.student_facing_summary, facts.join(' '))
+        if (!summary && !facts.length && !vocabulary.length && !grammar.length && !teacherInsight) return null
+        return {
+          id: `pipeline-draft-${run.id}`,
+          reportId: `draft-${run.id}`,
+          lessonId: run.lessonId,
+          date: asString(lessonInput?.class_date, run.startedAt.toISOString().slice(0, 10)),
+          title: 'AI Class Report Draft',
+          summary: summary || 'Draft observations extracted from the lesson transcript.',
+          focus: grammar.length ? grammar : facts,
+          vocabulary,
+          teacherInsight: teacherInsight || 'Teacher insight remains pending authorized publication.',
+          status: 'legacy' as const,
+          contentStatus: 'draft' as const,
+        }
+      })
+      .filter((item): item is {
+        id: string
+        reportId: string
+        lessonId: string
+        date: string
+        title: string
+        summary: string
+        focus: string[]
+        vocabulary: string[]
+        teacherInsight: string
+        status: 'legacy'
+        contentStatus: 'draft'
+      } => Boolean(item))
+
+    const draftsByLesson = new Map(draftRecords.map((draft) => [draft.lessonId, draft]))
+    const publishedLessonIds = new Set(reportRecords.map((report) => report.lessonId))
+    const reportEntries = [
+      ...reportRecords.map((report) => {
+        const draft = draftsByLesson.get(report.lessonId)
+        const useDraftContent = report.contentStatus === 'awaiting_validation' && draft
+        return {
+          id: report.id,
+          reportId: report.reportId,
+          lessonId: report.lessonId,
+          date: report.date,
+          title: useDraftContent ? draft.title : report.title,
+          summary: useDraftContent ? draft.summary : report.summary,
+          focus: report.focus.length ? report.focus : useDraftContent ? draft.focus : [],
+          vocabulary: report.vocabulary.length ? report.vocabulary : useDraftContent ? draft.vocabulary : [],
+          teacherInsight: report.teacherInsight || (useDraftContent ? draft.teacherInsight : 'Teacher insight is pending authorized publication.'),
+          status: 'published' as const,
+          contentStatus: useDraftContent ? ('draft' as const) : report.contentStatus,
+        }
+      }),
+      ...draftRecords
+        .filter((draft) => !publishedLessonIds.has(draft.lessonId))
+        .map((draft) => ({ ...draft, status: 'legacy' as const, contentStatus: 'draft' as const })),
+    ]
     const newClassReports = reportEntries.filter(
       (report) => !student.classReports.some((existing) => existing.id === report.id)
     )
@@ -588,7 +660,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         }
       })
       .filter((item): item is VocabularyEntry => Boolean(item))
-    const reportVocabulary = reportRecords.flatMap((report) =>
+    const reportVocabulary = reportEntries.flatMap((report) =>
       report.vocabulary.map((term) => ({
         id: `pipeline-report-vocabulary-${report.reportId}-${term}`,
         term,
@@ -614,7 +686,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
     const grammarFocus = Array.from(
       new Set([
         ...student.grammarOverview.focusPoints,
-        ...reportRecords.flatMap((report) => report.focus),
+        ...reportEntries.flatMap((report) => report.focus),
       ])
     )
     const progressTracker = student.progressTracker.length

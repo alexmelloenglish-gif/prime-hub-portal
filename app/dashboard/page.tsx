@@ -334,9 +334,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">{report.date}</p>
                     <h4 className="mt-1 text-lg font-semibold text-white">{report.title}</h4>
                   </div>
-                  <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-emerald-100">
-                    {report.status}
-                  </span>
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
+                    <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-emerald-100">
+                      {report.status}
+                    </span>
+                    {report.contentStatus !== 'published' ? (
+                      <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-amber-100">
+                        {report.contentStatus === 'draft' ? 'AI draft — validation required' : 'Awaiting validation'}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 <p className="text-sm leading-6 text-prime-cream/80">{report.summary}</p>
                 {report.focus.length ? (
