@@ -295,6 +295,7 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
       evidence_candidates: promptOne.evidence_candidates,
       learning_signal_proposals: promptOne.learning_signal_proposals,
       teacher_insight_proposals: promptOne.teacher_insight_proposals,
+      presentation_candidates: promptOne.presentation_candidates,
     },
     validated_learning_content: {
       vocabulary: [],

@@ -51,6 +51,11 @@ os chame de EducationalAction ou EducationalActionExecuted sem registro autoriza
 Não infira presença, progresso, mudança de nível, MaterialChange, atualização de
 portfólio ou qualquer mutação de domínio. Não crie estados ou eventos.
 
+Quando não houver dados validados, você pode apresentar 'non_authoritative_proposals.presentation_candidates'
+como um bloco explicitamente marcado 'AI Draft — validation required'. Esses candidatos podem
+preencher o rascunho do Class Report, mas nunca podem ser apresentados como fatos oficiais,
+Teacher Insight publicado ou atualização do portfólio.
+
 Preserve autoria, sourceReferences, reportId, lessonId, studentId, generatedAt,
 promptVersion=prompt-2.v2.0, projectionVersion e authorityStatus=non_authoritative.
 A saída é uma projeção idempotente e versionável.
@@ -164,14 +169,32 @@ export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOu
   const evidence = input.validated_evidence
   const vocabulary = input.validated_learning_content.vocabulary
   const corrections = input.validated_learning_content.corrections
-  const teacherInsightStatus = publishedInsight ? 'published' : 'omitted'
-  const summary = input.authorized_facts.join(' ') || (evidence.length ? 'The lesson included validated learning content.' : 'Class report pending authorized source records.')
+  const draftCandidates = input.non_authoritative_proposals.presentation_candidates
+  const draftFacts = draftCandidates?.class_report_facts || []
+  const draftVocabulary = draftCandidates?.vocabulary_candidates || []
+  const draftGrammar = draftCandidates?.grammar_focus_candidates || []
+  const draftSummary = draftCandidates?.student_facing_summary || draftFacts.join(' ')
+  const draftTeacherInsight = input.non_authoritative_proposals.teacher_insight_proposals[0]?.insight || ''
+  const hasValidatedContent = Boolean(
+    input.authorized_facts.length ||
+    evidence.length ||
+    vocabulary.length ||
+    corrections.length ||
+    input.validated_learning_content.grammar_focus.length
+  )
+  const hasDraftContent = Boolean(draftSummary || draftFacts.length || draftVocabulary.length || draftGrammar.length || draftTeacherInsight)
+  const teacherInsightStatus = publishedInsight ? 'published' : draftTeacherInsight ? 'non_official_observation' : 'omitted'
+  const summary = input.authorized_facts.join(' ') || (evidence.length ? 'The lesson included validated learning content.' : draftSummary || 'Class report pending authorized source records.')
   const markdown = [
     `# Class Report — ${context.class_date || 'Lesson'}`,
     '',
     '## Lesson Summary',
     `- ${summary}`,
     evidence.length ? `- ${evidence.map((item) => item.content).join(' ')}` : '- No validated Evidence was supplied for this projection.',
+    hasDraftContent && !hasValidatedContent ? '## AI Draft — validation required\n\nThis draft is derived from transcript observations and is not an official teacher-validated record.' : '',
+    hasDraftContent && !hasValidatedContent && draftFacts.length ? `- ${draftFacts.join(' ')}` : '',
+    hasDraftContent && !hasValidatedContent && draftVocabulary.length ? `- Vocabulary candidates: ${draftVocabulary.join(', ')}` : '',
+    hasDraftContent && !hasValidatedContent && draftGrammar.length ? `- Grammar candidates: ${draftGrammar.join(', ')}` : '',
     '',
     '## Action Steps',
     '- Review the authorized lesson content and practice the supplied examples.',
@@ -189,23 +212,31 @@ export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOu
     title: 'Class Report',
     markdown,
     summary,
-    evidenceHighlights: evidence.map((item) => item.content),
-    grammarFocus: input.validated_learning_content.grammar_focus,
-    vocabulary: vocabulary.map((item) => item.item),
+    evidenceHighlights: evidence.length ? evidence.map((item) => item.content) : draftFacts,
+    grammarFocus: input.validated_learning_content.grammar_focus.length ? input.validated_learning_content.grammar_focus : draftGrammar,
+    vocabulary: vocabulary.length ? vocabulary.map((item) => item.item) : draftVocabulary,
     corrections: corrections.map((item) => ({ original: item.original, improved: item.improved, explanation: item.explanation, evidenceIds: item.evidence_ids })),
     homeworkRecommendation: 'Review the authorized lesson content and practice the supplied examples.',
-    teacherInsight: publishedInsight?.text || null,
+    teacherInsight: publishedInsight?.text || (draftTeacherInsight || null),
     teacherInsightStatus,
     sourceEvidenceIds: evidence.map((item) => item.evidence_id),
     documentStatus: 'draft',
+    contentStatus: hasValidatedContent ? 'validated' : 'draft',
     implementationStatus: 'not_proven',
   }
-  return invokeJson<ClassReportOutput>(
+  const generated = await invokeJson<ClassReportOutput>(
     'PROMPT 2 — Produce only the student-facing Class Report projection. Respect source_status and never elevate proposal authority.',
     input,
     fallback,
     PROMPT_TWO_CONTRACT,
   )
+  return {
+    ...generated,
+    authorityStatus: 'non_authoritative',
+    documentStatus: 'draft',
+    contentStatus: hasValidatedContent ? 'validated' : 'draft',
+    implementationStatus: 'not_proven',
+  }
 }
 
 const PROMPT_THREE_CONTRACT = `

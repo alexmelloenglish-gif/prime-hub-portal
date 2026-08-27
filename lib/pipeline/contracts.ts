@@ -184,6 +184,7 @@ export type PromptTwoInput = {
     evidence_candidates: EvidenceCandidateOutput[]
     learning_signal_proposals: LearningSignalProposalOutput[]
     teacher_insight_proposals: TeacherInsightProposalOutput[]
+    presentation_candidates?: PromptOneOutput['presentation_candidates']
   }
   validated_learning_content: {
     vocabulary: Array<{ category: string; item: string; type?: string; meaning: string; example?: string; source: string }>
@@ -214,6 +215,8 @@ export type ClassReportOutput = {
   teacherInsightStatus: 'published' | 'omitted' | 'non_official_observation'
   sourceEvidenceIds: string[]
   documentStatus: 'draft' | 'published'
+  /** Content authority is separate from projection/document publication. */
+  contentStatus?: 'draft' | 'validated'
   implementationStatus: 'not_proven'
 }
 
