@@ -78,8 +78,12 @@ export type CumulativeImpactData = {
 export type ClassReportEntry = {
   id: string
   date: string
+  title: string
+  summary: string
   focus: string[]
+  vocabulary: string[]
   teacherInsight: string
+  status: 'published' | 'legacy'
 }
 
 export type StudentDashboardData = {
@@ -324,8 +328,12 @@ function parseClassReports(value: unknown): ClassReportEntry[] {
       return {
         id: asString(entry.id, `class-report-${index + 1}`),
         date: asString(entry.date, 'Date pending'),
+        title: asString(entry.title, 'Class report'),
+        summary: asString(entry.summary, 'Summary pending.'),
         focus: asStringArray(entry.focus),
+        vocabulary: asStringArray(entry.vocabulary),
         teacherInsight: asString(entry.teacherInsight, 'Teacher insight pending.'),
+        status: 'legacy' as 'published' | 'legacy',
       }
     })
     .filter((item): item is ClassReportEntry => Boolean(item))
@@ -543,8 +551,12 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
     const reportEntries = reportRecords.map((report) => ({
       id: report.id,
       date: report.date,
+      title: report.title,
+      summary: report.summary,
       focus: report.focus,
+      vocabulary: report.vocabulary,
       teacherInsight: report.teacherInsight || 'Teacher insight is pending authorized publication.',
+      status: 'published' as const,
     }))
     const newClassReports = reportEntries.filter(
       (report) => !student.classReports.some((existing) => existing.id === report.id)

@@ -318,6 +318,50 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </div>
       </section>
 
+      {student.classReports.length ? (
+        <section id="class-reports" className="space-y-2.5 scroll-mt-28">
+          <div>
+            <h3 className="text-lg font-bold leading-tight text-white">Class Reports</h3>
+            <p className="text-xs leading-5 text-prime-cream/65">
+              One report for each published lesson, kept separate from the student&apos;s full longitudinal portfolio.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {student.classReports.map((report) => (
+              <article key={report.id} className="glass-card space-y-3 p-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">{report.date}</p>
+                    <h4 className="mt-1 text-lg font-semibold text-white">{report.title}</h4>
+                  </div>
+                  <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-emerald-100">
+                    {report.status}
+                  </span>
+                </div>
+                <p className="text-sm leading-6 text-prime-cream/80">{report.summary}</p>
+                {report.focus.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {report.focus.map((focus) => (
+                      <span key={focus} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-prime-cream/75">
+                        {focus}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+                {report.vocabulary.length ? (
+                  <p className="text-xs leading-5 text-prime-cream/60">
+                    Vocabulary: {report.vocabulary.join(', ')}
+                  </p>
+                ) : null}
+                <p className="border-t border-white/10 pt-3 text-sm leading-6 text-prime-cream/70">
+                  {report.teacherInsight}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section id="progress-tracker" className="space-y-2.5 scroll-mt-28">
         <div>
           <h3 className="text-lg font-bold leading-tight text-white">Progress Tracker</h3>
