@@ -18,8 +18,8 @@ const features = [
   },
   {
     icon: History,
-    title: 'Memória que permanece',
-    description: 'A próxima aula começa com muito mais contexto, personalização e clareza sobre sua evolução.',
+    title: 'O contexto acompanha você',
+    description: 'A próxima aula começa com muito mais clareza sobre sua evolução, sem perder o que já foi construído.',
   },
 ]
 

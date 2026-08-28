@@ -8,9 +8,9 @@ const commonSchoolPoints = [
 ]
 
 const primePoints = [
-  'A aprendizagem relevante deixa um registro',
-  'O professor recebe mais contexto para interpretar',
-  'O feedback após a aula se conecta à sua história',
+  'A aprendizagem relevante deixa evidências',
+  'O professor interpreta o que elas significam e decide o próximo passo',
+  'O professor transforma as evidências em orientação',
   'A próxima etapa ganha direção e personalização',
 ]
 

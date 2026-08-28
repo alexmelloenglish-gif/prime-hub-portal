@@ -27,7 +27,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
               <span className="block text-prime-cream/90">Aprendizagem que permanece.</span>
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-prime-cream/80 md:text-xl">
-              Cada aula se conecta à próxima porque o seu aprendizado tem contexto. O professor acompanha sua trajetória, registra o que realmente importa
+              Cada aula se conecta à próxima porque o seu aprendizado não começa de novo. O professor acompanha sua trajetória, registra o que realmente importa
               e transforma cada encontro em um passo claro para a sua evolução.
             </p>
           </div>
@@ -93,7 +93,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
             <div className="relative space-y-3">
               {[
                 { icon: BookOpen, label: 'Aula', text: 'Interações reais e decisões pedagógicas' },
-                { icon: Sparkles, label: 'Assistência inteligente', text: 'A IA organiza e preserva o contexto' },
+                { icon: Sparkles, label: 'Memória da aprendizagem', text: 'O que importa permanece para a próxima aula' },
                 { icon: Target, label: 'Direção do professor', text: 'O próximo foco ganha clareza' },
               ].map(({ icon: Icon, label, text }, index) => (
                 <div key={label} className="relative flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
