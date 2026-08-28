@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs",
+    "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
     "build": "npm run teacher-intelligence:self-test && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",

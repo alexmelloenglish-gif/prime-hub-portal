@@ -380,9 +380,10 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
   for (const file of files) {
     const existing = await prisma.transcript.findUnique({
       where: { sourceFileId: file.id },
-      select: { id: true },
+      select: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1, select: { status: true } } },
     })
-    if (existing) {
+    const latestAttempt = existing?.pipelineRuns[0]
+    if (existing && latestAttempt?.status !== 'failed') {
       result.alreadyIngested += 1
       continue
     }

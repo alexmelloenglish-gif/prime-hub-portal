@@ -21,10 +21,15 @@ function getStableSourceFileId(input: LessonTranscriptInput): string | undefined
   return asOptionalString(metadata.sourceFileId)
 }
 
-function createIdempotencyKey(input: LessonTranscriptInput): string {
+function createBaseIdempotencyKey(input: LessonTranscriptInput): string {
   const sourceFileId = getStableSourceFileId(input)
   if (sourceFileId) return `drive:${sourceFileId}`
   return `${normalizeEmail(input.studentEmail)}:${input.lessonId}:${input.transcriptId || input.externalMeetingId || 'transcript'}`
+}
+
+function createIdempotencyKey(input: LessonTranscriptInput, attemptNumber: number): string {
+  const base = createBaseIdempotencyKey(input)
+  return attemptNumber === 1 ? base : `${base}:attempt:${attemptNumber}`
 }
 
 function isUniqueConstraintError(error: unknown): boolean {
@@ -163,7 +168,7 @@ async function persistPromptOne(runId: string, transcriptId: string, promptOne: 
   return prisma.$transaction(async (tx) => {
     for (const candidate of promptOne.evidence_candidates) {
       await tx.evidenceCandidate.upsert({
-        where: { transcriptId_candidateKey: { transcriptId, candidateKey: candidate.evidence_candidate_id } },
+        where: { pipelineRunId_candidateKey: { pipelineRunId: runId, candidateKey: candidate.evidence_candidate_id } },
         update: {
           sourceSpan: candidate.source_span,
           observation: candidate.content,
@@ -172,6 +177,7 @@ async function persistPromptOne(runId: string, transcriptId: string, promptOne: 
           requiresReview: candidate.requires_human_review,
         },
         create: {
+          pipelineRunId: runId,
           transcriptId,
           candidateKey: candidate.evidence_candidate_id,
           sourceSpan: candidate.source_span,
@@ -558,19 +564,20 @@ async function createReviewTask(runId: string, input: LessonTranscriptInput, sta
 
 export async function processLessonTranscript(input: LessonTranscriptInput): Promise<PipelineResult> {
   const prisma = getPrismaClient()
-  const normalizedInput = { ...input, studentEmail: normalizeEmail(input.studentEmail), source: input.source ?? 'google_meet' as const }
+  let normalizedInput: LessonTranscriptInput = { ...input, studentEmail: normalizeEmail(input.studentEmail), source: input.source ?? 'google_meet' }
   const sourceFileId = getStableSourceFileId(normalizedInput)
-  const idempotencyKey = createIdempotencyKey(normalizedInput)
+  const baseIdempotencyKey = createBaseIdempotencyKey(normalizedInput)
   const existingBySourceFile = sourceFileId
-    ? await prisma.transcript.findFirst({
-        where: { sourceFileId, source: 'google_meet' },
-        include: { pipelineRun: true },
+    ? await prisma.transcript.findUnique({
+        where: { sourceFileId },
+        include: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1 } },
       })
     : null
-  if (existingBySourceFile && existingBySourceFile.pipelineRun.studentEmail !== normalizedInput.studentEmail) {
+  if (existingBySourceFile && (existingBySourceFile.source !== 'google_meet' || existingBySourceFile.studentEmail !== normalizedInput.studentEmail)) {
     throw new Error('sourceFileId is already bound to a different student')
   }
-  const existing = existingBySourceFile?.pipelineRun || await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+  const existingByKey = existingBySourceFile ? null : await prisma.pipelineRun.findUnique({ where: { idempotencyKey: baseIdempotencyKey }, include: { transcript: true } })
+  const existing = existingBySourceFile?.pipelineRuns[0] || existingByKey
   if (existing?.status === 'completed') {
     const storedReport = await prisma.classReportProjection.findUnique({ where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } } })
     const storedCoaching = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: existing.id } })
@@ -589,10 +596,28 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
   if (existing && existing.status !== 'failed') {
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true }
   }
-  let run = existing
-  if (!run) {
+  const attemptNumber = existing?.status === 'failed' ? existing.attemptNumber + 1 : 1
+  const idempotencyKey = createIdempotencyKey(normalizedInput, attemptNumber)
+  let run
+  let transcript
+  const retryTranscript = existingBySourceFile || existingByKey?.transcript
+  if (retryTranscript && existing?.status === 'failed') {
+    normalizedInput = rebuildInput(
+      { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
+      retryTranscript,
+    )
     try {
-      run = await prisma.pipelineRun.create({ data: { idempotencyKey, studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId, status: 'received' } })
+      run = await prisma.pipelineRun.create({
+        data: {
+          idempotencyKey,
+          transcriptId: retryTranscript.id,
+          attemptNumber,
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+          status: 'received',
+        },
+      })
+      transcript = retryTranscript
     } catch (error) {
       if (!isUniqueConstraintError(error)) throw error
       const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
@@ -602,15 +627,45 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
       }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
+  } else if (!existing) {
+    const metadata = buildStoredInputMetadata(normalizedInput)
+    try {
+      const createdTranscript = await prisma.transcript.create({
+        data: {
+          sourceFileId: sourceFileId || null,
+          externalId: normalizedInput.transcriptId || normalizedInput.externalMeetingId,
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+          source: normalizedInput.source || 'google_meet',
+          content: normalizedInput.transcript,
+          metadata,
+          effectiveAt: normalizedInput.effectiveAt ? new Date(normalizedInput.effectiveAt) : null,
+          recordedAt: normalizedInput.recordedAt ? new Date(normalizedInput.recordedAt) : null,
+          pipelineRuns: {
+            create: {
+              idempotencyKey,
+              attemptNumber: 1,
+              studentEmail: normalizedInput.studentEmail,
+              lessonId: normalizedInput.lessonId,
+              status: 'received',
+            },
+          },
+        },
+        include: { pipelineRuns: true },
+      })
+      transcript = createdTranscript
+      run = createdTranscript.pipelineRuns[0]
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) throw error
+      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+      if (!concurrent) throw error
+      if (concurrent.studentEmail !== normalizedInput.studentEmail) throw new Error('idempotency key is already bound to a different student')
+      return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
+    }
   }
+  if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
   try {
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
-    const metadata = buildStoredInputMetadata(normalizedInput)
-    const transcript = await prisma.transcript.upsert({
-      where: { pipelineRunId: run.id },
-      update: { sourceFileId: sourceFileId || null, content: normalizedInput.transcript, externalId: normalizedInput.transcriptId || normalizedInput.externalMeetingId, metadata, effectiveAt: normalizedInput.effectiveAt ? new Date(normalizedInput.effectiveAt) : null, recordedAt: normalizedInput.recordedAt ? new Date(normalizedInput.recordedAt) : null },
-      create: { pipelineRunId: run.id, sourceFileId: sourceFileId || null, externalId: normalizedInput.transcriptId || normalizedInput.externalMeetingId, studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId, source: normalizedInput.source, content: normalizedInput.transcript, metadata, effectiveAt: normalizedInput.effectiveAt ? new Date(normalizedInput.effectiveAt) : null, recordedAt: normalizedInput.recordedAt ? new Date(normalizedInput.recordedAt) : null },
-    })
     const promptOne = await runPromptOne(normalizedInput, transcript.id)
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
     const persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)

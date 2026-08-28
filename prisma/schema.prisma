@@ -98,27 +98,31 @@ model Progress {
 }
 
 model PipelineRun {
-  id                       String       @id @default(cuid())
-  idempotencyKey           String       @unique
+  id                       String              @id @default(cuid())
+  idempotencyKey           String              @unique
+  transcriptId             String
+  attemptNumber            Int                 @default(1)
   studentEmail             String
   lessonId                 String
-  status                   String       @default("received")
+  status                   String              @default("received")
   promptOneSchemaVersion   String?
   promptOneArtifact        Json?
   promptThreeSchemaVersion String?
   promptThreeArtifact      Json?
   portfolioPatchId         String?
   portfolioApplyStatus     String?
-  authorityStatus          String       @default("non_authoritative")
+  authorityStatus          String              @default("non_authoritative")
   errorCode                String?
-  errorMessage             String?      @db.Text
-  startedAt                DateTime     @default(now())
+  errorMessage             String?             @db.Text
+  startedAt                DateTime            @default(now())
   completedAt              DateTime?
-  createdAt                DateTime     @default(now())
-  updatedAt                DateTime     @updatedAt
-  transcript               Transcript?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+  transcript               Transcript          @relation(fields: [transcriptId], references: [id], onDelete: Restrict)
   reviewTasks              ReviewTask[]
+  evidenceCandidates       EvidenceCandidate[]
 
+  @@unique([transcriptId, attemptNumber])
   @@index([studentEmail, createdAt])
   @@index([status])
   @@map("pipeline_runs")
@@ -145,39 +149,41 @@ model ReviewTask {
 }
 
 model Transcript {
-  id            String              @id @default(cuid())
-  pipelineRunId String              @unique
-  externalId    String?
-  sourceFileId  String?              @unique
-  studentEmail  String
-  lessonId      String
-  source        String
-  effectiveAt   DateTime?
-  recordedAt    DateTime?
-  content       String              @db.Text
-  metadata      Json?
-  createdAt     DateTime            @default(now())
-  pipelineRun   PipelineRun         @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
-  evidence      EvidenceCandidate[]
+  id           String              @id @default(cuid())
+  externalId   String?
+  sourceFileId String?             @unique
+  studentEmail String
+  lessonId     String
+  source       String
+  effectiveAt  DateTime?
+  recordedAt   DateTime?
+  content      String              @db.Text
+  metadata     Json?
+  createdAt    DateTime            @default(now())
+  pipelineRuns PipelineRun[]
+  evidence     EvidenceCandidate[]
 
   @@index([studentEmail, effectiveAt])
   @@map("transcripts")
 }
 
 model EvidenceCandidate {
-  id             String     @id @default(cuid())
+  id             String      @id @default(cuid())
+  pipelineRunId  String
   transcriptId   String
   candidateKey   String
   sourceSpan     String?
-  observation    String     @db.Text
+  observation    String      @db.Text
   category       String
   confidence     Float?
-  state          String     @default("proposed")
-  requiresReview Boolean    @default(true)
-  createdAt      DateTime   @default(now())
-  transcript     Transcript @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+  state          String      @default("proposed")
+  requiresReview Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  transcript     Transcript  @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+  pipelineRun    PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
 
-  @@unique([transcriptId, candidateKey])
+  @@unique([pipelineRunId, candidateKey])
+  @@index([transcriptId])
   @@index([state])
   @@map("evidence_candidates")
 }

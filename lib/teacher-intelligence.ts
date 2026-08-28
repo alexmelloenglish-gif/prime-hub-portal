@@ -204,18 +204,17 @@ export async function listEvidenceReviewQueue(limit = 100) {
       transcript: {
         select: {
           id: true,
-          pipelineRunId: true,
           studentEmail: true,
           lessonId: true,
           sourceFileId: true,
-          pipelineRun: { select: { promptOneArtifact: true, status: true } },
         },
       },
+      pipelineRun: { select: { id: true, promptOneArtifact: true, status: true } },
     },
   })
 
   return candidates.map((candidate) => {
-    const byKey = promptOneEvidenceByCandidateKey(candidate.transcript.pipelineRun.promptOneArtifact)
+    const byKey = promptOneEvidenceByCandidateKey(candidate.pipelineRun.promptOneArtifact)
     const rawCandidate = byKey.get(candidate.candidateKey) || {}
     return {
       id: candidate.id,
@@ -223,7 +222,7 @@ export async function listEvidenceReviewQueue(limit = 100) {
       studentEmail: candidate.transcript.studentEmail,
       lessonId: candidate.transcript.lessonId,
       transcriptId: candidate.transcriptId,
-      pipelineRunId: candidate.transcript.pipelineRunId,
+      pipelineRunId: candidate.pipelineRun.id,
       sourceFileId: candidate.transcript.sourceFileId,
       sourceSpan: candidate.sourceSpan,
       observation: candidate.observation,
@@ -233,8 +232,8 @@ export async function listEvidenceReviewQueue(limit = 100) {
       requiresReview: candidate.requiresReview,
       createdAt: candidate.createdAt.toISOString(),
       provenance: safeJson(asRecord(rawCandidate.provenance)),
-      aiProvenance: safeJson(getPromptOneProvenance(candidate.transcript.pipelineRun.promptOneArtifact)),
-      runtimeStatus: candidate.transcript.pipelineRun.status,
+      aiProvenance: safeJson(getPromptOneProvenance(candidate.pipelineRun.promptOneArtifact)),
+      runtimeStatus: candidate.pipelineRun.status,
     }
   })
 }
@@ -267,7 +266,8 @@ export async function recordEvidenceReviewDecision(input: {
     const candidate = await tx.evidenceCandidate.findUnique({
       where: { id: input.evidenceId },
       include: {
-        transcript: { select: { id: true, pipelineRunId: true, studentEmail: true, lessonId: true } },
+        transcript: { select: { id: true, studentEmail: true, lessonId: true } },
+        pipelineRun: { select: { id: true } },
       },
     })
     if (!candidate) throw new Error('Evidence Candidate not found')
@@ -281,7 +281,7 @@ export async function recordEvidenceReviewDecision(input: {
     const eventId = randomUUID()
     await tx.pipelineEvent.create({
       data: {
-        pipelineRunId: candidate.transcript.pipelineRunId,
+        pipelineRunId: candidate.pipelineRun.id,
         eventType: 'EvidenceCandidateReviewDecision',
         aggregateType: 'EvidenceCandidate',
         aggregateId: `${candidate.id}:${eventId}`,
@@ -293,7 +293,7 @@ export async function recordEvidenceReviewDecision(input: {
           previousState,
           newState: target.state,
           reason,
-          sourceRunId: candidate.transcript.pipelineRunId,
+          sourceRunId: candidate.pipelineRun.id,
           sourceTranscriptId: candidate.transcript.id,
           targetArtifactId: candidate.id,
           selectedEvidenceIds: [candidate.id],
@@ -623,15 +623,16 @@ export async function getTeacherLessonTrace(pipelineRunId: string) {
 
 export async function getTeacherTranscript(pipelineRunId: string, evidenceId?: string) {
   const prisma = getPrismaClient()
-  const transcript = await prisma.transcript.findUnique({
-    where: { pipelineRunId },
-    include: { evidence: evidenceId ? { where: { id: evidenceId } } : false },
+  const run = await prisma.pipelineRun.findUnique({
+    where: { id: pipelineRunId },
+    include: { transcript: { include: { evidence: evidenceId ? { where: { id: evidenceId, pipelineRunId } } : false } } },
   })
+  const transcript = run?.transcript
   if (!transcript) return null
   const selectedEvidence = evidenceId && Array.isArray(transcript.evidence) ? transcript.evidence[0] : null
   return {
     id: transcript.id,
-    pipelineRunId: transcript.pipelineRunId,
+    pipelineRunId,
     externalId: transcript.externalId,
     sourceFileId: transcript.sourceFileId,
     studentEmail: transcript.studentEmail,
