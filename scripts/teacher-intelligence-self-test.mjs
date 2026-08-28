@@ -33,7 +33,7 @@ assert.match(source.signals, /LearningSignalProposal ≠ canonical Learning Sign
 assert.match(source.insights, /TeacherInsightProposal ≠ published Teacher Insight/, 'Insight proposal and published Insight must remain distinct')
 assert.match(source.learningState, /No verified state transition/, 'Learning State UI must not manufacture a state transition')
 assert.match(source.lessonTrace, /Zero persisted Evidence Candidates/, 'Lesson trace must expose the zero-evidence condition')
-assert.match(source.lessonTrace, /GEMINI PROVENANCE/, 'Lesson trace must expose Gemini provenance')
+assert.match(source.intelligence, /GEMINI PROVENANCE/, 'Runtime trace must expose Gemini provenance')
 assert.doesNotMatch(allTeacherSource, /OPENAI|openai|chat\/completions/, 'Teacher Intelligence must not introduce a second AI provider path')
 assert.doesNotMatch(allTeacherSource, /canonicalEvidenceCreated:\s*true/, 'Teacher Intelligence must not claim canonical Evidence creation')
 
