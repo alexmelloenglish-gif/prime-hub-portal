@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
-import { runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
+import { GeminiGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
 import type {
   CoachingGuidanceOutput,
   ClassReportOutput,
@@ -546,8 +546,42 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
         return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
       }
     }
+    const isGeminiFailure = error instanceof GeminiGenerationError
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure'
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'failed', errorCode: 'PIPELINE_FAILED', errorMessage: message } })
+    if (isGeminiFailure) {
+      const aggregateId = `${run.id}:${error.stage}`
+      await prisma.pipelineEvent.upsert({
+        where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: run.id, eventType: 'GeminiGenerationFailed', aggregateId } },
+        update: {
+          payload: {
+            provider: error.provider,
+            stage: error.stage,
+            code: error.code,
+            httpStatus: error.httpStatus || null,
+          },
+        },
+        create: {
+          pipelineRunId: run.id,
+          eventType: 'GeminiGenerationFailed',
+          aggregateType: 'GeminiGeneration',
+          aggregateId,
+          payload: {
+            provider: error.provider,
+            stage: error.stage,
+            code: error.code,
+            httpStatus: error.httpStatus || null,
+          },
+        },
+      })
+    }
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: 'failed',
+        errorCode: isGeminiFailure ? `GEMINI_${error.code.toUpperCase()}` : 'PIPELINE_FAILED',
+        errorMessage: message,
+      },
+    })
     throw error
   }
 }

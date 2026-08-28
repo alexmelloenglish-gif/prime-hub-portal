@@ -65,6 +65,26 @@ function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTR
   return `${system}\n\n${contract}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
 }
 
+export class GeminiGenerationError extends Error {
+  readonly provider = 'gemini'
+  readonly stage: string
+  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json'
+  readonly httpStatus?: number
+
+  constructor(
+    stage: string,
+    code: GeminiGenerationError['code'],
+    message: string,
+    httpStatus?: number,
+  ) {
+    super(message)
+    this.name = 'GeminiGenerationError'
+    this.stage = stage
+    this.code = code
+    this.httpStatus = httpStatus
+  }
+}
+
 function parseJsonCandidate(content: string): unknown | null {
   const normalized = content
     .trim()
@@ -85,10 +105,21 @@ function parseJsonCandidate(content: string): unknown | null {
   }
 }
 
-async function invokeJson<T>(system: string, input: unknown, fallback: T, contract = CANONICAL_CONTRACT): Promise<T> {
-  const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY || process.env.GOOGLE_API_KEY
+async function invokeJson<T>(
+  stage: string,
+  system: string,
+  input: unknown,
+  contract = CANONICAL_CONTRACT,
+  draftFallback?: T,
+): Promise<T> {
+  // Draft fallbacks remain available for explicit offline/test callers only.
+  // Production never returns this value: every Gemini failure throws below.
+  void draftFallback
+  const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY
   const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
-  if (!apiKey) return fallback
+  if (!apiKey) {
+    throw new GeminiGenerationError(stage, 'missing_credential', 'Gemini credential is not configured')
+  }
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
@@ -110,21 +141,21 @@ async function invokeJson<T>(system: string, input: unknown, fallback: T, contra
     },
   )
   if (!response.ok) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_failed', model, status: response.status }))
-    return fallback
+    console.warn(JSON.stringify({ event: 'gemini_generation_failed', provider: 'gemini', stage, model, status: response.status }))
+    throw new GeminiGenerationError(stage, 'http_error', `Gemini request failed with HTTP ${response.status}`, response.status)
   }
   const payload = (await response.json()) as {
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
   }
   const content = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim()
   if (!content) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_empty', model }))
-    return fallback
+    console.warn(JSON.stringify({ event: 'gemini_generation_empty', provider: 'gemini', stage, model }))
+    throw new GeminiGenerationError(stage, 'empty_response', 'Gemini returned no candidate content')
   }
   const parsed = parseJsonCandidate(content)
   if (parsed === null) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', model }))
-    return fallback
+    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', provider: 'gemini', stage, model }))
+    throw new GeminiGenerationError(stage, 'invalid_json', 'Gemini returned invalid JSON')
   }
   return parsed as T
 }
@@ -191,8 +222,10 @@ function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): 
 
 export async function runPromptOne(input: LessonTranscriptInput, transcriptId: string): Promise<PromptOneOutput> {
   return invokeJson<PromptOneOutput>(
+    'prompt-1',
     'PROMPT 1 — Generate only the official Phase B B1.1 v3 non-authoritative extraction artifact. Include observations, Evidence Candidates, Evidence References, Learning Signal Proposals, Teacher Insight Proposals and presentation candidates. Never emit a canonical mutation.',
     input,
+    CANONICAL_CONTRACT,
     fallbackPromptOne(input, transcriptId),
   )
 }
@@ -259,10 +292,11 @@ export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOu
     implementationStatus: 'not_proven',
   }
   const generated = await invokeJson<ClassReportOutput>(
+    'prompt-2',
     'PROMPT 2 — Produce only the student-facing Class Report projection. Respect source_status and never elevate proposal authority.',
     input,
-    fallback,
     PROMPT_TWO_CONTRACT,
+    fallback,
   )
   return {
     ...generated,
@@ -340,10 +374,11 @@ export async function runPromptThree(input: {
     implementationStatus: 'not_proven',
   }
   return invokeJson<PortfolioPatchOutput>(
+    'prompt-3',
     'PROMPT 3 — Produce only an idempotent PortfolioProjectionPatch v3 from authorized projection inputs.',
     input,
-    fallback,
     PROMPT_THREE_CONTRACT,
+    fallback,
   )
 }
 
@@ -420,5 +455,11 @@ export async function runPromptFour(input: {
     documentStatus: 'draft',
     implementationStatus: 'not_proven',
   }
-  return invokeJson<CoachingGuidanceOutput>('PROMPT 4 — Produce only an internal, non-binding AI coaching recommendation.', input, fallback, PROMPT_FOUR_CONTRACT)
+  return invokeJson<CoachingGuidanceOutput>(
+    'prompt-4',
+    'PROMPT 4 — Produce only an internal, non-binding AI coaching recommendation.',
+    input,
+    PROMPT_FOUR_CONTRACT,
+    fallback,
+  )
 }
