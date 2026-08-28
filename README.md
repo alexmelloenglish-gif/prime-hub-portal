@@ -125,3 +125,25 @@ npm run firestore:seed:rafael
 - When the database is available, authenticated users can be synchronized into PostgreSQL automatically.
 - When Firebase is configured, only students whose Google email exists in Firestore can access the personalized dashboard.
 - When Firebase is not configured yet, the dashboard stays usable through preview data instead of crashing.
+
+
+## Drive transcript compatibility test — Louise
+
+This controlled test uses an authentic source transcript and preserves the original source file unchanged.
+
+| Field | Value |
+|---|---|
+| Original source | `Meeting Transcription (1).pdf` |
+| Original source file ID | `18_hJVMJv_PJUvacNyEZ5eDoRxkJiBrI7` |
+| Original source folder | `antiga nao usar` |
+| Derived Google Docs file | `LOUISE D. SILVA NOGUEIRA | Google Meet Transcript | 2026-06-01 | Derived Canonical Test` |
+| Derived Google Docs file ID | `16UPNIbK8UTCO0aiOU5qCB67Rgn8yuZNrM5qQkl-jI8c` |
+| Derived destination | `Meet Recordings` (`1p7u86xfGCRkbSBiNgSZMnUNO5j4S5vMw`) |
+| Canonical student identity | Louise D. Silva Nogueira (`louise_nogueira@hotmail.com`) |
+| Derivation status | Copy created from the extracted PDF text; original PDF was not edited, moved, or deleted |
+
+The derived document contains an explicit provenance section followed by a `Transcript` section. The transcript portion is copied verbatim from the authentic PDF extraction; no dialogue was invented or rewritten. The filename and body include the canonical student identity so the current Drive reconciliation triage can confirm the student by filename and transcript content. The document is a compatibility test and must not be represented as a native Google Meet-generated document.
+
+The source PDF is a real transcript export: it contains a meeting header, start time, duration, participants, a transcript marker, speaker labels, and timestamped dialogue. The derived Google Docs copy is intended to test the current parser's `documents.get?includeTabsContent=true` path and recursive body extraction. It does not itself prove a new Google Meet transcription event or a successful Gemini generation. Processing remains a separate, explicitly authorized step.
+
+No Tactic/Tactiq service was invoked by the PRIME pipeline during this test. Any reference to a third-party source visible inside the original PDF is retained only as source-document content and does not constitute an integration or runtime dependency.
