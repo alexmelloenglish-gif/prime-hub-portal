@@ -65,6 +65,14 @@ function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTR
   return `${system}\n\n${contract}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
 }
 
+function buildTranscriptDraftFact(input: LessonTranscriptInput): string[] {
+  const excerpt = input.transcript.replace(/\s+/g, ' ').trim()
+  if (!excerpt) return []
+  const maxLength = 360
+  const boundedExcerpt = excerpt.length > maxLength ? `${excerpt.slice(0, maxLength - 1)}…` : excerpt
+  return [`Transcript excerpt (unvalidated): ${boundedExcerpt}`]
+}
+
 async function invokeJson<T>(system: string, input: unknown, fallback: T, contract = CANONICAL_CONTRACT): Promise<T> {
   const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY || process.env.GOOGLE_API_KEY
   const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
@@ -130,7 +138,9 @@ function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): 
     learning_signal_proposals: [],
     teacher_insight_proposals: [],
     presentation_candidates: {
-      class_report_facts: [],
+      // Keep legitimate source material available to Prompt 2 as a clearly
+      // labelled draft candidate; never put it in authorized_facts.
+      class_report_facts: buildTranscriptDraftFact(input),
       vocabulary_candidates: [],
       grammar_focus_candidates: [],
     },
@@ -163,11 +173,29 @@ function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): 
 }
 
 export async function runPromptOne(input: LessonTranscriptInput, transcriptId: string): Promise<PromptOneOutput> {
-  return invokeJson<PromptOneOutput>(
+  const fallback = fallbackPromptOne(input, transcriptId)
+  const generated = await invokeJson<PromptOneOutput>(
     'PROMPT 1 — Generate only the official Phase B B1.1 v3 non-authoritative extraction artifact. Include observations, Evidence Candidates, Evidence References, Learning Signal Proposals, Teacher Insight Proposals and presentation candidates. Never emit a canonical mutation.',
     input,
-    fallbackPromptOne(input, transcriptId),
+    fallback,
   )
+  const presentation = generated.presentation_candidates && typeof generated.presentation_candidates === 'object'
+    ? generated.presentation_candidates
+    : fallback.presentation_candidates
+  const generatedFacts = Array.isArray(presentation.class_report_facts)
+    ? presentation.class_report_facts.filter((item): item is string => typeof item === 'string')
+    : []
+  if (generatedFacts.length || !fallback.presentation_candidates.class_report_facts.length) return generated
+  // A model response with empty presentation arrays must not erase the source.
+  // Preserve only a bounded, explicitly unvalidated draft candidate; authorized
+  // facts/evidence remain empty until an authorized service validates them.
+  return {
+    ...generated,
+    presentation_candidates: {
+      ...presentation,
+      class_report_facts: fallback.presentation_candidates.class_report_facts,
+    },
+  }
 }
 
 export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOutput> {
