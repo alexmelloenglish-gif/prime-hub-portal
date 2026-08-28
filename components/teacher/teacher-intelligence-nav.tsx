@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Activity,
+  BarChart3,
   BookOpen,
   BrainCircuit,
   ClipboardCheck,
@@ -24,6 +25,7 @@ const items = [
   { label: 'Insights', href: '/dashboard/admin/intelligence/insights', icon: Lightbulb },
   { label: 'Actions', href: '/dashboard/admin/intelligence/actions', icon: ListChecks },
   { label: 'Learning State', href: '/dashboard/admin/intelligence/learning-state', icon: Activity },
+  { label: 'Analytics', href: '/dashboard/admin/intelligence/analytics', icon: BarChart3 },
   { label: 'System / Audit', href: '/dashboard/admin/intelligence/audit', icon: FileClock },
 ]
 
