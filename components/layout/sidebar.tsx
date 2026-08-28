@@ -2,46 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { LayoutDashboard, BookOpen, TrendingUp, Target, CheckCircle2, MessageCircle, Settings, Shield, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, TrendingUp, Target, CheckCircle2, MessageCircle, Settings, Shield, LogOut, BrainCircuit } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const baseMenuItems = [
-  {
-    label: 'Overview',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    label: 'Lessons',
-    href: '/dashboard/aulas',
-    icon: BookOpen,
-  },
-  {
-    label: 'Progress',
-    href: '/dashboard/progresso',
-    icon: TrendingUp,
-  },
-  {
-    label: 'My Weekly Goals',
-    href: '/dashboard/goals',
-    icon: CheckCircle2,
-  },
-  {
-    label: 'Vocabulary',
-    href: '/dashboard/metas',
-    icon: Target,
-  },
-  {
-    label: 'Grammar',
-    href: '/dashboard/conversacao',
-    icon: MessageCircle,
-  },
-  {
-    label: 'Feedback',
-    href: '/dashboard/configuracoes',
-    icon: Settings,
-  },
+  { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Lessons', href: '/dashboard/aulas', icon: BookOpen },
+  { label: 'Progress', href: '/dashboard/progresso', icon: TrendingUp },
+  { label: 'My Weekly Goals', href: '/dashboard/goals', icon: CheckCircle2 },
+  { label: 'Vocabulary', href: '/dashboard/metas', icon: Target },
+  { label: 'Grammar', href: '/dashboard/conversacao', icon: MessageCircle },
+  { label: 'Feedback', href: '/dashboard/configuracoes', icon: Settings },
 ]
 
 export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
@@ -51,19 +23,13 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const menuItems = isAdmin
     ? [
         ...baseMenuItems,
-        {
-          label: 'Admin',
-          href: '/dashboard/admin',
-          icon: Shield,
-        },
+        { label: 'Teacher Intelligence', href: '/dashboard/admin/intelligence', icon: BrainCircuit },
+        { label: 'Admin', href: '/dashboard/admin', icon: Shield },
       ]
     : baseMenuItems
 
   const buildHref = (href: string) => {
-    if (!previewStudentEmail) {
-      return href
-    }
-
+    if (!previewStudentEmail || href.startsWith('/dashboard/admin')) return href
     const params = new URLSearchParams()
     params.set('studentEmail', previewStudentEmail)
     return `${href}?${params.toString()}`
@@ -79,18 +45,9 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
           {menuItems.map((item) => {
             const Icon = item.icon
-            const isActive =
-              pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
-
+            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
             return (
-              <Link
-                key={item.href}
-                href={buildHref(item.href)}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
-                  isActive ? 'bg-prime-red text-white' : 'text-prime-cream/70 hover:bg-white/10'
-                )}
-              >
+              <Link key={item.href} href={buildHref(item.href)} className={cn('flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors', isActive ? 'bg-prime-red text-white' : 'text-prime-cream/70 hover:bg-white/10')}>
                 <Icon className="h-5 w-5" />
                 <span className="font-medium">{item.label}</span>
               </Link>
@@ -98,33 +55,20 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           })}
         </nav>
 
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="mt-3 flex w-full shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-prime-cream/70 transition-colors hover:bg-white/10"
-        >
+        <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="mt-3 flex w-full shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-prime-cream/70 transition-colors hover:bg-white/10">
           <LogOut className="h-5 w-5" />
           <span className="font-medium">Sign out</span>
         </button>
       </aside>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 flex border-t border-white/10 bg-prime-dark/95 px-2 py-2 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-white/10 bg-prime-dark/95 px-2 py-2 backdrop-blur md:hidden">
         {menuItems.map((item) => {
           const Icon = item.icon
-          const isActive =
-            pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
-
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
           return (
-            <Link
-              key={item.href}
-              href={buildHref(item.href)}
-              className={cn(
-                'flex min-w-0 flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors',
-                isActive ? 'bg-prime-red/20 text-white' : 'text-prime-cream/70'
-              )}
-            >
+            <Link key={item.href} href={buildHref(item.href)} className={cn('flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors', isActive ? 'bg-prime-red/20 text-white' : 'text-prime-cream/70')}>
               <Icon className="h-4 w-4" />
-              <span className="truncate">{item.label}</span>
+              <span className="max-w-[88px] truncate">{item.label}</span>
             </Link>
           )
         })}
