@@ -69,7 +69,10 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as { role?: string }).role ?? 'student'
       }
 
-      if (isDatabaseConfigured && token.email && (!token.id || !token.role)) {
+      // Refresh authorization from the canonical database on every JWT refresh.
+      // This makes role changes effective for an existing session instead of
+      // leaving a stale role embedded in the JWT until the next sign-in.
+      if (isDatabaseConfigured && token.email) {
         const dbUser = await getPrismaClient().user.findUnique({
           where: { email: token.email },
           select: { id: true, role: true },

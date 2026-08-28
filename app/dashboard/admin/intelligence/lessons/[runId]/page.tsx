@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, ExternalLink, FileText, Search } from 'lucide-react'
 import { IntelligenceStatusBadge } from '@/components/teacher/intelligence-status-badge'
 import { getTeacherLessonTrace } from '@/lib/teacher-intelligence'
+import { RetryFailedRunButton } from './retry-failed-run-button'
 
 function JsonBlock({ value }: { value: unknown }) {
   return (
@@ -30,9 +31,14 @@ export default async function TeacherLessonDetailPage({ params }: { params: Prom
         <Link href="/dashboard/admin/intelligence/lessons" className="inline-flex items-center gap-2 text-sm text-prime-cream/65 hover:text-white">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Lessons
         </Link>
-        <div className="flex flex-wrap gap-2">
-          <IntelligenceStatusBadge label={`technical ${trace.run.status}`} state={trace.run.status === 'failed' ? 'FAILED' : trace.run.status === 'not_proven' ? 'NOT_PROVEN' : 'PRESENT'} />
-          {trace.firstUnprovenStage ? <IntelligenceStatusBadge label={`first unproven: ${trace.firstUnprovenStage}`} state="NOT_PROVEN" /> : null}
+        <div className="flex flex-wrap items-start justify-end gap-3">
+          <div className="flex flex-wrap gap-2">
+            <IntelligenceStatusBadge label={`technical ${trace.run.status}`} state={trace.run.status === 'failed' ? 'FAILED' : trace.run.status === 'not_proven' ? 'NOT_PROVEN' : 'PRESENT'} />
+            {trace.firstUnprovenStage ? <IntelligenceStatusBadge label={`first unproven: ${trace.firstUnprovenStage}`} state="NOT_PROVEN" /> : null}
+          </div>
+          {trace.run.status === 'failed' && trace.transcript?.sourceFileId ? (
+            <RetryFailedRunButton pipelineRunId={trace.run.id} sourceFileId={trace.transcript.sourceFileId} />
+          ) : null}
         </div>
       </div>
 

@@ -753,6 +753,102 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
   }
 }
 
+export type AdminPipelineRetryResult = PipelineResult & {
+  errorCode?: string
+}
+
+export async function retryFailedPipelineRun(input: {
+  sourceFileId: string
+  expectedPipelineRunId: string
+  requestedBy: string
+}): Promise<AdminPipelineRetryResult> {
+  const prisma = getPrismaClient()
+  const sourceFileId = input.sourceFileId.trim()
+  const expectedPipelineRunId = input.expectedPipelineRunId.trim()
+  if (!sourceFileId || !expectedPipelineRunId) {
+    throw new Error('sourceFileId and expectedPipelineRunId are required')
+  }
+
+  const transcript = await prisma.transcript.findUnique({
+    where: { sourceFileId },
+    include: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1 } },
+  })
+  const latest = transcript?.pipelineRuns[0]
+  if (!transcript || !latest) throw new Error('Pipeline transcript not found')
+  if (latest.id !== expectedPipelineRunId) {
+    throw new Error('Latest pipeline run changed; refresh before retrying')
+  }
+  if (latest.status !== 'failed') {
+    throw new Error('Only the latest failed pipeline run can be retried')
+  }
+
+  const rebuilt = rebuildInput(latest, transcript)
+  const retryInput: LessonTranscriptInput = {
+    ...rebuilt,
+    metadata: {
+      ...asRecord(rebuilt.metadata),
+      sourceFileId,
+    },
+  }
+
+  let result: PipelineResult | null = null
+  let executionError: unknown
+  try {
+    result = await processLessonTranscript(retryInput)
+  } catch (error) {
+    executionError = error
+  }
+
+  const attemptedRun = await prisma.pipelineRun.findFirst({
+    where: { transcriptId: transcript.id },
+    orderBy: { attemptNumber: 'desc' },
+  })
+  if (!attemptedRun || attemptedRun.id === expectedPipelineRunId) {
+    if (executionError) throw executionError
+    throw new Error('Pipeline retry did not create a new attempt')
+  }
+
+  await prisma.pipelineEvent.upsert({
+    where: {
+      pipelineRunId_eventType_aggregateId: {
+        pipelineRunId: attemptedRun.id,
+        eventType: 'PipelineRetryRequested',
+        aggregateId: expectedPipelineRunId,
+      },
+    },
+    update: {
+      payload: {
+        previousPipelineRunId: expectedPipelineRunId,
+        attemptNumber: attemptedRun.attemptNumber,
+        requestedBy: input.requestedBy,
+        retryMode: 'canonical_stored_transcript',
+      },
+    },
+    create: {
+      pipelineRunId: attemptedRun.id,
+      eventType: 'PipelineRetryRequested',
+      aggregateType: 'PipelineRun',
+      aggregateId: expectedPipelineRunId,
+      payload: {
+        previousPipelineRunId: expectedPipelineRunId,
+        attemptNumber: attemptedRun.attemptNumber,
+        requestedBy: input.requestedBy,
+        retryMode: 'canonical_stored_transcript',
+      },
+    },
+  })
+
+  if (result?.pipelineRunId === attemptedRun.id) {
+    return { ...result, errorCode: attemptedRun.errorCode || undefined }
+  }
+  return {
+    pipelineRunId: attemptedRun.id,
+    status: attemptedRun.status,
+    duplicate: false,
+    errorCode: attemptedRun.errorCode || undefined,
+  }
+}
+
 export async function listPendingReviewTasks() {
   const prisma = getPrismaClient()
   const tasks = await prisma.reviewTask.findMany({
