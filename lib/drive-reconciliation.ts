@@ -334,7 +334,8 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
       result.submitted += 1
       console.log(JSON.stringify({ event: 'drive_ingest_accepted', fileRef: safeFileRef(file.id), sourceHash: payload.metadata.sourceHash.slice(0, 12) }))
     }
-    break
+    // Continue scanning the same folder so one trigger can submit every eligible file
+    // up to MAX_SOURCE_READS_PER_RUN; sourceFileId idempotency prevents duplicates.
   }
 
   return result
