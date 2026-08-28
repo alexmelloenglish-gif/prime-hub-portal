@@ -10,6 +10,7 @@
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
     "build": "npm run teacher-intelligence:self-test && prisma generate && next build",
+    "vercel-build": "prisma migrate deploy && npm run build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
