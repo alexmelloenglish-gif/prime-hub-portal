@@ -98,7 +98,22 @@ export type TeacherInsightProposalOutput = {
   author_type: 'ai'
 }
 
+export type GenerationProvenance = {
+  provider: 'gemini' | 'fallback'
+  model?: string
+  requestId?: string
+  promptVersion: string
+  responseStatus?: number
+  startedAt: string
+  completedAt: string
+  artifactId?: string
+  validationStatus: 'valid' | 'invalid' | 'not_proven'
+  errorCode?: string
+}
+
 export type PromptOneOutput = {
+  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationProvenance?: GenerationProvenance
   schema_version: 'phase-b-prompt-1.v3'
   artifact_status: 'draft'
   authority_status: 'non_authoritative'
@@ -195,6 +210,8 @@ export type PromptTwoInput = {
 }
 
 export type ClassReportOutput = {
+  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationProvenance?: GenerationProvenance
   reportId: string
   lessonId: string
   studentId: string
@@ -217,7 +234,7 @@ export type ClassReportOutput = {
   documentStatus: 'draft' | 'published'
   /** Content authority is separate from projection/document publication. */
   contentStatus?: 'draft' | 'validated'
-  implementationStatus: 'not_proven'
+  implementationStatus: 'proven' | 'not_proven'
 }
 
 export type ProjectionSourceReference = {
@@ -241,6 +258,8 @@ export type ExcludedProjectionOperation = {
 }
 
 export type PortfolioPatchOutput = {
+  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationProvenance?: GenerationProvenance
   patch_schema_version: 'portfolio-projection-patch.v3'
   patch_id: string
   operation_key: string
@@ -265,7 +284,7 @@ export type PortfolioPatchOutput = {
     referential_integrity: 'checked'
   }
   documentStatus: 'draft'
-  implementationStatus: 'not_proven'
+  implementationStatus: 'proven' | 'not_proven'
 }
 
 export type CoachingSourceReference = {
@@ -289,6 +308,8 @@ export type CoachingProposedAction = {
 }
 
 export type CoachingGuidanceOutput = {
+  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationProvenance?: GenerationProvenance
   coaching_guidance_id: string
   student_id: string
   teacher_id?: string

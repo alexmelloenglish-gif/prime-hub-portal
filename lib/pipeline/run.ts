@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import { GeminiGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
+import { evaluateClassReportGate, evaluatePromptOneGate, qualityGateErrorMessage, QualityGateRejectedError, type QualityGateAssessment } from './quality-gate'
 import type {
   CoachingGuidanceOutput,
   ClassReportOutput,
@@ -115,9 +116,51 @@ function shouldRequirePublicationReview(coaching: CoachingGuidanceOutput): boole
   return coaching.is_pedagogical_decision
 }
 
-async function persistPromptOne(runId: string, transcriptId: string, promptOne: PromptOneOutput) {
+type ContinuationResult = {
+  report?: ClassReportOutput
+  coaching?: CoachingGuidanceOutput
+  qualityGate: QualityGateAssessment
+}
+
+async function persistQualityGateRejection(runId: string, stage: string, assessment: QualityGateAssessment) {
   const prisma = getPrismaClient()
-  await prisma.$transaction(async (tx) => {
+  const message = qualityGateErrorMessage(assessment)
+  await prisma.pipelineEvent.upsert({
+    where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: runId, eventType: 'QualityGateRejected', aggregateId: `${runId}:${stage}` } },
+    update: {
+      payload: {
+        stage,
+        cognitiveStatus: assessment.cognitiveStatus,
+        reasons: assessment.reasons,
+        candidateCount: assessment.candidateCount,
+        substantiveCandidateCount: assessment.substantiveCandidateCount,
+        persistedEvidenceCount: assessment.persistedEvidenceCount,
+      },
+    },
+    create: {
+      pipelineRunId: runId,
+      eventType: 'QualityGateRejected',
+      aggregateType: 'PipelineQualityGate',
+      aggregateId: `${runId}:${stage}`,
+      payload: {
+        stage,
+        cognitiveStatus: assessment.cognitiveStatus,
+        reasons: assessment.reasons,
+        candidateCount: assessment.candidateCount,
+        substantiveCandidateCount: assessment.substantiveCandidateCount,
+        persistedEvidenceCount: assessment.persistedEvidenceCount,
+      },
+    },
+  })
+  await prisma.pipelineRun.update({
+    where: { id: runId },
+    data: { status: 'not_proven', completedAt: null, errorCode: 'QUALITY_GATE_NOT_PROVEN', errorMessage: message },
+  })
+}
+
+async function persistPromptOne(runId: string, transcriptId: string, promptOne: PromptOneOutput): Promise<number> {
+  const prisma = getPrismaClient()
+  return prisma.$transaction(async (tx) => {
     for (const candidate of promptOne.evidence_candidates) {
       await tx.evidenceCandidate.upsert({
         where: { transcriptId_candidateKey: { transcriptId, candidateKey: candidate.evidence_candidate_id } },
@@ -186,15 +229,16 @@ async function persistPromptOne(runId: string, transcriptId: string, promptOne: 
     }
     await tx.pipelineEvent.upsert({
       where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: runId, eventType: 'Prompt1ArtifactCreated', aggregateId: transcriptId } },
-      update: { payload: { schemaVersion: promptOne.schema_version, authorityStatus: promptOne.authority_status, candidateCount: promptOne.evidence_candidates.length } },
+      update: { payload: { schemaVersion: promptOne.schema_version, authorityStatus: promptOne.authority_status, candidateCount: promptOne.evidence_candidates.length, generationStatus: promptOne.generationStatus || 'not_proven', generationProvenance: promptOne.generationProvenance || null } },
       create: {
         pipelineRunId: runId,
         eventType: 'Prompt1ArtifactCreated',
         aggregateType: 'Prompt1Artifact',
         aggregateId: transcriptId,
-        payload: { schemaVersion: promptOne.schema_version, authorityStatus: promptOne.authority_status, candidateCount: promptOne.evidence_candidates.length },
+        payload: { schemaVersion: promptOne.schema_version, authorityStatus: promptOne.authority_status, candidateCount: promptOne.evidence_candidates.length, generationStatus: promptOne.generationStatus || 'not_proven', generationProvenance: promptOne.generationProvenance || null },
       },
     })
+    return promptOne.evidence_candidates.length
   })
 }
 
@@ -260,8 +304,13 @@ async function applyPortfolioPatch(input: LessonTranscriptInput, runId: string, 
 //   - Normal path  → calls publishAfterReview internally (no human gate)
 //   - Exception    → creates publication_review_required task as before
 // ---------------------------------------------------------------------------
-async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput): Promise<{ report: ClassReportOutput; coaching: CoachingGuidanceOutput }> {
+async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput, persistedEvidenceCount: number): Promise<ContinuationResult> {
   const prisma = getPrismaClient()
+  const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
+  if (!promptOneGate.allowed) {
+    await persistQualityGateRejection(runId, 'prompt-1', promptOneGate)
+    return { qualityGate: promptOneGate }
+  }
   const promptTwoInput: PromptTwoInput = {
     report_context: {
       lesson_id: normalizedInput.lessonId,
@@ -305,6 +354,41 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
     },
   }
   const report = await runPromptTwo(promptTwoInput)
+  const reportGate = evaluateClassReportGate({ report, promptOneGate })
+  if (!reportGate.allowed) {
+    await prisma.classReportProjection.upsert({
+      where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
+      update: {
+        pipelineRunId: runId,
+        studentId: report.studentId,
+        generatedAt: new Date(report.generatedAt),
+        promptVersion: report.promptVersion,
+        projectionVersion: report.projectionVersion,
+        sourceReferences: report.sourceReferences as unknown as Prisma.InputJsonValue,
+        content: { ...report, documentStatus: 'draft', contentStatus: 'draft', implementationStatus: 'not_proven' } as unknown as Prisma.InputJsonValue,
+        documentStatus: 'draft',
+        implementationStatus: 'not_proven',
+      },
+      create: {
+        pipelineRunId: runId,
+        reportId: report.reportId,
+        studentEmail: normalizedInput.studentEmail,
+        studentId: report.studentId,
+        lessonId: normalizedInput.lessonId,
+        generatedAt: new Date(report.generatedAt),
+        promptVersion: report.promptVersion,
+        projectionVersion: report.projectionVersion,
+        sourceReferences: report.sourceReferences as unknown as Prisma.InputJsonValue,
+        sourceSnapshot: promptTwoInput as unknown as Prisma.InputJsonValue,
+        content: { ...report, documentStatus: 'draft', contentStatus: 'draft', implementationStatus: 'not_proven' } as unknown as Prisma.InputJsonValue,
+        documentStatus: 'draft',
+        implementationStatus: 'not_proven',
+      },
+    })
+    await persistQualityGateRejection(runId, 'prompt-2', reportGate)
+    return { report, qualityGate: reportGate }
+  }
+
   await prisma.classReportProjection.upsert({
     where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
     update: {
@@ -380,7 +464,7 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
       { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
       { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
     ], skipDuplicates: true })
-    return { report, coaching }
+    return { report, coaching, qualityGate: reportGate }
   }
 
   // Normal path: auto-publish without human gate
@@ -391,7 +475,7 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
   ], skipDuplicates: true })
   // Publish directly — synthetic task id keeps the same code path in publishAfterReview
   await publishAfterReview(runId, normalizedInput, `auto-publish-${runId}`, 'system', 'auto-publish: trusted source, non-pedagogical-decision')
-  return { report, coaching }
+  return { report, coaching, qualityGate: reportGate }
 }
 
 async function publishAfterReview(runId: string, normalizedInput: LessonTranscriptInput, reviewTaskId: string, reviewerId: string, reason?: string): Promise<{ report: ClassReportOutput; coaching?: CoachingGuidanceOutput }> {
@@ -400,16 +484,27 @@ async function publishAfterReview(runId: string, normalizedInput: LessonTranscri
     where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
   })
   const coachingProjection = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: runId } })
-  const run = await prisma.pipelineRun.findUnique({ where: { id: runId }, select: { promptThreeArtifact: true, portfolioPatchId: true } })
+  const run = await prisma.pipelineRun.findUnique({ where: { id: runId }, select: { promptOneArtifact: true, promptThreeArtifact: true, portfolioPatchId: true, transcript: { select: { id: true } } } })
   if (!projection || !run) throw new Error('Draft publication artifacts not found')
   const report = asRecord(projection.content) as unknown as ClassReportOutput
+  const promptOne = asRecord(run.promptOneArtifact) as unknown as PromptOneOutput
   const patch = asRecord(run.promptThreeArtifact) as unknown as PortfolioPatchOutput
   if (!report.reportId || report.documentStatus !== 'draft' || !patch.patch_id || !Array.isArray(patch.operations)) throw new Error('Draft publication artifacts are invalid or already published')
 
-  const publishedReport: ClassReportOutput = { ...report, documentStatus: 'published', implementationStatus: 'not_proven' }
+  const persistedEvidenceCount = run.transcript
+    ? await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
+    : 0
+  const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
+  const reportGate = evaluateClassReportGate({ report, promptOneGate })
+  if (!reportGate.allowed) {
+    await persistQualityGateRejection(runId, 'publication', reportGate)
+    throw new QualityGateRejectedError(reportGate)
+  }
+
+  const publishedReport: ClassReportOutput = { ...report, documentStatus: 'published', contentStatus: 'validated', generationStatus: 'gemini_generated', implementationStatus: 'proven' }
   await prisma.classReportProjection.update({
     where: { id: projection.id },
-    data: { content: publishedReport as unknown as Prisma.InputJsonValue, documentStatus: 'published', implementationStatus: 'not_proven' },
+    data: { content: publishedReport as unknown as Prisma.InputJsonValue, documentStatus: 'published', implementationStatus: 'proven' },
   })
   const publishedPatch: PortfolioPatchOutput = {
     ...patch,
@@ -417,12 +512,12 @@ async function publishAfterReview(runId: string, normalizedInput: LessonTranscri
       ? { ...operation, parameters: { ...operation.parameters, class_report_state: 'projection_published' } }
       : operation),
     documentStatus: 'draft',
-    implementationStatus: 'not_proven',
+    implementationStatus: 'proven',
   }
   const portfolioApply = await applyPortfolioPatch(normalizedInput, runId, publishedPatch)
   if (portfolioApply.status === 'version_rejected') throw new Error('Portfolio projection version conflict; publication was not applied')
 
-  await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'completed', completedAt: new Date(), promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue, portfolioApplyStatus: portfolioApply.status } })
+  await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'completed', completedAt: new Date(), promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue, portfolioApplyStatus: portfolioApply.status, authorityStatus: 'non_authoritative', errorCode: null, errorMessage: null } })
 
   // Only update the ReviewTask record when this was triggered by a real human review task
   const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
@@ -518,14 +613,17 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     })
     const promptOne = await runPromptOne(normalizedInput, transcript.id)
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
-    await persistPromptOne(run.id, transcript.id, promptOne)
+    const persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
 
     // Identity check: trusted sources skip the identity review queue
     if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
-      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne)
-      // If continueAfterReview routed to publication_review_required (exception path), status is already updated
+      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne, persistedEvidenceCount)
+      // If continueAfterReview routed to publication_review_required (exception path), status is already updated.
       const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
-      const finalStatus = updatedRun?.status || 'completed'
+      const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
+      if (!result.qualityGate.allowed) {
+        return { pipelineRunId: run.id, status: 'not_proven', duplicate: false, report: result.report, coaching: result.coaching }
+      }
       if (finalStatus === 'awaiting_publication_review') {
         const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
         return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
@@ -555,6 +653,13 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
         update: {
           payload: {
             provider: error.provider,
+            model: error.model || null,
+            requestId: error.requestId || null,
+            promptVersion: error.promptVersion,
+            startedAt: error.startedAt,
+            completedAt: error.completedAt,
+            artifactId: error.artifactId || null,
+            validationStatus: 'invalid',
             stage: error.stage,
             code: error.code,
             httpStatus: error.httpStatus || null,
@@ -567,6 +672,13 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
           aggregateId,
           payload: {
             provider: error.provider,
+            model: error.model || null,
+            requestId: error.requestId || null,
+            promptVersion: error.promptVersion,
+            startedAt: error.startedAt,
+            completedAt: error.completedAt,
+            artifactId: error.artifactId || null,
+            validationStatus: 'invalid',
             stage: error.stage,
             code: error.code,
             httpStatus: error.httpStatus || null,
@@ -674,9 +786,13 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
   }
 
   try {
-    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne)
+    const persistedEvidenceCount = await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
+    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne, persistedEvidenceCount)
     const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
-    const finalStatus = updatedRun?.status || 'completed'
+    const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
+    if (!result.qualityGate.allowed) {
+      return { pipelineRunId: run.id, status: 'not_proven', duplicate: false, report: result.report, coaching: result.coaching }
+    }
     if (finalStatus === 'awaiting_publication_review') {
       const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
       return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }

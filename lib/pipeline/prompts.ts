@@ -1,5 +1,8 @@
+import { randomUUID } from 'node:crypto'
+
 import type {
   ClassReportOutput,
+  GenerationProvenance,
   CoachingGuidanceOutput,
   LessonTranscriptInput,
   PortfolioPatchOutput,
@@ -65,23 +68,45 @@ function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTR
   return `${system}\n\n${contract}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
 }
 
+function promptVersionForStage(stage: string): string {
+  return ({
+    'prompt-1': 'prompt-1.v3',
+    'prompt-2': 'prompt-2.v2.0',
+    'prompt-3': 'prompt-3.v3',
+    'prompt-4': 'prompt-4.v1',
+  } as Record<string, string>)[stage] || stage
+}
+
 export class GeminiGenerationError extends Error {
   readonly provider = 'gemini'
   readonly stage: string
   readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json'
   readonly httpStatus?: number
+  readonly model?: string
+  readonly requestId?: string
+  readonly promptVersion: string
+  readonly startedAt: string
+  readonly completedAt: string
+  readonly artifactId?: string
 
   constructor(
     stage: string,
     code: GeminiGenerationError['code'],
     message: string,
     httpStatus?: number,
+    context?: Partial<GenerationProvenance>,
   ) {
     super(message)
     this.name = 'GeminiGenerationError'
     this.stage = stage
     this.code = code
     this.httpStatus = httpStatus
+    this.model = context?.model
+    this.requestId = context?.requestId
+    this.promptVersion = context?.promptVersion || promptVersionForStage(stage)
+    this.startedAt = context?.startedAt || new Date().toISOString()
+    this.completedAt = context?.completedAt || new Date().toISOString()
+    this.artifactId = context?.artifactId
   }
 }
 
@@ -115,10 +140,24 @@ async function invokeJson<T>(
   // Draft fallbacks remain available for explicit offline/test callers only.
   // Production never returns this value: every Gemini failure throws below.
   void draftFallback
+  const startedAt = new Date().toISOString()
+  const requestId = `gemini-${randomUUID()}`
+  const promptVersion = promptVersionForStage(stage)
+  const artifactId = `artifact-${stage}-${requestId}`
   const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY
   const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
+  const errorContext = (responseStatus?: number): Partial<GenerationProvenance> => ({
+    model,
+    requestId,
+    promptVersion,
+    responseStatus,
+    startedAt,
+    completedAt: new Date().toISOString(),
+    artifactId,
+    validationStatus: 'invalid',
+  })
   if (!apiKey) {
-    throw new GeminiGenerationError(stage, 'missing_credential', 'Gemini credential is not configured')
+    throw new GeminiGenerationError(stage, 'missing_credential', 'Gemini credential is not configured', undefined, errorContext())
   }
 
   const response = await fetch(
@@ -141,23 +180,41 @@ async function invokeJson<T>(
     },
   )
   if (!response.ok) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_failed', provider: 'gemini', stage, model, status: response.status }))
-    throw new GeminiGenerationError(stage, 'http_error', `Gemini request failed with HTTP ${response.status}`, response.status)
+    const context = errorContext(response.status)
+    console.warn(JSON.stringify({ event: 'gemini_generation_failed', provider: 'gemini', stage, model, requestId, status: response.status }))
+    throw new GeminiGenerationError(stage, 'http_error', `Gemini request failed with HTTP ${response.status}`, response.status, context)
   }
   const payload = (await response.json()) as {
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
   }
   const content = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim()
   if (!content) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_empty', provider: 'gemini', stage, model }))
-    throw new GeminiGenerationError(stage, 'empty_response', 'Gemini returned no candidate content')
+    const context = errorContext(response.status)
+    console.warn(JSON.stringify({ event: 'gemini_generation_empty', provider: 'gemini', stage, model, requestId }))
+    throw new GeminiGenerationError(stage, 'empty_response', 'Gemini returned no candidate content', response.status, context)
   }
   const parsed = parseJsonCandidate(content)
-  if (parsed === null) {
-    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', provider: 'gemini', stage, model }))
-    throw new GeminiGenerationError(stage, 'invalid_json', 'Gemini returned invalid JSON')
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    const context = errorContext(response.status)
+    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', provider: 'gemini', stage, model, requestId }))
+    throw new GeminiGenerationError(stage, 'invalid_json', 'Gemini returned invalid JSON', response.status, context)
   }
-  return parsed as T
+  const generationProvenance: GenerationProvenance = {
+    provider: 'gemini',
+    model,
+    requestId,
+    promptVersion,
+    responseStatus: response.status,
+    startedAt,
+    completedAt: new Date().toISOString(),
+    artifactId,
+    validationStatus: 'valid',
+  }
+  return {
+    ...(parsed as Record<string, unknown>),
+    generationStatus: 'gemini_generated',
+    generationProvenance,
+  } as T
 }
 
 function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): PromptOneOutput {
