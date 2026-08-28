@@ -5,6 +5,7 @@ const files = {
   intelligence: 'lib/teacher-intelligence.ts',
   reviewAction: 'app/dashboard/admin/intelligence/review/actions.ts',
   reviewPage: 'app/dashboard/admin/intelligence/review/page.tsx',
+  pipelineReview: 'app/dashboard/admin/review/review-queue-actions.tsx',
   signals: 'app/dashboard/admin/intelligence/signals/page.tsx',
   insights: 'app/dashboard/admin/intelligence/insights/page.tsx',
   learningState: 'app/dashboard/admin/intelligence/learning-state/page.tsx',
@@ -20,6 +21,10 @@ const allTeacherSource = Object.values(source).join('\n')
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
+assert.match(source.reviewPage, /listPendingReviewTasks/, 'Teacher Review Queue must reuse existing Pipeline ReviewTask workflow')
+assert.match(source.reviewPage, /ReviewQueueActions/, 'Teacher Review Queue must render existing Pipeline ReviewTask controls')
+assert.match(source.pipelineReview, /\/api\/pipeline\/review/, 'Pipeline review controls must reuse the existing review API')
+assert.doesNotMatch(source.pipelineReview, /now visible to the student/, 'Review completion copy must not infer final projection visibility')
 assert.match(source.intelligence, /canonicalEvidenceCreated:\s*false/, 'Evidence Candidate acceptance must not silently create canonical Evidence')
 assert.match(source.intelligence, /EvidenceCandidateReviewDecision/, 'Human Evidence review must persist an audit event')
 assert.match(source.intelligence, /reviewerId:/, 'Human review provenance must include reviewer identity')
