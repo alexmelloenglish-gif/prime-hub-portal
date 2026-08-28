@@ -11,13 +11,13 @@ interface BrandLogoProps {
 
 const logos: Record<BrandLogoVariant, { src: string; alt: string; width: number; height: number }> = {
   full: {
-    src: '/brand/prime-digital-hub-full.png',
+    src: '/brand/prime-digital-hub-full-transparent.png',
     alt: 'Prime Digital Hub',
     width: 373,
     height: 175,
   },
   mark: {
-    src: '/brand/prime-digital-hub-mark-bubble.png',
+    src: '/brand/prime-digital-hub-mark-transparent.png',
     alt: 'Prime Digital Hub mark',
     width: 938,
     height: 938,
@@ -32,7 +32,9 @@ export function BrandLogo({ variant = 'mark', className, priority = false }: Bra
     <span
       className={cn(
         'inline-flex shrink-0 items-center justify-center',
-        isFullLogo ? 'overflow-hidden rounded-md bg-white px-2 py-1' : 'overflow-visible bg-transparent',
+        isFullLogo
+          ? 'overflow-hidden rounded-xl border border-prime-cream/20 bg-prime-cream/95 px-2.5 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.24)]'
+          : 'overflow-visible bg-transparent',
         className
       )}
     >

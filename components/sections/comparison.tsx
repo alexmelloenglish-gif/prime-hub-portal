@@ -1,66 +1,62 @@
-import { Check, X } from 'lucide-react'
+import { ArrowRight, Check, X } from 'lucide-react'
 
 const commonSchoolPoints = [
-  'Aulas soltas e pouco direcionamento',
-  'Pouca visibilidade da própria evolução',
-  'Ambiente pouco estimulante',
-  'Navegação confusa',
+  'Aula termina e parte do contexto se perde',
+  'A próxima conversa depende de lembranças fragmentadas',
+  'O aluno nem sempre enxerga o próximo foco',
+  'O progresso fica difícil de acompanhar com clareza',
 ]
 
 const primePoints = [
-  'Trilhas de aprendizado claras e guiadas',
-  'Métricas reais de evolução',
-  'Ambiente pensado para aprender melhor',
-  'Navegação intuitiva e fluida',
+  'A aprendizagem relevante deixa um registro',
+  'O professor recebe mais contexto para interpretar',
+  'O feedback após a aula se conecta à sua história',
+  'A próxima etapa ganha direção e personalização',
 ]
 
 export function ComparisonSection() {
   return (
     <section className="relative z-10 container py-20">
-      <div className="mb-16 text-center">
-        <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Escolas comuns x Prime Digital Hub</h2>
-        <p className="text-lg text-prime-cream/80">Como a Prime transforma o jeito de aprender</p>
+      <div className="mb-16 max-w-3xl">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-prime-red">Antes e depois</p>
+        <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Quando a educação lembra, a evolução ganha direção.</h2>
+        <p className="text-lg leading-relaxed text-prime-cream/80">Não é sobre acumular dados. É sobre transformar cada aula em contexto para a próxima.</p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
         <div className="glass-card p-8">
-          <h3 className="mb-6 font-display text-2xl font-bold text-white">Escolas comuns</h3>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-prime-cream/45">Sem continuidade</p>
+          <h3 className="mb-6 font-display text-2xl font-bold text-white">A aula fica para trás</h3>
           <ul className="space-y-4">
             {commonSchoolPoints.map((point) => (
               <li key={point} className="flex items-start gap-3">
-                <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
+                <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
                 <span className="text-prime-cream/80">{point}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="glass-card border-prime-red/50 p-8">
-          <h3 className="mb-6 font-display text-2xl font-bold text-white">Prime Digital Hub</h3>
+        <div className="glass-card border-prime-red/50 bg-prime-red/10 p-8 shadow-[0_20px_60px_rgba(213,0,0,0.12)]">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-orange-200/70">Com o PRIME</p>
+          <h3 className="mb-6 font-display text-2xl font-bold text-white">A aprendizagem continua</h3>
           <ul className="space-y-4">
             {primePoints.map((point) => (
               <li key={point} className="flex items-start gap-3">
-                <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
-                <span className="text-prime-cream/80">{point}</span>
+                <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-300" />
+                <span className="text-prime-cream/85">{point}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <div className="mt-16 grid gap-8 md:grid-cols-3">
-        <div className="text-center">
-          <div className="mb-2 font-display text-4xl font-bold text-prime-red">40%</div>
-          <p className="text-prime-cream/80">Mais retenção de conteúdo</p>
-        </div>
-        <div className="text-center">
-          <div className="mb-2 font-display text-4xl font-bold text-prime-red">3x</div>
-          <p className="text-prime-cream/80">Mais engajamento com trilhas</p>
-        </div>
-        <div className="text-center">
-          <div className="mb-2 font-display text-4xl font-bold text-prime-red">+500</div>
-          <p className="text-prime-cream/80">Alunos transformados</p>
-        </div>
+      <div className="mt-12 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:gap-4">
+        <span className="font-display text-2xl font-semibold text-white">Aula</span>
+        <ArrowRight className="h-5 w-5 text-prime-red" />
+        <span className="font-display text-2xl font-semibold text-white">Evidência</span>
+        <ArrowRight className="h-5 w-5 text-prime-red" />
+        <span className="font-display text-2xl font-semibold text-white">Direção</span>
       </div>
     </section>
   )

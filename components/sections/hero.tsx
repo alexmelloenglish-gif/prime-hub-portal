@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BookOpen, CalendarCheck, ChevronRight, MessageCircle, Shield, Target } from 'lucide-react'
+import { BookOpen, CalendarCheck, ChevronRight, MessageCircle, Shield, Sparkles, Target } from 'lucide-react'
 import { BrandLogo } from '@/components/layout/brand-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -11,24 +11,26 @@ interface HeroSectionProps {
 export function HeroSection({ portalHref }: HeroSectionProps) {
   return (
     <section className="relative z-10 container pb-24 pt-12">
-      <div className="grid items-center gap-12 lg:grid-cols-2">
-        <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full bg-prime-red/20 px-4 py-2 text-sm font-medium text-orange-300">
+      <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="space-y-7">
+          <div className="inline-flex items-center gap-2 rounded-full border border-prime-red/30 bg-prime-red/15 px-4 py-2 text-sm font-medium text-orange-200">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-prime-red opacity-75"></span>
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-prime-red"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-prime-red opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-prime-red" />
             </span>
-            Agora 100% online
+            Aprendizagem particular de inglês
           </div>
 
-          <h1 className="font-display text-4xl font-extrabold tracking-tight leading-tight md:text-5xl lg:text-6xl">
-            Sua escola de idiomas <span className="text-prime-red">evoluiu</span>.
-          </h1>
-
-          <p className="max-w-xl text-lg leading-relaxed text-prime-cream/80 md:text-xl">
-            Bem-vindo ao <strong className="text-white">Prime Digital Hub</strong>, seu ecossistema de aprendizado 100%
-            online, feito para acompanhar seu progresso em inglês com clareza e propósito.
-          </p>
+          <div className="space-y-5">
+            <h1 className="max-w-3xl font-display text-4xl font-extrabold leading-[1.04] tracking-tight md:text-5xl lg:text-6xl">
+              Um <span className="text-prime-red">superprofessor</span>, assistido pela inteligência artificial.
+              <span className="block text-prime-cream/90">Para que você nunca precise começar do zero.</span>
+            </h1>
+            <p className="max-w-xl text-lg leading-relaxed text-prime-cream/80 md:text-xl">
+              O PRIME transforma cada aula em memória, evidência e direção. A IA organiza e preserva o contexto;
+              o professor interpreta, valida e conduz; você permanece no centro da sua evolução.
+            </p>
+          </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <Link
@@ -38,87 +40,82 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
                 'rounded-full bg-prime-red px-8 py-6 text-base font-semibold text-white shadow-lg shadow-prime-red/30 hover:bg-red-700'
               )}
             >
-              Acessar meu portal
+              Conhecer o método PRIME
               <ChevronRight className="ml-2 inline-flex h-5 w-5" />
             </Link>
             <a
-              href="#diferenciais"
+              href="#como-funciona"
               className={cn(
                 buttonVariants({ variant: 'outline', size: 'lg' }),
                 'rounded-full border-white/20 px-8 py-6 text-base font-semibold text-white hover:bg-white/10 hover:text-white'
               )}
             >
-              Conhecer a Prime
+              Como funciona
             </a>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-prime-cream/60">
-            <Shield className="h-4 w-4" />
-            <span>Ambiente seguro para alunos da Prime Digital Hub</span>
+            <Shield className="h-4 w-4 text-prime-red" />
+            <span>O professor continua sendo a autoridade pedagógica.</span>
           </div>
         </div>
 
-        <div className="glass-card border-white/10 p-4 shadow-2xl sm:p-6">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-4">
-              <BrandLogo variant="mark" className="h-14 w-14 shadow-lg shadow-prime-red/30" priority />
-              <div className="min-w-0">
-                <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Prime Digital Hub</h2>
-                <p className="text-sm text-prime-cream/70 sm:text-base">Portal acadêmico do aluno</p>
+        <div className="relative">
+          <div className="absolute -inset-8 rounded-full bg-prime-red/10 blur-3xl" aria-hidden="true" />
+          <div className="glass-card relative overflow-hidden border-white/10 p-5 shadow-2xl sm:p-7">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-4">
+                <div className="rounded-2xl bg-white p-1.5 shadow-lg shadow-prime-red/25">
+                  <BrandLogo variant="mark" className="h-12 w-12" priority />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Prime Digital Hub</p>
+                  <h2 className="mt-1 font-display text-xl font-semibold text-white sm:text-2xl">Sua aprendizagem, com contexto</h2>
+                </div>
               </div>
+              <Sparkles className="hidden h-5 w-5 shrink-0 text-prime-red sm:block" />
             </div>
-            <span className="hidden rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100 sm:inline-flex">
-              Online
-            </span>
-          </div>
 
-          <div className="mb-4 rounded-xl border border-white/10 bg-black/20 p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-prime-cream/70">
-                <CalendarCheck className="h-4 w-4 text-prime-red" />
-                Próxima aula
+            <div className="mb-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-prime-cream/70">
+                  <CalendarCheck className="h-4 w-4 text-prime-red" />
+                  Próxima aula
+                </div>
+                <span className="rounded-full bg-prime-red/15 px-3 py-1 text-xs font-medium text-orange-100">Mais contexto</span>
               </div>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-prime-cream/70">Hoje</span>
+              <p className="text-lg font-semibold text-white">A próxima aula não começa do zero.</p>
+              <p className="mt-1 text-sm leading-6 text-prime-cream/60">
+                Ela começa com a memória do que foi trabalhado, observado e direcionado pelo professor.
+              </p>
             </div>
-            <p className="text-lg font-semibold text-white">Speaking & Confidence</p>
-            <p className="mt-1 text-sm text-prime-cream/60">19:00 - foco em conversação guiada</p>
-          </div>
 
-          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-xl bg-white/10 p-4">
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-prime-red/20">
-                <Target className="h-5 w-5 text-prime-red" />
-              </div>
-              <p className="text-sm text-prime-cream/60">Meta</p>
-              <p className="mt-1 font-semibold text-white">Conversação</p>
+            <div className="relative space-y-3">
+              {[
+                { icon: BookOpen, label: 'Aula', text: 'Interações reais e decisões pedagógicas' },
+                { icon: Sparkles, label: 'Assistência inteligente', text: 'A IA organiza e preserva o contexto' },
+                { icon: Target, label: 'Direção do professor', text: 'O próximo foco ganha clareza' },
+              ].map(({ icon: Icon, label, text }, index) => (
+                <div key={label} className="relative flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-prime-red/15">
+                    <Icon className="h-5 w-5 text-prime-red" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{label}</p>
+                    <p className="mt-1 text-xs leading-5 text-prime-cream/60">{text}</p>
+                  </div>
+                  {index < 2 ? <span className="absolute -bottom-3 left-[1.9rem] z-10 h-3 border-l border-dashed border-prime-red/50" aria-hidden="true" /> : null}
+                </div>
+              ))}
             </div>
-            <div className="rounded-xl bg-white/10 p-4">
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-sky-400/15">
-                <BookOpen className="h-5 w-5 text-sky-200" />
-              </div>
-              <p className="text-sm text-prime-cream/60">Material</p>
-              <p className="mt-1 font-semibold text-white">Liberado</p>
-            </div>
-            <div className="rounded-xl bg-white/10 p-4">
-              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-amber-300/15">
-                <MessageCircle className="h-5 w-5 text-amber-100" />
-              </div>
-              <p className="text-sm text-prime-cream/60">Feedback</p>
-              <p className="mt-1 font-semibold text-white">Atualizado</p>
-            </div>
-          </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 flex items-center justify-between text-sm">
-              <span className="font-medium text-white">Progresso da jornada</span>
-              <span className="text-prime-cream/60">68%</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full rounded-full bg-prime-red" style={{ width: '68%' }}></div>
-            </div>
-            <div className="mt-3 flex items-center justify-between text-xs text-prime-cream/50">
-              <span>Vocabulário</span>
-              <span>Fluência</span>
+            <div className="mt-5 rounded-xl border border-prime-red/20 bg-prime-red/10 p-4">
+              <div className="flex items-start gap-3">
+                <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-prime-red" />
+                <p className="text-sm leading-6 text-prime-cream/80">
+                  <span className="font-semibold text-white">Faça cada aula contar.</span> A memória permanece; a evolução ganha direção.
+                </p>
+              </div>
             </div>
           </div>
         </div>

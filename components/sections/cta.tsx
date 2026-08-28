@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Script from 'next/script'
+import { ArrowRight, Brain, GraduationCap } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -21,14 +22,8 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function CTASection({ portalHref }: CTASectionProps) {
   return (
     <section className="relative z-10 container py-20">
-      <link
-        rel="stylesheet"
-        href="https://calendar.google.com/calendar/scheduling-button-script.css"
-      />
-      <Script
-        src="https://calendar.google.com/calendar/scheduling-button-script.js"
-        strategy="afterInteractive"
-      />
+      <link rel="stylesheet" href="https://calendar.google.com/calendar/scheduling-button-script.css" />
+      <Script src="https://calendar.google.com/calendar/scheduling-button-script.js" strategy="afterInteractive" />
       <Script id="google-calendar-scheduling-button" strategy="afterInteractive">
         {`
           window.addEventListener('load', function () {
@@ -38,20 +33,22 @@ export function CTASection({ portalHref }: CTASectionProps) {
             window.calendar.schedulingButton.load({
               url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0wTZJTbc4VySmF2Nro3c1012BBIOuApsNa3xINFvQAx0R7Yz8F226YhxFgPqafwCjE1WnQBKIq?gv=true',
               color: '#D50000',
-              label: 'Agendar aula experimental + teste de nivel!',
+              label: 'Agendar conversa com a Prime',
               target,
             });
           });
         `}
       </Script>
-      <div className="glass-card overflow-hidden p-12 text-center md:p-16">
+      <div className="glass-card overflow-hidden border-prime-red/20 bg-prime-red/10 p-10 text-center shadow-[0_24px_80px_rgba(213,0,0,0.12)] md:p-16">
         <div className="mx-auto max-w-3xl">
-          <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">
-            Pronto para transformar seu ingles?
-          </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-prime-cream/80">
-            Entre no portal, agende seu teste de nivel e fale com a Prime Digital Hub por
-            WhatsApp sem sair da pagina principal.
+          <div className="mb-6 flex items-center justify-center gap-3 text-prime-red">
+            <Brain className="h-5 w-5" />
+            <span className="text-sm font-semibold uppercase tracking-[0.22em]">O método PRIME</span>
+            <GraduationCap className="h-5 w-5" />
+          </div>
+          <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">Educação que lembra. Você que evolui.</h2>
+          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-prime-cream/80">
+            O professor permanece no centro. A inteligência artificial assiste, organiza e amplia sua memória para que cada aula tenha mais contexto, direcionamento e personalização.
           </p>
         </div>
 
@@ -63,7 +60,8 @@ export function CTASection({ portalHref }: CTASectionProps) {
               'rounded-full bg-prime-red px-8 py-6 text-base font-semibold text-white hover:bg-red-700'
             )}
           >
-            Comecar agora
+            Conhecer o método PRIME
+            <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
 
           <div
@@ -75,15 +73,17 @@ export function CTASection({ portalHref }: CTASectionProps) {
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
+            aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
             className={cn(
               buttonVariants({ size: 'lg', variant: 'outline' }),
               'rounded-full border-emerald-400/60 bg-emerald-500/15 px-8 py-6 text-base font-semibold text-emerald-100 shadow-[0_18px_42px_rgba(16,185,129,0.18)] transition hover:border-emerald-300 hover:bg-emerald-500/25 hover:text-white'
             )}
           >
             <WhatsAppIcon className="mr-3 h-5 w-5" />
-            Fale conosco
+            Falar com a Prime
           </Link>
         </div>
+        <p className="mt-6 text-sm text-prime-cream/55">Faça cada aula contar.</p>
       </div>
     </section>
   )
