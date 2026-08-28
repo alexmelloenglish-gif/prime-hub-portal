@@ -30,7 +30,7 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
   }
 
   function approvalLabel(stage: string) {
-    if (stage === 'publication_review_required') return 'Approve publication'
+    if (stage === 'publication_review_required') return 'Approve publication workflow'
     if (stage === 'processing_approved') return 'Retry processing'
     return 'Approve and continue'
   }
@@ -55,9 +55,11 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
       setTasks((current) => current.filter((item) => item.id !== task.id))
       setMessage(decision === 'approved'
         ? task.stage === 'publication_review_required'
-          ? 'Publication approved. The validated class report and portfolio projection are now visible to the student.'
-          : 'Identity approved. Prompts 2–4 generated drafts; a second publication review is now required.'
-        : 'Rejected safely. No student-facing projection was published.')
+          ? 'Publication workflow approved. Inspect the lesson trace to verify the persisted report, portfolio and final pipeline state.'
+          : task.stage === 'processing_approved'
+            ? 'Processing retry authorized. Inspect the lesson trace to verify the new persisted runtime result.'
+            : 'Identity review approved. Processing continued under the current quality gates; inspect the lesson trace for the resulting downstream state.'
+        : 'Rejected safely. The decision was sent to the existing review workflow; inspect the run trace for the persisted final state.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'The review decision could not be saved.')
     } finally {
@@ -68,8 +70,8 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
   if (!tasks.length) {
     return (
       <div className="glass-card p-8 text-center">
-        <p className="text-lg font-medium text-white">No pending reviews.</p>
-        <p className="mt-2 text-sm leading-6 text-prime-cream/65">New usable transcripts appear here after Drive triage and Prompt 1. Student-facing content is published only after identity review and publication review.</p>
+        <p className="text-lg font-medium text-white">No pending pipeline reviews.</p>
+        <p className="mt-2 text-sm leading-6 text-prime-cream/65">No identity, publication or retry ReviewTask is currently waiting for a human decision.</p>
         {message ? <p className="mt-4 text-sm text-emerald-200">{message}</p> : null}
       </div>
     )
