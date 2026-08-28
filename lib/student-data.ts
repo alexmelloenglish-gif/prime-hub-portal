@@ -630,10 +630,13 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         .filter((draft) => !publishedLessonIds.has(draft.lessonId))
         .map((draft) => ({ ...draft, status: 'legacy' as const, contentStatus: 'draft' as const })),
     ]
-    const newClassReports = reportEntries.filter(
-      (report) => !student.classReports.some((existing) => existing.id === report.id)
+    const pipelineLessonIds = new Set(reportEntries.map((report) => report.lessonId))
+    const legacyClassReports = student.classReports.filter(
+      (existing) => !pipelineLessonIds.has(existing.id)
     )
-    const classReports = [...student.classReports, ...newClassReports]
+    // Pipeline-backed reports are the authoritative current view. Keep legacy
+    // repository history, but render it after actual persisted pipeline content.
+    const classReports = [...reportEntries, ...legacyClassReports]
 
     const pipelineAttendance = reportRecords.map((report) => ({
       id: `pipeline-attendance-${report.reportId}`,
