@@ -65,6 +65,26 @@ function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTR
   return `${system}\n\n${contract}\n\nENTRADA JSON:\n${JSON.stringify(input)}`
 }
 
+function parseJsonCandidate(content: string): unknown | null {
+  const normalized = content
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim()
+  try {
+    return JSON.parse(normalized)
+  } catch {
+    const firstObject = normalized.indexOf('{')
+    const lastObject = normalized.lastIndexOf('}')
+    if (firstObject < 0 || lastObject <= firstObject) return null
+    try {
+      return JSON.parse(normalized.slice(firstObject, lastObject + 1))
+    } catch {
+      return null
+    }
+  }
+}
+
 async function invokeJson<T>(system: string, input: unknown, fallback: T, contract = CANONICAL_CONTRACT): Promise<T> {
   const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY || process.env.GOOGLE_API_KEY
   const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
@@ -89,17 +109,24 @@ async function invokeJson<T>(system: string, input: unknown, fallback: T, contra
       cache: 'no-store',
     },
   )
-  if (!response.ok) return fallback
+  if (!response.ok) {
+    console.warn(JSON.stringify({ event: 'gemini_generation_failed', model, status: response.status }))
+    return fallback
+  }
   const payload = (await response.json()) as {
     candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
   }
   const content = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim()
-  if (!content) return fallback
-  try {
-    return JSON.parse(content) as T
-  } catch {
+  if (!content) {
+    console.warn(JSON.stringify({ event: 'gemini_generation_empty', model }))
     return fallback
   }
+  const parsed = parseJsonCandidate(content)
+  if (parsed === null) {
+    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', model }))
+    return fallback
+  }
+  return parsed as T
 }
 
 function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): PromptOneOutput {
