@@ -19,7 +19,7 @@ export function ComparisonSection() {
     <section className="relative z-10 container py-20">
       <div className="mb-16 max-w-3xl">
         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-prime-red">Antes e depois</p>
-        <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Quando a educação lembra, a evolução ganha direção.</h2>
+        <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Quando a educação lembra, o aluno assume a direção.</h2>
         <p className="text-lg leading-relaxed text-prime-cream/80">Não é sobre acumular dados. É sobre transformar cada aula em contexto para a próxima.</p>
       </div>
 

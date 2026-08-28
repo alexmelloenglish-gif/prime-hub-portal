@@ -13,8 +13,8 @@ const values = [
   },
   {
     icon: Brain,
-    title: 'IA como assistente',
-    description: 'A inteligência artificial organiza informações e amplia a capacidade de memória do professor.',
+    title: 'Tecnologia nos bastidores',
+    description: 'Um sistema de inteligência de aprendizagem organiza o contexto para que o professor possa se concentrar em você.',
   },
   {
     icon: History,
@@ -39,10 +39,10 @@ export function WhyPrimeSection() {
       <div className="mb-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
         <div>
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-prime-red">O que torna o PRIME diferente</p>
-          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">Inteligência a serviço de uma relação de aprendizagem.</h2>
+          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">Uma escola que continua com você.</h2>
         </div>
         <p className="max-w-2xl text-lg leading-relaxed text-prime-cream/80">
-          A tecnologia não ocupa o lugar do professor. Ela funciona como sua assistente: organiza, assiste e amplia sua memória para que ele possa acompanhar você com mais contexto e personalização.
+          O professor continua sendo a autoridade. A tecnologia trabalha nos bastidores para preservar o contexto da sua jornada e tornar cada encontro mais atento, pessoal e consistente.
         </p>
       </div>
 

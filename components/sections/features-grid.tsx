@@ -8,8 +8,8 @@ const features = [
   },
   {
     icon: Brain,
-    title: 'Inteligência como assistência',
-    description: 'A IA organiza o contexto e amplia a memória do professor, sem substituir sua autoridade pedagógica.',
+    title: 'Acompanhamento com contexto',
+    description: 'O professor encontra o histórico certo para acompanhar sua evolução com atenção e consistência.',
   },
   {
     icon: Compass,
@@ -30,7 +30,7 @@ export function FeaturesGrid() {
         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-prime-red">O método PRIME</p>
         <h2 className="mb-4 font-display text-3xl font-bold text-white md:text-4xl">Educação que lembra.</h2>
         <p className="text-lg leading-relaxed text-prime-cream/80">
-          O PRIME conecta cada encontro à sua história de aprendizagem — com tecnologia assistindo o professor e o aluno no centro de tudo.
+          O PRIME conecta cada encontro à sua história de aprendizagem — para que a sua escola continue com você entre uma aula e outra.
         </p>
       </div>
 

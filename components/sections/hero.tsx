@@ -18,17 +18,17 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-prime-red opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-prime-red" />
             </span>
-            Aprendizagem particular de inglês
+            Prime Digital Hub · Seu ecossistema de aprendizagem
           </div>
 
           <div className="space-y-5">
             <h1 className="max-w-3xl font-display text-4xl font-extrabold leading-[1.04] tracking-tight md:text-5xl lg:text-6xl">
-              Um <span className="text-prime-red">superprofessor</span>, assistido pela inteligência artificial.
-              <span className="block text-prime-cream/90">Para que você nunca precise começar do zero.</span>
+              Sua escola de inglês <span className="text-prime-red">continua evoluindo.</span>
+              <span className="block text-prime-cream/90">Aprendizagem que permanece.</span>
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-prime-cream/80 md:text-xl">
-              O PRIME transforma cada aula em memória, evidência e direção. A IA organiza e preserva o contexto;
-              o professor interpreta, valida e conduz; você permanece no centro da sua evolução.
+              Cada aula se conecta à próxima porque o seu aprendizado tem contexto. O professor acompanha sua trajetória, registra o que realmente importa
+              e transforma cada encontro em um passo claro para a sua evolução.
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/50">Prime Digital Hub</p>
-                  <h2 className="mt-1 font-display text-xl font-semibold text-white sm:text-2xl">Sua aprendizagem, com contexto</h2>
+                  <h2 className="mt-1 font-display text-xl font-semibold text-white sm:text-2xl">Sua aprendizagem, com o seu contexto</h2>
                 </div>
               </div>
               <Sparkles className="hidden h-5 w-5 shrink-0 text-prime-red sm:block" />

@@ -13,8 +13,8 @@ const logos: Record<BrandLogoVariant, { src: string; alt: string; width: number;
   full: {
     src: '/brand/prime-digital-hub-full-transparent.png',
     alt: 'Prime Digital Hub',
-    width: 373,
-    height: 175,
+    width: 353,
+    height: 156,
   },
   mark: {
     src: '/brand/prime-digital-hub-mark-transparent.png',

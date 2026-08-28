@@ -12,7 +12,7 @@ export function Footer() {
             <span className="text-sm text-prime-cream/60">© 2026 Prime Digital Hub. Todos os direitos reservados.</span>
           </div>
           <div className="text-center md:text-right">
-            <p className="text-sm font-medium text-prime-cream/70">Educação que lembra. Você que evolui.</p>
+            <p className="text-sm font-medium text-prime-cream/70">Aprendizagem que permanece.</p>
             <p className="mt-1 text-sm text-prime-cream/40">Seu ecossistema de aprendizagem</p>
           </div>
         </div>

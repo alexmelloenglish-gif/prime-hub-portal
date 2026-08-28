@@ -46,9 +46,9 @@ export function CTASection({ portalHref }: CTASectionProps) {
             <span className="text-sm font-semibold uppercase tracking-[0.22em]">O método PRIME</span>
             <GraduationCap className="h-5 w-5" />
           </div>
-          <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">Educação que lembra. Você que evolui.</h2>
+          <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">Aprendizagem que permanece.</h2>
           <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-prime-cream/80">
-            O professor permanece no centro. A inteligência artificial assiste, organiza e amplia sua memória para que cada aula tenha mais contexto, direcionamento e personalização.
+            Uma escola de inglês que acompanha sua evolução, aula após aula. O professor permanece no centro e cada encontro continua a história do anterior.
           </p>
         </div>
 

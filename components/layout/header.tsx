@@ -12,7 +12,7 @@ export function Header({ portalHref }: HeaderProps) {
     <header className="relative z-10 container py-6">
       <nav className="flex min-w-0 items-center justify-between gap-3">
         <Link href="/" className="flex min-w-0 items-center">
-          <BrandLogo variant="full" className="h-16 w-44 sm:h-[72px] sm:w-52" priority />
+          <BrandLogo variant="full" className="h-12 w-36 sm:h-14 sm:w-44" priority />
         </Link>
         <Link
           href={portalHref}
