@@ -52,11 +52,12 @@ export function ComparisonSection() {
       </div>
 
       <div className="mt-12 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:gap-4">
-        <span className="font-display text-2xl font-semibold text-white">Aula</span>
-        <ArrowRight className="h-5 w-5 text-prime-red" />
-        <span className="font-display text-2xl font-semibold text-white">Evidência</span>
-        <ArrowRight className="h-5 w-5 text-prime-red" />
-        <span className="font-display text-2xl font-semibold text-white">Direção</span>
+        {['Aula', 'Evidência', 'Interpretação', 'Direção', 'Evolução'].map((stage, index, stages) => (
+          <div key={stage} className="flex items-center gap-3 sm:gap-4">
+            <span className="font-display text-2xl font-semibold text-white">{stage}</span>
+            {index < stages.length - 1 ? <ArrowRight className="h-5 w-5 text-prime-red" /> : null}
+          </div>
+        ))}
       </div>
     </section>
   )
