@@ -66,27 +66,34 @@ function buildRequest(system: string, input: unknown, contract = CANONICAL_CONTR
 }
 
 async function invokeJson<T>(system: string, input: unknown, fallback: T, contract = CANONICAL_CONTRACT): Promise<T> {
-  const apiKey = process.env.OPENAI_API_KEY
-  const baseUrl = process.env.OPENAI_API_BASE || 'https://api.openai.com/v1'
-  const model = process.env.PRIME_PIPELINE_MODEL || 'gpt-4o-mini'
+  const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY || process.env.GOOGLE_API_KEY
+  const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
   if (!apiKey) return fallback
 
-  const response = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      temperature: 0.1,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: buildRequest('', input, contract) },
-      ],
-    }),
-  })
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: 'user', parts: [{ text: buildRequest('', input, contract) }] }],
+        generationConfig: {
+          temperature: 0.1,
+          responseMimeType: 'application/json',
+        },
+      }),
+      cache: 'no-store',
+    },
+  )
   if (!response.ok) return fallback
-  const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> }
-  const content = payload.choices?.[0]?.message?.content
+  const payload = (await response.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+  }
+  const content = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim()
   if (!content) return fallback
   try {
     return JSON.parse(content) as T
