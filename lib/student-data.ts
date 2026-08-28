@@ -521,13 +521,16 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         const vocabulary = asStringArray(content.vocabulary)
         const corrections = Array.isArray(content.corrections) ? content.corrections : []
         const summary = asString(content.summary, 'Published class report available.')
-        const hasPublishedContent = Boolean(
-          (summary && !summary.toLowerCase().includes('pending authorized source records')) ||
-          focus.length ||
-          evidenceHighlights.length ||
-          vocabulary.length ||
-          corrections.length
-        )
+        const declaredContentStatus = asString(content.contentStatus)
+        const hasPublishedContent = declaredContentStatus
+          ? declaredContentStatus === 'validated'
+          : Boolean(
+            (summary && !summary.toLowerCase().includes('pending authorized source records')) ||
+            focus.length ||
+            evidenceHighlights.length ||
+            vocabulary.length ||
+            corrections.length
+          )
         const teacherInsightIsPublished = asString(content.teacherInsightStatus) === 'published'
         return {
           id: `pipeline-${reportId}`,
