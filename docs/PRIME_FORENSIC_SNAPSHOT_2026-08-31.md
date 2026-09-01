@@ -3,7 +3,7 @@
 ## Snapshot operacional e de evidência
 
 **Data:** 31 de agosto de 2026  
-**Purpose:** ponto de retorno canônico para evitar retrabalho e impedir que hipóteses históricas sejam tratadas como fatos atuais.  
+**Purpose:** ponto de retorno canônico para evitar retrabalho e preservar a separação entre fatos já auditados e ações ainda bloqueadas.  
 **Modo:** READ-ONLY / diagnóstico.  
 **Regra:** este documento registra o estado conhecido até este ponto; nenhuma conclusão abaixo autoriza execução de retry, alteração de código, schema, ambiente, trigger ou deployment.
 
@@ -20,8 +20,6 @@ O mecanismo de retry direcionado já está implementado e publicado em Productio
 - **Regra:** NÃO implementar, refatorar, migrar ou modificar o mecanismo de retry durante esta investigação.
 - **Laura:** retry ainda NÃO executado.
 
-O objetivo atual é somente provar dependências e causalidade antes de uma execução controlada.
-
 ---
 
 ## 2. NEON — ESTADO FORENSE CONFIRMADO
@@ -30,19 +28,6 @@ O objetivo atual é somente provar dependências e causalidade antes de uma exec
 **Branch:** `br-cold-cloud-anwml3lu` (`main`)  
 **Database:** `neondb`  
 **Schema:** `public`
-
-### Tabelas canônicas relevantes
-
-- `pipeline_runs`
-- `transcripts`
-- `lessons`
-- `pipeline_events`
-- `evidence_candidates`
-- `learning_signal_proposals`
-- `teacher_insight_proposals`
-- `review_tasks`
-- `class_report_projections`
-- `portfolio_projections`
 
 ### Integridade histórica
 
@@ -75,8 +60,6 @@ Portfolio = 0
 - **Historical PipelineRun:** `cmtcqbiy800006cqasv3nsziu`
 - **Transcript:** `cmtcqbiyy00026cqafg8r788w`
 - **Lesson:** `lesson_a3368991e6ba0c79`
-- **Student:** `lauramgcstemp@gmail.com`
-- **sourceFileId:** `1gvkGGRuzn-cHz4rrRVG0sXU_-hND_QKgHnmj2qnL534`
 - **Status:** `failed`
 - **Error:** Gemini HTTP 403 no Prompt 1
 - **EvidenceCandidate:** 0
@@ -95,36 +78,13 @@ Portfolio = 0
 3. use nova `idempotencyKey`;
 4. use novo `attemptNumber`.
 
-A constraint relevante é:
-
-```text
-UNIQUE(transcriptId, attemptNumber)
-```
-
-Também existe:
-
-```text
-UNIQUE(idempotencyKey)
-```
+A criação de um novo Transcript usando o mesmo `sourceFileId` é bloqueada por `UNIQUE(sourceFileId)`.
 
 Não existe `UNIQUE(lessonId)` em `pipeline_runs`.
 
-A criação de um novo Transcript usando o mesmo `sourceFileId` NÃO é possível devido a:
+Não existe atualmente uma relação explícita persistida `retry_of`, `parentRunId`, `replayOf` ou equivalente. `attemptNumber` apenas numera tentativas.
 
-```text
-transcripts_sourceFileId_key
-UNIQUE(sourceFileId)
-```
-
-Portanto, o caminho correto para o retry é reutilizar o Transcript histórico, não recriá-lo.
-
-### Retry lineage
-
-Não existe atualmente uma relação explícita persistida `retry_of`, `parentRunId`, `replayOf` ou equivalente.
-
-`attemptNumber` permite numerar tentativas, mas não identifica explicitamente o PipelineRun pai.
-
-Isso NÃO bloqueia estruturalmente o retry atual; apenas significa que uma linhagem explícita e auditável exigiria mudança estrutural futura, caso seja requisito.
+**Conclusão:** o retry estrutural pode preservar o histórico sem migration; linhagem explícita exigiria mudança futura somente se isso se tornar requisito.
 
 ---
 
@@ -138,12 +98,12 @@ As seguintes falhas devem permanecer separadas:
 - histórico `invalid_grant`
 - Gemini HTTP 403
 - defeito/questão de retry ou idempotência
+- Apps Script runtime/trigger errors
+- Cloud Billing / Payments restriction
 
 Nenhuma dessas falhas deve ser considerada causa de outra sem evidência runtime específica.
 
-### O que está comprovado
-
-Para os seis históricos auditados:
+Para os seis históricos, a sequência persistida é:
 
 ```text
 Transcript recebido/persistido
@@ -161,59 +121,30 @@ PipelineRun = failed
 sem artefatos downstream
 ```
 
-### O que NÃO está comprovado
-
-Não há evidência suficiente para afirmar que:
-
-- Apps Script causou o Gemini 403;
-- Firestore causou o Gemini 403;
-- `/api/cron/drive-transcripts` causou o Gemini 403;
-- `ingest_http_500` histórico causou o Gemini 403;
-- `drive_http_403` histórico causou o Gemini 403;
-- `invalid_grant` histórico causou o Gemini 403.
-
 ---
 
 ## 5. APPS SCRIPT — ESTADO DA AUDITORIA
 
-Foram encontrados quatro projetos Apps Script relacionados no Drive.
+Projeto candidato principal:
 
-### Candidato principal
+- **Nome:** `PRIME Digital Hub — Google Meet Transcript Automation`
+- **Script ID:** `1ZCiOyQPRQocSMbAER9c0FelY494I5TTLP639XWdrzmNrSqzbekNIByB5`
+- **Owner:** `alexandre@primedigitalhub.com.br`
+- **Última modificação observada:** `2026-08-27T14:39:56.912Z`
 
-**Nome:** `PRIME Digital Hub — Google Meet Transcript Automation`  
-**Script ID:** `1ZCiOyQPRQocSMbAER9c0FelY494I5TTLP639XWdrzmNrSqzbekNIByB5`  
-**Owner:** `alexandre@primedigitalhub.com.br`  
-**Última modificação observada:** `2026-08-27T14:39:56.912Z`
+Quatro projetos relacionados foram descobertos no Drive.
 
-Outros candidatos encontrados:
-
-- `PRIME Digital Hub Automation`
-- `Projeto sem título` — modificado em 18/08
-- `Projeto sem título` — modificado em 24/07
-
-### Limitação de acesso
-
-O conteúdo real dos projetos Apps Script, `appsscript.json`, triggers e histórico de execução NÃO puderam ser lidos porque a API disponível não possuía os escopos necessários. A interface web também estava autenticada como `alexmello.english@gmail.com`, enquanto os projetos foram identificados como pertencentes a `alexandre@primedigitalhub.com.br`.
-
-Portanto:
+O conteúdo real do Apps Script, `appsscript.json`, triggers e histórico de execução não pôde ser lido na auditoria anterior por limitação de escopos/autenticação. Portanto, o Apps Script não foi comprovado como causa do Gemini 403.
 
 ```text
-RUNTIME_VERSION = UNKNOWN
-TRIGGER_FUNCTION = UNKNOWN
-APPS_SCRIPT_CALLS_GEMINI_DIRECTLY = UNKNOWN
-APPS_SCRIPT_CALLS_PORTAL_ENDPOINT = UNKNOWN
-V8_MIGRATION_REQUIRED = NOT_PROVEN
+PROMPT_1_403_CAUSED_BY_APPS_SCRIPT = NOT_PROVEN
 ```
-
-Não alterar runtime, triggers ou código Apps Script com base apenas em hipótese.
 
 ---
 
 ## 6. PORTAL / VERCEL — CAMINHO DO PROMPT 1
 
-A evidência disponível no repositório indica que a chamada direta ao Gemini ocorre no runtime do portal, não na rota de ingestão em si.
-
-Arquitetura observada:
+A evidência do repositório auditada no SHA `43eda9442732887089a85d23111baa320ab04ca1` estabelece:
 
 ```text
 entrada externa / Apps Script (se aplicável)
@@ -229,124 +160,133 @@ lib/pipeline/prompts.ts
 Gemini generateContent
 ```
 
-A rota `/api/pipeline/ingest` valida `x-prime-pipeline-secret`, recebe o payload e chama `processLessonTranscript(payload)`.
+A rota de ingestão valida o segredo de pipeline e chama `processLessonTranscript()`; a chamada direta ao Gemini ocorre posteriormente na camada de geração de prompts.
 
-A camada de prompts é a que realiza a chamada HTTP ao Gemini.
-
-Configuração identificada no código/documentação:
+Configuração identificada no código:
 
 ```text
 GOOGLE_AI_STUDIO_API_KEY
 PRIME_PIPELINE_MODEL
 ```
 
-O modelo padrão documentado no código auditado é `gemini-3.7-flash`.
-
-**Importante:** isso é evidência do repositório; o valor efetivamente configurado em Production não deve ser presumido sem uma verificação de ambiente/runtime.
+O valor efetivamente configurado em Production não deve ser presumido sem verificação de ambiente/runtime.
 
 ---
 
-## 7. DRIVE / INGESTÃO — REGRA PARA O RETRY
+## 7. NOVO CHECKPOINT — GOOGLE CLOUD BILLING / GEMINI ACCESS
+
+Um relatório de auditoria externo foi incorporado ao estado operacional desta investigação.
+
+### Evidência reportada
+
+O healthcheck isolado do Gemini foi reportado como alcançando o provedor e retornando:
+
+```text
+HTTP 403
+PERMISSION_DENIED
+Your project has been denied access. Please contact support.
+```
+
+O mesmo relatório registrou uma tentativa de configuração de Cloud Billing que falhou com:
+
+```text
+OR_BACR2_59
+Unable to complete billing setup.
+Unable to configure your account.
+```
+
+Também foi reportada a existência de uma conta de billing anterior encerrada e impossibilidade de tratá-la como uma conta ativa disponível para o projeto.
+
+**Estado operacional adotado neste snapshot:**
+
+```text
+GOOGLE_CLOUD_BILLING = BLOCKED
+BILLING_SETUP = FAILED / OR_BACR2_59
+ACTIVE_BILLING_ACCOUNT_FOR_PROJECT = NO
+GEMINI_PROVIDER_ACCESS = FAIL
+CURRENT_GEMINI_RESULT = 403 PERMISSION_DENIED
+```
+
+### Segurança de registro
+
+Este repositório é público. **Não registrar neste snapshot números completos ou identificadores financeiros sensíveis, dados de cartão, CVV, tokens, chaves de API ou segredos.** Os detalhes financeiros do relatório externo devem permanecer apenas no ambiente privado apropriado/Console de Billing.
+
+### Causalidade
+
+O estado de Billing/Gemini é agora o **bloqueio operacional atual reportado**, mas deve continuar separado dos seis erros históricos de Apps Script, Drive, Firestore e retry. O código histórico prova o Gemini 403; o relatório de Billing fornece a evidência operacional atual que deve ser resolvida antes de qualquer retry.
+
+---
+
+## 8. DRIVE / INGESTÃO — REGRA PARA O RETRY
 
 O retry direcionado foi desenhado para reconstruir o processamento a partir do Transcript canônico já persistido.
 
-Logo, para o cenário da Laura, a nova tentativa não deve ser conceitualmente tratada como uma nova ingestão de Drive.
+Portanto, um erro atual em `/api/cron/drive-transcripts` não deve ser automaticamente considerado bloqueador do retry histórico, desde que o caminho efetivo de `retryFailedPipelineRun()` continue reutilizando o Transcript persistido.
 
-Isso significa que um erro atual de:
+Essa condição deve ser confirmada no código/runtime antes da execução.
+
+---
+
+## 9. FIRESTORE — REGRA DE CAUSALIDADE
+
+O erro histórico `UNAUTHENTICATED` do Firestore permanece separado do Gemini 403.
+
+Antes do retry, deve ser confirmado se `retryFailedPipelineRun()` / `processLessonTranscript()` consulta Firestore no caminho crítico ou se Firestore é restrito à projeção/admin/dashboard.
+
+Não inferir causalidade sem evidência do caminho de execução.
+
+---
+
+## 10. ESTADO OPERACIONAL ATUAL
 
 ```text
-/api/cron/drive-transcripts
+APPS SCRIPT = NÃO PROVADO COMO CAUSA DO 403
+NEON HISTORICAL RECORDS = PRESERVADOS
+RETRY IMPLEMENTATION = JÁ PUBLICADO
+GEMINI HEALTHCHECK = 403 / PERMISSION_DENIED
+GOOGLE CLOUD BILLING = BLOQUEADO
+
+LAURA RETRY = NÃO EXECUTADO
+GL-003 = NÃO EXECUTADO
+FULL PIPELINE = BLOQUEADO
 ```
 
-não deve ser automaticamente considerado bloqueador do retry histórico, desde que a implementação atual de `retryFailedPipelineRun()` realmente utilize o Transcript persistido e não reexecute a reconciliação do Drive.
-
-Essa última condição deve ser confirmada no código/runtime antes da execução.
-
----
-
-## 8. FIRESTORE — REGRA DE CAUSALIDADE
-
-O dashboard/admin utiliza Firestore para identidade/perfil do aluno e projeções relacionadas.
-
-Foi observado anteriormente um problema de autenticação Firestore (`UNAUTHENTICATED`).
-
-Neste snapshot, esse erro permanece como **DEPENDÊNCIA A CLASSIFICAR**, não como causa do Gemini 403 histórico.
-
-A pergunta operacional correta antes do retry é:
-
-> `retryFailedPipelineRun()` / `processLessonTranscript()` precisa consultar o diretório Firestore para executar Prompt 1, ou o Firestore está restrito à projeção/admin/dashboard?
-
-Não assumir resposta sem evidência do caminho de execução.
-
----
-
-## 9. DASHBOARD — EVIDÊNCIA DE PROCESSAMENTO
-
-O Admin Panel atualmente mostra estados de pipeline por aluno e uma seção de atividade recente persistida.
-
-Para os históricos de falha observados, o dashboard mostra `failed`, `report not published` e `Portfolio: not applied`.
-
-Para runs completos, há evidência correspondente de:
-
-```text
-completed
-report published
-Portfolio: applied
-```
-
-Isso confirma que a camada de dashboard está refletindo estado persistido do pipeline; não deve ser usada isoladamente para inferir a causa técnica de uma falha.
-
----
-
-## 10. ESTADO ATUAL DO GL-003
-
-O mecanismo direcionado está publicado, mas a execução continua deliberadamente bloqueada enquanto o pre-flight não concluir todas as dependências críticas.
-
-### Não executar ainda
+### O que NÃO fazer agora
 
 - não executar retry da Laura;
 - não executar GL-003;
 - não alterar código;
 - não alterar schema;
-- não alterar variáveis de ambiente;
+- não alterar variáveis de ambiente sem novo gate autorizado;
 - não alterar triggers Apps Script;
 - não realizar nova ingestão como substituto do retry;
-- não descartar Transcript ou Lesson histórica como inválida.
-
-### Princípio de preservação
-
-Uma falha de processamento no Prompt 1 **não transforma a aula em aula inválida**.
-
-Enquanto o Transcript canônico estiver preservado e o failure estiver localizado, a aula permanece candidata à recuperação pelo mecanismo de retry.
+- não recriar Transcript;
+- não descartar Transcript ou Lesson histórica como inválida;
+- não criar repetidamente novas contas de Billing enquanto o bloqueio administrativo não estiver resolvido.
 
 ---
 
 ## 11. PONTO EXATO DE RETOMADA
 
-A próxima investigação deve começar daqui, sem repetir as auditorias já concluídas:
+A investigação deve continuar **a partir do bloqueio de Billing/Gemini**, sem repetir as auditorias Neon já concluídas.
 
 ```text
-1. Código atual do retry
-   ↓
-2. Confirmar exatamente quais funções/serviços ele chama
-   ↓
-3. Confirmar se reutiliza o Transcript histórico
-   ↓
-4. Confirmar se Firestore está ou não no caminho crítico
-   ↓
-5. Confirmar primeiro provider externo chamado pelo retry
-   ↓
-6. Confirmar configuração/runtime desse provider em Production
-   ↓
-7. Só então emitir SAFE TO EXECUTE
-   ↓
-8. Se SAFE = YES, executar UMA única retentativa controlada
+1. Resolver / esclarecer Cloud Billing / Payments restriction
+        ↓
+2. Confirmar Billing account ACTIVE e utilizável pelo projeto
+        ↓
+3. Confirmar acesso permitido ao Gemini
+        ↓
+4. Validar o healthcheck mínimo do Gemini
+        ↓
+5. Confirmar configuração Production do provider/model
+        ↓
+6. Completar pre-flight do retry
+        ↓
+7. Somente se SAFE = YES, executar UMA única retentativa controlada da Laura
 ```
 
-**Não repetir a descoberta do schema Neon.**  
-**Não repetir a auditoria dos seis históricos.**  
-**Não recriar Transcript.**  
-**Não interpretar o Gemini 403 como erro de Apps Script sem nova evidência.**
+Até o passo 4 passar, não executar Laura nem GL-003.
 
 ---
 
@@ -362,11 +302,13 @@ A próxima investigação deve começar daqui, sem repetir as auditorias já con
 | Novo Transcript com mesmo sourceFileId | **BLOQUEADO por UNIQUE(sourceFileId)** |
 | Retry lineage explícito `retry_of` | **NÃO EXISTE** |
 | Apps Script encontrado | **SIM** |
-| Conteúdo/manifesto/triggers Apps Script auditados | **NÃO — acesso insuficiente** |
 | Apps Script como causa do Gemini 403 | **NÃO PROVADO** |
-| Vercel/portal como executor da chamada Gemini | **SUPORTADO PELO CÓDIGO AUDITADO** |
+| Chamada Gemini no portal/Vercel | **SUPORTADA PELO CÓDIGO AUDITADO** |
 | Firestore como causa do Gemini 403 | **NÃO PROVADO** |
 | Drive ingest como causa do Gemini 403 | **NÃO PROVADO** |
+| Gemini healthcheck | **403 / PERMISSION_DENIED** |
+| Cloud Billing setup | **BLOQUEADO / OR_BACR2_59** |
+| Active Billing utilizável pelo projeto | **NÃO DISPONÍVEL NO RELATÓRIO AUDITADO** |
 | Laura retry executado | **NÃO** |
 | GL-003 executado | **NÃO** |
 | Código modificado nesta investigação | **NÃO** |
@@ -379,6 +321,6 @@ A próxima investigação deve começar daqui, sem repetir as auditorias já con
 
 Este documento é um **checkpoint de retorno**.
 
-Qualquer agente que retome a investigação deve primeiro ler este snapshot e tratar seus fatos confirmados como estado já estabelecido. Não deve refazer buscas ou modificar componentes já auditados sem evidência nova de regressão, mudança de requisito ou contradição verificável.
+Qualquer agente que retome a investigação deve primeiro ler este snapshot e tratar os fatos aqui registrados como estado já estabelecido. Não deve refazer buscas Neon/Idempotency já concluídas, não deve modificar componentes já auditados e não deve executar retry apenas porque o banco estruturalmente permite fazê-lo.
 
-**STATUS DO SNAPSHOT: LOCKED FOR CONTINUATION**
+**STATUS DO SNAPSHOT: LOCKED FOR CONTINUATION — BILLING/GEMINI BLOCKER**
