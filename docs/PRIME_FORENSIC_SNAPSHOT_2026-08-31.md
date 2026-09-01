@@ -237,10 +237,69 @@ Não inferir causalidade sem evidência do caminho de execução.
 
 ---
 
-## 10. ESTADO OPERACIONAL ATUAL
+## 10. OPERATIONAL CHECKPOINT UPDATE — TRANSPORT/PERSISTENCE PROVEN
+
+Uma revisão adicional do código atual refinou o breakpoint de forma importante.
+
+A rota `/api/pipeline/ingest` não possui um stop natural antes do Gemini. O fluxo efetivo é:
+
+```text
+Drive / external automation
+        ↓
+POST /api/pipeline/ingest
+        ↓
+Transcript persisted
+        ↓
+PipelineRun created
+        ↓
+status = processing
+        ↓
+processLessonTranscript()
+        ↓
+runPromptOne()
+        ↓
+Gemini generateContent
+```
+
+Consequentemente, um novo transcript enviado agora pelo endpoint real não seria um “teste somente de transporte”: ele avançaria para Prompt 1 e encontraria o mesmo bloqueio do Gemini enquanto o provider continuar retornando 403.
+
+Os históricos reais já fornecem a evidência necessária para o breakpoint de transporte/persistência. O estado é agora classificado como:
+
+```text
+DRIVE SOURCE DISCOVERY              = PROVEN
+TRANSCRIPT READ / PAYLOAD CREATION  = PROVEN
+APPS SCRIPT → CANONICAL ENDPOINT    = PROVEN
+HTTP INGESTION                      = PROVEN
+TRANSCRIPT PERSISTENCE              = PROVEN
+PIPELINERUN CREATION                = PROVEN
+PROMPT 1 INVOCATION REACHED         = PROVEN
+GEMINI GENERATION                   = BLOCKED
+GEMINI PROVIDER RESPONSE            = HTTP 403 PERMISSION_DENIED
+DOWNSTREAM COGNITIVE ARTIFACTS      = BLOCKED
+```
+
+This strengthens, but does not change, the causal boundary: the transport path is proven; the Apps Script is still **not proven to make the Gemini call**.
+
+### Transport-only test decision
+
+```text
+FRESH TRANSPORT-ONLY TEST REQUIRED = NO
+CODE CHANGE TO INSERT A PRE-GEMINI STOP = NO
+PRODUCTION BYPASS REQUIRED = NO
+```
+
+A fresh transcript should not be submitted merely to prove transport/persistence while the Gemini provider gate is known to fail. Doing so would predictably generate another failed PipelineRun without answering a new forensic question.
+
+---
+
+## 11. ESTADO OPERACIONAL ATUAL
 
 ```text
 APPS SCRIPT = NÃO PROVADO COMO CAUSA DO 403
+DRIVE → PORTAL TRANSPORT = PROVEN
+TRANSCRIPT PERSISTENCE = PROVEN
+PIPELINERUN CREATION = PROVEN
+PROMPT 1 REACHED = PROVEN
 NEON HISTORICAL RECORDS = PRESERVADOS
 RETRY IMPLEMENTATION = JÁ PUBLICADO
 GEMINI HEALTHCHECK = 403 / PERMISSION_DENIED
@@ -266,9 +325,9 @@ FULL PIPELINE = BLOQUEADO
 
 ---
 
-## 11. PONTO EXATO DE RETOMADA
+## 12. PONTO EXATO DE RETOMADA
 
-A investigação deve continuar **a partir do bloqueio de Billing/Gemini**, sem repetir as auditorias Neon já concluídas.
+A investigação deve continuar **a partir do bloqueio de Billing/Gemini**, sem repetir as auditorias Neon já concluídas e sem repetir um teste de transporte que já está demonstrado.
 
 ```text
 1. Resolver / esclarecer Cloud Billing / Payments restriction
@@ -290,7 +349,7 @@ Até o passo 4 passar, não executar Laura nem GL-003.
 
 ---
 
-## 12. CHECKPOINT CANÔNICO
+## 13. CHECKPOINT CANÔNICO
 
 | Item | Estado |
 |---|---|
@@ -298,6 +357,10 @@ Até o passo 4 passar, não executar Laura nem GL-003.
 | Transcript da Laura preservado | **CONFIRMADO** |
 | Falha histórica Prompt 1 / Gemini 403 | **CONFIRMADO** |
 | Artefatos downstream dos seis históricos | **0** |
+| Drive → Portal transport | **CONFIRMADO** |
+| Transcript persistence | **CONFIRMADO** |
+| PipelineRun creation | **CONFIRMADO** |
+| Prompt 1 reached | **CONFIRMADO** |
 | Retry estrutural sem migration | **CONFIRMADO** |
 | Novo Transcript com mesmo sourceFileId | **BLOQUEADO por UNIQUE(sourceFileId)** |
 | Retry lineage explícito `retry_of` | **NÃO EXISTE** |
@@ -309,6 +372,7 @@ Até o passo 4 passar, não executar Laura nem GL-003.
 | Gemini healthcheck | **403 / PERMISSION_DENIED** |
 | Cloud Billing setup | **BLOQUEADO / OR_BACR2_59** |
 | Active Billing utilizável pelo projeto | **NÃO DISPONÍVEL NO RELATÓRIO AUDITADO** |
+| Novo teste de transporte necessário | **NÃO** |
 | Laura retry executado | **NÃO** |
 | GL-003 executado | **NÃO** |
 | Código modificado nesta investigação | **NÃO** |
@@ -317,10 +381,12 @@ Até o passo 4 passar, não executar Laura nem GL-003.
 
 ---
 
-## 13. REGRA FINAL DESTE SNAPSHOT
+## 14. REGRA FINAL DESTE SNAPSHOT
 
 Este documento é um **checkpoint de retorno**.
 
-Qualquer agente que retome a investigação deve primeiro ler este snapshot e tratar os fatos aqui registrados como estado já estabelecido. Não deve refazer buscas Neon/Idempotency já concluídas, não deve modificar componentes já auditados e não deve executar retry apenas porque o banco estruturalmente permite fazê-lo.
+Qualquer agente que retome a investigação deve primeiro ler este snapshot e tratar os fatos aqui registrados como estado já estabelecido. Não deve refazer buscas Neon/Idempotency ou testes de transporte já concluídos, não deve modificar componentes já auditados e não deve executar retry apenas porque o banco estruturalmente permite fazê-lo.
 
-**STATUS DO SNAPSHOT: LOCKED FOR CONTINUATION — BILLING/GEMINI BLOCKER**
+O próximo trabalho permitido é resolver o bloqueio de Billing/Gemini e, depois, validar novamente somente o healthcheck mínimo do provider. Nenhuma nova ingestão deve ser usada como substituto desse gate.
+
+**STATUS DO SNAPSHOT: LOCKED FOR CONTINUATION — TRANSPORT PROVEN / BILLING-GEMINI BLOCKER**
