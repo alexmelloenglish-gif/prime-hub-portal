@@ -4,7 +4,9 @@
 **Last updated:** 2026-08-31  
 **Purpose:** prevent work on the wrong repository, project, environment, account, endpoint, deployment, billing profile, database or legacy version.
 
-> **DO NOT RE-INVESTIGATE:** this registry is an identity map, not a redesign document. Verify only what is marked UNKNOWN/PENDING or what has new contradictory evidence.
+> **🚨 DO NOT RE-INVESTIGATE:** this registry is an identity map, not a redesign document. Verify only what is marked UNKNOWN/PENDING or what has new contradictory evidence.
+>
+> **🚨 DO NOT REPEAT FAILED PATHS WITHOUT NEW EVIDENCE.** A proven fact remains locked unless there is regression evidence, a code/runtime change, a contradiction, or a changed requirement.
 
 ## CORE RULE
 
@@ -24,6 +26,7 @@ This public document may contain public identifiers, project IDs, account names,
 - **BLOCKED** — correct resource but currently unable to proceed
 - **UNKNOWN** — discovered but ownership/purpose is not yet proven
 - **DO NOT USE** — explicitly excluded from PRIME production
+- **PROVEN / LOCKED** — behavior or fact established by evidence; do not reopen without a defined reopening condition
 
 ---
 
@@ -182,7 +185,64 @@ Real transcript → transport → persistence → Gemini → cognitive artifacts
 
 ---
 
-# 8. LEGACY / WRONG / DO NOT USE REGISTER
+# 8. WHERE WE ARE → WHAT IS PROVEN → WHAT IS BLOCKED → WHERE WE GO
+
+This section is a **navigation checkpoint**, not a second technical design. Its purpose is to let a future agent, Codex, developer or human resume work immediately without repeating completed investigations.
+
+## WHERE WE ARE NOW
+
+The canonical project is correctly identified across the principal layers: GitHub repository, Vercel project, Google Cloud project, Apps Script automation and Neon database. The transport foundation has been demonstrated through the point at which Prompt 1 is reached.
+
+The active blocker is downstream of transport: the Gemini provider currently rejects the project request with HTTP `403 PERMISSION_DENIED`, and the associated Google Cloud billing setup is blocked by `OR_BACR2_59`.
+
+## WHAT IS PROVEN / LOCKED
+
+- Canonical GitHub repository identity.
+- Canonical Vercel project identity as previously audited.
+- Canonical Google Cloud project identity.
+- Canonical Apps Script project identity and V8 runtime status as recorded in the audited checkpoint.
+- Canonical ingestion endpoint.
+- Drive → Apps Script → portal ingestion path through transcript persistence and `PipelineRun` creation.
+- Prompt 1 is reached before the observed Gemini provider failure.
+- The historical six-run breakpoint is `GeminiGenerationFailed` / HTTP `403`, followed by failed pipeline state and absence of downstream artifacts.
+- The old Vercel ingest endpoint and Rhino runtime are legacy/deprecated and must not be revived as troubleshooting shortcuts.
+
+**LOCK RULE:** Do not reopen any item above merely because a new agent has not personally inspected it. Reopen only with new contradictory evidence, regression evidence, a relevant code/runtime change, or a changed requirement.
+
+## WHAT IS BLOCKED
+
+- Gemini provider access.
+- Google Cloud billing/provider activation required for successful Gemini generation.
+- Full cognitive pipeline validation.
+- GL-003 execution.
+- Controlled Laura retry.
+- Full end-to-end production validation.
+
+## WHERE WE GO NEXT
+
+The next operational path is **not** another transport investigation. It is:
+
+1. Resolve the Google Cloud Billing / provider-access restriction.
+2. Confirm the canonical `prime-hub-portal` project has active billing/provider access.
+3. Run only the minimum Gemini healthcheck and require a successful provider response.
+4. Reassess production environment configuration only if the healthcheck passes or produces new evidence.
+5. Validate the cognitive pipeline through the approved gates.
+6. Only after the preceding gates pass, prepare the controlled GL-003 / Laura validation.
+7. Preserve the resulting evidence in a new dated snapshot.
+
+## STOP CONDITIONS
+
+Stop and report instead of improvising when:
+
+- a canonical identifier conflicts with a platform's direct evidence;
+- a supposedly locked fact is contradicted;
+- a proposed fix requires changing an environment, credential, deployment, trigger or architecture decision not authorized by the current task;
+- a legacy resource appears to be required for current operation;
+- a new test would merely reproduce an already-proven failure without answering a new question.
+
+---
+
+# 9. LEGACY / WRONG / DO NOT USE REGISTER
 
 | Resource | Classification | Replacement / canonical resource |
 |---|---|---|
@@ -194,7 +254,7 @@ For every future finding record: resource type; exact name/ID/URL; classificatio
 
 ---
 
-# 9. PENDING VERIFICATION — DO NOT GUESS
+# 10. PENDING VERIFICATION — DO NOT GUESS
 
 - Exact canonical Production domain/deployment mapping in Vercel.
 - Current Production deployment SHA mapping after each approved deployment.
@@ -208,7 +268,7 @@ For every future finding record: resource type; exact name/ID/URL; classificatio
 
 ---
 
-# 10. CHANGE CONTROL
+# 11. CHANGE CONTROL
 
 Never silently replace an identifier.
 
@@ -224,7 +284,7 @@ A `CANONICAL` resource should only be replaced by direct evidence from the ownin
 
 ---
 
-# 11. FUTURE-AGENT CONTRIBUTION CONTRACT
+# 12. FUTURE-AGENT CONTRIBUTION CONTRACT
 
 Before contributing, read:
 
@@ -257,7 +317,7 @@ NOTES:
 
 ---
 
-# 12. NEXT PHASE — CLEANUP NOT STARTED
+# 13. NEXT PHASE — CLEANUP NOT STARTED
 
 The cleanup phase must use this registry as its source of truth and must classify before deleting, archiving, renaming or disconnecting anything.
 
