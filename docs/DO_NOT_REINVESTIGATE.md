@@ -227,11 +227,59 @@ WHERE WE ARE GOING:
 
 ---
 
+# 10. FIVE-GATE VALIDATION MODEL
+
+This is the canonical validation sequence. It separates already-proven transport, the current external provider blocker, cognitive validation, controlled production validation, and the final real-world end-to-end proof.
+
+```text
+GATE 1 — TRANSPORT FOUNDATION
+Drive → Apps Script → Ingest → Persistence → PipelineRun → Prompt 1 reached
+STATUS = PROVEN / LOCKED
+REOPEN ONLY IF = regression / code change / runtime change / contradictory evidence
+
+GATE 2 — GEMINI PROVIDER
+Billing → project billing linkage → Gemini access → minimal healthcheck
+STATUS = BLOCKED
+CURRENT BLOCKER = OR_BACR2_59 / HTTP 403 PERMISSION_DENIED
+
+GATE 3 — COGNITIVE PIPELINE
+Prompt 1 → Prompt 2 → Prompt 3 → Prompt 4
+→ Evidence → Signal → Insight → Report / Portfolio
+STATUS = NOT YET VALIDATED END-TO-END
+
+GATE 4 — CONTROLLED PRODUCTION VALIDATION
+GL-003 → one controlled Laura retry
+STATUS = BLOCKED
+
+GATE 5 — FULL E2E
+Real transcript
+→ transport
+→ persistence
+→ Gemini
+→ cognitive artifacts
+→ Dashboard / Portfolio
+→ final traceable evidence
+STATUS = PENDING
+```
+
+**Gate 5 is distinct from Gate 4.** A controlled retry can validate production behavior without, by itself, proving the complete real-transcript-to-student-surface lifecycle. The project reaches final E2E proof only when the whole chain is observed with durable artifacts and traceable evidence.
+
+Master rule:
+
+> **A PROVEN / LOCKED gate does not return to INVESTIGATE without new evidence of regression, contradiction, code/runtime change, or changed requirement.**
+
+---
+
 # 🚨 STATUS
 
 **DO NOT RE-INVESTIGATE — CONTINUE FROM CANONICAL SNAPSHOT.**
 
 Last canonical checkpoint: **2026-08-31**  
 Current blocker: **Google Cloud Billing / Gemini provider access**  
+Gate 1: **PROVEN / LOCKED**  
+Gate 2: **BLOCKED**  
+Gate 3: **NOT YET VALIDATED E2E**  
+Gate 4: **BLOCKED**  
+Gate 5: **PENDING**  
 Laura retry: **BLOCKED**  
 GL-003: **BLOCKED**
