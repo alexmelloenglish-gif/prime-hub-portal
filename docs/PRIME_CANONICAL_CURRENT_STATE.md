@@ -1,16 +1,51 @@
-# PRIME Digital Hub / PRIME Learning Engine
+# 🚨 DO NOT RE-INVESTIGATE — PRIME DIGITAL HUB
 
 ## CANONICAL CURRENT STATE — OPERATIONAL SNAPSHOT
+
+> **STOP. READ THIS FIRST.** This document is the canonical return point. Facts marked **PROVEN / DONE / LOCKED** must **NOT be re-investigated or rebuilt** unless new contradictory runtime evidence is produced.
+
+**Anti-rework rule:** Before starting any investigation, read `docs/DO_NOT_REINVESTIGATE.md` and this document. Reopening a closed investigation without new evidence is considered retrabalho.
 
 **Date:** 2026-08-31  
 **Status:** CANONICAL / FROZEN CURRENT STOP POINT  
 **Repository:** `alexmelloenglish-gif/prime-hub-portal`  
-**Canonical branch:** `main`  
-**Purpose:** freeze the operational state and prevent retrabalho. Later amendments in this file supersede earlier execution-order statements where they conflict.
+**Canonical branch:** `main`
 
-> **The dashboard must never lie.**
+---
 
-> **Specification establishes intent. Implementation establishes existence. Execution establishes operation. Persistence establishes durable state. Provenance establishes causality. Only a complete trace establishes runtime verification.**
+# 0. 🚨 DO NOT RE-INVESTIGATE — PROVEN FACTS
+
+The following are already established for this checkpoint:
+
+```text
+NEON SCHEMA FORENSIC AUDIT         = DONE
+SIX HISTORICAL RUN AUDIT           = DONE
+LAURA HISTORICAL RECORD AUDIT      = DONE
+IDEMPOTENCY STRUCTURAL AUDIT       = DONE
+RETRY IMPLEMENTATION               = DONE / DEPLOYED
+APPS SCRIPT PROJECT IDENTIFICATION = DONE
+DRIVE → PORTAL TRANSPORT           = PROVEN
+TRANSCRIPT PERSISTENCE             = PROVEN
+PIPELINERUN CREATION               = PROVEN
+PROMPT 1 REACHED                   = PROVEN
+PORTAL → GEMINI CALL LOCALIZATION  = PROVEN
+```
+
+**Do not redo these audits merely because a new agent/session starts.** Only reopen one when there is new evidence of regression, contradiction, or a changed requirement.
+
+### Current blocker — do not confuse it with the closed investigations
+
+```text
+CURRENT ROOT BLOCKER = GOOGLE CLOUD BILLING / GEMINI PROVIDER ACCESS
+GEMINI HEALTHCHECK   = HTTP 403 / PERMISSION_DENIED
+BILLING SETUP        = OR_BACR2_59 / BLOCKED
+```
+
+The historical Apps Script → Prompt 1 causality remains:
+
+```text
+PROMPT_1_403_CAUSED_BY_APPS_SCRIPT = NOT_PROVEN
+```
 
 ---
 
@@ -176,8 +211,6 @@ GEMINI_PROVIDER_ACCESS = FAIL
 CURRENT_GEMINI_RESULT = 403 PERMISSION_DENIED
 ```
 
-This is now the **current root blocker for execution**, while remaining causally separate from the historical Apps Script/Drive/Firestore findings.
-
 ### Public-repository security rule
 
 This repository is public. Do not store payment-card information, full financial identifiers, API keys, tokens, passwords, CVV, or other secrets in GitHub documentation. Detailed billing evidence must remain in the private Google Cloud/Payments environment.
@@ -220,7 +253,48 @@ No code refactor, schema change, Apps Script change or repeated billing-account 
 
 ---
 
-# 9. What is already DONE / what must NOT be redone
+# 9. Transport/persistence checkpoint — PROVEN
+
+The current `/api/pipeline/ingest` route does not provide a natural stop point before Gemini. Its effective sequence is:
+
+```text
+Drive / external automation
+        ↓
+POST /api/pipeline/ingest
+        ↓
+Transcript persisted
+        ↓
+PipelineRun created
+        ↓
+status = processing
+        ↓
+processLessonTranscript()
+        ↓
+runPromptOne()
+        ↓
+Gemini generateContent
+```
+
+Historical production executions already provide the evidence needed for this breakpoint.
+
+```text
+DRIVE SOURCE DISCOVERY              = PROVEN
+TRANSCRIPT READ / PAYLOAD CREATION  = PROVEN
+APPS SCRIPT → CANONICAL ENDPOINT    = PROVEN
+HTTP INGESTION                      = PROVEN
+TRANSCRIPT PERSISTENCE              = PROVEN
+PIPELINERUN CREATION                = PROVEN
+PROMPT 1 INVOCATION REACHED         = PROVEN
+GEMINI GENERATION                   = BLOCKED
+GEMINI PROVIDER RESPONSE            = HTTP 403 PERMISSION_DENIED
+DOWNSTREAM COGNITIVE ARTIFACTS      = BLOCKED
+```
+
+A fresh transcript is therefore **not** required merely to prove transport/persistence while Gemini remains blocked.
+
+---
+
+# 10. What is already DONE / what must NOT be redone
 
 ```text
 NEON SCHEMA FORENSIC AUDIT        = DONE
@@ -230,32 +304,35 @@ IDEMPOTENCY STRUCTURAL AUDIT      = DONE
 RETRY IMPLEMENTATION              = DONE / DEPLOYED
 APPS SCRIPT PROJECT IDENTIFICATION= DONE
 PORTAL GEMINI CALL LOCALIZATION   = DONE
+DRIVE → PORTAL TRANSPORT           = PROVEN
+TRANSCRIPT PERSISTENCE             = PROVEN
+PIPELINERUN CREATION               = PROVEN
+PROMPT 1 REACHED                   = PROVEN
 ```
 
 Do not repeat these investigations without new contradictory evidence.
 
-The remaining Apps Script source/trigger inspection is a separate unresolved evidence gap, not a reason to rewrite the pipeline.
-
 ---
 
-# 10. Future-agent reading order
+# 11. Future-agent reading order
 
 Any new agent, Codex session or operator continuing this work must read:
 
-1. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — this document, first.
-2. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md` — cross-layer forensic checkpoint.
-3. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md` — Apps Script / Prompt 1 evidence.
-4. `docs/google-drive-transcript-automation.md` — Drive/transcript architecture.
-5. `app/api/pipeline/ingest/route.ts` — ingestion boundary.
-6. `lib/pipeline/run.ts` — orchestration/failure persistence.
-7. `lib/pipeline/prompts.ts` — Gemini provider call.
-8. Neon `pipeline_runs`, `transcripts`, `pipeline_events` — historical persistence evidence.
+1. `docs/DO_NOT_REINVESTIGATE.md` — **first: anti-rework guardrail**.
+2. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — canonical current state.
+3. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md` — cross-layer forensic checkpoint.
+4. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md` — Apps Script / Prompt 1 evidence.
+5. `docs/google-drive-transcript-automation.md` — Drive/transcript architecture.
+6. `app/api/pipeline/ingest/route.ts` — ingestion boundary.
+7. `lib/pipeline/run.ts` — orchestration/failure persistence.
+8. `lib/pipeline/prompts.ts` — Gemini provider call.
+9. Neon `pipeline_runs`, `transcripts`, `pipeline_events` — historical persistence evidence.
 
 Use audited Production SHA `43eda9442732887089a85d23111baa320ab04ca1` when reproducing the source-level reasoning recorded here, unless a newer verified deployment is explicitly recorded.
 
 ---
 
-# 11. Security and credential handling
+# 12. Security and credential handling
 
 If Vercel access is requested, authenticate through the account that owns/has access to the Vercel project/workspace. GitHub credentials and Vercel login credentials are separate systems.
 
@@ -265,7 +342,7 @@ Provider credentials used by the application are runtime configuration, not huma
 
 ---
 
-# 12. CURRENT STOP POINT
+# 13. CURRENT STOP POINT
 
 ```text
 IMPLEMENTATION = FROZEN
@@ -283,4 +360,4 @@ LAURA = BLOCKED
 
 **NEXT AUTHORIZED ACTION:** resolve the Billing/Payments restriction, confirm an active billing account usable by `prime-hub-portal`, then run only the minimal Gemini healthcheck. Do not execute Laura retry or GL-003 before that gate passes.
 
-**STATUS: LOCKED FOR CONTINUATION — 2026-08-31**
+**STATUS: 🚨 DO NOT RE-INVESTIGATE — LOCKED FOR CONTINUATION — 2026-08-31**
