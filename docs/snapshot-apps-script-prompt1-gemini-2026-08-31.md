@@ -36,7 +36,7 @@ Primary candidate project:
 
 Four related Apps Script projects were discovered in Drive, but only the project above matches the primary failure-notification name exactly.
 
-The actual Apps Script source, `appsscript.json`, triggers and execution history could not be inspected because the available Google Apps Script/Gmail credentials lacked the required scopes, and the browser session was authenticated as a different account. Therefore the following remain **UNKNOWN**:
+The actual Apps Script source, `appsscript.json`, triggers and execution history could not be inspected in the prior audit because the available Google Apps Script/Gmail credentials lacked the required scopes, and the browser session was authenticated as a different account. Therefore the following remain **UNKNOWN**:
 
 - runtime version;
 - trigger function/frequency/executing account;
@@ -46,7 +46,7 @@ The actual Apps Script source, `appsscript.json`, triggers and execution history
 - Apps Script execution history;
 - whether V8 migration is required.
 
-Do **not** infer `DEPRECATED_ES5` merely from the historical runtime discussion. It must be read from the actual manifest.
+Do **not** infer `DEPRECATED_ES5` merely from historical runtime discussion. It must be read from the actual manifest.
 
 ## 3. Portal/GitHub evidence at audited deployment SHA
 
@@ -54,7 +54,7 @@ Audited deployment/source SHA:
 
 `43eda9442732887089a85d23111baa320ab04ca1`
 
-The repository establishes the following architecture:
+The repository establishes:
 
 `/api/pipeline/ingest`
 → validates the pipeline secret
@@ -64,17 +64,11 @@ The repository establishes the following architecture:
 → `runPromptOne()` invokes the Gemini generation layer
 → Gemini `generateContent`
 
-The Gemini generation implementation in `lib/pipeline/prompts.ts` calls:
-
-`https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`
-
-using:
+The Gemini generation implementation calls the Google Generative Language API using:
 
 - `GOOGLE_AI_STUDIO_API_KEY` as the API credential;
-- `PRIME_PIPELINE_MODEL` as the configured model, with code fallback `gemini-3.7-flash`;
+- `PRIME_PIPELINE_MODEL` as the configured model, with the code fallback documented in the audited source;
 - `x-goog-api-key` for the provider request.
-
-A non-2xx provider response becomes `GeminiGenerationError` with the provider HTTP status. Prompt 1 is versioned as `prompt-1.v3` in the current inspected code.
 
 The ingestion route itself does **not** directly call Gemini; the Gemini call occurs later in the portal runtime.
 
@@ -88,19 +82,6 @@ Canonical Neon environment audited read-only:
 - Branch ID: `br-cold-cloud-anwml3lu`
 - Database: `neondb`
 - Schema: `public`
-
-Relevant canonical tables confirmed:
-
-- `pipeline_runs`
-- `transcripts`
-- `lessons`
-- `pipeline_events`
-- `evidence_candidates`
-- `learning_signal_proposals`
-- `teacher_insight_proposals`
-- `review_tasks`
-- `class_report_projections`
-- `portfolio_projections`
 
 For the six historical failures:
 
@@ -122,7 +103,6 @@ For the six historical failures:
 - Error: `GEMINI_HTTP_ERROR` / HTTP 403
 - Attempt: `1`
 - Authority: `non_authoritative`
-- Idempotency key: `drive:1gvkGGRuzn-cHz4rrRVG0sXU_-hND_QKgHnmj2qnL534`
 - Evidence candidates: `0`
 - Learning signals: `0`
 - Teacher insights: `0`
@@ -134,7 +114,7 @@ The historical Laura record is intact.
 
 A structurally valid retry can reuse the historical Transcript and Lesson without a schema migration, provided the new PipelineRun uses a new `id`, a new `idempotencyKey`, and an unused `attemptNumber` for that transcript.
 
-However, explicit retry lineage (`retryOf`, `parentRunId`, etc.) is **not currently persisted**. `attemptNumber` can number attempts but does not identify the historical parent run.
+Explicit retry lineage (`retryOf`, `parentRunId`, etc.) is not currently persisted.
 
 ## 6. Idempotency finding
 
@@ -163,7 +143,8 @@ These findings remain independent unless runtime evidence proves otherwise:
 - historical `invalid_grant`;
 - historical Gemini HTTP 403;
 - retry/idempotency behavior;
-- Apps Script runtime/trigger errors.
+- Apps Script runtime/trigger errors;
+- Cloud Billing / Payments restriction.
 
 The Neon evidence does **not** show that Firestore authentication, Drive reconciliation, historical Drive errors, or Apps Script caused the six Gemini 403 failures.
 
@@ -175,7 +156,43 @@ while:
 
 `Apps Script → ??? = NOT PROVEN`
 
-## 8. Operational status / safety
+## 8. NEW BILLING / GEMINI CHECKPOINT
+
+A separate audited report has now been incorporated into the operational snapshot.
+
+Reported isolated Gemini healthcheck result:
+
+```text
+HTTP 403
+PERMISSION_DENIED
+Your project has been denied access. Please contact support.
+```
+
+Reported Cloud Billing setup failure:
+
+```text
+OR_BACR2_59
+Unable to complete billing setup.
+Unable to configure your account.
+```
+
+The report also states that the previously used billing account is closed and is not currently available as an active account for the project.
+
+Current operational state adopted from that audit:
+
+```text
+GOOGLE_CLOUD_BILLING = BLOCKED
+BILLING_SETUP = FAILED / OR_BACR2_59
+ACTIVE_BILLING_ACCOUNT_FOR_PROJECT = NO
+GEMINI_PROVIDER_ACCESS = FAIL
+CURRENT_GEMINI_RESULT = 403 PERMISSION_DENIED
+```
+
+This is a **separate provider/infrastructure blocker**. It does not retroactively prove that Apps Script caused the historical Prompt 1 403.
+
+This repository is public; no payment-card data, full financial identifiers, API keys, tokens, passwords or other secrets are stored here. Detailed billing evidence belongs in the private Google Cloud/Payments environment.
+
+## 9. Operational status / safety
 
 As of this snapshot:
 
@@ -187,11 +204,15 @@ As of this snapshot:
 - **No Laura retry executed:** YES
 - **No GL-003 executed:** YES
 
-`GL-003_SAFE_TO_EXECUTE = NO` in the forensic procedure because the procedure explicitly required stopping before execution and the provider health/Apps Script dependency picture is not fully proven.
+```text
+LAURA RETRY = BLOCKED
+GL-003 = BLOCKED
+FULL PIPELINE = BLOCKED
+```
 
-Do not execute Laura retry merely because the database can structurally represent it. The provider path must first be proven healthy and the remaining pre-flight dependencies must be classified.
+The current blocker is the reported Cloud Billing / Gemini provider access failure. Do not execute a retry until the provider health gate passes and the remaining retry dependencies have been classified.
 
-## 9. Where future agents must look
+## 10. Where future agents must look
 
 Use this file as the **first-read snapshot** for the Apps Script / Prompt 1 / Gemini investigation:
 
@@ -199,31 +220,22 @@ Use this file as the **first-read snapshot** for the Apps Script / Prompt 1 / Ge
 
 Then consult, in this order:
 
-1. `docs/google-drive-transcript-automation.md` — canonical Drive/transcript ingestion architecture and idempotency behavior.
-2. `app/api/pipeline/ingest/route.ts` — ingestion boundary and pipeline entry.
-3. `lib/pipeline/run.ts` — pipeline execution/orchestration and failure persistence.
-4. `lib/pipeline/prompts.ts` — Gemini provider call and Prompt 1 generation behavior.
-5. Neon `pipeline_runs`, `transcripts`, and `pipeline_events` — canonical persistence evidence for historical runs.
-6. The actual Apps Script project identified above — **only after access is available**, to resolve the remaining UNKNOWN values for manifest, triggers, code and executions.
+1. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md` — canonical cross-layer forensic state and current blocker.
+2. `docs/google-drive-transcript-automation.md` — canonical Drive/transcript ingestion architecture.
+3. `app/api/pipeline/ingest/route.ts` — ingestion boundary and pipeline entry.
+4. `lib/pipeline/run.ts` — pipeline execution/orchestration and failure persistence.
+5. `lib/pipeline/prompts.ts` — Gemini provider call and Prompt 1 generation behavior.
+6. Neon `pipeline_runs`, `transcripts`, and `pipeline_events` — canonical persistence evidence for historical runs.
+7. The actual Apps Script project identified above — **only after access is available**, to resolve the remaining UNKNOWN values for manifest, triggers, code and executions.
 
-When checking source behavior relevant to this snapshot, prefer the audited production source/deployment SHA:
+When checking source behavior relevant to this snapshot, prefer audited Production source/deployment SHA `43eda9442732887089a85d23111baa320ab04ca1` unless a newer verified deployment is explicitly recorded.
 
-`43eda9442732887089a85d23111baa320ab04ca1`
+## 11. Current decision boundary
 
-Do not replace this snapshot with assumptions from a different deployment without recording the new SHA and evidence.
+The Neon schema/idempotency audit is complete for this checkpoint and should not be repeated without new evidence.
 
-## 10. Current decision boundary
+The historical Apps Script association remains unresolved at source/trigger level, while the current provider health result and Billing setup state are recorded as the active operational blocker.
 
-The investigation has crossed the point where repeating the same Neon schema/idempotency audit is useful. Those facts are recorded here.
+The next permitted investigation is to resolve the Cloud Billing / Gemini access block, then re-run only the minimal provider healthcheck. No Laura retry or GL-003 execution is authorized by this snapshot.
 
-The unresolved question is specifically:
-
-> Does the real Apps Script project call only the PRIME portal ingestion/reconciliation path, or does it independently call Gemini / contain a runtime/trigger failure?
-
-Until the actual Apps Script manifest, source, triggers and execution history are readable, the answer remains:
-
-`NOT_PROVEN`
-
-The historical Prompt 1/Gemini 403 remains localized by portal evidence to the portal-to-Gemini provider call.
-
-**SNAPSHOT STATUS: CANONICAL FORENSIC CHECKPOINT — 2026-08-31**
+**SNAPSHOT STATUS: CANONICAL FORENSIC CHECKPOINT — BILLING/GEMINI BLOCKER — 2026-08-31**
