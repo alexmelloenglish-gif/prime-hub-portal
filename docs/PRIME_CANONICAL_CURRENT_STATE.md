@@ -2,28 +2,21 @@
 
 ## CANONICAL CURRENT STATE — OPERATIONAL SNAPSHOT
 
-**Date:** 2026-08-28  
+**Date:** 2026-08-31  
 **Status:** CANONICAL / FROZEN CURRENT STOP POINT  
 **Repository:** `alexmelloenglish-gif/prime-hub-portal`  
 **Canonical branch:** `main`  
-**Reference main commit:** `0a8c382b57b8cc70245da89b7ff30eee17177fa2`  
-**Purpose:** freeze the operational state after the Teacher Intelligence implementation work and define the next authorized execution order without inferring unproven cognitive behavior.
-
-> **Teacher Intelligence Dashboard — runtime observability surface implemented; cognitive lifecycle remains partially unproven.**
+**Purpose:** freeze the operational state and prevent retrabalho. Later amendments in this file supersede earlier execution-order statements where they conflict.
 
 > **The dashboard must never lie.**
 
 > **Specification establishes intent. Implementation establishes existence. Execution establishes operation. Persistence establishes durable state. Provenance establishes causality. Only a complete trace establishes runtime verification.**
 
-This snapshot does not erase or rewrite the historical Runtime Verification Register, GL-001, GL-002, or the GL-003 protocol. Where older CURRENT STOP POINT text conflicts with this document, this snapshot is the current operational reference.
-
 ---
 
-# 1. Current project layers
+# 1. Existing product/runtime and Teacher Intelligence
 
-The current PRIME state must be understood as three distinct layers.
-
-## 1.1 Existing product/runtime
+The product/runtime foundation remains:
 
 ```text
 Drive
@@ -34,395 +27,260 @@ Drive
 → dashboard
 ```
 
-This is the operational product/runtime foundation already present in the system.
+Teacher Intelligence observability surfaces remain implemented as previously recorded, including PipelineRun, PipelineEvent, transcript/provenance inspection, Evidence Candidate review, Learning Signal Proposal, Teacher Insight Proposal, Class Report/Portfolio inspection, audit/provenance and existing Pipeline ReviewTask workflow.
 
-## 1.2 Instrumentation / observability
-
-The project now has a Teacher Intelligence runtime-observability layer built over the existing runtime, including surfaces for:
-
-- `PipelineRun`
-- `PipelineEvent`
-- source / Drive provenance where persisted
-- transcript inspection
-- Gemini provenance where persisted
-- Evidence Candidate review
-- Learning Signal Proposal visibility
-- Teacher Insight Proposal visibility
-- Class Report / Portfolio projection inspection
-- audit / provenance
-- existing Pipeline ReviewTask workflow
-
-## 1.3 Cognitive learning lifecycle still to be proven
-
-```text
-Evidence
-→ Signal
-→ Insight
-→ Decision
-→ Action
-→ Learning State
-→ Outcome
-```
-
-The dashboard may expose the absence or partial existence of these stages. It must not manufacture them.
+These surfaces do not manufacture cognitive lifecycle state.
 
 ---
 
-# 2. Teacher Intelligence implementation state
+# 2. Retry implementation — FROZEN
 
-## PR #2 — implemented and merged
+The targeted retry mechanism is already implemented and deployed to Production.
 
-**PR:** `feat: implement Teacher Intelligence runtime dashboard`  
-**Merge commit:** `37ece0edd2f01e83fa736b1654a53d44a8a702f0`
+- Production deployment: `dpl_51Jfb5ZfhcuhffrWB5R2G4gNzF6c`
+- Audited GitHub SHA: `43eda9442732887089a85d23111baa320ab04ca1`
+- Endpoint: `POST /api/admin/pipeline/retry`
+- Path: `retryFailedPipelineRun()` → `processLessonTranscript()`
 
-Implemented runtime-observability surfaces include:
+**Do not implement, refactor, migrate, or modify the retry mechanism during the current investigation.**
 
-- Teacher Intelligence Command Center
-- internal Teacher Intelligence navigation
-- Students
-- Lessons
-- Lesson runtime trace
-- dedicated Transcript viewer
-- Evidence Candidate Review
-- Learning Signal Proposal view
-- Teacher Insight Proposal view
-- Coaching / Action truth surface
-- Learning State truth surface
-- Audit / Provenance
-- loading / error states
-- Admin sidebar entry
-
-The implementation reused the existing PRIME runtime and did not introduce a second Learning Engine architecture.
-
-## PR #3 — implemented and merged
-
-**PR:** `feat: integrate existing pipeline reviews into Teacher Intelligence`  
-**Merge commit:** `0a8c382b57b8cc70245da89b7ff30eee17177fa2`
-
-The Teacher Review Queue now reuses the existing Pipeline ReviewTask workflow and existing review API instead of creating a parallel approval mechanism.
-
-Canonical review surface:
-
-```text
-Existing Pipeline ReviewTasks
-+
-Evidence Candidate Review
-→ Teacher Intelligence Review Queue
-```
-
-The integration also removed copy that inferred downstream publication/visibility merely from a successful review request.
+Laura retry has not been executed.
 
 ---
 
-# 3. Critical semantic boundaries — governance rules
+# 3. Neon historical evidence — LOCKED
 
-These distinctions are now runtime governance rules, not optional documentation conventions.
+The Neon forensic audit established that the six historical PipelineRuns are intact and remain `failed`.
 
-```text
-Evidence Candidate
-≠
-Validated Evidence
-```
+All six have:
 
 ```text
-LearningSignalProposal
-≠
-Canonical Learning Signal
+Transcript persisted
+PipelineRun persisted
+Prompt 1 reached
+GeminiGenerationFailed
+provider = gemini
+stage = prompt-1
+httpStatus = 403
+PipelineRun = failed
+no downstream artifacts
 ```
+
+Laura's canonical historical record remains intact:
 
 ```text
-TeacherInsightProposal
-≠
-Published / human-validated Teacher Insight
+PipelineRun = cmtcqbiy800006cqasv3nsziu
+Transcript  = cmtcqbiyy00026cqafg8r788w
+Lesson      = lesson_a3368991e6ba0c79
+Status      = failed
+Error       = GEMINI_HTTP_ERROR / HTTP 403
 ```
 
-```text
-Teacher review
-≠
-Pedagogical Decision
-```
+The retry can structurally reuse the historical Transcript and Lesson without schema migration, using a new PipelineRun identity, new idempotency key and unused attempt number.
 
-```text
-Coaching recommendation
-≠
-Educational Action
-```
-
-```text
-Class Report published
-≠
-Learning State updated
-```
-
-```text
-PipelineRun completed
-≠
-Cognitive E2E verified
-```
-
-Any UI, analytics, documentation, demo, audit or future implementation must preserve these boundaries.
+The historical database audit is complete for this checkpoint and should not be repeated without new evidence.
 
 ---
 
-# 4. Evidence Candidate review — exact current meaning
+# 4. Causality separation — LOCKED
 
-The Teacher Intelligence Evidence Candidate review exposes:
+The following remain independent findings unless runtime evidence proves a causal relationship:
 
-```text
-ACCEPT
-REJECT
-RETURN FOR REVISION
-BLOCK
-```
+- Firebase `UNAUTHENTICATED`
+- Drive `ingest_http_500`
+- historical Drive `403`
+- historical `invalid_grant`
+- historical Gemini HTTP 403
+- retry/idempotency behavior
+- Apps Script runtime/trigger errors
+- Cloud Billing / Payments restriction
 
-The code path persists an audit event for the human review decision and intentionally preserves the distinction:
+The Apps Script has not been proven to cause the historical Gemini 403.
 
-```text
-canonicalEvidenceCreated = false
-```
+---
+
+# 5. Apps Script — current recorded state
+
+Primary candidate:
+
+- Project: `PRIME Digital Hub — Google Meet Transcript Automation`
+- Script ID: `1ZCiOyQPRQocSMbAER9c0FelY494I5TTLP639XWdrzmNrSqzbekNIByB5`
+- Owner: `alexandre@primedigitalhub.com.br`
+
+The prior forensic audit could identify the project but could not read its manifest, source, triggers or execution history because of access/scope limitations.
 
 Therefore:
 
-- Evidence Candidate review UI: **IMPLEMENTED**
-- Human review event path: **IMPLEMENTED**
-- Real teacher Evidence Candidate decision verified in Production during this implementation cycle: **NOT PROVEN**
-- Canonical Validated Evidence creation: **NOT PROVEN**
-
----
-
-# 5. Runtime truth — operational snapshot
-
-| Capability | Current state |
-|---|---|
-| Drive → ingestion | **VERIFIED historically** |
-| Transcript persistence | **VERIFIED historically** |
-| Pipeline run creation | **VERIFIED historically** |
-| Post-gate Gemini execution on a new real lesson | **NOT PROVEN** |
-| Evidence Candidate generation E2E post-gate | **NOT PROVEN** |
-| Evidence Candidate persistence E2E post-gate | **NOT PROVEN** |
-| Teacher Intelligence shell | **IMPLEMENTED / PRODUCTION** |
-| Students surface | **IMPLEMENTED / PRODUCTION** |
-| Lessons surface | **IMPLEMENTED / PRODUCTION** |
-| Lesson trace | **IMPLEMENTED / PRODUCTION** |
-| Transcript viewer | **IMPLEMENTED / PRODUCTION** |
-| Gemini provenance surface | **IMPLEMENTED / PRODUCTION** |
-| Evidence Candidate review UI | **IMPLEMENTED / PRODUCTION** |
-| Pipeline ReviewTask integration | **IMPLEMENTED / PRODUCTION** |
-| Evidence Candidate review persistence in a real teacher action | **NOT PROVEN** |
-| Learning Signal Proposal view | **IMPLEMENTED / PRODUCTION** |
-| Canonical Learning Signal | **NOT PROVEN** |
-| Teacher Insight Proposal view | **IMPLEMENTED / PRODUCTION** |
-| Published human Teacher Insight | **NOT PROVEN** |
-| Coaching / Action truth surface | **IMPLEMENTED / PRODUCTION** |
-| Pedagogical Decision | **NOT PROVEN** |
-| Educational Action | **NOT PROVEN** |
-| Learning State truth surface | **IMPLEMENTED / PRODUCTION** |
-| Canonical Learning State transition | **NOT PROVEN** |
-| Audit / provenance surface | **IMPLEMENTED / PRODUCTION** |
-| Outcome verification | **NOT PROVEN** |
-| Longitudinal learning loop | **NOT PROVEN** |
-| Full cognitive E2E trace | **NOT PROVEN** |
-
----
-
-# 6. Golden Trace state
-
-## GL-001 — Rafael
-
-**FROZEN / REJECTED AS E2E GOLDEN TRACE**
-
-Historical evidence must remain unchanged.
-
-## GL-002 — Gustavo
-
-**FROZEN / REJECTED AS E2E GOLDEN TRACE**
-
-Historical evidence must remain unchanged.
-
-## GL-003
-
-**NEXT AUTHORIZED REAL RUNTIME VERIFICATION**
-
-GL-003 remains the next decisive proof after the `4b1df7c` gate correction.
-
-Required trace:
-
 ```text
-sourceFileId
-   ↓
-pipelineRunId
-   ↓
-transcriptId
-   ↓
-Gemini provider
-   ↓
-model
-   ↓
-requestId
-   ↓
-Prompt 1
-   ↓
-EvidenceCandidate IDs
-   ↓
-Evidence persistence
-   ↓
-Quality Gate
-   ↓
-Prompt 2
-   ↓
-Class Report
-   ↓
-Portfolio
-   ↓
-dashboard
+PROMPT_1_403_CAUSED_BY_APPS_SCRIPT = NOT_PROVEN
 ```
 
-If any link disappears:
+Do not infer runtime or trigger behavior without actual Apps Script evidence.
+
+---
+
+# 6. Portal → Gemini localization
+
+The audited Production source establishes the portal-side architecture:
 
 ```text
-FIRST VERIFIED BREAKPOINT = [stage]
+/api/pipeline/ingest
+→ processLessonTranscript()
+→ runPromptOne()
+→ Gemini generation layer
+→ generateContent
 ```
 
-Everything after that stage remains **NOT PROVEN**.
+The Gemini call is performed in the portal runtime rather than directly by the ingestion route.
 
-A `completed` pipeline status or visually correct dashboard is not sufficient for GL-003 PASS.
-
----
-
-# 7. Execution order — management freeze
-
-No additional Teacher Intelligence feature expansion is authorized before the next verification checkpoint merely because a screen is missing.
-
-The operational sequence is now:
+Relevant runtime configuration includes:
 
 ```text
-CURRENT SNAPSHOT
-      ↓
-GL-003
-      ↓
-PROVE 4b1df7c IN REAL RUNTIME
-      ↓
-ANALYTICS
-      ↓
-FIREBASE / IDEMPOTENCY AUDIT
-      ↓
-RECONCILIATION
-      ↓
-ONLY THEN new Teacher Dashboard increments
+GOOGLE_AI_STUDIO_API_KEY
+PRIME_PIPELINE_MODEL
 ```
 
-This sequence is canonical until new evidence justifies a change.
+This source evidence localizes the historical Prompt 1 403 to the portal-to-provider call, while preserving the Apps Script causality status as `NOT_PROVEN`.
 
 ---
 
-# 8. Analytics status
+# 7. NEW CURRENT BLOCKER — CLOUD BILLING / GEMINI ACCESS
 
-Analytics was started after the initial Teacher Intelligence implementation but is **not part of this canonical Production snapshot**.
+A separate audited report has now established the current operational blocker as a Google Cloud Billing / Gemini access issue.
 
-Current classification:
+The isolated Gemini healthcheck was reported to reach the provider and return:
 
 ```text
-Analytics = IN PROGRESS / NON-CANONICAL
+HTTP 403
+PERMISSION_DENIED
+Your project has been denied access. Please contact support.
 ```
 
-No Analytics branch, page, count, chart or metric may be described as Production truth until it is completed, reviewed, merged into `main`, deployed, and verified according to its evidence requirements.
-
-Analytics must not invent percentages for unproven cognitive stages.
-
-In particular, the following remain `NOT PROVEN` until supported by real runtime evidence:
-
-- Validated Evidence coverage
-- Canonical Signal coverage
-- Pedagogical Decision coverage
-- Educational Action coverage
-- Learning State coverage
-- Outcome coverage
-- E2E cognitive loop coverage
-
----
-
-# 9. Firebase / idempotency — separate engineering front
-
-Firebase / idempotency errors and related reconciliation concerns remain a **separate engineering front**.
-
-They are not resolved, superseded, or made irrelevant by progress in Teacher Intelligence.
-
-Current rule:
-
-> **Teacher Intelligence progress must not be used as evidence that Firebase/idempotency behavior is correct.**
-
-This snapshot does not re-audit that subsystem. Its errors/idempotency state must be handled in its own audit after GL-003 and Analytics according to the execution order above.
-
----
-
-# 10. Verification evidence from the Teacher Intelligence implementation cycle
-
-A static Teacher Intelligence regression self-test was added to the build and used to protect truth boundaries such as:
-
-- Teacher Intelligence admin navigation exists.
-- existing admin authorization is reused.
-- existing Pipeline ReviewTask workflow is reused.
-- existing review API is reused.
-- Evidence Candidate acceptance cannot silently claim canonical Evidence creation.
-- Signal Proposal remains distinct from canonical Signal.
-- Insight Proposal remains distinct from published Insight.
-- Learning State UI does not manufacture a state transition.
-- zero-Evidence condition remains visible.
-- Gemini provenance surface remains present.
-- no second OpenAI provider path is introduced by Teacher Intelligence.
-- review completion copy does not infer downstream publication/visibility without persisted-state evidence.
-
-Observed implementation/deployment evidence during this cycle included:
+The same audit reported a Cloud Billing setup failure:
 
 ```text
-Teacher Intelligence static regression self-test: PASS
-Prisma generate: PASS
-Next.js production compilation: PASS
-Production deployment: READY / Vercel success
+OR_BACR2_59
+Unable to complete billing setup.
+Unable to configure your account.
 ```
 
-These prove the Teacher Intelligence implementation/build/deployment level. They do not prove the cognitive Learning Engine E2E path.
+The report further states that the previously available billing account is closed and that there is currently no active billing account available for the project.
+
+For operational purposes, this snapshot therefore records:
+
+```text
+GOOGLE_CLOUD_BILLING = BLOCKED
+BILLING_SETUP = FAILED / OR_BACR2_59
+ACTIVE_BILLING_ACCOUNT_FOR_PROJECT = NO
+GEMINI_PROVIDER_ACCESS = FAIL
+CURRENT_GEMINI_RESULT = 403 PERMISSION_DENIED
+```
+
+This is now the **current root blocker for execution**, while remaining causally separate from the historical Apps Script/Drive/Firestore findings.
+
+### Public-repository security rule
+
+This repository is public. Do not store payment-card information, full financial identifiers, API keys, tokens, passwords, CVV, or other secrets in GitHub documentation. Detailed billing evidence must remain in the private Google Cloud/Payments environment.
 
 ---
 
-# 11. Security finding kept separate
+# 8. CURRENT EXECUTION GATE — SUPERSEDING PRIOR GL-003 ORDER
 
-The implementation build reported dependency vulnerabilities, including high and critical findings.
+Any earlier section of this file that described immediate GL-003 execution is superseded by this current gate.
 
-No forced dependency upgrade was mixed into the Teacher Intelligence implementation.
+The order is now:
 
-This remains a separate security-remediation item. It must not be silently treated as resolved by successful deployment.
+```text
+CLOUD BILLING / PAYMENTS
+        ↓
+ACTIVE BILLING ACCOUNT
+        ↓
+PROJECT LINKED TO BILLING
+        ↓
+GEMINI ACCESS ALLOWED
+        ↓
+MINIMAL GEMINI HEALTHCHECK = PASS
+        ↓
+REMAINING RETRY PRE-FLIGHT = PASS
+        ↓
+GL-003 SAFE TO EXECUTE = YES
+        ↓
+ONE CONTROLLED LAURA RETRY
+```
+
+Until the minimal Gemini healthcheck passes:
+
+```text
+LAURA RETRY = BLOCKED
+GL-003 = BLOCKED
+FULL PIPELINE = BLOCKED
+```
+
+No code refactor, schema change, Apps Script change or repeated billing-account creation is authorized merely to bypass this gate.
+
+---
+
+# 9. What is already DONE / what must NOT be redone
+
+```text
+NEON SCHEMA FORENSIC AUDIT        = DONE
+SIX HISTORICAL RUN AUDIT          = DONE
+LAURA HISTORICAL RECORD AUDIT     = DONE
+IDEMPOTENCY STRUCTURAL AUDIT      = DONE
+RETRY IMPLEMENTATION              = DONE / DEPLOYED
+APPS SCRIPT PROJECT IDENTIFICATION= DONE
+PORTAL GEMINI CALL LOCALIZATION   = DONE
+```
+
+Do not repeat these investigations without new contradictory evidence.
+
+The remaining Apps Script source/trigger inspection is a separate unresolved evidence gap, not a reason to rewrite the pipeline.
+
+---
+
+# 10. Future-agent reading order
+
+Any new agent, Codex session or operator continuing this work must read:
+
+1. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — this document, first.
+2. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md` — cross-layer forensic checkpoint.
+3. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md` — Apps Script / Prompt 1 evidence.
+4. `docs/google-drive-transcript-automation.md` — Drive/transcript architecture.
+5. `app/api/pipeline/ingest/route.ts` — ingestion boundary.
+6. `lib/pipeline/run.ts` — orchestration/failure persistence.
+7. `lib/pipeline/prompts.ts` — Gemini provider call.
+8. Neon `pipeline_runs`, `transcripts`, `pipeline_events` — historical persistence evidence.
+
+Use audited Production SHA `43eda9442732887089a85d23111baa320ab04ca1` when reproducing the source-level reasoning recorded here, unless a newer verified deployment is explicitly recorded.
+
+---
+
+# 11. Security and credential handling
+
+If Vercel access is requested, authenticate through the account that owns/has access to the Vercel project/workspace. GitHub credentials and Vercel login credentials are separate systems.
+
+Never place passwords, 2FA codes, API tokens, private keys or production secrets in this repository or in chat.
+
+Provider credentials used by the application are runtime configuration, not human login credentials.
 
 ---
 
 # 12. CURRENT STOP POINT
 
-> **Teacher Intelligence Dashboard runtime-observability surfaces are implemented in Production through PR #2 and PR #3. The UI can expose persisted runtime artifacts and explicitly represent unproven cognitive stages without manufacturing them. Historical Golden Traces GL-001 and GL-002 remain frozen and rejected as E2E proofs. Analytics is not yet canonical Production work. Firebase/idempotency remains a separate unresolved engineering front. The next authorized project event is GL-003: a new real Production lesson must traverse the post-`4b1df7c` runtime so the project can prove the first evidence-bearing post-gate trace or identify the first verified breakpoint. No additional cognitive lifecycle claim is authorized before that evidence exists.**
-
-## Deepest current truth
-
 ```text
-Product/runtime foundation          EXISTS / historical verification available
-Runtime observability              IMPLEMENTED / PRODUCTION
-Cognitive lifecycle                PARTIALLY IMPLEMENTED AS PROPOSALS / NOT E2E PROVEN
-Learning State / Decision / Action NOT PROVEN
-Outcome loop                       NOT PROVEN
-Next proof                         GL-003
+IMPLEMENTATION = FROZEN
+HISTORICAL EVIDENCE = PRESERVED
+RETRY = IMPLEMENTED BUT NOT EXECUTED
+APPS SCRIPT CAUSALITY = NOT_PROVEN
+PROMPT 1 HISTORICAL 403 = CONFIRMED
+CURRENT GEMINI HEALTH = 403 / PERMISSION_DENIED
+CLOUD BILLING = BLOCKED
+GL-003 = BLOCKED
+LAURA = BLOCKED
 ```
 
----
+**CURRENT ROOT BLOCKER:** Google Cloud Billing / Gemini provider access.
 
-# 13. Next authorized action
+**NEXT AUTHORIZED ACTION:** resolve the Billing/Payments restriction, confirm an active billing account usable by `prime-hub-portal`, then run only the minimal Gemini healthcheck. Do not execute Laura retry or GL-003 before that gate passes.
 
-**Execute GL-003 without contaminating the experiment.**
-
-A controlled manual Production trigger remains acceptable only if it invokes the same existing Production pipeline and does not alter source evidence, database records, generated artifacts, gates, or outcomes merely to obtain a passing result.
-
-> **Manual trigger is allowed. Manual contamination is forbidden.**
-
-After GL-003:
-
-1. update the Runtime Verification Register with the actual trace;
-2. set `FIRST VERIFIED BREAKPOINT` if the chain breaks;
-3. classify downstream stages as `NOT PROVEN` where evidence ends;
-4. only then resume Analytics according to the management sequence.
+**STATUS: LOCKED FOR CONTINUATION — 2026-08-31**
