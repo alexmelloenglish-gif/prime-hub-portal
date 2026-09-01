@@ -192,7 +192,60 @@ This is a **separate provider/infrastructure blocker**. It does not retroactivel
 
 This repository is public; no payment-card data, full financial identifiers, API keys, tokens, passwords or other secrets are stored here. Detailed billing evidence belongs in the private Google Cloud/Payments environment.
 
-## 9. Operational status / safety
+## 9. OPERATIONAL CHECKPOINT UPDATE — TRANSPORT/PERSISTENCE PROVEN
+
+A subsequent code review of the current pipeline established an important refinement to the previous state classification.
+
+The current `/api/pipeline/ingest` route does not provide a natural stop point before Gemini. Its effective sequence is:
+
+```text
+Drive / external automation
+        ↓
+POST /api/pipeline/ingest
+        ↓
+Transcript persisted
+        ↓
+PipelineRun created
+        ↓
+status = processing
+        ↓
+processLessonTranscript()
+        ↓
+runPromptOne()
+        ↓
+Gemini generateContent
+```
+
+Therefore, sending a fresh transcript through the real ingestion endpoint while Gemini access remains blocked would not constitute a transport-only test. It would proceed into Prompt 1 and reproduce the provider failure.
+
+The existing historical executions already provide the stronger production evidence needed for this breakpoint. Accordingly, the transport/persistence path is now classified as:
+
+```text
+DRIVE SOURCE DISCOVERY              = PROVEN
+TRANSCRIPT READ / PAYLOAD CREATION  = PROVEN
+APPS SCRIPT → CANONICAL ENDPOINT    = PROVEN
+HTTP INGESTION                      = PROVEN
+TRANSCRIPT PERSISTENCE              = PROVEN
+PIPELINERUN CREATION                = PROVEN
+PROMPT 1 INVOCATION REACHED         = PROVEN
+GEMINI GENERATION                   = BLOCKED
+GEMINI PROVIDER RESPONSE            = HTTP 403 PERMISSION_DENIED
+DOWNSTREAM COGNITIVE ARTIFACTS      = BLOCKED
+```
+
+This classification is based on the historical production runs and the audited portal execution path; it does **not** prove that Apps Script itself made the Gemini call.
+
+### Transport-only test decision
+
+```text
+FRESH TRANSPORT-ONLY TEST REQUIRED = NO
+CODE CHANGE TO INSERT A PRE-GEMINI STOP = NO
+PRODUCTION BYPASS REQUIRED = NO
+```
+
+A new test transcript is not required merely to prove transport/persistence. Re-running one before the Gemini provider gate passes would only create another expected failed run.
+
+## 10. Operational status / safety
 
 As of this snapshot:
 
@@ -212,7 +265,7 @@ FULL PIPELINE = BLOCKED
 
 The current blocker is the reported Cloud Billing / Gemini provider access failure. Do not execute a retry until the provider health gate passes and the remaining retry dependencies have been classified.
 
-## 10. Where future agents must look
+## 11. Where future agents must look
 
 Use this file as the **first-read snapshot** for the Apps Script / Prompt 1 / Gemini investigation:
 
@@ -230,12 +283,14 @@ Then consult, in this order:
 
 When checking source behavior relevant to this snapshot, prefer audited Production source/deployment SHA `43eda9442732887089a85d23111baa320ab04ca1` unless a newer verified deployment is explicitly recorded.
 
-## 11. Current decision boundary
+## 12. Current decision boundary
 
 The Neon schema/idempotency audit is complete for this checkpoint and should not be repeated without new evidence.
 
 The historical Apps Script association remains unresolved at source/trigger level, while the current provider health result and Billing setup state are recorded as the active operational blocker.
 
+The transport/persistence path is already proven by the historical production executions and the audited portal call chain. Do not introduce a code-only bypass merely to manufacture a pre-Gemini checkpoint.
+
 The next permitted investigation is to resolve the Cloud Billing / Gemini access block, then re-run only the minimal provider healthcheck. No Laura retry or GL-003 execution is authorized by this snapshot.
 
-**SNAPSHOT STATUS: CANONICAL FORENSIC CHECKPOINT — BILLING/GEMINI BLOCKER — 2026-08-31**
+**SNAPSHOT STATUS: CANONICAL FORENSIC CHECKPOINT — TRANSPORT PROVEN / BILLING-GEMINI BLOCKER — 2026-08-31**
