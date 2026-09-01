@@ -39,12 +39,13 @@ NO NEW EVIDENCE → CONTINUE FROM SNAPSHOT
 Before making any change or running any diagnostic, read:
 
 1. **THIS FILE** — `docs/DO_NOT_REINVESTIGATE.md`
-2. `docs/PRIME_CANONICAL_CURRENT_STATE.md`
-3. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md`
-4. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md`
-5. Only then inspect source, runtime or external systems as required by the current blocker.
+2. **IDENTITY REGISTRY** — `docs/PRIME_CANONICAL_PROJECT_REGISTRY.md`
+3. `docs/PRIME_CANONICAL_CURRENT_STATE.md`
+4. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md`
+5. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md`
+6. Only then inspect source, runtime or external systems as required by the current blocker.
 
-These documents are the project's forensic return points.
+These documents are the project's forensic return points. The **Canonical Project Registry** is the authoritative map for which repository, Vercel project, Google project, Apps Script, database, endpoint and account identity is actually canonical.
 
 ---
 
@@ -283,3 +284,5 @@ Gate 4: **BLOCKED**
 Gate 5: **PENDING**  
 Laura retry: **BLOCKED**  
 GL-003: **BLOCKED**
+
+**NEW IDENTITY-REGISTRY RULE:** before working on any external system, consult `docs/PRIME_CANONICAL_PROJECT_REGISTRY.md`. If the resource is not `CANONICAL / ACTIVE / VERIFIED`, verify its identity before operating on it. GitHub and Vercel authentication are separate systems; never treat one credential as the other.
