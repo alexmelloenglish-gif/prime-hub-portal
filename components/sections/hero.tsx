@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BookOpen,
   CalendarCheck,
-  GraduationCap,
   History,
   ShieldCheck,
   Target,
