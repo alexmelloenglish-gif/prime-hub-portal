@@ -48,7 +48,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#f5f9ff] text-[#0a235c]">
+    <div className="dashboard-light min-h-dvh overflow-x-hidden bg-[#f5f9ff] text-[#0a235c]">
       <Sidebar isAdmin={adminUser} />
       <div className="min-h-dvh md:ml-64">
         <Topbar user={topbarUser} />
