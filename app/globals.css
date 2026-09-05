@@ -78,6 +78,12 @@
   }
 }
 
+/* Student-facing class reports show learning content only.
+   Internal workflow labels such as legacy, draft, or awaiting validation belong in admin/audit views. */
+#class-reports article > div:first-child > div:last-child {
+  display: none;
+}
+
 /* Keep the Tailwind rem scale stable across browsers and client accessibility defaults. */
 html {
   font-size: 16px;
