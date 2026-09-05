@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import Script from 'next/script'
-import { ArrowRight, Brain, GraduationCap } from 'lucide-react'
+import { ArrowRight, Brain, CalendarCheck, GraduationCap } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -9,7 +8,9 @@ interface CTASectionProps {
 }
 
 const whatsappHref =
-  'https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20a%20Prime%20Digital%20Hub.'
+  'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+a+Prime+Digital+Hub.&type=phone_number&app_absent=0'
+
+const trialLessonHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -22,23 +23,6 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function CTASection({ portalHref }: CTASectionProps) {
   return (
     <section className="relative z-10 container py-20">
-      <link rel="stylesheet" href="https://calendar.google.com/calendar/scheduling-button-script.css" />
-      <Script src="https://calendar.google.com/calendar/scheduling-button-script.js" strategy="afterInteractive" />
-      <Script id="google-calendar-scheduling-button" strategy="afterInteractive">
-        {`
-          window.addEventListener('load', function () {
-            const target = document.getElementById('prime-calendar-scheduling-button');
-            if (!target || !window.calendar?.schedulingButton) return;
-            target.innerHTML = '';
-            window.calendar.schedulingButton.load({
-              url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0wTZJTbc4VySmF2Nro3c1012BBIOuApsNa3xINFvQAx0R7Yz8F226YhxFgPqafwCjE1WnQBKIq?gv=true',
-              color: '#D50000',
-              label: 'Agendar conversa com a Prime',
-              target,
-            });
-          });
-        `}
-      </Script>
       <div className="glass-card overflow-hidden border-prime-red/20 bg-prime-red/10 p-10 text-center shadow-[0_24px_80px_rgba(213,0,0,0.12)] md:p-16">
         <div className="mx-auto max-w-3xl">
           <div className="mb-6 flex items-center justify-center gap-3 text-prime-red">
@@ -52,7 +36,7 @@ export function CTASection({ portalHref }: CTASectionProps) {
           </p>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-4 lg:flex-row">
+        <div className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:flex-wrap">
           <Link
             href={portalHref}
             className={cn(
@@ -64,24 +48,33 @@ export function CTASection({ portalHref }: CTASectionProps) {
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
 
-          <div
-            id="prime-calendar-scheduling-button"
-            className="calendar-button-host flex min-h-[56px] min-w-[320px] items-center justify-center rounded-full border border-red-400/30 bg-red-500/10 p-1 shadow-[0_18px_42px_rgba(213,0,0,0.18)]"
-          />
+          <a
+            href={trialLessonHref}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Agende sua aula experimental grátis"
+            className={cn(
+              buttonVariants({ size: 'lg', variant: 'outline' }),
+              'rounded-full border-sky-400/60 bg-white px-8 py-6 text-base font-semibold text-prime-dark shadow-[0_18px_42px_rgba(14,165,233,0.16)] transition hover:border-sky-300 hover:bg-sky-50 hover:text-prime-dark'
+            )}
+          >
+            <CalendarCheck className="mr-3 h-5 w-5 text-sky-600" />
+            Agende sua aula experimental grátis
+          </a>
 
-          <Link
+          <a
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
             aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
             className={cn(
-              buttonVariants({ size: 'lg', variant: 'outline' }),
-              'rounded-full border-emerald-400/60 bg-emerald-500/15 px-8 py-6 text-base font-semibold text-emerald-100 shadow-[0_18px_42px_rgba(16,185,129,0.18)] transition hover:border-emerald-300 hover:bg-emerald-500/25 hover:text-white'
+              buttonVariants({ size: 'lg' }),
+              'rounded-full border border-[#25D366] bg-[#25D366] px-8 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(37,211,102,0.28)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white'
             )}
           >
             <WhatsAppIcon className="mr-3 h-5 w-5" />
-            Falar com a Prime
-          </Link>
+            Falar com a Prime no WhatsApp
+          </a>
         </div>
         <p className="mt-6 text-sm text-prime-cream/55">Faça cada aula contar.</p>
       </div>
