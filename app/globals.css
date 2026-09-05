@@ -103,31 +103,22 @@
 }
 
 .dashboard-light .glass-card .text-prime-cream,
-.dashboard-light .glass-card .text-prime-cream\/45,
-.dashboard-light .glass-card .text-prime-cream\/50,
-.dashboard-light .glass-card .text-prime-cream\/55,
-.dashboard-light .glass-card .text-prime-cream\/60,
-.dashboard-light .glass-card .text-prime-cream\/65,
-.dashboard-light .glass-card .text-prime-cream\/70,
-.dashboard-light .glass-card .text-prime-cream\/75,
-.dashboard-light .glass-card .text-prime-cream\/80,
-.dashboard-light .glass-card .text-prime-cream\/85 {
+.dashboard-light .glass-card [class*='text-prime-cream/'] {
   color: #49617f !important;
 }
 
-.dashboard-light .glass-card .bg-black\/20,
-.dashboard-light .glass-card .bg-white\/5,
-.dashboard-light .glass-card .bg-white\/10,
-.dashboard-light .glass-card .bg-sky-300\/10,
-.dashboard-light .glass-card .bg-emerald-300\/10,
-.dashboard-light .glass-card .bg-amber-300\/10 {
+.dashboard-light .glass-card [class*='bg-black/'],
+.dashboard-light .glass-card [class*='bg-white/'],
+.dashboard-light .glass-card [class*='bg-sky-300/'],
+.dashboard-light .glass-card [class*='bg-emerald-300/'],
+.dashboard-light .glass-card [class*='bg-amber-300/'] {
   background-color: #f8fbff !important;
 }
 
-.dashboard-light .glass-card .border-white\/10,
-.dashboard-light .glass-card .border-sky-300\/20,
-.dashboard-light .glass-card .border-emerald-300\/20,
-.dashboard-light .glass-card .border-amber-300\/20 {
+.dashboard-light .glass-card [class*='border-white/'],
+.dashboard-light .glass-card [class*='border-sky-300/'],
+.dashboard-light .glass-card [class*='border-emerald-300/'],
+.dashboard-light .glass-card [class*='border-amber-300/'] {
   border-color: #dbe5f0 !important;
 }
 
