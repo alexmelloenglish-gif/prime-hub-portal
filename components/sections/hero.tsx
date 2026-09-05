@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import {
   ArrowRight,
   BookOpen,
@@ -11,10 +10,6 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const heroStudentImage = '/assets/prime-hero-student.webp'
-
-interface HeroSectionProps {
-  portalHref: string
-}
 
 const bookingHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 const whatsappHref =
@@ -35,7 +30,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-export function HeroSection({ portalHref }: HeroSectionProps) {
+export function HeroSection() {
   return (
     <section id="inicio" className="relative overflow-hidden bg-white">
       <div className="pointer-events-none absolute right-[-10rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#eaf2fb] blur-3xl" aria-hidden="true" />
@@ -58,6 +53,10 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
               Cada aula se conecta à próxima porque o seu aprendizado não começa de novo. O professor acompanha sua trajetória,
               registra o que realmente importa e transforma cada encontro em um passo claro para a sua evolução.
             </p>
+            <div className="inline-flex max-w-fit items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-semibold text-[#7f241c] shadow-sm">
+              <ShieldCheck className="h-5 w-5 text-prime-red" />
+              O professor continua sendo a autoridade pedagógica.
+            </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -95,16 +94,6 @@ export function HeroSection({ portalHref }: HeroSectionProps) {
               <WhatsAppIcon className="mr-2 h-5 w-5" />
               Falar com a Prime
             </a>
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:gap-6">
-            <div className="flex items-center gap-2 text-sm font-medium text-[#274566]">
-              <ShieldCheck className="h-5 w-5 text-prime-red" />
-              O professor continua sendo a autoridade pedagógica.
-            </div>
-            <Link href={portalHref} className="text-sm font-semibold text-[#123263] underline-offset-4 hover:text-prime-red hover:underline">
-              Já sou aluno: acessar portal
-            </Link>
           </div>
         </div>
 
