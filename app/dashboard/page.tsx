@@ -6,7 +6,6 @@ import {
   Bot,
   BookOpen,
   CalendarDays,
-  CheckCircle2,
   ClipboardList,
   FolderOpen,
   Headphones,
