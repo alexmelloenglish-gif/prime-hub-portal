@@ -25,8 +25,8 @@ const features = [
 
 export function FeaturesGrid() {
   return (
-    <section id="metodo-prime" className="relative z-10 border-y border-slate-200 bg-[#f7fafd] py-16 sm:py-20">
-      <div className="container">
+    <section id="como-funciona" className="relative z-10 border-y border-slate-200 bg-[#f7fafd] py-16 sm:py-20">
+      <div id="metodo-prime" className="container scroll-mt-28">
         <div className="mb-10 grid gap-6 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-prime-red">O método PRIME</p>
