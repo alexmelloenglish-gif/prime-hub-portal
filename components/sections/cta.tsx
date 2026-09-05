@@ -1,15 +1,13 @@
 import { ArrowRight, Brain, CalendarCheck, GraduationCap } from 'lucide-react'
-import { BrandLogo } from '@/components/layout/brand-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-interface CTASectionProps {
-  portalHref: string
-}
+const communityImage = '/assets/prime-cta-community.webp'
+
+interface CTASectionProps { portalHref: string }
 
 const whatsappHref =
   'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de%20falar%20com%20a%20Prime%20Digital%20Hub.&type=phone_number&app_absent=0'
-
 const trialLessonHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -24,12 +22,9 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
   return (
     <section className="relative z-10 bg-white py-16 sm:py-20">
       <div className="container">
-        <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#f9fbfe_0%,#ffffff_52%,#fff6f6_100%)] px-6 py-10 shadow-[0_26px_70px_rgba(14,43,82,0.08)] sm:px-10 lg:px-14 lg:py-14">
-          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-red-100/50 blur-3xl" aria-hidden="true" />
-          <div className="absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-blue-100/60 blur-3xl" aria-hidden="true" />
-
-          <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="max-w-3xl">
+        <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#f9fbfe_0%,#ffffff_52%,#fff6f6_100%)] shadow-[0_26px_70px_rgba(14,43,82,0.08)]">
+          <div className="grid lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+            <div className="relative z-10 px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
               <div className="mb-5 flex items-center gap-3 text-prime-red">
                 <Brain className="h-5 w-5" />
                 <span className="text-xs font-bold uppercase tracking-[0.24em]">O método PRIME</span>
@@ -72,11 +67,16 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 lg:min-w-[220px]">
-              <BrandLogo variant="full" className="h-[105px] w-[235px] border-0 bg-transparent p-0 shadow-none" />
-              <div className="text-center">
-                <p className="font-display text-lg font-bold text-[#0b2c5c]">Faça cada aula contar.</p>
-                <p className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-prime-red">Learn · Improve · Belong</p>
+            <div className="relative min-h-[280px] overflow-hidden lg:min-h-full">
+              <img src={communityImage} alt="Comunidade de alunos aprendendo juntos no Prime Digital Hub" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/25 via-transparent to-[#0b2c5c]/10" />
+              <div className="absolute right-5 top-5 rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur">
+                <p className="font-display text-lg font-bold uppercase tracking-[0.14em] text-[#0b2c5c]">More than English.</p>
+                <div className="mt-2 h-1 w-20 rounded-full bg-prime-red" />
+              </div>
+              <div className="absolute bottom-5 left-5 rounded-2xl bg-[#0b2c5c]/90 px-5 py-4 text-white shadow-lg backdrop-blur">
+                <p className="font-display text-2xl font-bold italic">Faça cada aula contar.</p>
+                <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/80">Learn · Improve · Belong</p>
               </div>
             </div>
           </div>
