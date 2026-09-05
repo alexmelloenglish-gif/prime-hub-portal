@@ -25,7 +25,7 @@ function formatLessonDate(value: string | null) {
 }
 
 function humanizeStatus(value: string) {
-  return value.replaceAll('_', ' ').replaceAll('/', ' · ')
+  return value.replace(/_/g, ' ').replace(/\//g, ' · ')
 }
 
 export default async function TeacherIntelligenceHomePage() {
