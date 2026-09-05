@@ -128,6 +128,27 @@
   color: #0a235c !important;
 }
 
+/* Student profile photos for admin preview links. */
+.dashboard-light:has(a[href*='itallopires17%40gmail.com']) .shrink-0 > .rounded-full.bg-blue-600,
+.dashboard-light:has(a[href*='itallopires17@gmail.com']) .shrink-0 > .rounded-full.bg-blue-600 {
+  background-image: url('/assets/italo-profile.svg') !important;
+  background-position: center !important;
+  background-size: cover !important;
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+.dashboard-light:has(a[href*='louise_nogueira%40hotmail.com']) .shrink-0 > .rounded-full.bg-blue-600,
+.dashboard-light:has(a[href*='louise.nogueira%40hotmail.com']) .shrink-0 > .rounded-full.bg-blue-600,
+.dashboard-light:has(a[href*='louise_nogueira@hotmail.com']) .shrink-0 > .rounded-full.bg-blue-600,
+.dashboard-light:has(a[href*='louise.nogueira@hotmail.com']) .shrink-0 > .rounded-full.bg-blue-600 {
+  background-image: url('/assets/louise-profile.svg') !important;
+  background-position: center !important;
+  background-size: cover !important;
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
 /* Keep the Tailwind rem scale stable across browsers and client accessibility defaults. */
 html {
   font-size: 16px;
