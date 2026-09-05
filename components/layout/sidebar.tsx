@@ -31,7 +31,8 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const previewStudentEmail = searchParams.get('studentEmail')
-  const menuItems = isAdmin
+  const isStudentPreview = Boolean(previewStudentEmail)
+  const menuItems = isAdmin && !isStudentPreview
     ? [
         ...baseMenuItems,
         { label: 'Teacher Intelligence', href: '/dashboard/admin/intelligence', icon: BrainCircuit },
@@ -49,7 +50,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <>
       <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-[#eadfd3] bg-[#fffaf4] p-4 shadow-[10px_0_34px_rgba(15,48,93,0.05)] md:flex md:flex-col">
-        <Link href="/dashboard" className="mb-5 flex shrink-0 items-center justify-center rounded-2xl px-2 py-2">
+        <Link href={isStudentPreview ? buildHref('/dashboard') : '/dashboard'} className="mb-5 flex shrink-0 items-center justify-center rounded-2xl px-2 py-2">
           <img
             src="/brand/prime-digital-hub-full-transparent.png"
             alt="Prime Digital Hub"
