@@ -13,7 +13,7 @@ export default async function Home() {
   const portalHref = session ? '/dashboard' : '/login'
 
   return (
-    <main className="min-h-screen bg-prime-gradient">
+    <main className="min-h-screen bg-white text-[#0b2c5c]">
       <Header portalHref={portalHref} />
       <HeroSection portalHref={portalHref} />
       <FeaturesGrid />
