@@ -48,7 +48,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-slate-200 bg-white p-4 shadow-[8px_0_32px_rgba(15,48,93,0.04)] md:flex md:flex-col">
+      <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-[#eadfd3] bg-[#fffaf4] p-4 shadow-[10px_0_34px_rgba(15,48,93,0.05)] md:flex md:flex-col">
         <Link href="/dashboard" className="mb-5 flex shrink-0 items-center justify-center rounded-2xl px-2 py-2">
           <img
             src="/brand/prime-digital-hub-full-transparent.png"
@@ -68,38 +68,49 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
                 key={item.href}
                 href={buildHref(item.href)}
                 className={cn(
-                  'flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all',
+                  'group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all duration-200',
                   isActive
-                    ? 'border-blue-100 bg-blue-50 text-blue-700 shadow-sm'
-                    : 'border-transparent text-[#36527e] hover:border-slate-200 hover:bg-slate-50 hover:text-[#0a235c]'
+                    ? 'border-[#ead0c7] bg-white text-[#0a235c] shadow-[0_8px_24px_rgba(15,48,93,0.07)] ring-1 ring-[#f4e4dc]'
+                    : 'border-transparent text-[#526783] hover:border-[#eadfd3] hover:bg-white/75 hover:text-[#0a235c]'
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <span
+                  className={cn(
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
+                    isActive
+                      ? 'bg-[#a82217]/10 text-[#a82217]'
+                      : 'bg-[#f0e5da] text-[#7890ad] group-hover:bg-[#a82217]/8 group-hover:text-[#a82217]'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
                 <span className="font-medium">{item.label}</span>
               </Link>
             )
           })}
         </nav>
 
-        <div className="my-4 border-t border-slate-200" />
+        <div className="my-4 border-t border-[#eadfd3]" />
 
-        <div className="mb-4 rounded-2xl bg-gradient-to-br from-[#dcebff] via-[#edf6ff] to-white p-4 shadow-inner">
+        <div className="mb-4 rounded-2xl border border-[#eadfd3] bg-white p-4 shadow-[0_12px_28px_rgba(15,48,93,0.05)]">
           <p className="text-[1.05rem] font-bold leading-tight text-[#0a235c]">Small steps.<br />Bigger futures.</p>
           <div className="mt-3 h-1 w-12 rounded-full bg-prime-red" />
-          <p className="mt-3 text-xs leading-5 text-[#47658f]">Consistent learning today. New opportunities tomorrow.</p>
+          <p className="mt-3 text-xs leading-5 text-[#526783]">Consistent learning today. New opportunities tomorrow.</p>
         </div>
 
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/' })}
-          className="mt-auto flex w-full shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#49617f] transition-colors hover:bg-slate-100 hover:text-[#0a235c]"
+          className="mt-auto flex w-full shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#526783] transition-colors hover:bg-white hover:text-[#0a235c]"
         >
-          <LogOut className="h-5 w-5" />
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0e5da] text-[#7890ad]">
+            <LogOut className="h-4 w-4" />
+          </span>
           <span className="font-medium">Sign out</span>
         </button>
       </aside>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-slate-200 bg-white/95 px-2 py-2 shadow-[0_-8px_28px_rgba(15,48,93,0.08)] backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-[#eadfd3] bg-[#fffaf4]/95 px-2 py-2 shadow-[0_-8px_28px_rgba(15,48,93,0.08)] backdrop-blur md:hidden">
         {menuItems.map((item) => {
           const Icon = item.icon
           const isActive =
@@ -111,7 +122,7 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
               href={buildHref(item.href)}
               className={cn(
                 'flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors',
-                isActive ? 'bg-blue-50 text-blue-700' : 'text-[#607697]'
+                isActive ? 'bg-white text-[#a82217] shadow-sm' : 'text-[#607697]'
               )}
             >
               <Icon className="h-4 w-4" />
