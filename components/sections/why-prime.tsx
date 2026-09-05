@@ -35,31 +35,41 @@ const values = [
 
 export function WhyPrimeSection() {
   return (
-    <section className="relative z-10 container py-20">
-      <div className="mb-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-        <div>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-prime-red">O que torna o PRIME diferente</p>
-          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">Uma escola que continua com você.</h2>
+    <section id="diferenciais" className="relative z-10 bg-white py-16 sm:py-20">
+      <div className="container">
+        <div className="mb-10 grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-prime-red">O que torna o PRIME diferente</p>
+            <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">Uma escola que continua com você.</h2>
+          </div>
+          <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+            O professor continua sendo a autoridade. A tecnologia trabalha nos bastidores para preservar o contexto da sua jornada e tornar cada encontro mais atento, pessoal e consistente.
+          </p>
         </div>
-        <p className="max-w-2xl text-lg leading-relaxed text-prime-cream/80">
-          O professor continua sendo a autoridade. A tecnologia trabalha nos bastidores para preservar o contexto da sua jornada e tornar cada encontro mais atento, pessoal e consistente.
-        </p>
-      </div>
 
-      <div className="grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
-        {values.map((value) => {
-          const Icon = value.icon
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {values.map((value, index) => {
+            const Icon = value.icon
+            const accent = index === 0 || index === 5
 
-          return (
-            <div key={value.title} className="space-y-4 border-t border-white/10 pt-5">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-prime-red/15">
-                <Icon className="h-6 w-6 text-prime-red" />
-              </div>
-              <h3 className="font-display text-xl font-semibold text-white">{value.title}</h3>
-              <p className="leading-7 text-prime-cream/70">{value.description}</p>
-            </div>
-          )
-        })}
+            return (
+              <article
+                key={value.title}
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(14,43,82,0.045)]"
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${accent ? 'bg-red-50' : 'bg-[#eef4fa]'}`}>
+                    <Icon className={`h-6 w-6 ${accent ? 'text-prime-red' : 'text-[#123263]'}`} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-[#0b2c5c]">{value.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{value.description}</p>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
