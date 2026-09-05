@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-white text-[#0b2c5c]">
       <Header portalHref={portalHref} />
-      <HeroSection portalHref={portalHref} />
+      <HeroSection />
       <FeaturesGrid />
       <WhyPrimeSection />
       <ComparisonSection />
