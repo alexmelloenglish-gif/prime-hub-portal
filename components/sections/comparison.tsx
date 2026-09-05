@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, Brain, Check, Target, TrendingUp, X } from 'lucide-react'
 
 const commonSchoolPoints = [
-  'Aula termina e parte do contexto se perde',
+  'A aula termina e parte do contexto se perde',
   'A próxima conversa depende de lembranças fragmentadas',
   'O aluno nem sempre enxerga o próximo foco',
   'O progresso fica difícil de acompanhar com clareza',
@@ -43,8 +43,9 @@ export function ComparisonSection() {
                 <X className="h-5 w-5 text-slate-500" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Sem continuidade</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Em outras escolas e métodos</p>
                 <h3 className="font-display text-2xl font-bold text-[#0b2c5c]">A aula fica para trás</h3>
+                <p className="mt-1 text-sm font-medium text-slate-500">Sem um professor acompanhando o contexto de forma contínua.</p>
               </div>
             </div>
             <ul className="space-y-4">
@@ -63,8 +64,9 @@ export function ComparisonSection() {
                 <Check className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-prime-red">Com o PRIME</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-prime-red">Aqui no Prime Digital Hub</p>
                 <h3 className="font-display text-2xl font-bold text-prime-red">A aprendizagem continua</h3>
+                <p className="mt-1 text-sm font-semibold text-[#7f241c]">Com professor, contexto e continuidade entre as aulas.</p>
               </div>
             </div>
             <ul className="space-y-4">
