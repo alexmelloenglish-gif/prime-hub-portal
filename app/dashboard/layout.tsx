@@ -41,15 +41,18 @@ export default async function DashboardLayout({
   const topbarUser = {
     name: studentState.student?.studentName ?? activeUser.name,
     email: studentState.student?.studentEmail ?? activeUser.email,
-    image: activeUser.image,
+    image:
+      studentState.student?.studentEmail?.toLowerCase() === 'rafael.copolillo@gmail.com'
+        ? '/assets/rafael-profile.svg'
+        : activeUser.image,
   }
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-prime-dark">
+    <div className="min-h-dvh overflow-x-hidden bg-[#f5f9ff] text-[#0a235c]">
       <Sidebar isAdmin={adminUser} />
       <div className="min-h-dvh md:ml-64">
         <Topbar user={topbarUser} />
-        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-5">{children}</main>
+        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-8">{children}</main>
       </div>
     </div>
   )
