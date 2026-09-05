@@ -3,7 +3,6 @@ import {
   BookOpen,
   CalendarCheck,
   History,
-  ShieldCheck,
   Target,
 } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
@@ -53,10 +52,6 @@ export function HeroSection() {
               Cada aula se conecta à próxima porque o seu aprendizado não começa de novo. O professor acompanha sua trajetória,
               registra o que realmente importa e transforma cada encontro em um passo claro para a sua evolução.
             </p>
-            <div className="inline-flex max-w-fit items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 py-2 text-sm font-semibold text-[#7f241c] shadow-sm">
-              <ShieldCheck className="h-5 w-5 text-prime-red" />
-              O professor continua sendo a autoridade pedagógica.
-            </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
