@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { ArrowRight, Brain, CalendarCheck, GraduationCap } from 'lucide-react'
+import { BrandLogo } from '@/components/layout/brand-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -8,7 +8,7 @@ interface CTASectionProps {
 }
 
 const whatsappHref =
-  'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+a+Prime+Digital+Hub.&type=phone_number&app_absent=0'
+  'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de%20falar%20com%20a%20Prime%20Digital%20Hub.&type=phone_number&app_absent=0'
 
 const trialLessonHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 
@@ -20,63 +20,67 @@ function WhatsAppIcon({ className }: { className?: string }) {
   )
 }
 
-export function CTASection({ portalHref }: CTASectionProps) {
+export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
   return (
-    <section className="relative z-10 container py-20">
-      <div className="glass-card overflow-hidden border-prime-red/20 bg-prime-red/10 p-10 text-center shadow-[0_24px_80px_rgba(213,0,0,0.12)] md:p-16">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-6 flex items-center justify-center gap-3 text-prime-red">
-            <Brain className="h-5 w-5" />
-            <span className="text-sm font-semibold uppercase tracking-[0.22em]">O método PRIME</span>
-            <GraduationCap className="h-5 w-5" />
+    <section className="relative z-10 bg-white py-16 sm:py-20">
+      <div className="container">
+        <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#f9fbfe_0%,#ffffff_52%,#fff6f6_100%)] px-6 py-10 shadow-[0_26px_70px_rgba(14,43,82,0.08)] sm:px-10 lg:px-14 lg:py-14">
+          <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-red-100/50 blur-3xl" aria-hidden="true" />
+          <div className="absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-blue-100/60 blur-3xl" aria-hidden="true" />
+
+          <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="max-w-3xl">
+              <div className="mb-5 flex items-center gap-3 text-prime-red">
+                <Brain className="h-5 w-5" />
+                <span className="text-xs font-bold uppercase tracking-[0.24em]">O método PRIME</span>
+                <GraduationCap className="h-5 w-5" />
+              </div>
+              <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">Aprendizagem que permanece.</h2>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
+                Uma escola de inglês que acompanha sua evolução, aula após aula. O professor permanece no centro e cada encontro continua a história do anterior.
+              </p>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a
+                  href={trialLessonHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Agende sua aula experimental grátis"
+                  className={cn(
+                    buttonVariants({ size: 'lg' }),
+                    'rounded-full bg-prime-red px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700'
+                  )}
+                >
+                  <CalendarCheck className="mr-2 h-5 w-5" />
+                  Agende sua aula experimental grátis
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
+                  className={cn(
+                    buttonVariants({ size: 'lg' }),
+                    'rounded-full border border-[#25D366] bg-[#25D366] px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(37,211,102,0.24)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white'
+                  )}
+                >
+                  <WhatsAppIcon className="mr-2 h-5 w-5" />
+                  Falar com a Prime no WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-4 lg:min-w-[220px]">
+              <BrandLogo variant="full" className="h-[105px] w-[235px] border-0 bg-transparent p-0 shadow-none" />
+              <div className="text-center">
+                <p className="font-display text-lg font-bold text-[#0b2c5c]">Faça cada aula contar.</p>
+                <p className="mt-1 text-sm font-semibold uppercase tracking-[0.16em] text-prime-red">Learn · Improve · Belong</p>
+              </div>
+            </div>
           </div>
-          <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-4xl">Aprendizagem que permanece.</h2>
-          <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-prime-cream/80">
-            Uma escola de inglês que acompanha sua evolução, aula após aula. O professor permanece no centro e cada encontro continua a história do anterior.
-          </p>
         </div>
-
-        <div className="flex flex-col items-center justify-center gap-4 lg:flex-row lg:flex-wrap">
-          <Link
-            href={portalHref}
-            className={cn(
-              buttonVariants({ size: 'lg' }),
-              'rounded-full bg-prime-red px-8 py-6 text-base font-semibold text-white hover:bg-red-700'
-            )}
-          >
-            Conhecer o método PRIME
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-
-          <a
-            href={trialLessonHref}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Agende sua aula experimental grátis"
-            className={cn(
-              buttonVariants({ size: 'lg', variant: 'outline' }),
-              'rounded-full border-sky-400/60 bg-white px-8 py-6 text-base font-semibold text-prime-dark shadow-[0_18px_42px_rgba(14,165,233,0.16)] transition hover:border-sky-300 hover:bg-sky-50 hover:text-prime-dark'
-            )}
-          >
-            <CalendarCheck className="mr-3 h-5 w-5 text-sky-600" />
-            Agende sua aula experimental grátis
-          </a>
-
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
-            className={cn(
-              buttonVariants({ size: 'lg' }),
-              'rounded-full border border-[#25D366] bg-[#25D366] px-8 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(37,211,102,0.28)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white'
-            )}
-          >
-            <WhatsAppIcon className="mr-3 h-5 w-5" />
-            Falar com a Prime no WhatsApp
-          </a>
-        </div>
-        <p className="mt-6 text-sm text-prime-cream/55">Faça cada aula contar.</p>
       </div>
     </section>
   )
