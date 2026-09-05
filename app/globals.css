@@ -84,6 +84,59 @@
   display: none;
 }
 
+/* Light dashboard readability guardrails.
+   Prevent old dark-theme glass cards from rendering pale text on the new light dashboard/admin background. */
+.dashboard-light .glass-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0a235c !important;
+  box-shadow: 0 18px 42px rgba(15, 48, 93, 0.08) !important;
+  backdrop-filter: none !important;
+}
+
+.dashboard-light .glass-card .text-white,
+.dashboard-light .glass-card h1,
+.dashboard-light .glass-card h2,
+.dashboard-light .glass-card h3,
+.dashboard-light .glass-card h4 {
+  color: #0a235c !important;
+}
+
+.dashboard-light .glass-card .text-prime-cream,
+.dashboard-light .glass-card .text-prime-cream\/45,
+.dashboard-light .glass-card .text-prime-cream\/50,
+.dashboard-light .glass-card .text-prime-cream\/55,
+.dashboard-light .glass-card .text-prime-cream\/60,
+.dashboard-light .glass-card .text-prime-cream\/65,
+.dashboard-light .glass-card .text-prime-cream\/70,
+.dashboard-light .glass-card .text-prime-cream\/75,
+.dashboard-light .glass-card .text-prime-cream\/80,
+.dashboard-light .glass-card .text-prime-cream\/85 {
+  color: #49617f !important;
+}
+
+.dashboard-light .glass-card .bg-black\/20,
+.dashboard-light .glass-card .bg-white\/5,
+.dashboard-light .glass-card .bg-white\/10,
+.dashboard-light .glass-card .bg-sky-300\/10,
+.dashboard-light .glass-card .bg-emerald-300\/10,
+.dashboard-light .glass-card .bg-amber-300\/10 {
+  background-color: #f8fbff !important;
+}
+
+.dashboard-light .glass-card .border-white\/10,
+.dashboard-light .glass-card .border-sky-300\/20,
+.dashboard-light .glass-card .border-emerald-300\/20,
+.dashboard-light .glass-card .border-amber-300\/20 {
+  border-color: #dbe5f0 !important;
+}
+
+.dashboard-light .glass-card .text-sky-100,
+.dashboard-light .glass-card .text-emerald-100,
+.dashboard-light .glass-card .text-amber-100 {
+  color: #0a235c !important;
+}
+
 /* Keep the Tailwind rem scale stable across browsers and client accessibility defaults. */
 html {
   font-size: 16px;
