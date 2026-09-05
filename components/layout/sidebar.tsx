@@ -19,18 +19,19 @@ import { cn } from '@/lib/utils'
 
 const baseMenuItems = [
   { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Lessons', href: '/dashboard/aulas', icon: BookOpen },
-  { label: 'Progress', href: '/dashboard/progresso', icon: TrendingUp },
+  { label: 'Lessons', href: '/dashboard?section=lessons#attendance-overview', icon: BookOpen, section: 'lessons' },
+  { label: 'Progress', href: '/dashboard?section=progress#progress-tracker', icon: TrendingUp, section: 'progress' },
   { label: 'My Weekly Goals', href: '/dashboard/goals', icon: CheckCircle2 },
-  { label: 'Vocabulary', href: '/dashboard/metas', icon: Target },
-  { label: 'Grammar', href: '/dashboard/conversacao', icon: MessageCircle },
-  { label: 'Feedback', href: '/dashboard/configuracoes', icon: Settings },
+  { label: 'Vocabulary', href: '/dashboard?section=vocabulary#vocabulary-bank', icon: Target, section: 'vocabulary' },
+  { label: 'Grammar', href: '/dashboard?section=grammar#grammar-overview', icon: MessageCircle, section: 'grammar' },
+  { label: 'Feedback', href: '/dashboard?section=feedback#teacher-feedback', icon: Settings, section: 'feedback' },
 ]
 
 export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const previewStudentEmail = searchParams.get('studentEmail')
+  const activeSection = searchParams.get('section')
   const isStudentPreview = Boolean(previewStudentEmail)
   const menuItems = isAdmin && !isStudentPreview
     ? [
@@ -41,10 +42,30 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
     : baseMenuItems
 
   const buildHref = (href: string) => {
-    if (!previewStudentEmail || href.startsWith('/dashboard/admin')) return href
-    const params = new URLSearchParams()
-    params.set('studentEmail', previewStudentEmail)
-    return `${href}?${params.toString()}`
+    const [pathAndQuery, hash] = href.split('#')
+    const [path, query] = pathAndQuery.split('?')
+    const params = new URLSearchParams(query || '')
+
+    if (previewStudentEmail && !path.startsWith('/dashboard/admin')) {
+      params.set('studentEmail', previewStudentEmail)
+    }
+
+    const queryString = params.toString()
+    return `${path}${queryString ? `?${queryString}` : ''}${hash ? `#${hash}` : ''}`
+  }
+
+  const isItemActive = (item: (typeof menuItems)[number]) => {
+    if ('section' in item && item.section) {
+      return pathname === '/dashboard' && activeSection === item.section
+    }
+
+    const itemPath = item.href.split('?')[0].split('#')[0]
+
+    if (itemPath === '/dashboard') {
+      return pathname === '/dashboard' && !activeSection
+    }
+
+    return pathname === itemPath || pathname.startsWith(`${itemPath}/`)
   }
 
   return (
@@ -61,12 +82,10 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
         <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
           {menuItems.map((item) => {
             const Icon = item.icon
-            const isActive =
-              pathname === item.href ||
-              (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
+            const isActive = isItemActive(item)
             return (
               <Link
-                key={item.href}
+                key={item.label}
                 href={buildHref(item.href)}
                 className={cn(
                   'group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all duration-200',
@@ -114,12 +133,10 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
       <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-[#eadfd3] bg-[#fffaf4]/95 px-2 py-2 shadow-[0_-8px_28px_rgba(15,48,93,0.08)] backdrop-blur md:hidden">
         {menuItems.map((item) => {
           const Icon = item.icon
-          const isActive =
-            pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
+          const isActive = isItemActive(item)
           return (
             <Link
-              key={item.href}
+              key={item.label}
               href={buildHref(item.href)}
               className={cn(
                 'flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors',
