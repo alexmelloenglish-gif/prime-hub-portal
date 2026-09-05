@@ -2,7 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { LayoutDashboard, BookOpen, TrendingUp, Target, CheckCircle2, MessageCircle, Settings, Shield, LogOut, BrainCircuit } from 'lucide-react'
+import {
+  LayoutDashboard,
+  BookOpen,
+  TrendingUp,
+  Target,
+  CheckCircle2,
+  MessageCircle,
+  Settings,
+  Shield,
+  LogOut,
+  BrainCircuit,
+} from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
@@ -37,17 +48,32 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-white/10 bg-gradient-to-b from-prime-dark to-prime-dark/95 p-4 md:flex md:flex-col">
-        <Link href="/dashboard" className="mb-5 flex shrink-0 items-center justify-center">
-          <img src="/assets/logo-mini.png" alt="Prime Digital Hub" className="h-12 w-12 object-contain" />
+      <aside className="fixed left-0 top-0 hidden h-dvh w-64 overflow-hidden border-r border-slate-200 bg-white p-4 shadow-[8px_0_32px_rgba(15,48,93,0.04)] md:flex md:flex-col">
+        <Link href="/dashboard" className="mb-5 flex shrink-0 items-center justify-center rounded-2xl px-2 py-2">
+          <img
+            src="/brand/prime-digital-hub-full-transparent.png"
+            alt="Prime Digital Hub"
+            className="h-16 w-auto max-w-[190px] object-contain"
+          />
         </Link>
 
         <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
           {menuItems.map((item) => {
             const Icon = item.icon
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
             return (
-              <Link key={item.href} href={buildHref(item.href)} className={cn('flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors', isActive ? 'bg-prime-red text-white' : 'text-prime-cream/70 hover:bg-white/10')}>
+              <Link
+                key={item.href}
+                href={buildHref(item.href)}
+                className={cn(
+                  'flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all',
+                  isActive
+                    ? 'border-blue-100 bg-blue-50 text-blue-700 shadow-sm'
+                    : 'border-transparent text-[#36527e] hover:border-slate-200 hover:bg-slate-50 hover:text-[#0a235c]'
+                )}
+              >
                 <Icon className="h-5 w-5" />
                 <span className="font-medium">{item.label}</span>
               </Link>
@@ -55,18 +81,39 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
           })}
         </nav>
 
-        <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="mt-3 flex w-full shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-prime-cream/70 transition-colors hover:bg-white/10">
+        <div className="my-4 border-t border-slate-200" />
+
+        <div className="mb-4 rounded-2xl bg-gradient-to-br from-[#dcebff] via-[#edf6ff] to-white p-4 shadow-inner">
+          <p className="text-[1.05rem] font-bold leading-tight text-[#0a235c]">Small steps.<br />Bigger futures.</p>
+          <div className="mt-3 h-1 w-12 rounded-full bg-prime-red" />
+          <p className="mt-3 text-xs leading-5 text-[#47658f]">Consistent learning today. New opportunities tomorrow.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: '/' })}
+          className="mt-auto flex w-full shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#49617f] transition-colors hover:bg-slate-100 hover:text-[#0a235c]"
+        >
           <LogOut className="h-5 w-5" />
           <span className="font-medium">Sign out</span>
         </button>
       </aside>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-white/10 bg-prime-dark/95 px-2 py-2 backdrop-blur md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 flex overflow-x-auto border-t border-slate-200 bg-white/95 px-2 py-2 shadow-[0_-8px_28px_rgba(15,48,93,0.08)] backdrop-blur md:hidden">
         {menuItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`))
           return (
-            <Link key={item.href} href={buildHref(item.href)} className={cn('flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors', isActive ? 'bg-prime-red/20 text-white' : 'text-prime-cream/70')}>
+            <Link
+              key={item.href}
+              href={buildHref(item.href)}
+              className={cn(
+                'flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-2 text-[11px] transition-colors',
+                isActive ? 'bg-blue-50 text-blue-700' : 'text-[#607697]'
+              )}
+            >
               <Icon className="h-4 w-4" />
               <span className="max-w-[88px] truncate">{item.label}</span>
             </Link>
