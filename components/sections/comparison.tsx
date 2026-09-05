@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, Brain, Check, Target, TrendingUp, X } from 'lucide-react'
 
 const otherMethodsPersonImage = '/assets/other-methods-person.webp'
-const primeContextPersonImage = '/assets/prime-context-person.webp'
+const primeContextPersonImage = '/assets/prime-hero-student.webp'
 
 const commonSchoolPoints = [
   'A aula termina e parte do contexto se perde',
@@ -92,7 +92,7 @@ export function ComparisonSection() {
                 </ul>
               </div>
               <div className="relative min-h-[280px] bg-[#eef4fa] sm:min-h-full">
-                <img src={primeContextPersonImage} alt="Aluna do Prime Digital Hub estudando com contexto e continuidade" className="absolute inset-0 h-full w-full object-cover" />
+                <img src={primeContextPersonImage} alt="Aluna do Prime Digital Hub estudando com contexto e continuidade" className="absolute inset-0 h-full w-full object-cover object-center" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0b2c5c]/20 via-transparent to-white/5" />
                 <div className="absolute right-4 top-4 rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur">
                   <p className="font-display text-lg font-bold leading-tight text-[#0b2c5c]">Mais clareza.</p>
