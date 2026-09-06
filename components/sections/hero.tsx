@@ -8,7 +8,7 @@ import {
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const heroStudentImage = '/assets/prime-hero-student.webp'
+const heroStudentImage = '/assets/prime-hero-student-hq.webp'
 
 const bookingHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 const whatsappHref =
@@ -35,15 +35,15 @@ export function HeroSection() {
       <div className="pointer-events-none absolute right-[-10rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#eaf2fb] blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute left-[-12rem] top-[28rem] h-[28rem] w-[28rem] rounded-full bg-red-50 blur-3xl" aria-hidden="true" />
 
-      <div className="container relative z-10 grid items-center gap-10 pb-10 pt-10 lg:grid-cols-[0.93fr_1.07fr] lg:pb-12 lg:pt-14">
-        <div className="space-y-7">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[#244571] sm:text-sm">
-            <span className="h-2 w-2 rounded-full bg-prime-red" />
+      <div className="container relative z-10 grid min-w-0 items-center gap-10 pb-10 pt-10 lg:grid-cols-[0.93fr_1.07fr] lg:pb-12 lg:pt-14">
+        <div className="min-w-0 space-y-7">
+          <div className="inline-flex max-w-full items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#244571] sm:text-sm sm:tracking-[0.22em]">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-prime-red" />
             Prime Digital Hub · Seu ecossistema de aprendizagem
           </div>
 
           <div className="space-y-5">
-            <h1 className="max-w-3xl font-display text-[2.65rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
+            <h1 className="max-w-3xl font-display text-[2.35rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
               Sua escola de inglês continua evoluindo.
               <span className="mt-2 block text-[#0b2c5c]">Aprendizagem que permanece.</span>
             </h1>
@@ -54,27 +54,27 @@ export function HeroSection() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
             <a
               href="#metodo-prime"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'rounded-full bg-prime-red px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700'
+                'w-full min-w-0 whitespace-normal rounded-full bg-prime-red px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700 sm:w-auto sm:px-7'
               )}
             >
               Conhecer o método PRIME
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
             </a>
             <a
               href={bookingHref}
               target="_blank"
               rel="noreferrer"
               className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                'rounded-full border-[#123263]/25 bg-white px-7 py-6 text-base font-semibold text-[#123263] shadow-sm hover:bg-[#f5f8fc] hover:text-[#123263]'
+                buttonVariants({ size: 'lg' }),
+                'w-full min-w-0 whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
               )}
             >
-              <CalendarCheck className="mr-2 h-5 w-5" />
+              <CalendarCheck className="mr-2 h-5 w-5 shrink-0" />
               Agende sua aula experimental grátis
             </a>
             <a
@@ -83,46 +83,45 @@ export function HeroSection() {
               rel="noreferrer"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'rounded-full border border-[#25D366] bg-[#25D366] px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(37,211,102,0.20)] hover:bg-[#1ebe5d]'
+                'w-full min-w-0 whitespace-normal rounded-full border border-[#25D366] bg-[#25D366] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(37,211,102,0.20)] hover:bg-[#1ebe5d] sm:w-auto sm:px-7'
               )}
             >
-              <WhatsAppIcon className="mr-2 h-5 w-5" />
+              <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />
               Falar com a Prime
             </a>
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative min-w-0">
           <div className="absolute -inset-5 rounded-[2.5rem] bg-[radial-gradient(circle_at_top_right,rgba(168,34,23,0.10),transparent_38%),linear-gradient(135deg,#eef5fb,#ffffff_55%,#f8fbff)] shadow-[0_40px_100px_rgba(14,43,82,0.10)]" />
           <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_28px_80px_rgba(14,43,82,0.12)]">
-            <img src={heroStudentImage} alt="Aluna estudando inglês online no Prime Digital Hub" className="h-[360px] w-full object-cover sm:h-[430px]" />
-            <div className="absolute right-5 top-5 rounded-2xl bg-white/92 px-4 py-3 shadow-lg backdrop-blur">
-              <p className="font-display text-xl font-bold leading-tight text-[#0b2c5c]">Learn · Improve · Belong</p>
-              <div className="mt-2 h-1 w-20 rounded-full bg-prime-red" />
-            </div>
-            <div className="absolute bottom-5 right-5 rounded-2xl bg-[#0b2c5c]/92 px-4 py-3 text-white shadow-lg backdrop-blur">
-              <p className="font-display text-lg font-bold">Better English.</p>
-              <p className="text-sm font-semibold text-white/80">Brighter Futures.</p>
+            <img
+              src={heroStudentImage}
+              alt="Aluna estudando inglês online no Prime Digital Hub"
+              className="h-[340px] w-full object-cover contrast-[1.04] brightness-[1.03] saturate-[1.05] sm:h-[430px]"
+            />
+            <div className="border-t border-slate-100 bg-white px-5 py-4 text-center sm:px-6">
+              <p className="font-display text-lg font-bold tracking-[-0.01em] text-[#0b2c5c] sm:text-xl">Better English, Brighter Future.</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container relative z-10 pb-16">
-        <div className="grid overflow-hidden rounded-[1.7rem] border border-slate-200 bg-[#f7fafd] shadow-[0_18px_50px_rgba(14,43,82,0.07)] md:grid-cols-[1.2fr_repeat(4,1fr)]">
-          <div className="p-6 sm:p-7">
+        <div className="grid min-w-0 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-[#f7fafd] shadow-[0_18px_50px_rgba(14,43,82,0.07)] md:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
+          <div className="min-w-0 p-6 sm:p-7">
             <h2 className="font-display text-2xl font-bold text-[#0b2c5c]">Sua aprendizagem, com o seu contexto.</h2>
             <p className="mt-2 font-semibold text-[#123263]">A próxima aula não começa do zero.</p>
             <p className="mt-3 text-sm leading-6 text-slate-600">Ela começa com a memória do que foi trabalhado, observado e direcionado pelo professor.</p>
             <p className="mt-5 border-l-4 border-prime-red pl-4 font-display text-lg font-bold italic text-[#0b2c5c]">Faça cada aula contar.</p>
           </div>
           {flow.map(({ icon: Icon, label, text }, index) => (
-            <div key={label} className="relative border-t border-slate-200 bg-white p-5 md:border-l md:border-t-0">
+            <div key={label} className="relative min-w-0 border-t border-slate-200 bg-white p-5 md:border-l md:border-t-0">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#eef4fa]">
                 <Icon className="h-6 w-6 text-[#123263]" />
               </div>
               <p className="font-display text-base font-bold text-[#0b2c5c]">{label}</p>
-              <p className="mt-2 text-sm leading-5 text-slate-600">{text}</p>
+              <p className="mt-2 break-words text-sm leading-5 text-slate-600">{text}</p>
               {index < flow.length - 1 ? <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 -translate-y-1/2 text-[#123263] md:block" /> : null}
             </div>
           ))}
