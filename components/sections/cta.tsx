@@ -2,7 +2,7 @@ import { ArrowRight, Brain, CalendarCheck, GraduationCap } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const communityImage = '/assets/prime-cta-community.webp'
+const communityImage = '/assets/prime-cta-community-hq.webp'
 
 interface CTASectionProps { portalHref: string }
 
@@ -20,22 +20,22 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
   return (
-    <section className="relative z-10 bg-white py-16 sm:py-20">
-      <div className="container">
-        <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#f9fbfe_0%,#ffffff_52%,#fff6f6_100%)] shadow-[0_26px_70px_rgba(14,43,82,0.08)]">
-          <div className="grid lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-            <div className="relative z-10 px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-              <div className="mb-5 flex items-center gap-3 text-prime-red">
-                <Brain className="h-5 w-5" />
-                <span className="text-xs font-bold uppercase tracking-[0.24em]">O método PRIME</span>
-                <GraduationCap className="h-5 w-5" />
+    <section className="relative z-10 overflow-hidden bg-white py-16 sm:py-20">
+      <div className="container min-w-0">
+        <div className="relative min-w-0 overflow-hidden rounded-[2rem] border border-slate-200 bg-[linear-gradient(135deg,#f9fbfe_0%,#ffffff_52%,#fff6f6_100%)] shadow-[0_26px_70px_rgba(14,43,82,0.08)]">
+          <div className="grid min-w-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-stretch">
+            <div className="relative z-10 min-w-0 px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
+              <div className="mb-5 flex min-w-0 flex-wrap items-center gap-3 text-prime-red">
+                <Brain className="h-5 w-5 shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.24em]">O método PRIME</span>
+                <GraduationCap className="h-5 w-5 shrink-0" />
               </div>
               <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">Aprendizagem que permanece.</h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
                 Uma escola de inglês que acompanha sua evolução, aula após aula. O professor permanece no centro e cada encontro continua a história do anterior.
               </p>
 
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-7 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a
                   href={trialLessonHref}
                   target="_blank"
@@ -43,12 +43,12 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
                   aria-label="Agende sua aula experimental grátis"
                   className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'rounded-full bg-prime-red px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700'
+                    'w-full min-w-0 whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
                   )}
                 >
-                  <CalendarCheck className="mr-2 h-5 w-5" />
+                  <CalendarCheck className="mr-2 h-5 w-5 shrink-0" />
                   Agende sua aula experimental grátis
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
                 </a>
 
                 <a
@@ -58,25 +58,29 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
                   aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
                   className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'rounded-full border border-[#25D366] bg-[#25D366] px-7 py-6 text-base font-semibold text-white shadow-[0_18px_42px_rgba(37,211,102,0.24)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white'
+                    'w-full min-w-0 whitespace-normal rounded-full border border-[#25D366] bg-[#25D366] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(37,211,102,0.24)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white sm:w-auto sm:px-7'
                   )}
                 >
-                  <WhatsAppIcon className="mr-2 h-5 w-5" />
+                  <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />
                   Falar com a Prime no WhatsApp
                 </a>
               </div>
             </div>
 
-            <div className="relative min-h-[280px] overflow-hidden lg:min-h-full">
-              <img src={communityImage} alt="Comunidade de alunos aprendendo juntos no Prime Digital Hub" className="absolute inset-0 h-full w-full object-cover" />
+            <div className="relative min-h-[340px] min-w-0 overflow-hidden sm:min-h-[360px] lg:min-h-full">
+              <img
+                src={communityImage}
+                alt="Comunidade de alunos aprendendo juntos no Prime Digital Hub"
+                className="absolute inset-0 h-full w-full object-cover contrast-[1.03] brightness-[1.03] saturate-[1.04]"
+              />
               <div className="absolute inset-0 bg-gradient-to-r from-white/25 via-transparent to-[#0b2c5c]/10" />
-              <div className="absolute right-5 top-5 rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur">
-                <p className="font-display text-lg font-bold uppercase tracking-[0.14em] text-[#0b2c5c]">More than English.</p>
+              <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur sm:right-5 sm:top-5">
+                <p className="font-display text-base font-bold uppercase tracking-[0.12em] text-[#0b2c5c] sm:text-lg sm:tracking-[0.14em]">More than English.</p>
                 <div className="mt-2 h-1 w-20 rounded-full bg-prime-red" />
               </div>
-              <div className="absolute bottom-5 left-5 rounded-2xl bg-[#0b2c5c]/90 px-5 py-4 text-white shadow-lg backdrop-blur">
-                <p className="font-display text-2xl font-bold italic">Faça cada aula contar.</p>
-                <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/80">Learn · Improve · Belong</p>
+              <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-[#0b2c5c]/90 px-5 py-4 text-white shadow-lg backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-[calc(100%-2.5rem)]">
+                <p className="font-display text-xl font-bold italic sm:text-2xl">Faça cada aula contar.</p>
+                <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-white/80 sm:tracking-[0.18em]">Learn · Improve · Belong</p>
               </div>
             </div>
           </div>
