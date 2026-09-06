@@ -5,6 +5,7 @@
   "identityVersion": "prime-student-id-v1",
   "identitySource": "calendar_booking_teacher_confirmation",
   "profileStatus": "active",
+  "dashboardSourcePolicy": "authorized_repository_snapshot",
   "profileSource": {
     "sourceType": "google_docs_student_portfolio",
     "sourceDocumentId": "1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg",

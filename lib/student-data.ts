@@ -602,6 +602,13 @@ function buildRepositoryStudent(email: string, name?: string | null): StudentDas
   return parseStudentDocument(profile, profileEmail, profileName)
 }
 
+function buildExplicitRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
+  const normalizedEmail = normalizeEmail(email)
+  const profile = verifiedRepositoryProfiles[normalizedEmail]
+  if (asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot') return null
+  return buildRepositoryStudent(normalizedEmail, name)
+}
+
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
   return {
     studentName: name ?? 'Prime Student',
@@ -958,18 +965,35 @@ const getStudentDashboardStateCached = cache(
         }
       }
 
+      const repositoryStudent = buildExplicitRepositoryStudent(normalizedEmail, name)
+      const mergedStudent = repositoryStudent ? await mergePipelineProjection(normalizedEmail, repositoryStudent) : null
+      if (mergedStudent) {
+        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
+          studentId: mergedStudent.studentId,
+          reason: 'firestore_document_not_found',
+        })
+      }
       return {
-        hasAccess: false,
-        source: 'firestore',
-        student: null,
+        hasAccess: Boolean(mergedStudent),
+        source: mergedStudent ? 'repository' : 'firestore',
+        student: mergedStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
-    } catch {
+    } catch (error) {
+      const repositoryStudent = buildExplicitRepositoryStudent(email, name)
+      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
+      if (mergedStudent) {
+        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
+          studentId: mergedStudent.studentId,
+          reason: 'firestore_unavailable',
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+        })
+      }
       return {
-        hasAccess: false,
-        source: 'firestore',
-        student: null,
+        hasAccess: Boolean(mergedStudent),
+        source: mergedStudent ? 'repository' : 'firestore',
+        student: mergedStudent,
         isPreviewingAnotherStudent: false,
         viewerEmail: email,
       }
