@@ -10,6 +10,7 @@ const studentDataSource = await readFile(new URL('lib/student-data.ts', root), '
 
 assert.equal(italo.studentId, 'stu_fb5b64e3437e')
 assert.equal(italo.studentEmail, 'itallopires17@gmail.com')
+assert.equal(italo.dashboardSourcePolicy, 'authorized_repository_snapshot')
 assert.equal(italo.attendanceOverview.length, 1)
 assert.equal(italo.attendanceOverview[0].status, 'present')
 assert.equal(italo.attendanceRate, '1/1 confirmed')
@@ -41,7 +42,7 @@ assert.ok(!dashboardSource.includes('15 scheduled lessons'))
 assert.ok(!studentDataSource.includes('AI Class Report Draft'))
 assert.ok(!studentDataSource.includes('pipeline-draft-'))
 
-const firestoreCatch = /catch\s*\{[\s\S]{0,400}source:\s*'firestore'[\s\S]{0,200}student:\s*null/
-assert.match(studentDataSource, firestoreCatch)
+assert.ok(studentDataSource.includes("asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot'"))
+assert.ok(studentDataSource.includes("reason: 'firestore_unavailable'"))
 
 console.log('Student Dashboard v1 contract self-test passed for Italo Pires.')
