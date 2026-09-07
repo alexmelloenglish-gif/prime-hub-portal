@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, Brain, Check, Target, TrendingUp, X } from 'lucide-react'
 
 const otherMethodsPersonImage = '/assets/other-methods-person.webp'
-const primeContextPersonImage = '/assets/prime-context-person-hq.webp'
+const primeContextPersonImage = 'https://images.pexels.com/photos/7229087/pexels-photo-7229087.jpeg?cs=srgb&dl=pexels-anntarazevich-7229087.jpg&fm=jpg'
 
 const commonSchoolPoints = [
   'A aula termina e parte do contexto se perde',
