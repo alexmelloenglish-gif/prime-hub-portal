@@ -40,7 +40,7 @@ export function ComparisonApprovedSection() {
         <div className="mx-auto mb-9 max-w-6xl text-center">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-prime-red sm:text-sm">Antes e depois</p>
           <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-[#0b2c5c] sm:text-4xl xl:text-5xl">
-            Quando a educação lembra, o aluno assume a direção.
+            Quando a educação preserva a memória pedagógica, o aluno assume a direção com clareza e confiança.
           </h2>
           <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">Não é sobre acumular dados. É sobre transformar cada aula em contexto para a próxima.</p>
         </div>
