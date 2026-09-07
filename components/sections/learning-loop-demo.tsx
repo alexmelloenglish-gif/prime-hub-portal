@@ -1,9 +1,10 @@
 import { ArrowRight, CheckCircle2, MessageSquareText, Target, TrendingUp } from 'lucide-react'
 
 const journey = [
-  { step: '01', label: 'O professor observa', text: 'A aula deixa evidências sobre o que você consegue fazer, explicar e praticar.', icon: MessageSquareText },
-  { step: '02', label: 'O contexto permanece', text: 'O que importa fica organizado para que a próxima conversa não comece do zero.', icon: TrendingUp },
-  { step: '03', label: 'O próximo foco aparece', text: 'Você entende o que praticar agora e por que isso importa para o seu objetivo.', icon: Target },
+  { step: '01', label: 'A tecnologia organiza', text: 'Ela registra e conecta falas, respostas, correções e tentativas para ampliar o olhar do professor.', icon: MessageSquareText },
+  { step: '02', label: 'O professor valida', text: 'O professor confere cada evidência rastreável: o que o aluno produziu, com quanto apoio e em qual contexto.', icon: TrendingUp },
+  { step: '03', label: 'O que não consolidou aparece', text: 'Se uma estrutura só aparece com modelo ou ajuda, isso fica registrado como evidência de que ainda precisa de prática — não como domínio comprovado.', icon: Target },
+  { step: '04', label: 'A próxima aula parte daí', text: 'O professor escolhe o próximo foco com base em evidências rastreáveis e comprovadas — não em um palpite ou guessing game.', icon: ArrowRight },
 ]
 
 export function LearningLoopDemo() {
@@ -18,7 +19,7 @@ export function LearningLoopDemo() {
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Não é apenas uma aula. É um ciclo que continua.</h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-blue-100 sm:text-lg">
-            Este é um exemplo real de como uma aula da Prime é acompanhada. O professor conduz a conversa, interpreta as evidências e define o próximo passo. A tecnologia amplia esse trabalho, guarda a memória e nos assiste na preparação da aula seguinte.
+            Este é um exemplo real de como uma aula da Prime é acompanhada. A tecnologia organiza e conecta as evidências da aprendizagem para ampliar o olhar do professor, mas não decide sozinha. O professor valida o que foi observado, identifica o que ainda precisa de apoio e conduz a próxima aula com base em evidências rastreáveis e comprovadas — não em um guessing game.
           </p>
           <p className="mt-5 max-w-2xl font-display text-xl font-bold leading-8 text-white sm:text-2xl">
             O aprendizado não acaba quando a aula termina, ele está apenas começando.
@@ -30,7 +31,7 @@ export function LearningLoopDemo() {
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-5">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Aula real · Caso anonimizado</p>
-                <h3 className="mt-2 font-display text-2xl font-bold">Preparação para uma entrevista de trabalho</h3>
+                <h3 className="mt-2 font-display text-2xl font-bold">Preparação para uma prova</h3>
               </div>
               <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-semibold text-emerald-100">Acompanhamento do professor</span>
             </div>
@@ -38,12 +39,12 @@ export function LearningLoopDemo() {
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl bg-white p-4 text-[#0b2c5c] sm:col-span-2">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Situação da aula</p>
-                <p className="mt-3 font-display text-xl font-bold">Como falar sobre quem sou e o que já fiz.</p>
-                <p className="mt-3 text-sm leading-6 text-slate-600">O aluno se preparou para explicar sua formação e sua experiência em embarcações.</p>
+                <p className="mt-3 font-display text-xl font-bold">Revisar o inglês para a escola.</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">O aluno praticou frases no passado e palavras sobre saúde. O professor observou o que ele conseguiu produzir e o que ainda precisou de correção.</p>
               </div>
               <div className="rounded-2xl bg-[#eaf2fb] p-4 text-[#0b2c5c]">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Próximo foco</p>
-                <p className="mt-3 font-display text-lg font-bold">Organizar melhor as respostas</p>
+                <p className="mt-3 font-display text-lg font-bold">Responder com frases completas</p>
                 <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-[#24558b]"><CheckCircle2 className="h-4 w-4" /> Direção do professor</div>
               </div>
             </div>
@@ -53,11 +54,12 @@ export function LearningLoopDemo() {
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-200">Evidências da aula</p>
                 <span className="text-xs text-blue-200">Registro real · sem identificação</span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-blue-50">O aluno explicou sua formação, falou sobre sua experiência a bordo e descreveu o tipo de oportunidade que procura.</p>
-              <div className="mt-4 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
-                <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-200">O que funcionou</p><p className="mt-2 text-sm leading-6 text-blue-50">Ele conseguiu falar melhor quando o assunto fazia parte da sua experiência.</p></div>
-                <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-200">O que vem depois</p><p className="mt-2 text-sm leading-6 text-blue-50">Usar uma estrutura simples para responder com mais clareza e segurança.</p></div>
+              <p className="mt-3 text-sm leading-6 text-blue-50">Duas evidências simples da aula:</p>
+              <div className="mt-3 grid gap-2 text-sm leading-6 text-blue-50">
+                <p><span className="font-bold text-white">1.</span> O aluno escreveu: “I didn’t swim.”</p>
+                <p><span className="font-bold text-white">2.</span> O professor corrigiu: “Did you rode?” → “Did you ride?”</p>
               </div>
+              <div className="mt-4 border-t border-white/10 pt-4"><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-200">Próximo passo</p><p className="mt-2 text-sm leading-6 text-blue-50">Retomar o passado e as respostas completas até que apareçam com menos ajuda.</p></div>
             </div>
           </div>
 
