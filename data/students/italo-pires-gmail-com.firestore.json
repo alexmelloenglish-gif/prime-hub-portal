@@ -15,8 +15,15 @@
   "teacherName": "Alexandre Mello",
   "program": "Maritime English — Professional Communication & Interview Preparation",
   "classFrequency": "No recurring schedule confirmed",
-  "currentLevel": "A2-B1",
-  "targetLevel": "Not yet established",
+  "currentLevel": "CEFR A2",
+  "targetLevel": "CEFR B1",
+  "cefr": {
+    "framework": "CEFR",
+    "current": "A2",
+    "target": "B1",
+    "currentStatus": "teacher-validated",
+    "targetStatus": "teacher-validated"
+  },
   "objective": "Communicate his maritime training, experience and professional fit more clearly and confidently in interviews and offshore-work contexts.",
   "focus": "Professional self-introduction, maritime vocabulary, interview structure, grammar accuracy and speaking confidence",
   "attendanceRate": "1/1 confirmed",
@@ -25,14 +32,14 @@
     "version": "student-dashboard-v1.0",
     "currentState": {
       "level": {
-        "value": "A2-B1",
-        "qualifier": "Initial working range based on one confirmed lesson; not a formal level certification.",
+        "value": "CEFR A2",
+        "qualifier": "Teacher-validated current CEFR level.",
         "status": "teacher-validated"
       },
       "targetLevel": {
-        "value": null,
-        "qualifier": "A target level has not yet been established.",
-        "status": "not-available"
+        "value": "CEFR B1",
+        "qualifier": "Teacher-validated target CEFR level.",
+        "status": "teacher-validated"
       },
       "objective": {
         "value": "Communicate his maritime training, experience and professional fit more clearly and confidently in interviews and offshore-work contexts.",
@@ -69,10 +76,14 @@
       }
     ],
     "nextAction": {
+      "id": "action-professional-introduction-60s",
       "title": "Prepare and record a 60-second professional introduction",
       "description": "Use four parts: who you are, your maritime training, relevant onboard or technical experience, and the opportunity you are seeking. Reuse at least two items from the vocabulary bank.",
       "evidence": "Recommended from the confirmed lesson objective and teacher feedback.",
-      "status": "teacher-validated"
+      "authorizationStatus": "teacher-validated",
+      "status": "teacher-validated",
+      "destination": "#next-action",
+      "outcome": null
     },
     "schedule": {
       "status": "not-scheduled",
@@ -96,197 +107,44 @@
     }
   ],
   "portfolioNavigation": [
-    {
-      "id": "nav-attendance",
-      "title": "Attendance Overview",
-      "href": "#attendance-overview"
-    },
-    {
-      "id": "nav-progress",
-      "title": "Progress Tracker",
-      "href": "#progress-tracker"
-    },
-    {
-      "id": "nav-vocabulary",
-      "title": "Vocabulary Bank",
-      "href": "#vocabulary-bank"
-    },
-    {
-      "id": "nav-grammar",
-      "title": "Grammar Overview",
-      "href": "#grammar-overview"
-    },
-    {
-      "id": "nav-feedback",
-      "title": "Teacher Feedback",
-      "href": "#teacher-feedback"
-    }
+    {"id":"nav-attendance","title":"Attendance Overview","href":"#attendance-overview"},
+    {"id":"nav-progress","title":"Progress Tracker","href":"#progress-tracker"},
+    {"id":"nav-vocabulary","title":"Vocabulary Bank","href":"#vocabulary-bank"},
+    {"id":"nav-grammar","title":"Grammar Overview","href":"#grammar-overview"},
+    {"id":"nav-feedback","title":"Teacher Feedback","href":"#teacher-feedback"}
   ],
   "progressTracker": [
-    {
-      "id": "speaking-confidence",
-      "title": "Speaking Confidence",
-      "status": "Initial evidence",
-      "insight": "In the first confirmed lesson, Italo was willing to speak about meaningful professional topics with context and vocabulary support.",
-      "accent": "green"
-    },
-    {
-      "id": "professional-communication",
-      "title": "Professional Communication",
-      "status": "Baseline observed",
-      "insight": "He explained training, experience and career interests in the first lesson; clearer interview-answer structure is the current priority.",
-      "accent": "green"
-    },
-    {
-      "id": "technical-vocabulary",
-      "title": "Technical Vocabulary",
-      "status": "Existing strength",
-      "insight": "The first lesson showed that maritime knowledge provides a strong base for English related to vessels, offshore operations and positioning systems.",
-      "accent": "yellow"
-    },
-    {
-      "id": "grammar-accuracy",
-      "title": "Grammar Accuracy",
-      "status": "Current priority",
-      "insight": "Current priority: verb patterns, agreement, future forms and present-time descriptions during spontaneous speech.",
-      "accent": "pink"
-    },
-    {
-      "id": "independent-english-use",
-      "title": "Independent English Use",
-      "status": "Self-reported evidence",
-      "insight": "Italo reported using English with classmates, friends and music. This is useful context, not a measured progress claim.",
-      "accent": "yellow"
-    }
+    {"id":"speaking-confidence","title":"Speaking Confidence","status":"Initial evidence","insight":"In the first confirmed lesson, Italo was willing to speak about meaningful professional topics with context and vocabulary support.","accent":"green"},
+    {"id":"professional-communication","title":"Professional Communication","status":"Baseline observed","insight":"He explained training, experience and career interests in the first lesson; clearer interview-answer structure is the current priority.","accent":"green"},
+    {"id":"technical-vocabulary","title":"Technical Vocabulary","status":"Existing strength","insight":"The first lesson showed that maritime knowledge provides a strong base for English related to vessels, offshore operations and positioning systems.","accent":"yellow"},
+    {"id":"grammar-accuracy","title":"Grammar Accuracy","status":"Current priority","insight":"Current priority: verb patterns, agreement, future forms and present-time descriptions during spontaneous speech.","accent":"pink"},
+    {"id":"independent-english-use","title":"Independent English Use","status":"Self-reported evidence","insight":"Italo reported using English with classmates, friends and music. This is useful context, not a measured progress claim.","accent":"yellow"}
   ],
   "attendanceOverview": [
-    {
-      "id": "class-2026-08-18",
-      "lessonId": "italo-2026-08-18",
-      "date": "August 18, 2026",
-      "status": "present",
-      "title": "Professional self-introduction, maritime career and technical communication",
-      "summary": "Maritime career, professional interview preparation and technical communication."
-    }
+    {"id":"class-2026-08-18","lessonId":"italo-2026-08-18","date":"August 18, 2026","status":"present","title":"Professional self-introduction, maritime career and technical communication","summary":"Maritime career, professional interview preparation and technical communication."}
   ],
   "classReports": [
-    {
-      "id": "class-report-1",
-      "date": "18 August 2026",
-      "title": "Class Report - 18 Aug 2026",
-      "summary": "This lesson connected Italo’s maritime studies and career plans with practical English for professional interviews. He discussed companies and vessels, his training, onboard routines, offshore and onshore work, dynamic positioning systems and renewable energy. He also practiced presenting his professional profile, experience and career interests in English.",
-      "focus": [
-        "Professional self-introduction for maritime job interviews"
-      ],
-      "vocabulary": [
-        "training",
-        "onboard experience",
-        "career path",
-        "vessel",
-        "platform supply vessel",
-        "heading",
-        "positioning system",
-        "satellite",
-        "interface",
-        "wind farm",
-        "renewable energy",
-        "on board",
-        "on shore"
-      ],
-      "teacherInsight": "Italo used his technical knowledge as a foundation for meaningful professional communication and practiced turning it into clearer interview-style English.",
-      "status": "published",
-      "contentStatus": "published"
-    }
+    {"id":"class-report-1","lessonId":"italo-2026-08-18","date":"18 August 2026","title":"Class Report - 18 Aug 2026","summary":"This lesson connected Italo’s maritime studies and career plans with practical English for professional interviews. He discussed companies and vessels, his training, onboard routines, offshore and onshore work, dynamic positioning systems and renewable energy. He also practiced presenting his professional profile, experience and career interests in English.","focus":["Professional self-introduction for maritime job interviews"],"vocabulary":["training","onboard experience","career path","vessel","platform supply vessel","heading","positioning system","satellite","interface","wind farm","renewable energy","on board","on shore"],"teacherInsight":"Italo used his technical knowledge as a foundation for meaningful professional communication and practiced turning it into clearer interview-style English.","status":"published","contentStatus":"published"}
   ],
   "goals": [
-    {
-      "id": "goal-1",
-      "title": "Build a strong professional self-introduction",
-      "description": "Present training, relevant experience, professional goals and motivation clearly in approximately 60 seconds.",
-      "status": "active"
-    },
-    {
-      "id": "goal-2",
-      "title": "Improve interview answer structure",
-      "description": "Use a repeatable sequence so professional answers are easier to follow and more confident.",
-      "status": "active"
-    },
-    {
-      "id": "goal-3",
-      "title": "Make key grammar patterns automatic",
-      "description": "Practice common interview verbs and high-frequency sentence patterns until they become easier to use during spontaneous speaking.",
-      "status": "active"
-    }
+    {"id":"goal-1","title":"Build a strong professional self-introduction","description":"Present training, relevant experience, professional goals and motivation clearly in approximately 60 seconds.","status":"active"},
+    {"id":"goal-2","title":"Improve interview answer structure","description":"Use a repeatable sequence so professional answers are easier to follow and more confident.","status":"active"},
+    {"id":"goal-3","title":"Make key grammar patterns automatic","description":"Practice common interview verbs and high-frequency sentence patterns until they become easier to use during spontaneous speaking.","status":"active"}
   ],
   "vocabularyBank": [
-    {
-      "id": "v1",
-      "term": "onboard experience",
-      "meaning": "professional or training experience while working on a vessel",
-      "example": "My onboard experience helped me become more disciplined."
-    },
-    {
-      "id": "v2",
-      "term": "positioning system",
-      "meaning": "a system used to control or maintain a vessel’s position",
-      "example": "The positioning system is essential for the operation."
-    },
-    {
-      "id": "v3",
-      "term": "platform supply vessel",
-      "meaning": "a vessel that supports offshore platforms with equipment and supplies",
-      "example": "A platform supply vessel supports offshore operations."
-    },
-    {
-      "id": "v4",
-      "term": "on board / on shore",
-      "meaning": "working on a vessel / working on land",
-      "example": "I will spend part of the year on board and part on shore."
-    }
+    {"id":"v1","term":"onboard experience","meaning":"professional or training experience while working on a vessel","example":"My onboard experience helped me become more disciplined."},
+    {"id":"v2","term":"positioning system","meaning":"a system used to control or maintain a vessel’s position","example":"The positioning system is essential for the operation."},
+    {"id":"v3","term":"platform supply vessel","meaning":"a vessel that supports offshore platforms with equipment and supplies","example":"A platform supply vessel supports offshore operations."},
+    {"id":"v4","term":"on board / on shore","meaning":"working on a vessel / working on land","example":"I will spend part of the year on board and part on shore."}
   ],
-  "grammarOverview": {
-    "title": "Grammar & Accuracy Overview",
-    "summary": "Current priorities are high-value grammar patterns that support clearer professional communication.",
-    "focusPoints": [
-      "Verb patterns: use start + verb-ing / to + verb; want + to + verb; need + to + verb in professional answers.",
-      "Agreement & wording: use singular agreement consistently and choose precise professional wording, e.g. Each company has its own interview process.",
-      "Time reference: use Present Simple for recurring conditions, Present Continuous for what is happening now, and will for future schedules or plans."
-    ]
-  },
+  "grammarOverview": {"title":"Grammar & Accuracy Overview","summary":"Current priorities are high-value grammar patterns that support clearer professional communication.","focusPoints":["Verb patterns: use start + verb-ing / to + verb; want + to + verb; need + to + verb in professional answers.","Agreement & wording: use singular agreement consistently and choose precise professional wording, e.g. Each company has its own interview process.","Time reference: use Present Simple for recurring conditions, Present Continuous for what is happening now, and will for future schedules or plans."]},
   "teacherFeedback": [
-    {
-      "id": "feedback-current",
-      "title": "General Feedback",
-      "body": "Italo brings valuable technical knowledge to class and can discuss complex maritime subjects when the language is connected to situations he understands well. He is willing to communicate and is beginning to use English more actively outside class."
-    },
-    {
-      "id": "feedback-priority",
-      "title": "Growth Priority",
-      "body": "Use familiar maritime content to make professional answers more structured, grammatically accurate and confident before adding large amounts of new technical terminology."
-    }
+    {"id":"feedback-current","title":"General Feedback","body":"Italo brings valuable technical knowledge to class and can discuss complex maritime subjects when the language is connected to situations he understands well. He is willing to communicate and is beginning to use English more actively outside class."},
+    {"id":"feedback-priority","title":"Growth Priority","body":"Use familiar maritime content to make professional answers more structured, grammatically accurate and confident before adding large amounts of new technical terminology."}
   ],
-  "cumulativeImpact": {
-    "title": "First-Lesson Learning Snapshot",
-    "summary": "One confirmed lesson establishes an initial professional Maritime English baseline. This is a current evidence snapshot, not a cumulative progress claim.",
-    "evidence": [
-      "1 confirmed lesson represented in the portfolio.",
-      "4 curated vocabulary-bank entries.",
-      "2 current priorities and 1 recommended next action.",
-      "3 grammar and accuracy focus areas."
-    ]
-  },
+  "cumulativeImpact": {"title":"First-Lesson Learning Snapshot","summary":"One confirmed lesson establishes an initial professional Maritime English baseline. This is a current evidence snapshot, not a cumulative progress claim.","evidence":["1 confirmed lesson represented in the portfolio.","4 curated vocabulary-bank entries.","2 current priorities and 1 recommended next action.","3 grammar and accuracy focus areas."]},
   "lessonRecords": [
-    {
-      "lessonId": "italo-2026-08-18",
-      "studentId": "stu_fb5b64e3437e",
-      "sourceType": "google_docs_student_portfolio",
-      "sourceDocumentId": "1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg",
-      "lessonDate": "2026-08-18",
-      "meetUrl": "https://meet.google.com/yvr-xrvs-gaw",
-      "artifactStatus": "portfolio_confirmed",
-      "authorityStatus": "teacher_confirmed",
-      "implementationStatus": "dashboard_projection_published"
-    }
+    {"lessonId":"italo-2026-08-18","studentId":"stu_fb5b64e3437e","canonicalLessonId":"italo-2026-08-18","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg","lessonDate":"2026-08-18","meetUrl":"https://meet.google.com/yvr-xrvs-gaw","artifactStatus":"portfolio_confirmed","authorityStatus":"teacher_confirmed","implementationStatus":"dashboard_projection_published"}
   ],
   "returningStudent": true,
   "notes": "Student dashboard profile aligned with the current Template Edition portfolio. Login identity remains itallopires17@gmail.com. Future class history should only be added after attendance is confirmed.",
