@@ -287,3 +287,17 @@ model PipelineEvent {
   @@index([aggregateType, aggregateId])
   @@map("pipeline_events")
 }
+
+model VocabularyReuseSentence {
+  id            String   @id @default(cuid())
+  studentId     String?
+  studentEmail  String
+  vocabularyKey String
+  term          String
+  sentence      String   @db.Text
+  lockedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([studentEmail, vocabularyKey, createdAt])
+  @@map("vocabulary_reuse_sentences")
+}
