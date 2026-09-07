@@ -5,24 +5,7 @@ import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
 import { authOptions } from '@/lib/auth'
 import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
-
-function getDashboardProfileImage(studentEmail?: string | null, fallbackImage?: string | null) {
-  const email = studentEmail?.toLowerCase()
-
-  if (email === 'rafael.copolillo@gmail.com') {
-    return '/assets/rafael-profile.svg'
-  }
-
-  if (email === 'itallopires17@gmail.com') {
-    return '/assets/italo-profile.svg'
-  }
-
-  if (email === 'louise_nogueira@hotmail.com' || email === 'louise.nogueira@hotmail.com') {
-    return '/assets/louise-profile.svg'
-  }
-
-  return fallbackImage
-}
+import { resolveStudentProfileAsset } from '@/lib/canonical-dashboard'
 
 export default async function DashboardLayout({
   children,
@@ -59,7 +42,7 @@ export default async function DashboardLayout({
   const topbarUser = {
     name: studentState.student?.studentName ?? activeUser.name,
     email: studentState.student?.studentEmail ?? activeUser.email,
-    image: getDashboardProfileImage(studentState.student?.studentEmail, activeUser.image),
+    image: resolveStudentProfileAsset(studentState.student?.studentId, activeUser.image),
   }
 
   return (
