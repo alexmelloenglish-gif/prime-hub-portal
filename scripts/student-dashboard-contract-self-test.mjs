@@ -34,7 +34,7 @@ assert.ok(!italo.progressTracker.some((item) => /active growth|improving|develop
 assert.ok(!JSON.stringify(italo).includes('Rafael'))
 
 assert.ok(dashboardSource.includes('What Matters Now'))
-assert.ok(dashboardSource.includes('What to do next'))
+assert.ok(dashboardSource.includes('Canonical action'))
 assert.ok(dashboardSource.includes('Learner Memory'))
 assert.ok(!dashboardSource.includes('isRafael'))
 assert.ok(!dashboardSource.includes('w-[68%]'))
