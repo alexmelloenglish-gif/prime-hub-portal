@@ -50,12 +50,12 @@ function getOidcTokenAudience(stsAudience: string) {
   return stsAudience
 }
 
-function getFederationConfig(): FederationConfig | undefined {
+function getFederationConfig(serviceAccountEnv = 'GCP_SERVICE_ACCOUNT_EMAIL'): FederationConfig | undefined {
   if (getFirebaseRuntimeMode() !== 'wif') return undefined
 
   const projectId = getEnv('GCP_PROJECT_ID') ?? getEnv('FIREBASE_PROJECT_ID')
   const projectNumber = getEnv('GCP_PROJECT_NUMBER')
-  const serviceAccountEmail = getEnv('GCP_SERVICE_ACCOUNT_EMAIL')
+  const serviceAccountEmail = getEnv(serviceAccountEnv)
   const poolId = getEnv('GCP_WORKLOAD_IDENTITY_POOL_ID')
   const providerId = getEnv('GCP_WORKLOAD_IDENTITY_POOL_PROVIDER_ID')
 
@@ -72,13 +72,10 @@ function getFederationConfig(): FederationConfig | undefined {
 }
 
 /**
- * Firebase Admin expects its Credential interface, while Google Auth's
- * ExternalAccountClient performs the WIF exchange and refresh itself.
- * The supplier deliberately obtains a fresh Vercel OIDC token for each
- * Google exchange instead of writing a one-time token to disk.
+ * Google Auth's ExternalAccountClient performs the WIF exchange and refresh itself.
+ * A fresh Vercel OIDC token is obtained for each Google exchange.
  */
-function createFederatedAuthClient() {
-  const config = getFederationConfig()
+function createFederatedAuthClient(config: FederationConfig | undefined = getFederationConfig()) {
   if (!config) return undefined
 
   const authClient = ExternalAccountClient.fromJSON({
@@ -126,6 +123,7 @@ const staticKeyConfigured = Boolean(
     readPrivateKey()
 )
 const federation = getFederationConfig()
+const writerFederation = getFederationConfig('GCP_WRITER_SERVICE_ACCOUNT_EMAIL')
 const federatedAuthConfigured = Boolean(federation)
 
 export function getFirebaseConfigStatus() {
@@ -146,6 +144,7 @@ export function getFirebaseConfigStatus() {
     federationProjectNumberPresent: Boolean(federation?.projectNumber),
     federationAudiencePresent: Boolean(federation?.audience),
     federationServiceAccountPresent: Boolean(federation?.serviceAccountEmail),
+    writerFederatedAuthConfigured: Boolean(writerFederation),
     authMode: federatedAuthConfigured ? 'vercel-oidc-wif' : staticKeyConfigured ? 'static-key' : 'repository',
   }
 }
@@ -179,22 +178,43 @@ export function getFirebaseAdminApp() {
 }
 
 let federatedFirestore: Firestore | undefined
+let federatedFirestoreWriter: Firestore | undefined
+
+function createFederatedFirestore(config: FederationConfig) {
+  const authClient = createFederatedAuthClient(config)
+  if (!authClient) {
+    throw new Error('Google Workload Identity Federation configuration is incomplete')
+  }
+  return new Firestore({
+    projectId: config.projectId,
+    auth: new GoogleAuth({ authClient, projectId: config.projectId }),
+  })
+}
 
 export function getFirebaseFirestore() {
   if (runtimeMode === 'wif') {
     if (!federatedFirestore) {
-      const authClient = createFederatedAuthClient()
-      if (!authClient || !federation) {
-        throw new Error('Google Workload Identity Federation configuration is incomplete')
+      if (!federation) {
+        throw new Error('Google Workload Identity Federation reader configuration is incomplete')
       }
-      // Pass the Google Auth client directly to the Cloud Firestore SDK.
-      // Firebase Admin's getFirestore rejects custom Credential adapters.
-      federatedFirestore = new Firestore({
-        projectId: federation.projectId,
-        auth: new GoogleAuth({ authClient, projectId: federation.projectId }),
-      })
+      federatedFirestore = createFederatedFirestore(federation)
     }
     return federatedFirestore
   }
   return getFirestore(getFirebaseAdminApp())
+}
+
+export function getFirebaseFirestoreWriter() {
+  if (runtimeMode !== 'wif') {
+    throw new Error('Canonical Firestore publication requires PRIME_FIREBASE_MODE=wif')
+  }
+  if (!writerFederation) {
+    throw new Error(
+      'Canonical Firestore publication requires a dedicated writer identity. Set GCP_WRITER_SERVICE_ACCOUNT_EMAIL after the writer service account and IAM bindings are validated.'
+    )
+  }
+  if (!federatedFirestoreWriter) {
+    federatedFirestoreWriter = createFederatedFirestore(writerFederation)
+  }
+  return federatedFirestoreWriter
 }
