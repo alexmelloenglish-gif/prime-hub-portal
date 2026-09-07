@@ -1,4 +1,4 @@
-export const CANONICAL_STUDENT_PROJECTION_VERSION = 'student-dashboard-v1.1'
+export const CANONICAL_STUDENT_PROJECTION_VERSION = 'student-dashboard-v1.0'
 
 export type TemporalLayer = 'NOW' | 'RECENT' | 'MEMORY'
 export type ProjectionStatus = 'teacher-validated' | 'portfolio-confirmed' | 'qualified' | 'not-available'
@@ -89,15 +89,14 @@ export function buildCanonicalStudentProjection(
     : []
 
   const actionObject = objectValue(projection?.nextAction)
+  const authorization = stringValue(actionObject?.authorizationStatus) || stringValue(actionObject?.status) || 'qualified'
   const nextAction: CanonicalAction | null = actionObject && stringValue(actionObject.title)
     ? {
         id: stringValue(actionObject.id) || `action-${record.studentId}-1`,
         title: stringValue(actionObject.title),
         description: stringValue(actionObject.description),
         evidence: stringValue(actionObject.evidence),
-        authorizationStatus:
-          stringValue(actionObject.authorizationStatus) as ProjectionStatus ||
-          (stringValue(actionObject.status) as ProjectionStatus || 'qualified'),
+        authorizationStatus: authorization as ProjectionStatus,
         destination: stringValue(actionObject.destination) || null,
         outcome: actionObject.outcome ?? null,
       }
