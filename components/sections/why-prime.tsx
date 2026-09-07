@@ -3,18 +3,18 @@ import { Brain, GraduationCap, Heart, History, ShieldCheck, UserRound } from 'lu
 const values = [
   {
     icon: UserRound,
-    title: 'O aluno no centro',
-    description: 'Sua história, seus objetivos, seu contexto e sua evolução orientam a jornada.',
+    title: 'Você, aluno, no centro',
+    description: 'Sua história, seus objetivos, seu contexto e sua evolução orientam a aula e a jornada.',
   },
   {
     icon: GraduationCap,
-    title: 'Professor como autoridade',
-    description: 'O professor interpreta as evidências, valida os sinais e decide a direção pedagógica.',
+    title: 'Professor com autoridade',
+    description: 'O professor interpreta as evidências, valida os sinais e decide a direção da aula.',
   },
   {
     icon: Brain,
-    title: 'Tecnologia nos bastidores',
-    description: 'Um sistema de inteligência de aprendizagem organiza o contexto para que o professor possa se concentrar em você.',
+    title: 'Tecnologia que amplifica',
+    description: 'A tecnologia amplia o trabalho do professor, preserva a memória do aprendizado e nos assiste na preparação do próximo encontro.',
   },
   {
     icon: History,
@@ -43,7 +43,7 @@ export function WhyPrimeSection() {
             <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">Uma escola que continua com você.</h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            O professor continua sendo a autoridade. A tecnologia trabalha nos bastidores para preservar o contexto da sua jornada e tornar cada encontro mais atento, pessoal e consistente.
+            Você, aluno, está no centro. O professor tem autoridade para interpretar o que acontece e decidir a direção. A tecnologia amplifica esse trabalho, preserva a memória permanente e nos assiste na preparação da aula seguinte.
           </p>
         </div>
 

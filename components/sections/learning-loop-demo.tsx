@@ -18,7 +18,10 @@ export function LearningLoopDemo() {
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Não é apenas uma aula. É um ciclo que continua.</h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-blue-100 sm:text-lg">
-            Esta é uma demonstração fictícia de como a Prime transforma uma aula em contexto, direção e próxima ação. O professor permanece no centro; a tecnologia organiza o que precisa continuar.
+            Este é um exemplo de uma aula real da Prime. O professor conduz a conversa, interpreta o que aparece e define o próximo passo. A tecnologia amplia esse trabalho, guarda a memória e nos assiste na preparação da aula seguinte.
+          </p>
+          <p className="mt-5 max-w-2xl font-display text-xl font-bold leading-8 text-white sm:text-2xl">
+            O aprendizado não acaba quando a aula termina, ele está apenas começando.
           </p>
         </div>
 
@@ -26,31 +29,31 @@ export function LearningLoopDemo() {
           <div className="rounded-[2rem] border border-white/15 bg-white/[0.08] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur sm:p-7">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-5">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Exemplo ilustrativo</p>
-                <h3 className="mt-2 font-display text-2xl font-bold">Seu próximo foco de aprendizagem</h3>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-200">Aula real · 18 de agosto de 2026</p>
+                <h3 className="mt-2 font-display text-2xl font-bold">Inglês para uma apresentação profissional</h3>
               </div>
-              <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-semibold text-emerald-100">Professor validado</span>
+              <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-semibold text-emerald-100">Acompanhamento do professor</span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl bg-white p-4 text-[#0b2c5c] sm:col-span-2">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Objetivo atual</p>
-                <p className="mt-3 font-display text-xl font-bold">Comunicar uma ideia profissional com mais clareza.</p>
-                <p className="mt-3 text-sm leading-6 text-slate-600">A próxima atividade parte de um contexto que faz sentido para você — não de um exercício genérico.</p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">O que foi trabalhado</p>
+                <p className="mt-3 font-display text-xl font-bold">Apresentar formação, experiência e objetivos profissionais.</p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">A aula usou o contexto de carreira marítima para praticar comunicação em entrevistas.</p>
               </div>
               <div className="rounded-2xl bg-[#eaf2fb] p-4 text-[#0b2c5c]">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Próxima ação</p>
-                <p className="mt-3 font-display text-lg font-bold">Praticar uma resposta de 60 segundos</p>
-                <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-[#24558b]"><CheckCircle2 className="h-4 w-4" /> Em foco agora</div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Próximo foco</p>
+                <p className="mt-3 font-display text-lg font-bold">Organizar respostas de entrevista</p>
+                <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-[#24558b]"><CheckCircle2 className="h-4 w-4" /> Direção do professor</div>
               </div>
             </div>
 
             <div className="mt-4 rounded-2xl border border-white/10 bg-[#071f44] p-4 sm:p-5">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-200">Evidência da aula</p>
-                <span className="text-xs text-blue-200">Exemplo sem dados reais</span>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-200">O que o professor observou</p>
+                <span className="text-xs text-blue-200">Registro real da aula</span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-blue-50">“Você comunica ideias relevantes quando o assunto faz parte da sua experiência. O próximo passo é organizar a resposta e ganhar mais segurança na estrutura.”</p>
+              <p className="mt-3 text-sm leading-6 text-blue-50">“O aluno consegue falar sobre assuntos profissionais que conhece. O próximo passo é organizar melhor as respostas e ganhar mais segurança na estrutura.”</p>
             </div>
           </div>
 

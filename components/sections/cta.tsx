@@ -32,7 +32,7 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
               </div>
               <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">Aprendizagem que permanece.</h2>
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-                Uma escola de inglês que acompanha sua evolução, aula após aula. O professor permanece no centro e cada encontro continua a história do anterior.
+                Você, aluno, está no centro. O professor tem autoridade para conduzir a aula, e a tecnologia preserva a memória para que cada encontro continue a história do anterior.
               </p>
 
               <div className="mt-7 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">

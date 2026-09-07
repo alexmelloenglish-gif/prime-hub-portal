@@ -53,9 +53,9 @@ export function HeroSection() {
               registra o que realmente importa e conecta cada encontro ao seguinte — para que você evolua com contexto, direção e continuidade.
             </p>
             <div className="grid gap-3 text-sm font-semibold text-[#123263] sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Contexto entre aulas</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Professor no centro</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco claro</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Você, aluno, no centro</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Professor com autoridade</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória e próxima direção</div>
             </div>
           </div>
 
