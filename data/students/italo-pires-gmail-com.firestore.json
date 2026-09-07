@@ -32,49 +32,15 @@
   "canonicalProjection": {
     "version": "student-dashboard-v1.0",
     "currentState": {
-      "level": {
-        "value": "CEFR A2",
-        "qualifier": "Teacher-validated current CEFR level.",
-        "status": "teacher-validated"
-      },
-      "targetLevel": {
-        "value": "CEFR B1",
-        "qualifier": "Teacher-validated target CEFR level.",
-        "status": "teacher-validated"
-      },
-      "objective": {
-        "value": "Communicate his maritime training, experience and professional fit more clearly and confidently in interviews and offshore-work contexts.",
-        "qualifier": "Current professional objective documented from the first lesson.",
-        "status": "portfolio-confirmed"
-      },
-      "focus": {
-        "value": "Professional self-introduction, interview-answer structure and high-value grammar accuracy.",
-        "qualifier": "Curated from the confirmed lesson evidence and teacher feedback.",
-        "status": "teacher-validated"
-      }
+      "level": {"value":"CEFR A2","qualifier":"Teacher-validated current CEFR level.","status":"teacher-validated"},
+      "targetLevel": {"value":"CEFR B1","qualifier":"Teacher-validated target CEFR level.","status":"teacher-validated"},
+      "objective": {"value":"Communicate his maritime training, experience and professional fit more clearly and confidently in interviews and offshore-work contexts.","qualifier":"Current professional objective documented from the first lesson.","status":"portfolio-confirmed"},
+      "focus": {"value":"Professional self-introduction, interview-answer structure and high-value grammar accuracy.","qualifier":"Curated from the confirmed lesson evidence and teacher feedback.","status":"teacher-validated"}
     },
-    "whatChanged": {
-      "title": "A clear starting point is now documented",
-      "summary": "PRIME now has an initial picture of how Italo uses his maritime knowledge in English, where communication already works and what needs focused practice next. This is learner-model growth, not a claim that his English level improved after one lesson.",
-      "changeType": "learner-model",
-      "evidence": "Confirmed lesson on 18 August 2026 and the teacher-approved student portfolio.",
-      "status": "teacher-validated"
-    },
+    "whatChanged": {"title":"A clear starting point is now documented","summary":"PRIME now has an initial picture of how Italo uses his maritime knowledge in English, where communication already works and what needs focused practice next. This is learner-model growth, not a claim that his English level improved after one lesson.","changeType":"learner-model","evidence":"Confirmed lesson on 18 August 2026 and the teacher-approved student portfolio.","status":"teacher-validated"},
     "priorities": [
-      {
-        "id": "priority-self-introduction",
-        "title": "Structure a 60-second professional self-introduction",
-        "why": "A repeatable structure will help Italo present his training, experience, goals and professional fit with greater clarity.",
-        "evidence": "The first lesson focused on maritime interview preparation and professional self-presentation.",
-        "status": "teacher-validated"
-      },
-      {
-        "id": "priority-verb-patterns",
-        "title": "Stabilize high-frequency interview verb patterns",
-        "why": "More automatic use of start, want and need patterns will improve accuracy without interrupting communication.",
-        "evidence": "Teacher-confirmed grammar priorities from the 18 August lesson.",
-        "status": "teacher-validated"
-      }
+      {"id":"priority-self-introduction","title":"Structure a 60-second professional self-introduction","why":"A repeatable structure will help Italo present his training, experience, goals and professional fit with greater clarity.","evidence":"The first lesson focused on maritime interview preparation and professional self-presentation.","status":"teacher-validated"},
+      {"id":"priority-verb-patterns","title":"Stabilize high-frequency interview verb patterns","why":"More automatic use of start, want and need patterns will improve accuracy without interrupting communication.","evidence":"Teacher-confirmed grammar priorities from the 18 August lesson.","status":"teacher-validated"}
     ],
     "nextAction": {
       "id": "action-professional-introduction-60s",
@@ -83,29 +49,14 @@
       "evidence": "Recommended from the confirmed lesson objective and teacher feedback.",
       "authorizationStatus": "teacher-validated",
       "status": "teacher-validated",
-      "destination": "#next-action",
+      "destination": "/dashboard/action?studentEmail=itallopires17%40gmail.com",
       "outcome": null
     },
-    "schedule": {
-      "status": "not-scheduled",
-      "label": "No future lesson is currently scheduled. The portfolio remains available and will grow when new attendance and evidence are confirmed."
-    }
+    "schedule": {"status":"not-scheduled","label":"No future lesson is currently scheduled. The portfolio remains available and will grow when new attendance and evidence are confirmed."}
   },
   "manageSpace": [
-    {
-      "id": "portfolio",
-      "title": "My Portfolio",
-      "href": "https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg",
-      "description": "Open your full learning portfolio with class history, progress, vocabulary and feedback.",
-      "icon": "folder-open"
-    },
-    {
-      "id": "support",
-      "title": "Prime Support",
-      "href": "https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F",
-      "description": "Get help with links, platform questions or class logistics.",
-      "icon": "headphones"
-    }
+    {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg","description":"Open your full learning portfolio with class history, progress, vocabulary and feedback.","icon":"folder-open"},
+    {"id":"support","title":"Prime Support","href":"https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F","description":"Get help with links, platform questions or class logistics.","icon":"headphones"}
   ],
   "portfolioNavigation": [
     {"id":"nav-attendance","title":"Attendance Overview","href":"#attendance-overview"},
