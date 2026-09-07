@@ -19,10 +19,16 @@ export async function POST(request: Request) {
   }
 
   let body: { email?: unknown } = {}
+  const contentType = request.headers.get('content-type') || ''
   try {
-    body = (await request.json()) as { email?: unknown }
+    if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+      const formData = await request.formData()
+      body.email = formData.get('email')
+    } else {
+      body = (await request.json()) as { email?: unknown }
+    }
   } catch {
-    // Empty body means use the explicit route requirement below.
+    // Empty or malformed bodies are rejected by the explicit requirement below.
   }
 
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
