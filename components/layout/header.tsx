@@ -25,6 +25,7 @@ export function Header({ portalHref }: HeaderProps) {
         <div className="hidden items-center gap-6 text-sm font-semibold text-[#123263] lg:flex">
           <a href="#inicio" className="transition hover:text-prime-red">Início</a>
           <a href="#como-funciona" className="transition hover:text-prime-red">Como funciona</a>
+          <a href="#programas" className="transition hover:text-prime-red">Programas</a>
           <a href="#metodo-prime" className="transition hover:text-prime-red">Método PRIME</a>
           <a href="#diferenciais" className="transition hover:text-prime-red">Diferenciais</a>
           <a href="#comparativo" className="transition hover:text-prime-red">Antes e depois</a>
