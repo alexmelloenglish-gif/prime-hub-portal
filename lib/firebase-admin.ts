@@ -43,6 +43,13 @@ function normalizeWorkloadIdentityAudience(value: string) {
   return value
 }
 
+function getOidcTokenAudience(stsAudience: string) {
+  if (stsAudience.startsWith('//iam.googleapis.com/')) {
+    return `https:${stsAudience}`
+  }
+  return stsAudience
+}
+
 function getFederationConfig(): FederationConfig | undefined {
   if (getFirebaseRuntimeMode() !== 'wif') return undefined
 
@@ -83,7 +90,11 @@ function createFederatedAuthClient() {
       `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/` +
       `${encodeURIComponent(config.serviceAccountEmail)}:generateAccessToken`,
     subject_token_supplier: {
-      getSubjectToken: () => getVercelOidcToken(),
+      // Google STS expects the external-account audience in //iam... form,
+      // while the OIDC provider validates the ID token aud against the
+      // provider URL in https://iam... form.
+      getSubjectToken: () =>
+        getVercelOidcToken({ audience: getOidcTokenAudience(config.audience) }),
     },
   })
 
