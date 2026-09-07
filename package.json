@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
-    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs",
+    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs",
     "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && prisma generate && next build",
     "vercel-build": "prisma migrate deploy && npm run build",
     "start": "next start",

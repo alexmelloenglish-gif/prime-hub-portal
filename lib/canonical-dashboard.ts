@@ -59,7 +59,7 @@ function buildCanonicalLessons(student: StudentDashboardData): CanonicalLesson[]
   const attendance = dedupeLessons(
     student.attendanceOverview.map((entry) => ({
       ...entry,
-      lessonId: entry.id,
+      lessonId: canonicalRecordKey(entry) ?? entry.id,
       lessonDate: entry.date,
     }))
   )
@@ -69,7 +69,9 @@ function buildCanonicalLessons(student: StudentDashboardData): CanonicalLesson[]
     .filter((value): value is number => value !== null)
   const latestTimestamp = timestamps.length ? Math.max(...timestamps) : null
 
-  return attendance.map((entry) => ({
+  const canonicalLessons = student.lessonRecords ?? []
+  const knownIds = new Set(canonicalLessons.map((lesson) => lesson.lessonId))
+  const inferredLessons: CanonicalLesson[] = attendance.filter((entry) => !knownIds.has(entry.lessonId)).map((entry) => ({
     lessonId:
       canonicalRecordKey({ id: entry.id, lessonId: entry.lessonId }) ??
       lessonFingerprint(entry) ??
@@ -81,6 +83,7 @@ function buildCanonicalLessons(student: StudentDashboardData): CanonicalLesson[]
     sourceType: entry.id?.startsWith('pipeline-') ? 'pipeline' : 'authorized-record',
     sourceDocumentId: entry.id,
   }))
+  return [...canonicalLessons, ...inferredLessons]
 }
 
 export function resolveStudentProfileAsset(studentId: string | undefined, fallbackImage?: string | null) {

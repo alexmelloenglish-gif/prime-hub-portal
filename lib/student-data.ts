@@ -13,6 +13,7 @@ import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
+import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -43,6 +44,8 @@ export type ProgressTrackerCard = {
 
 export type AttendanceEntry = {
   id: string
+  lessonId?: string
+  canonicalLessonId?: string
   date: string
   status: 'present' | 'absent' | 'scheduled' | 'pending'
   title: string
@@ -84,6 +87,10 @@ export type StudentDashboardProjection = {
     status: ProjectionEvidenceStatus
   }>
   nextAction: {
+    id?: string
+    authorizationStatus?: ProjectionEvidenceStatus
+    destination?: string | null
+    outcome?: unknown | null
     title: string
     description: string
     evidence: string
@@ -123,6 +130,8 @@ export type CumulativeImpactData = {
 
 export type ClassReportEntry = {
   id: string
+  lessonId?: string
+  canonicalLessonId?: string
   date: string
   title: string
   summary: string
@@ -149,6 +158,7 @@ export type StudentDashboardData = {
   portfolioNavigation: PortfolioNavigationLink[]
   progressTracker: ProgressTrackerCard[]
   attendanceOverview: AttendanceEntry[]
+  lessonRecords?: CanonicalLesson[]
   classReports: ClassReportEntry[]
   goals: GoalEntry[]
   vocabularyBank: VocabularyEntry[]
@@ -350,6 +360,8 @@ function parseAttendance(value: unknown): AttendanceEntry[] {
 
       return {
         id: asString(entry.id, `attendance-${index + 1}`),
+        ...(asString(entry.lessonId) ? { lessonId: asString(entry.lessonId) } : {}),
+        ...(asString(entry.canonicalLessonId) ? { canonicalLessonId: asString(entry.canonicalLessonId) } : {}),
         date: asString(entry.date, 'Date pending'),
         status:
           status === 'absent'
@@ -451,6 +463,10 @@ function parseCanonicalProjection(root: Record<string, unknown>): StudentDashboa
     nextAction:
       nextAction && asString(nextAction.title)
         ? {
+            id: asString(nextAction.id),
+            authorizationStatus: parseProjectionStatus(nextAction.authorizationStatus ?? nextAction.status, 'qualified'),
+            destination: asString(nextAction.destination) || null,
+            outcome: nextAction.outcome ?? null,
             title: asString(nextAction.title),
             description: asString(nextAction.description),
             evidence: asString(nextAction.evidence),
@@ -486,6 +502,8 @@ function parseClassReports(value: unknown): ClassReportEntry[] {
 
       return {
         id: asString(entry.id, `class-report-${index + 1}`),
+        ...(asString(entry.lessonId) ? { lessonId: asString(entry.lessonId) } : {}),
+        ...(asString(entry.canonicalLessonId) ? { canonicalLessonId: asString(entry.canonicalLessonId) } : {}),
         date: asString(entry.date, 'Date pending'),
         title: asString(entry.title, 'Class report'),
         summary: asString(entry.summary, 'Summary pending.'),
@@ -877,7 +895,30 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
   }
 }
 
-function parseStudentDocument(
+function parseCanonicalLessons(value: unknown, studentId: string): CanonicalLesson[] {
+  if (!Array.isArray(value)) return []
+  const lessons: CanonicalLesson[] = []
+  for (const item of value) {
+    const entry = asObject(item)
+    if (!entry) continue
+    const lessonId = asString(entry.canonicalLessonId) || asString(entry.lessonId)
+    const lessonDate = asString(entry.lessonDate)
+    const temporalLayer = asString(entry.temporalLayer)
+    if (!lessonId || !lessonDate || !['NOW', 'RECENT', 'MEMORY'].includes(temporalLayer)) continue
+    lessons.push({
+      lessonId,
+      studentId: asString(entry.studentId, studentId),
+      lessonDate,
+      temporalLayer: temporalLayer as CanonicalLesson['temporalLayer'],
+      status: asString(entry.status),
+      sourceType: asString(entry.sourceType),
+      sourceDocumentId: asString(entry.sourceDocumentId),
+    })
+  }
+  return lessons
+}
+
+export function parseStudentDocument(
   data: DocumentData,
   email: string,
   name?: string | null
@@ -900,6 +941,7 @@ function parseStudentDocument(
     portfolioNavigation: parsePortfolioNavigation(root.portfolioNavigation),
     progressTracker: parseProgressTracker(root.progressTracker),
     attendanceOverview: parseAttendance(root.attendanceOverview),
+    lessonRecords: parseCanonicalLessons(root.lessonRecords, asString(root.studentId, normalizeEmailToDocId(email))),
     classReports: parseClassReports(root.classReports),
     goals: parseGoals(root.goals),
     vocabularyBank: parseVocabulary(root.vocabularyBank),

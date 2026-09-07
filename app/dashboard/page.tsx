@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
+import { canonicalLessonId } from '@/lib/canonical-student-projection'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -117,7 +118,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     status?: ProjectionEvidenceStatus
   } | null
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
-  const recentAttendance = reconcileAttendanceForProjection(student).filter((entry) => recentIds.has(entry.id) || projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id))
+  const recentAttendance = reconcileAttendanceForProjection(student).filter((entry) => recentIds.has(canonicalLessonId(entry) ?? entry.id) || projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id))
   const allReports = dedupeByDateAndTitle(reconcileClassReportsForProjection(student.classReports))
   const latestLessonTimestamp = projection.recentLessons.length
     ? Math.max(...projection.recentLessons.map((lesson) => dateTimestamp(lesson.lessonDate) ?? 0))
