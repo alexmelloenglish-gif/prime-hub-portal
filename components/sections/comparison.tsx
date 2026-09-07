@@ -101,6 +101,7 @@ export function ComparisonSection() {
                 <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur">
                   <p className="font-display text-lg font-bold leading-tight text-[#0b2c5c]">Mais clareza.</p>
                   <p className="text-sm font-semibold text-prime-red">Mais progresso.</p>
+                  <p className="text-sm font-semibold text-[#0b2c5c]">Mais você.</p>
                 </div>
               </div>
             </div>
