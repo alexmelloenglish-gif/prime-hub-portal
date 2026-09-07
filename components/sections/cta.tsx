@@ -43,7 +43,7 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
                   aria-label="Agende sua aula experimental grátis"
                   className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'w-full min-w-0 whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
+                    'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
                   )}
                 >
                   <CalendarCheck className="mr-2 h-5 w-5 shrink-0" />
@@ -58,7 +58,7 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
                   aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
                   className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'w-full min-w-0 whitespace-normal rounded-full border border-[#25D366] bg-[#25D366] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(37,211,102,0.24)] transition hover:border-[#1ebe5d] hover:bg-[#1ebe5d] hover:text-white sm:w-auto sm:px-7'
+                    'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640] bg-[#118640] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(17,134,64,0.24)] transition hover:border-[#0f753a] hover:bg-[#0f753a] hover:text-white sm:w-auto sm:px-7'
                   )}
                 >
                   <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />

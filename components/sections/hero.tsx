@@ -59,7 +59,7 @@ export function HeroSection() {
               href="#metodo-prime"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'w-full min-w-0 whitespace-normal rounded-full bg-prime-red px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700 sm:w-auto sm:px-7'
+                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full bg-prime-red px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700 sm:w-auto sm:px-7'
               )}
             >
               Conhecer o método PRIME
@@ -71,7 +71,7 @@ export function HeroSection() {
               rel="noreferrer"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'w-full min-w-0 whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
+                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#1565D8] bg-[#1565D8] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] hover:text-white sm:w-auto sm:px-7'
               )}
             >
               <CalendarCheck className="mr-2 h-5 w-5 shrink-0" />
@@ -83,7 +83,7 @@ export function HeroSection() {
               rel="noreferrer"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'w-full min-w-0 whitespace-normal rounded-full border border-[#25D366] bg-[#25D366] px-6 py-6 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(37,211,102,0.20)] hover:bg-[#1ebe5d] sm:w-auto sm:px-7'
+                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640] bg-[#118640] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(17,134,64,0.20)] hover:bg-[#0f753a] sm:w-auto sm:px-7'
               )}
             >
               <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />
@@ -98,7 +98,9 @@ export function HeroSection() {
             <img
               src={heroStudentImage}
               alt="Aluna estudando inglês online no Prime Digital Hub"
-              className="h-[340px] w-full object-cover contrast-[1.04] brightness-[1.03] saturate-[1.05] sm:h-[430px]"
+              width={958}
+              height={860}
+              className="h-auto w-full contrast-[1.04] brightness-[1.03] saturate-[1.05]"
             />
             <div className="border-t border-slate-100 bg-white px-5 py-4 text-center sm:px-6">
               <p className="font-display text-lg font-bold tracking-[-0.01em] text-[#0b2c5c] sm:text-xl">Better English, Brighter Future.</p>
@@ -107,7 +109,7 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="container relative z-10 pb-16">
+      <div id="como-funciona" className="container relative z-10 scroll-mt-6 pb-16">
         <div className="grid min-w-0 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-[#f7fafd] shadow-[0_18px_50px_rgba(14,43,82,0.07)] md:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
           <div className="min-w-0 p-6 sm:p-7">
             <h2 className="font-display text-2xl font-bold text-[#0b2c5c]">Sua aprendizagem, com o seu contexto.</h2>

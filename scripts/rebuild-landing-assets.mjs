@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import sharp from 'sharp'
 
 const root = process.cwd()
 
@@ -43,4 +44,16 @@ for (const { name, sourceDir, expectedBytes, output } of specs) {
   fs.mkdirSync(path.dirname(target), { recursive: true })
   fs.writeFileSync(target, bytes)
   console.log(`rebuilt ${output} (${bytes.length} bytes)`)
+}
+
+// Decode every photograph rendered on the home page. A successful HTTP response
+// or a non-empty file is not proof that the browser can display an image.
+for (const asset of [
+  ...specs.map(({ output }) => output),
+  'public/assets/comparison-other-approved.webp',
+  'public/assets/comparison-prime-approved.webp',
+  'public/brand/prime-digital-hub-full-transparent.png',
+]) {
+  await sharp(path.join(root, asset), { failOn: 'warning' }).raw().toBuffer()
+  console.log(`validated image: ${asset}`)
 }
