@@ -12,8 +12,15 @@ import {
   Route,
   Sparkles,
 } from 'lucide-react'
+import { VocabularyReuseGrid } from '@/components/dashboard/vocabulary-reuse-grid'
 import { authOptions } from '@/lib/auth'
 import { canonicalLessonId } from '@/lib/canonical-student-projection'
+import {
+  DASHBOARD_DISPLAY_BUDGET,
+  selectActiveVocabulary,
+  selectCurrentFeedback,
+  selectRecentReports,
+} from '@/lib/dashboard-display-budget'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -117,18 +124,29 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     evidence?: string
     status?: ProjectionEvidenceStatus
   } | null
+
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
-  const recentAttendance = reconcileAttendanceForProjection(student).filter((entry) => recentIds.has(canonicalLessonId(entry) ?? entry.id) || projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id))
+  const recentAttendance = reconcileAttendanceForProjection(student).filter(
+    (entry) =>
+      recentIds.has(canonicalLessonId(entry) ?? entry.id) ||
+      projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id)
+  )
   const allReports = dedupeByDateAndTitle(reconcileClassReportsForProjection(student.classReports))
   const latestLessonTimestamp = projection.recentLessons.length
     ? Math.max(...projection.recentLessons.map((lesson) => dateTimestamp(lesson.lessonDate) ?? 0))
     : null
-  const recentReports = latestLessonTimestamp
+  const recentReportCandidates = latestLessonTimestamp
     ? allReports.filter((report) => {
         const ts = dateTimestamp(report.date)
         return ts === null || latestLessonTimestamp - ts <= 30 * 24 * 60 * 60 * 1000
       })
     : allReports
+  const recentReports = selectRecentReports(recentReportCandidates)
+  const visiblePriorities = projection.priorities.slice(0, DASHBOARD_DISPLAY_BUDGET.priorities)
+  const visibleProgress = student.progressTracker.slice(0, DASHBOARD_DISPLAY_BUDGET.progressItems)
+  const activeVocabulary = selectActiveVocabulary(student.vocabularyBank, student.classReports)
+  const visibleGrammar = student.grammarOverview.focusPoints.slice(0, DASHBOARD_DISPLAY_BUDGET.grammarItems)
+  const visibleFeedback = selectCurrentFeedback(student.teacherFeedback)
   const profileImage = resolveStudentProfileAsset(student.studentId, session.user.image)
   const presentRecentLessons = recentAttendance.filter((entry) => entry.status === 'present').length
   const nextAction = projection.nextAction
@@ -163,10 +181,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="max-w-3xl space-y-3">
             <p className="text-sm font-semibold text-blue-600">Your PRIME learning projection</p>
             <h2 className="text-4xl font-bold tracking-tight text-[#0a235c]">What matters now, <span className="text-blue-600">{student.studentName}.</span></h2>
-            <p className="text-sm leading-6 text-slate-600 md:text-base">A deterministic view of the authorized learning record: current state, recent evidence, longitudinal memory and the next canonical action.</p>
+            <p className="text-sm leading-6 text-slate-600 md:text-base">A focused view of your authorized learning record: current state, recent evidence, useful memory and the next action.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#244575]">{presentRecentLessons} recent confirmed lesson{presentRecentLessons === 1 ? '' : 's'}</span>
-              <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">{projection.memoryLessons.length} memory lesson{projection.memoryLessons.length === 1 ? '' : 's'}</span>
+              <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">Deeper history stays in your portfolio</span>
             </div>
           </div>
         </div>
@@ -194,7 +212,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <article className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-600" /><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">What Matters Now</h3></div></div>
           <div className="mt-5 space-y-3">
-            {projection.priorities.length ? projection.priorities.map((priority, index) => {
+            {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
               return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div><h4 className="font-semibold text-[#0a235c]">{item.title}</h4><p className="mt-1.5 text-sm leading-6 text-slate-600">{item.why}</p>{item.evidence ? <p className="mt-2 text-xs leading-5 text-slate-400">{item.evidence}</p> : null}</div></div></div>
             }) : <p className="text-sm text-slate-500">No validated current priority is available yet.</p>}
@@ -213,23 +231,29 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Confirmed Lessons & Reports</h3><p className="mt-1 text-sm text-slate-500">Newly relevant evidence only. Recent observations do not overwrite the current state.</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Confirmed Lessons & Reports</h3><p className="mt-1 text-sm text-slate-500">Only the most recently useful evidence is shown here. Older records remain in memory.</p></div>
         <section id="attendance-overview" className="space-y-3">
           {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-medium text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">{lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No recent confirmed lesson is available yet.</p>}
         </section>
-        {recentReports.length ? <section id="class-reports" className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Published Class Reports</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={report.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.map((item) => <span key={item} className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs text-[#345481]">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-500">Vocabulary: {report.vocabulary.join(', ')}</p> : null}{report.teacherInsight ? <p className="mt-3 border-t border-slate-100 pt-3 text-sm leading-6 text-[#49617f]">{report.teacherInsight}</p> : null}</article>)}</div></section> : null}
+
+        {recentReports.length ? <section id="class-reports" className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Published Class Reports</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={report.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs text-[#345481]">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-500">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{report.teacherInsight ? <p className="mt-3 border-t border-slate-100 pt-3 text-sm leading-6 text-[#49617f]">{report.teacherInsight}</p> : null}</article>)}</div></section> : null}
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-500">Longitudinal learning content remains available without being mistaken for the current state.</p></div>
-        {student.progressTracker.length ? <section id="progress-tracker" className="grid gap-4 lg:grid-cols-2">{student.progressTracker.map((item) => <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><h4 className="text-lg font-semibold text-[#0a235c]">{item.title}</h4><p className="mt-2.5 text-sm leading-6 text-slate-500">{item.insight}</p><p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{item.status}</p></article>)}</section> : null}
-        {student.vocabularyBank.length ? <section id="vocabulary-bank" className="space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary Bank</h4><div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">{student.vocabularyBank.map((item) => <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-lg font-semibold text-[#0a235c]">{item.term}</p><p className="mt-3 text-sm leading-6 text-slate-600">{item.meaning}</p><p className="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 text-sm italic text-slate-500">{item.example}</p></article>)}</div></section> : null}
-        {student.grammarOverview.focusPoints.length ? <section id="grammar-overview" className="space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-600">{student.grammarOverview.summary}</p><ul className="grid gap-3 lg:grid-cols-2">{student.grammarOverview.focusPoints.map((point) => <li key={point} className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm leading-6 text-[#3d5578]">{point}</li>)}</ul></section> : null}
-        {student.teacherFeedback.length ? <section id="teacher-feedback" className="space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Teacher Feedback</h4><div className="grid gap-3 lg:grid-cols-2">{student.teacherFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-semibold text-[#0a235c]">{feedback.title}</h4><p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Teacher perspective</p></div></div><p className="mt-4 text-sm leading-7 text-slate-600">{feedback.body}</p></article>)}</div></section> : null}
-        {student.manageSpace.length ? <section id="manage-space" className="rounded-[24px] border border-blue-100 bg-blue-50/40 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-500">Resources remain data-driven and student-agnostic.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{student.manageSpace.map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm hover:border-blue-200"><p className="font-semibold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{link.description}</p></a>)}</div></section> : null}
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-500">Useful memory stays visible in small doses. The full longitudinal record remains preserved in your portfolio.</p></div>
+
+        {visibleProgress.length ? <section id="progress-tracker" className="grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><h4 className="text-lg font-semibold text-[#0a235c]">{item.title}</h4><p className="mt-2.5 text-sm leading-6 text-slate-500">{item.insight}</p><p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{item.status}</p></article>)}</section> : null}
+
+        {activeVocabulary.length ? <section id="vocabulary-bank" className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-500">Five words at most. The sentence comes from you, not from the system.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
+
+        {visibleGrammar.length ? <section id="grammar-overview" className="space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-600">{student.grammarOverview.summary}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => <li key={point} className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm leading-6 text-[#3d5578]">{point}</li>)}</ul></section> : null}
+
+        {visibleFeedback.length ? <section id="teacher-feedback" className="space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Teacher Feedback</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-semibold text-[#0a235c]">{feedback.title}</h4><p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Teacher perspective</p></div></div><p className="mt-4 text-sm leading-7 text-slate-600">{feedback.body}</p></article>)}</div></section> : null}
+
+        {student.manageSpace.length ? <section id="manage-space" className="rounded-[24px] border border-blue-100 bg-blue-50/40 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-500">Open your class, portfolio or support without adding more learning clutter.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{student.manageSpace.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm hover:border-blue-200"><p className="font-semibold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{link.description}</p></a>)}</div></section> : null}
       </section>
 
-      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: canonical mechanism + authorized student content.</footer>
+      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: bounded dashboard view + preserved longitudinal memory.</footer>
     </div>
   )
 }
