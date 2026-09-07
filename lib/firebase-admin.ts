@@ -1,7 +1,6 @@
-import { getVercelOidcTokenSync } from '@vercel/oidc'
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { applicationDefault, cert, getApps, initializeApp, type Credential } from 'firebase-admin/app'
+import { getVercelOidcToken } from '@vercel/oidc'
+import { ExternalAccountClient } from 'google-auth-library'
+import { cert, getApps, initializeApp, type Credential } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 function readPrivateKey() {
@@ -30,8 +29,6 @@ type FederationConfig = {
   projectId: string
   projectNumber: string
   serviceAccountEmail: string
-  poolId: string
-  providerId: string
   audience: string
 }
 
@@ -64,36 +61,20 @@ function getFederationConfig(): FederationConfig | undefined {
       `//iam.googleapis.com/projects/${projectNumber}/locations/global/workloadIdentityPools/${poolId}/providers/${providerId}`
   )
 
-  return {
-    projectId,
-    projectNumber,
-    serviceAccountEmail,
-    poolId,
-    providerId,
-    audience,
-  }
+  return { projectId, projectNumber, serviceAccountEmail, audience }
 }
 
 /**
- * Firebase Admin v13 accepts only its own ServiceAccountCredential or
- * ApplicationDefaultCredential for Firestore. This bridge remains disabled
- * unless PRIME_FIREBASE_MODE=wif is explicitly enabled after an isolated test.
+ * Firebase Admin expects its Credential interface, while Google Auth's
+ * ExternalAccountClient performs the WIF exchange and refresh itself.
+ * The supplier deliberately obtains a fresh Vercel OIDC token for each
+ * Google exchange instead of writing a one-time token to disk.
  */
-function createFederatedApplicationDefault(): Credential | undefined {
+function createFederatedCredential(): Credential | undefined {
   const config = getFederationConfig()
   if (!config) return undefined
 
-  const directory = join(
-    '/tmp',
-    `prime-hub-portal-wif-${config.projectNumber}-${config.poolId}-${config.providerId}`
-  )
-  const subjectTokenPath = join(directory, 'subject-token')
-  const credentialsPath = join(directory, 'external-account.json')
-
-  mkdirSync(directory, { recursive: true, mode: 0o700 })
-  writeFileSync(subjectTokenPath, getVercelOidcTokenSync(), { encoding: 'utf8', mode: 0o600 })
-
-  const externalAccountConfig = {
+  const authClient = ExternalAccountClient.fromJSON({
     type: 'external_account',
     audience: config.audience,
     subject_token_type: 'urn:ietf:params:oauth:token-type:jwt',
@@ -101,19 +82,27 @@ function createFederatedApplicationDefault(): Credential | undefined {
     service_account_impersonation_url:
       `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/` +
       `${encodeURIComponent(config.serviceAccountEmail)}:generateAccessToken`,
-    credential_source: {
-      file: subjectTokenPath,
-      format: { type: 'text' },
+    subject_token_supplier: {
+      getSubjectToken: () => getVercelOidcToken({ audience: config.audience }),
     },
-  }
-
-  writeFileSync(credentialsPath, JSON.stringify(externalAccountConfig), {
-    encoding: 'utf8',
-    mode: 0o600,
   })
 
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath
-  return applicationDefault()
+  return {
+    getAccessToken: async () => {
+      const { token, res } = await authClient.getAccessToken()
+      if (!token) {
+        throw new Error('Google Workload Identity Federation returned no access token')
+      }
+
+      const expiresIn =
+        typeof res?.data === 'object' && res.data !== null &&
+        'expires_in' in res.data && typeof res.data.expires_in === 'number'
+          ? res.data.expires_in
+          : 3600
+
+      return { access_token: token, expires_in: expiresIn }
+    },
+  }
 }
 
 const runtimeMode = getFirebaseRuntimeMode()
@@ -143,8 +132,6 @@ export function getFirebaseConfigStatus() {
     federatedAuthConfigured,
     federationProjectNumberPresent: Boolean(federation?.projectNumber),
     federationAudiencePresent: Boolean(federation?.audience),
-    federationPoolPresent: Boolean(federation?.poolId),
-    federationProviderPresent: Boolean(federation?.providerId),
     federationServiceAccountPresent: Boolean(federation?.serviceAccountEmail),
     authMode: federatedAuthConfigured ? 'vercel-oidc-wif' : staticKeyConfigured ? 'static-key' : 'repository',
   }
@@ -160,9 +147,7 @@ export function getFirebaseAdminApp() {
   }
 
   if (!getApps().length) {
-    const federatedCredential = federatedAuthConfigured
-      ? createFederatedApplicationDefault()
-      : undefined
+    const federatedCredential = federatedAuthConfigured ? createFederatedCredential() : undefined
     const credential =
       federatedCredential ??
       cert({
