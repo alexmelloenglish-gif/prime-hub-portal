@@ -3,7 +3,7 @@ import { Header } from '@/components/layout/header'
 import { HeroSection } from '@/components/sections/hero'
 import { FeaturesGrid } from '@/components/sections/features-grid'
 import { WhyPrimeSection } from '@/components/sections/why-prime'
-import { ComparisonSection } from '@/components/sections/comparison'
+import { ComparisonApprovedSection } from '@/components/sections/comparison-approved'
 import { CTASection } from '@/components/sections/cta'
 import { Footer } from '@/components/layout/footer'
 import { authOptions } from '@/lib/auth'
@@ -18,7 +18,7 @@ export default async function Home() {
       <HeroSection />
       <FeaturesGrid />
       <WhyPrimeSection />
-      <ComparisonSection />
+      <ComparisonApprovedSection />
       <CTASection portalHref={portalHref} />
       <Footer />
     </main>
