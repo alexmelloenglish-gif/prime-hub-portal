@@ -67,18 +67,20 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
               </div>
             </div>
 
-            <div className="relative min-h-[340px] min-w-0 overflow-hidden sm:min-h-[360px] lg:min-h-full">
+            <div className="relative flex min-w-0 flex-col overflow-hidden lg:block lg:min-h-full">
               <img
                 src={communityImage}
                 alt="Comunidade de alunos aprendendo juntos no Prime Digital Hub"
-                className="absolute inset-0 h-full w-full object-cover contrast-[1.03] brightness-[1.03] saturate-[1.04]"
+                width={900}
+                height={440}
+                className="order-2 h-auto w-full contrast-[1.03] brightness-[1.03] saturate-[1.04] lg:absolute lg:inset-0 lg:h-full lg:object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-white/25 via-transparent to-[#0b2c5c]/10" />
-              <div className="absolute right-4 top-4 max-w-[calc(100%-2rem)] rounded-2xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur sm:right-5 sm:top-5">
+              <div className="absolute inset-0 hidden bg-gradient-to-r from-white/25 via-transparent to-[#0b2c5c]/10 lg:block" />
+              <div className="relative order-1 bg-white/90 px-5 py-4 lg:absolute lg:right-5 lg:top-5 lg:max-w-[calc(100%-2rem)] lg:rounded-2xl lg:shadow-lg lg:backdrop-blur">
                 <p className="font-display text-base font-bold uppercase tracking-[0.12em] text-[#0b2c5c] sm:text-lg sm:tracking-[0.14em]">More than English.</p>
                 <div className="mt-2 h-1 w-20 rounded-full bg-prime-red" />
               </div>
-              <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-[#0b2c5c]/90 px-5 py-4 text-white shadow-lg backdrop-blur sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-[calc(100%-2.5rem)]">
+              <div className="relative order-3 bg-[#0b2c5c] px-5 py-4 text-white lg:absolute lg:bottom-5 lg:left-5 lg:max-w-[calc(100%-2.5rem)] lg:rounded-2xl lg:bg-[#0b2c5c]/90 lg:shadow-lg lg:backdrop-blur">
                 <p className="font-display text-xl font-bold italic sm:text-2xl">Faça cada aula contar.</p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-white/80 sm:tracking-[0.18em]">Learn · Improve · Belong</p>
               </div>
