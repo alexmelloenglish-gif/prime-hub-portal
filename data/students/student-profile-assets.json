@@ -1,0 +1,9 @@
+{
+  "version": "student-profile-assets.v1",
+  "students": {
+    "stu_cce1337c71da": {"asset":"/assets/rafael-profile.svg"},
+    "stu_fb5b64e3437e": {"asset":"/assets/italo-profile.svg"},
+    "stu_c5930e6e76ae": {"asset":"/assets/louise-profile.svg"}
+  },
+  "rule": "Profile assets are student data. UI components must resolve assets from the authorized student record/asset registry and must not branch on student email, student name, or student ID."
+}
