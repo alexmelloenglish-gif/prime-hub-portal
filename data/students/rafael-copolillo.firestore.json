@@ -5,14 +5,98 @@
   "identityVersion": "prime-student-id-v1",
   "identitySource": "canonical_name_email",
   "profileStatus": "active",
+  "dashboardSourcePolicy": "authorized_repository_snapshot",
+  "profileSource": {
+    "sourceType": "google_docs_student_portfolio",
+    "sourceDocumentId": "1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE",
+    "sourceUrl": "https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE",
+    "sourceAuthority": "teacher_approved_student_portfolio"
+  },
   "teacherName": "Alexandre Mello",
   "program": "Prime Upper",
   "classFrequency": "Once a week",
   "currentLevel": "CEFR B2",
   "targetLevel": "CEFR C1",
+  "cefr": {
+    "framework": "CEFR",
+    "current": "B2",
+    "target": "C1",
+    "currentStatus": "teacher-validated",
+    "targetStatus": "teacher-validated"
+  },
+  "objective": "Increase grammatical and lexical precision while preserving Rafael's strong fluency, analytical communication and ability to sustain meaningful real-world discussion.",
   "focus": "Fluency Development • Grammar Consolidation & Review",
-  "attendanceRate": "100%",
-  "attendanceLabel": "Consistency: Excellent (10 attended, 0 missed)",
+  "attendanceRate": "11/15 confirmed",
+  "attendanceLabel": "Consistency: Good (11 attended, 4 absences)",
+  "canonicalProjection": {
+    "version": "student-dashboard-v1.0",
+    "currentState": {
+      "level": {
+        "value": "CEFR B2",
+        "qualifier": "Teacher-approved current CEFR level in the authoritative portfolio.",
+        "status": "teacher-validated"
+      },
+      "targetLevel": {
+        "value": "CEFR C1",
+        "qualifier": "Teacher-approved target CEFR level in the authoritative portfolio.",
+        "status": "teacher-validated"
+      },
+      "objective": {
+        "value": "Increase grammatical and lexical precision while preserving strong fluency and analytical communication.",
+        "qualifier": "Curated from the longitudinal teacher insights and the most recent detailed portfolio evidence.",
+        "status": "teacher-validated"
+      },
+      "focus": {
+        "value": "Precise tense selection, natural sentence framing and high-value vocabulary reuse in spontaneous speaking.",
+        "qualifier": "The latest detailed reports narrow the next step toward precision rather than adding more topic volume.",
+        "status": "teacher-validated"
+      }
+    },
+    "whatChanged": {
+      "title": "The learner model is reconciled; the CEFR level is unchanged",
+      "summary": "Rafael's record now reflects 15 scheduled lessons, 11 attended lessons and 4 absences. The latest confirmed attendance is 27 August 2026 and the latest scheduled event, 3 September 2026, is recorded as an absence. The portfolio does not contain a detailed class report for 27 August, so no new language-development claim is being inferred from that lesson. The strongest current evidence still points to high fluency with a narrower need for grammatical and lexical precision.",
+      "changeType": "learner-model",
+      "evidence": "Authoritative PRIME Portfolio attendance overview plus the detailed 2 July and 14 July 2026 class reports.",
+      "status": "teacher-validated"
+    },
+    "priorities": [
+      {
+        "id": "priority-precision-without-losing-fluency",
+        "title": "Increase precision without reducing fluency",
+        "why": "Rafael can already sustain complex and reflective discussion. The current C1-facing work is more accurate tense selection, clearer sentence completion and more natural phrasing during spontaneous speech.",
+        "evidence": "Repeated teacher insights across the portfolio, reinforced by the 2 July present-perfect work and the 14 July reflective-framing work.",
+        "status": "teacher-validated"
+      },
+      {
+        "id": "priority-personalized-vocabulary-reuse",
+        "title": "Turn five high-value words into active personal language",
+        "why": "The portfolio repeatedly recommends vocabulary recycling. A small student-authored reuse set is more actionable than exposing the cumulative bank.",
+        "evidence": "July action steps call for recycling vocabulary through short written or spoken responses; the active set is curated from the latest detailed class evidence.",
+        "status": "teacher-validated"
+      },
+      {
+        "id": "priority-weekly-rhythm",
+        "title": "Rebuild the weekly learning rhythm",
+        "why": "Four absences are now documented across 15 scheduled lessons, including the most recent scheduled event on 3 September. Consistent exposure supports the grammar and vocabulary recycling already identified as priorities.",
+        "evidence": "Authoritative attendance overview: 11 attended lessons and 4 absences.",
+        "status": "teacher-validated"
+      }
+    ],
+    "nextAction": {
+      "id": "action-lock-five-personal-vocabulary-sentences",
+      "title": "Write and lock five personal vocabulary sentences",
+      "description": "Open Vocabulary to Reuse and write one sentence you would genuinely say for each of the five active items. Lock each sentence so it becomes part of your personal learning memory and returns when the word is recycled.",
+      "evidence": "The portfolio repeatedly recommends active vocabulary recycling, and the latest detailed reflective lesson provides a high-value set for immediate reuse.",
+      "authorizationStatus": "teacher-validated",
+      "status": "teacher-validated",
+      "destination": "/dashboard/metas?studentEmail=rafael.copolillo%40gmail.com",
+      "outcome": "Five student-authored sentences locked into Rafael's vocabulary reuse memory."
+    },
+    "schedule": {
+      "status": "not-scheduled",
+      "label": "Once-a-week frequency is documented, but no future lesson date is explicitly confirmed in the authoritative portfolio."
+    }
+  },
   "manageSpace": [
     {
       "id": "portfolio",
@@ -96,289 +180,401 @@
       "id": "fluency",
       "title": "Fluency",
       "status": "Strong",
-      "insight": "Maintains long, natural conversation on familiar and complex real-life topics, with growing comfort in reflective and personal discussion.",
+      "insight": "Sustains long, natural conversation on complex, personal and reflective topics without needing the dashboard to manufacture a progress claim.",
       "accent": "green"
     },
     {
-      "id": "listening",
-      "title": "Listening",
-      "status": "Strong",
-      "insight": "Follows teacher prompts, reformulations, and vocabulary modeling well, even during dense or improvised conversation.",
-      "accent": "green"
+      "id": "analytical-reflective-communication",
+      "title": "Analytical & Reflective Communication",
+      "status": "Very Strong",
+      "insight": "Connects professional, political, social and personal realities with depth, supporting arguments and meaningful reflection.",
+      "accent": "blue"
     },
     {
-      "id": "vocabulary",
-      "title": "Vocabulary",
-      "status": "Active Growth",
-      "insight": "Expanded into pets, home décor, antiques, negotiation language, self-management, and reflective life vocabulary.",
-      "accent": "yellow"
-    },
-    {
-      "id": "grammar",
-      "title": "Grammar",
+      "id": "grammar-precision",
+      "title": "Grammar Precision",
       "status": "Improving",
-      "insight": "New evidence shows need to consolidate present perfect vs simple past, habits vs events, and more natural sentence framing in spontaneous speech.",
+      "insight": "The active need is sharper tense selection, complete sentence framing and smoother movement between past experience and present meaning.",
       "accent": "pink"
     },
     {
-      "id": "analytical-discussion",
-      "title": "Analytical Discussion",
-      "status": "Very Strong",
-      "insight": "Continues connecting personal, professional, and social realities with thoughtful commentary and strong engagement.",
-      "accent": "blue"
+      "id": "lexical-precision",
+      "title": "Lexical Precision & Reuse",
+      "status": "Active Growth",
+      "insight": "The cumulative vocabulary is broad; the current task is to retrieve a small set and make it personally reusable in spontaneous communication.",
+      "accent": "yellow"
+    },
+    {
+      "id": "listening-memory",
+      "title": "Listening",
+      "status": "Strong",
+      "insight": "Historical evidence shows that Rafael follows dense teacher prompts, reformulations and modeled vocabulary effectively.",
+      "accent": "green"
     }
   ],
   "attendanceOverview": [
     {
       "id": "class-2026-03-05",
+      "lessonId": "rafael-2026-03-05",
       "date": "March 5, 2026",
       "status": "present",
       "title": "Italy trip storytelling and BBC current events",
-      "summary": "Rafael shared his recent trip to Italy with clear chronological storytelling and strong communicative instinct. The lesson also introduced a BBC report about Iran, strengthening listening comprehension, memory recall and real-world retelling."
+      "summary": "Italy-trip storytelling, BBC news listening and retelling, and simple-past work are documented in the portfolio."
     },
     {
       "id": "class-2026-03-12",
+      "lessonId": "rafael-2026-03-12",
       "date": "March 12, 2026",
       "status": "present",
-      "title": "Advanced fluency, geopolitics and international relations",
-      "summary": "The class focused on advanced conversation fluency, narrative skills and geopolitical vocabulary. Rafael showed strong curiosity about global events and strong potential for advanced fluency development."
+      "title": "Advanced fluency, professional experience and geopolitics",
+      "summary": "The portfolio documents storytelling, professional background, pandemic experience, geopolitical analysis and passive reporting language."
     },
     {
       "id": "class-2026-03-23",
+      "lessonId": "rafael-2026-03-23",
       "date": "March 23, 2026",
       "status": "present",
       "title": "Lifestyle, technology and political institutions",
-      "summary": "The lesson moved from health, nutrition and technology into public institutions and political developments in Rio. Rafael communicated with confidence in familiar real-life topics while grammar precision became the next growth target."
+      "summary": "Real-life discussion moved across lifestyle, health, technology, education and political institutions, with sentence clarity becoming a growth area."
     },
     {
       "id": "class-2026-03-26",
+      "lessonId": "rafael-2026-03-26",
       "date": "March 26, 2026",
       "status": "present",
       "title": "Dream storytelling plus AI in business and society",
-      "summary": "Rafael handled spontaneous speaking, listening and interpretation around AI and business with strong analytical thinking. The key priority was improving verb accuracy and core sentence patterns without losing communicative power."
+      "summary": "Spontaneous storytelling and AI/business discussion developed interpretation, vocabulary and more accurate sentence patterns, including say versus tell."
     },
     {
       "id": "class-2026-04-06",
+      "lessonId": "rafael-2026-04-06",
       "date": "April 6, 2026",
       "status": "present",
       "title": "Structured storytelling, emotions and family language dynamics",
-      "summary": "This lesson developed guided speaking with scaffolding, emotional vocabulary and clarity in past forms. Rafael showed noticeable improvement in self-correction and stronger narrative organization when supported by structure."
+      "summary": "Structured Italy-trip storytelling, emotional language and past-simple versus past-continuous work supported clearer self-correction and organization."
     },
     {
       "id": "class-2026-04-09",
+      "lessonId": "rafael-2026-04-09",
       "date": "April 9, 2026",
       "status": "present",
       "title": "Homes, cooking processes and complex political explanation",
-      "summary": "The class combined house and kitchen vocabulary with discussion of a complex political scenario at Alerj. Rafael explained a difficult real-world topic with very few gaps and showed stronger consolidation of the past simple."
+      "summary": "Homes, cooking and gardening vocabulary were combined with explanation of a complex political situation and further past-simple consolidation."
     },
     {
       "id": "class-2026-05-26",
+      "lessonId": "rafael-2026-05-26",
       "date": "May 26, 2026",
       "status": "present",
-      "title": "Rumours, conditionals and advanced expression in context",
-      "summary": "The class developed third conditional structures and speculative language through real conversations and the song Rumour Has It. Rafael produced natural expressions with nuance and showed strong engagement with advanced grammar in authentic use."
+      "title": "Political polarization, civic participation and third conditional",
+      "summary": "The portfolio documents political and civic vocabulary, institutional discussion and third-conditional work for hypothetical political situations."
     },
     {
       "id": "class-2026-06-18",
+      "lessonId": "rafael-2026-06-18",
       "date": "June 18, 2026",
       "status": "present",
       "title": "Education, career challenges and public administration vocabulary",
-      "summary": "Rafael discussed education, family responsibilities, and career paths with a focus on professional development. The lesson integrated tax law and public administration vocabulary, while consolidating past simple usage in personal narratives."
+      "summary": "Education, family responsibilities, career development and tax-law/public-administration vocabulary were integrated with past-simple consolidation."
+    },
+    {
+      "id": "absence-2026-06-25",
+      "lessonId": "rafael-2026-06-25",
+      "date": "June 25, 2026",
+      "status": "absent",
+      "title": "Absence recorded",
+      "summary": "The authoritative portfolio records an absence on this date."
     },
     {
       "id": "class-2026-07-02",
+      "lessonId": "rafael-2026-07-02",
       "date": "July 2, 2026",
       "status": "present",
-      "title": "Home decoration, antique shopping and lifestyle differences",
-      "summary": "The class explored personalized topics like a new puppy, home decoration, and antique shopping. Rafael practiced spontaneous speaking and expanded his vocabulary related to furniture, antiques, and business culture, while focusing on the present perfect vs simple past."
+      "title": "Puppy, home decoration, antique shopping and study consistency",
+      "summary": "Spontaneous personal conversation developed home and shopping vocabulary while focusing on present perfect versus simple past and daily study consistency."
+    },
+    {
+      "id": "absence-2026-07-09",
+      "lessonId": "rafael-2026-07-09",
+      "date": "July 9, 2026",
+      "status": "absent",
+      "title": "Absence recorded",
+      "summary": "The authoritative portfolio records an absence on this date."
     },
     {
       "id": "class-2026-07-14",
+      "lessonId": "rafael-2026-07-14",
       "date": "July 14, 2026",
       "status": "present",
-      "title": "Reflective discussion on politics, resilience and lifelong learning",
-      "summary": "This reflective session combined political context, family duty, and personal resilience. Rafael expressed complex values and life transitions with depth, reinforcing vocabulary for emotional states, leadership, and professional growth."
+      "title": "Reflective discussion on responsibility, resilience and lifelong learning",
+      "summary": "Reflective speaking connected political context, family responsibility, life transitions, self-reliance and lifelong learning with natural framing across past and present."
+    },
+    {
+      "id": "absence-2026-08-13",
+      "lessonId": "rafael-2026-08-13",
+      "date": "August 13, 2026",
+      "status": "absent",
+      "title": "Absence recorded",
+      "summary": "The authoritative portfolio records an absence on this date."
+    },
+    {
+      "id": "class-2026-08-27",
+      "lessonId": "rafael-2026-08-27",
+      "date": "August 27, 2026",
+      "status": "present",
+      "title": "Confirmed attendance — detailed report not present",
+      "summary": "Attendance is confirmed in the authoritative portfolio. The current portfolio snapshot contains the 27 August heading but no detailed class-report content, so no lesson content is inferred here."
+    },
+    {
+      "id": "absence-2026-09-03",
+      "lessonId": "rafael-2026-09-03",
+      "date": "September 3, 2026",
+      "status": "absent",
+      "title": "Absence recorded",
+      "summary": "The authoritative portfolio records an absence on this date."
     }
   ],
   "goals": [
     {
       "id": "goal-1",
       "title": "Increase structural precision without losing fluency",
-      "description": "Keep the current communicative confidence while improving sentence control, clearer connectors and more refined vocabulary choices.",
+      "description": "Keep the current communicative confidence while improving sentence control, connectors and tense selection.",
       "status": "on-track"
     },
     {
       "id": "goal-2",
-      "title": "Consolidate past tense consistency in storytelling",
-      "description": "Strengthen past simple accuracy, reduce overuse of continuous forms and keep self-correction active in real speaking situations.",
+      "title": "Make high-value vocabulary personally reusable",
+      "description": "Retrieve a small active set and reuse it through student-authored sentences rather than exposing the whole cumulative bank at once.",
       "status": "on-track"
     },
     {
       "id": "goal-3",
-      "title": "Expand active vocabulary in high-value topics",
-      "description": "Use cumulative vocabulary from travel, geopolitics, business, emotions and daily life more naturally during live classes.",
-      "status": "on-track"
+      "title": "Maintain a steadier weekly learning rhythm",
+      "description": "Use regular exposure to support the grammar consolidation and vocabulary recycling already identified in the portfolio.",
+      "status": "attention"
     }
   ],
   "vocabularyBank": [
-    { "id": "v1", "term": "birth certificate", "meaning": "official document proving birth", "example": "She needed her birth certificate to apply for a passport.", "category": "Travel & Documentation" },
-    { "id": "v2", "term": "citizenship", "meaning": "legal status of belonging to a country", "example": "He applied for dual citizenship.", "category": "Travel & Documentation" },
-    { "id": "v3", "term": "luggage", "meaning": "bags used for travel", "example": "We checked in our luggage before boarding.", "category": "Travel & Documentation" },
-    { "id": "v4", "term": "baggage", "meaning": "personal belongings for travel", "example": "His baggage was delayed.", "category": "Travel & Documentation" },
-    { "id": "v5", "term": "suitcase", "meaning": "a travel bag with a handle", "example": "She packed everything into one suitcase.", "category": "Travel & Documentation" },
-    { "id": "v6", "term": "tell / told", "meaning": "verb — to communicate information", "example": "He told me the story.", "category": "Storytelling & Communication" },
-    { "id": "v7", "term": "see / saw", "meaning": "verb — to perceive with eyes", "example": "I saw many monuments.", "category": "Storytelling & Communication" },
-    { "id": "v8", "term": "go / went", "meaning": "verb — to move or travel", "example": "We went to Rome.", "category": "Storytelling & Communication" },
-    { "id": "v9", "term": "sentimental", "meaning": "adjective — expressing deep emotional feelings", "example": "I felt very sentimental when I arrived.", "category": "Storytelling & Communication" },
-    { "id": "v10", "term": "connection", "meaning": "noun — strong emotional link", "example": "I felt a strong connection to the place.", "category": "Storytelling & Communication" },
-    { "id": "v11", "term": "tax auditor", "meaning": "noun — professional who checks financial records", "example": "He works as a tax auditor.", "category": "Work & Institutions" },
-    { "id": "v12", "term": "Legislative Assembly", "meaning": "noun — government institution", "example": "He works at the Legislative Assembly.", "category": "Work & Institutions" },
-    { "id": "v13", "term": "remote work", "meaning": "noun — working from home", "example": "Remote work became common.", "category": "Work & Institutions" },
-    { "id": "v14", "term": "hybrid work", "meaning": "noun — mix of remote and in-person work", "example": "Many companies adopted hybrid work.", "category": "Work & Institutions" },
-    { "id": "v15", "term": "asymmetry", "meaning": "noun — lack of equality between sides", "example": "The conflict showed asymmetry.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v16", "term": "attrition", "meaning": "noun — gradual reduction or weakening", "example": "The strategy was based on attrition.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v17", "term": "interceptor", "meaning": "noun — missile used to stop attacks", "example": "The interceptor destroyed the target.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v18", "term": "swarm", "meaning": "noun — large coordinated group", "example": "A swarm of drones attacked.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v19", "term": "missile", "meaning": "noun — guided weapon", "example": "The missile hit the ship.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v20", "term": "drone", "meaning": "noun — unmanned aircraft", "example": "The drone collected data.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v21", "term": "Strait of Hormuz", "meaning": "noun — strategic waterway", "example": "Ships passed through the Strait of Hormuz.", "category": "Geopolitics & Public Affairs" },
-    { "id": "v22", "term": "plenary session", "meaning": "noun — formal meeting", "example": "The vote happened in a plenary session.", "category": "Work & Institutions" },
-    { "id": "v23", "term": "AI", "meaning": "noun — artificial intelligence systems", "example": "AI is transforming industries.", "category": "AI & Business" },
-    { "id": "v24", "term": "data", "meaning": "noun — information for analysis", "example": "The system uses data.", "category": "AI & Business" },
-    { "id": "v25", "term": "patterns", "meaning": "noun — repeated behaviors or trends", "example": "AI detects patterns.", "category": "AI & Business" },
-    { "id": "v26", "term": "demand forecasting", "meaning": "noun — predicting customer demand", "example": "Demand forecasting improves planning.", "category": "AI & Business" },
-    { "id": "v27", "term": "holiday home", "meaning": "noun — vacation house", "example": "We go to our holiday home on weekends.", "category": "Daily Life" },
-    { "id": "v28", "term": "dough", "meaning": "noun — mixture used in baking", "example": "I prepared the dough.", "category": "Cooking" },
-    { "id": "v29", "term": "puppy", "meaning": "noun — a young dog", "example": "They got a new puppy and still had not chosen a name for her.", "category": "Animals & Pets" },
-    { "id": "v30", "term": "fur", "meaning": "noun — the hair covering an animal’s body", "example": "The fur fell a lot when he described the dog shedding.", "category": "Animals & Pets" },
-    { "id": "v31", "term": "jealous", "meaning": "adjective — feeling upset because attention is being shared", "example": "Nina seemed jealous of the new puppy.", "category": "Animals & Pets" },
-    { "id": "v32", "term": "furniture", "meaning": "noun — large movable objects in a house", "example": "They found antique furniture while shopping.", "category": "Home & Furniture" },
-    { "id": "v33", "term": "cozy", "meaning": "adjective — comfortable, warm, and pleasant", "example": "He described a clean and cozy home atmosphere.", "category": "Home & Furniture" },
-    { "id": "v34", "term": "thrift shop", "meaning": "noun phrase — a shop that sells second-hand items", "example": "They found furniture and decorations at a thrift shop.", "category": "Shopping & Markets" },
-    { "id": "v35", "term": "constancy", "meaning": "noun — regular, steady repetition over time", "example": "The lesson reinforced constancy through 10–15 minutes of daily practice.", "category": "Study Habits & Productivity" },
-    { "id": "v36", "term": "24/7", "meaning": "expression — all the time; 24 hours a day, 7 days a week", "example": "São Paulo was described as having a 24/7 business mentality.", "category": "Expressions" },
-    { "id": "v37", "term": "lifelong learning", "meaning": "noun phrase — continuous learning throughout life", "example": "The lesson framed Rafael as an example of lifelong learning.", "category": "Personal Growth" },
-    { "id": "v38", "term": "on my own", "meaning": "expression — by myself, without support", "example": "Rafael described a period when he felt on his own.", "category": "Emotions & Reflection" },
-    { "id": "v39", "term": "grateful", "meaning": "adjective — thankful for what one has", "example": "He expressed that he feels grateful for health and family.", "category": "Emotions & Reflection" },
-    { "id": "v40", "term": "building manager", "meaning": "noun — the person responsible for overseeing a residential building", "example": "Rafael explained that he had recently become the building manager.", "category": "Work & Leadership" },
-    { "id": "v41", "term": "hard-working", "meaning": "adjective — putting in consistent effort", "example": "Rafael was described as hard-working and committed.", "category": "Character & Communication" },
-    { "id": "v42", "term": "family man", "meaning": "noun phrase — a man strongly devoted to his family", "example": "The lesson highlighted his identity as a family man.", "category": "Character & Communication" }
+    { "id": "v1", "term": "birth certificate", "meaning": "official document proving birth", "example": "Source example retained in the portfolio.", "category": "Travel & Documentation" },
+    { "id": "v2", "term": "citizenship", "meaning": "legal status of belonging to a country", "example": "Source example retained in the portfolio.", "category": "Travel & Documentation" },
+    { "id": "v3", "term": "luggage", "meaning": "bags used for travel", "example": "Source example retained in the portfolio.", "category": "Travel & Documentation" },
+    { "id": "v4", "term": "baggage", "meaning": "personal belongings for travel", "example": "Source example retained in the portfolio.", "category": "Travel & Documentation" },
+    { "id": "v5", "term": "suitcase", "meaning": "a travel bag with a handle", "example": "Source example retained in the portfolio.", "category": "Travel & Documentation" },
+    { "id": "v6", "term": "tell / told", "meaning": "to communicate information; tell normally takes a listener", "example": "Source example retained in the portfolio.", "category": "Storytelling & Communication" },
+    { "id": "v7", "term": "see / saw", "meaning": "to perceive with the eyes", "example": "Source example retained in the portfolio.", "category": "Storytelling & Communication" },
+    { "id": "v8", "term": "go / went", "meaning": "to move or travel", "example": "Source example retained in the portfolio.", "category": "Storytelling & Communication" },
+    { "id": "v9", "term": "sentimental", "meaning": "expressing or prompted by deep emotional feelings", "example": "Source example retained in the portfolio.", "category": "Storytelling & Communication" },
+    { "id": "v10", "term": "connection", "meaning": "a strong emotional link", "example": "Source example retained in the portfolio.", "category": "Storytelling & Communication" },
+    { "id": "v11", "term": "tax auditor", "meaning": "a professional who checks financial or tax records", "example": "Source example retained in the portfolio.", "category": "Work & Institutions" },
+    { "id": "v12", "term": "Legislative Assembly", "meaning": "a legislative government institution", "example": "Source example retained in the portfolio.", "category": "Work & Institutions" },
+    { "id": "v13", "term": "remote work", "meaning": "working away from the usual office, commonly from home", "example": "Source example retained in the portfolio.", "category": "Work & Institutions" },
+    { "id": "v14", "term": "hybrid work", "meaning": "a combination of remote and in-person work", "example": "Source example retained in the portfolio.", "category": "Work & Institutions" },
+    { "id": "v15", "term": "asymmetry", "meaning": "lack of equality between two sides", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v16", "term": "attrition", "meaning": "gradual weakening or reduction over time", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v17", "term": "interceptor", "meaning": "a missile designed to destroy an incoming threat", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v18", "term": "swarm", "meaning": "a large group acting together", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v19", "term": "missile", "meaning": "a guided weapon", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v20", "term": "drone", "meaning": "an unmanned aircraft", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v21", "term": "Strait of Hormuz", "meaning": "a strategically important waterway", "example": "Source example retained in the portfolio.", "category": "Geopolitics & Public Affairs" },
+    { "id": "v22", "term": "plenary session", "meaning": "a formal meeting involving the full body of members", "example": "Source example retained in the portfolio.", "category": "Work & Institutions" },
+    { "id": "v23", "term": "AI", "meaning": "artificial intelligence systems", "example": "Source example retained in the portfolio.", "category": "AI & Business" },
+    { "id": "v24", "term": "data", "meaning": "information used for analysis", "example": "Source example retained in the portfolio.", "category": "AI & Business" },
+    { "id": "v25", "term": "patterns", "meaning": "repeated behaviors or trends", "example": "Source example retained in the portfolio.", "category": "AI & Business" },
+    { "id": "v26", "term": "demand forecasting", "meaning": "predicting future customer demand", "example": "Source example retained in the portfolio.", "category": "AI & Business" },
+    { "id": "v27", "term": "holiday home", "meaning": "a house used for vacations or weekends", "example": "Source example retained in the portfolio.", "category": "Daily Life" },
+    { "id": "v28", "term": "dough", "meaning": "a mixture used in baking", "example": "Source example retained in the portfolio.", "category": "Cooking" },
+    { "id": "v29", "term": "puppy", "meaning": "a young dog", "example": "Source example retained in the portfolio.", "category": "Animals & Pets" },
+    { "id": "v30", "term": "fur", "meaning": "the hair covering an animal's body", "example": "Source example retained in the portfolio.", "category": "Animals & Pets" },
+    { "id": "v31", "term": "jealous", "meaning": "feeling upset because attention is being shared", "example": "Source example retained in the portfolio.", "category": "Animals & Pets" },
+    { "id": "v32", "term": "furniture", "meaning": "large movable objects used in a house or room", "example": "Source example retained in the portfolio.", "category": "Home & Furniture" },
+    { "id": "v33", "term": "cozy", "meaning": "comfortable, warm and pleasant", "example": "Source example retained in the portfolio.", "category": "Home & Furniture" },
+    { "id": "v34", "term": "thrift shop", "meaning": "a shop that sells second-hand items", "example": "Source example retained in the portfolio.", "category": "Shopping & Markets" },
+    { "id": "v35", "term": "constancy", "meaning": "regular, steady repetition over time", "example": "Source example retained in the portfolio.", "category": "Study Habits & Productivity" },
+    { "id": "v36", "term": "24/7", "meaning": "all the time; twenty-four hours a day, seven days a week", "example": "Source example retained in the portfolio.", "category": "Expressions" },
+    { "id": "v37", "term": "lifelong learning", "meaning": "continuous learning throughout life", "example": "Student-authored reuse is stored separately.", "category": "Personal Growth" },
+    { "id": "v38", "term": "on my own", "meaning": "by myself or without support", "example": "Student-authored reuse is stored separately.", "category": "Emotions & Reflection" },
+    { "id": "v39", "term": "grateful", "meaning": "thankful for what one has or receives", "example": "Student-authored reuse is stored separately.", "category": "Emotions & Reflection" },
+    { "id": "v40", "term": "building manager", "meaning": "the person responsible for overseeing a residential building", "example": "Student-authored reuse is stored separately.", "category": "Work & Leadership" },
+    { "id": "v41", "term": "hard-working", "meaning": "putting in consistent effort", "example": "Source example retained in the portfolio.", "category": "Character & Communication" },
+    { "id": "v42", "term": "family man", "meaning": "a man strongly devoted to his family", "example": "Source example retained in the portfolio.", "category": "Character & Communication" },
+    { "id": "v43", "term": "interpersonal skills", "meaning": "skills used to communicate and work effectively with other people", "example": "Student-authored reuse is stored separately.", "category": "Character & Communication" }
   ],
   "grammarOverview": {
     "title": "Grammar Overview (Cumulative)",
-    "summary": "Rafael sustains conversation very well, but his next level of development depends on improving precision in grammar and lexical choice during spontaneous speech. The main priorities are tense selection, object placement, and clearer sentence framing.",
+    "summary": "Rafael's current precision work is intentionally narrow: tense selection, complete and natural sentence framing, and accurate phrasing during spontaneous speech. Older observed patterns remain in cumulative memory rather than competing with the current three.",
     "focusPoints": [
-      "Past tense consistency: Developing → Improving",
-      "Sentence structure & completion: Building connected sentences without interruption",
-      "Natural phrasing & comparatives: Avoiding literal translations",
-      "Passive voice (reporting): Using for formal news-style communication",
-      "Say vs Tell: Correct structure usage",
-      "Present perfect vs simple past: Distinguishing unfinished present-relevant situations",
-      "Habits vs current/finished actions: Separating clearly in spontaneous speech"
+      "Present perfect vs simple past: distinguish unfinished or present-relevant situations from completed past actions; keep habits separate from one-off events.",
+      "Natural reflective framing & sentence completion: connect past experience to present meaning with complete sentences, accurate collocations and smoother transitions.",
+      "Past tense consistency: continue consolidating completed past forms while avoiding unnecessary continuous framing in narratives.",
+      "Natural phrasing & comparatives: avoid literal translations and choose more idiomatic English structures.",
+      "Passive voice for reporting: use passive forms appropriately in formal and news-style communication.",
+      "Say vs Tell: maintain the correct listener/message structure.",
+      "Third conditional: use had + past participle and would have + past participle for unreal past outcomes."
     ]
   },
   "teacherFeedback": [
     {
-      "id": "feedback-july",
-      "title": "Monthly teacher feedback",
-      "body": "Rafael continues to demonstrate strong communicative ability and confidence. In July, he engaged naturally in conversations about pets, family responsibility, and life transitions, showing that his English remains functional even in abstract or emotionally demanding topics."
+      "id": "feedback-july-memory",
+      "title": "July learning memory",
+      "body": "July evidence shows strong communicative stamina across personal, political and reflective topics, with increasing awareness of tense selection and natural framing."
     },
     {
-      "id": "feedback-priority",
-      "title": "Current growth priority",
-      "body": "The next level depends on improving precision in grammar and lexical choice during spontaneous speech. Priorities include tense selection, object placement, and clearer sentence framing."
+      "id": "feedback-current-canonical",
+      "title": "Current Teacher Feedback",
+      "body": "Rafael's B2 communication is strong and sustained, especially in analytical and reflective contexts. The current path toward C1 is not about accumulating more topics; it is about more precise tense selection, more natural sentence framing and more deliberate lexical choice during spontaneous speech. The authoritative attendance record now stands at 11 of 15 attended, so restoring the weekly rhythm matters for the recycling work already identified. No CEFR change is being claimed from the current evidence."
     }
   ],
   "classReports": [
     {
+      "id": "class-report-2026-03-05",
+      "lessonId": "rafael-2026-03-05",
       "date": "March 5, 2026",
-      "focus": [
-        "Italy trip storytelling",
-        "BBC news listening and retelling",
-        "Simple past review"
-      ],
-      "teacherInsight": "Language used in real life stays alive. Rafael showed strong communicative instinct, focusing on meaning and interaction instead of perfection."
+      "title": "Italy trip storytelling and BBC current events",
+      "summary": "Rafael retold his Italy trip chronologically and used a BBC international-news report for listening, retelling and verification work. The lesson also reviewed the simple past for completed events and experiences.",
+      "focus": ["Chronological storytelling", "BBC listening and retelling", "Simple past"],
+      "vocabulary": ["birth certificate", "citizenship", "luggage", "tell / told", "go / went"],
+      "teacherInsight": "The lesson showed strong communicative instinct and effective real-world language use even when grammar was not perfect.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-03-12",
+      "lessonId": "rafael-2026-03-12",
       "date": "March 12, 2026",
-      "focus": [
-        "Advanced conversation fluency",
-        "Geopolitics and international relations",
-        "Analytical discussion of current events"
-      ],
-      "teacherInsight": "Rafael is already capable of discussing professional experiences, international news and geopolitical analysis with excellent potential for advanced fluency development."
+      "title": "Professional experience, geopolitics and advanced fluency",
+      "summary": "The lesson combined storytelling, Rafael's tax-auditor background, pandemic work changes, geopolitical analysis and passive reporting language for complex real-world discussion.",
+      "focus": ["Professional background", "Geopolitical analysis", "Passive voice for reporting"],
+      "vocabulary": ["tax auditor", "asymmetry", "attrition", "interceptor", "swarm"],
+      "teacherInsight": "Rafael demonstrated strong analytical ability and willingness to communicate even when searching for vocabulary.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-03-23",
+      "lessonId": "rafael-2026-03-23",
       "date": "March 23, 2026",
-      "focus": [
-        "Lifestyle and health vocabulary",
-        "Technology and education",
-        "Political and institutional discussion"
-      ],
-      "teacherInsight": "His fluency allows him to engage in complex discussions connected to his real life. The next step is grammatical precision while maintaining this level of communication."
+      "title": "Lifestyle, technology and political institutions",
+      "summary": "Real-life conversation moved from health and lifestyle to technology, education and political institutions in Rio de Janeiro, with sentence clarity and comparative forms identified as precision targets.",
+      "focus": ["Lifestyle and health", "Technology and education", "Political institutions"],
+      "vocabulary": ["plenary session", "remote work", "hybrid work"],
+      "teacherInsight": "Rafael's fluency supports complex real-life discussion; grammatical precision is the next development step.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-03-26",
+      "lessonId": "rafael-2026-03-26",
       "date": "March 26, 2026",
-      "focus": [
-        "Storytelling using past events",
-        "AI and business vocabulary",
-        "Say vs tell"
-      ],
-      "teacherInsight": "Rafael shows strong analytical thinking and can interpret challenging real-world content effectively. With more precision, his communication will become even stronger."
+      "title": "Dream storytelling and AI in business and society",
+      "summary": "Spontaneous storytelling and AI/business discussion developed listening, interpretation and summarizing, while grammar work focused on more reliable verb use and say-versus-tell structure.",
+      "focus": ["Storytelling", "AI and business", "Say vs Tell"],
+      "vocabulary": ["AI", "data", "patterns", "demand forecasting"],
+      "teacherInsight": "Rafael can process and explain complex ideas effectively; accuracy and consistency in core sentence patterns remain the priority.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-04-06",
+      "lessonId": "rafael-2026-04-06",
       "date": "April 6, 2026",
-      "focus": [
-        "Structured storytelling",
-        "Emotional vocabulary",
-        "Past simple vs past continuous"
-      ],
-      "teacherInsight": "His emotional awareness and reflective thinking add depth to his communication. With structure, his speech becomes clearer, more organized and more natural."
+      "title": "Structured storytelling and emotional expression",
+      "summary": "A structured retelling of the Italy trip developed emotional vocabulary, narrative organization and the distinction between past simple and past continuous.",
+      "focus": ["Structured storytelling", "Emotional vocabulary", "Past simple vs past continuous"],
+      "vocabulary": ["sentimental", "connection"],
+      "teacherInsight": "With structure, Rafael's speech became clearer and more organized, and his self-correction in past forms showed growing control.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-04-09",
+      "lessonId": "rafael-2026-04-09",
       "date": "April 9, 2026",
-      "focus": [
-        "Types of houses and cooking vocabulary",
-        "Past simple consolidation",
-        "Complex political explanation"
-      ],
-      "teacherInsight": "Rafael showed significant progress explaining a highly complex political situation in English with very few gaps, while also consolidating the past simple through self-correction."
+      "title": "Homes, cooking and complex political explanation",
+      "summary": "The lesson integrated home, cooking and gardening vocabulary with explanation of a complex political situation, while consolidating the past simple and step-by-step explanation.",
+      "focus": ["Home and cooking vocabulary", "Past simple consolidation", "Complex political explanation"],
+      "vocabulary": ["holiday home", "dough"],
+      "teacherInsight": "Rafael explained a highly complex political situation with very few gaps and showed stronger awareness of past-simple self-correction.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-05-26",
+      "lessonId": "rafael-2026-05-26",
       "date": "May 26, 2026",
-      "focus": [
-        "Third conditional and speculative language",
-        "Rumour Has It - song-based vocabulary and expression",
-        "Advanced grammar in authentic context"
-      ],
-      "teacherInsight": "Rafael produced natural third conditional structures and speculative expressions with strong engagement. His ability to connect grammar with authentic context reflects real advancement toward C1 expression."
+      "title": "Political polarization, civic participation and third conditional",
+      "summary": "The lesson focused on political polarization in Brazil, civic participation, voting systems and institutions, using the third conditional to discuss hypothetical past political outcomes.",
+      "focus": ["Political and civic vocabulary", "Third conditional", "Analytical opinion"],
+      "vocabulary": ["polarization", "find a middle ground"],
+      "teacherInsight": "Analytical and opinion-based discussion remained a major strength; advanced hypothetical grammar required more precision.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-06-18",
+      "lessonId": "rafael-2026-06-18",
       "date": "June 18, 2026",
-      "focus": [
-        "Education and career challenges",
-        "Tax law and public administration vocabulary",
-        "Past simple consolidation in personal narratives"
-      ],
-      "teacherInsight": "Rafael showed progress in narrating personal events clearly and in using professional vocabulary related to law and public administration."
+      "title": "Education, career and public administration",
+      "summary": "Rafael discussed education, family responsibilities, career choices and professional development while expanding tax-law and public-administration vocabulary and consolidating past-simple narration.",
+      "focus": ["Education and career", "Tax law and public administration", "Past simple narration"],
+      "vocabulary": ["tax auditor"],
+      "teacherInsight": "Rafael strengthened personal-event narration and professional vocabulary while continuing to consolidate past-simple awareness.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-07-02",
+      "lessonId": "rafael-2026-07-02",
       "date": "July 2, 2026",
-      "focus": [
-        "Home decoration and antique shopping",
-        "Present perfect vs simple past",
-        "Spontaneous speaking and vocabulary expansion"
-      ],
-      "teacherInsight": "Rafael showed strong willingness to speak and excellent conversational stamina. The main need now is sharper control of vocabulary and grammar in highly spontaneous moments."
+      "title": "Puppy, home decoration, antique shopping and consistency",
+      "summary": "A long spontaneous conversation about a new puppy, home decoration and antique shopping expanded personalized vocabulary and highlighted present-perfect versus simple-past distinctions and study consistency.",
+      "focus": ["Spontaneous speaking", "Present perfect vs simple past", "Study consistency"],
+      "vocabulary": ["puppy", "fur", "cozy", "thrift shop", "constancy"],
+      "teacherInsight": "Rafael showed excellent conversational stamina; the main need was sharper grammar and vocabulary control in highly spontaneous moments.",
+      "status": "published",
+      "contentStatus": "published"
     },
     {
+      "id": "class-report-2026-07-14",
+      "lessonId": "rafael-2026-07-14",
       "date": "July 14, 2026",
-      "focus": [
-        "Political context and family responsibility",
-        "Reflective speaking and identity",
-        "Natural reflective framing in past and present"
-      ],
-      "teacherInsight": "Rafael performed very strongly in this lesson; his ability to express values, memory, and emotional tension with sincerity and depth reflects a major communicative strength."
+      "title": "Responsibility, resilience and lifelong learning",
+      "summary": "Reflective speaking connected political context, family responsibility, life transitions, self-reliance and lifelong learning, with attention to natural framing between past experience and present meaning.",
+      "focus": ["Reflective speaking", "Natural sentence framing", "Lifelong learning and responsibility"],
+      "vocabulary": ["lifelong learning", "on my own", "grateful", "building manager", "interpersonal skills"],
+      "teacherInsight": "Rafael expressed values, memory, responsibility and emotional tension with sincerity and depth; this is one of his strongest communicative contexts.",
+      "status": "published",
+      "contentStatus": "published"
     }
-  ]
+  ],
+  "cumulativeImpact": {
+    "title": "Longitudinal Learning Snapshot",
+    "summary": "The authoritative portfolio now establishes a broad B2 learning history while the dashboard exposes only the current actionable projection.",
+    "evidence": [
+      "15 scheduled lessons are recorded: 11 attended and 4 absences.",
+      "10 detailed class reports are available through 14 July 2026.",
+      "Attendance is confirmed for 27 August 2026, but no detailed report content is present for that date in the authoritative portfolio snapshot.",
+      "The active dashboard vocabulary set is limited to 5 items; deeper vocabulary remains longitudinal memory.",
+      "No CEFR change from B2 toward C1 is claimed without new validated evidence."
+    ]
+  },
+  "lessonRecords": [
+    {"lessonId":"rafael-2026-03-05","studentId":"stu_cce1337c71da","lessonDate":"2026-03-05","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-03-12","studentId":"stu_cce1337c71da","lessonDate":"2026-03-12","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-03-23","studentId":"stu_cce1337c71da","lessonDate":"2026-03-23","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-03-26","studentId":"stu_cce1337c71da","lessonDate":"2026-03-26","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-04-06","studentId":"stu_cce1337c71da","lessonDate":"2026-04-06","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-04-09","studentId":"stu_cce1337c71da","lessonDate":"2026-04-09","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-05-26","studentId":"stu_cce1337c71da","lessonDate":"2026-05-26","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-06-18","studentId":"stu_cce1337c71da","lessonDate":"2026-06-18","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-06-25","studentId":"stu_cce1337c71da","lessonDate":"2026-06-25","temporalLayer":"MEMORY","status":"absent","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-07-02","studentId":"stu_cce1337c71da","lessonDate":"2026-07-02","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-07-09","studentId":"stu_cce1337c71da","lessonDate":"2026-07-09","temporalLayer":"MEMORY","status":"absent","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-07-14","studentId":"stu_cce1337c71da","lessonDate":"2026-07-14","temporalLayer":"MEMORY","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-08-13","studentId":"stu_cce1337c71da","lessonDate":"2026-08-13","temporalLayer":"MEMORY","status":"absent","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-08-27","studentId":"stu_cce1337c71da","lessonDate":"2026-08-27","temporalLayer":"RECENT","status":"present","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"},
+    {"lessonId":"rafael-2026-09-03","studentId":"stu_cce1337c71da","lessonDate":"2026-09-03","temporalLayer":"MEMORY","status":"absent","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE"}
+  ],
+  "returningStudent": true,
+  "notes": "Canonical dashboard curation rebuilt from the authoritative PRIME Portfolio without reusing the former visible Rafael dashboard as the decision source. Current CEFR remains B2 with target C1. Attendance is reconciled to 11/15 with four absences. The portfolio confirms attendance on 27 August 2026 but contains no detailed report content for that date, so no lesson content is invented. The 3 September 2026 absence is preserved in attendance and learner-model context. July remains the latest detailed pedagogical evidence. Active vocabulary is limited to five July 14 items for student-authored reuse; the wider bank remains memory.",
+  "profileCompleteness": "portfolio_aligned_canonical_candidate"
 }
