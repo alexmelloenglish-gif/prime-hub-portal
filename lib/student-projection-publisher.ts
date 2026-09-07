@@ -81,6 +81,28 @@ export async function publishCanonicalStudentProjection(email: string) {
     { merge: true },
   )
 
+  const readBackSnapshot = await firestore.collection(collectionName).doc(documentId).get()
+  if (!readBackSnapshot.exists) {
+    throw new Error(`Projection read-back failed: Firestore document ${documentId} does not exist`)
+  }
+
+  const readBack = readBackSnapshot.data() as DocumentData
+  const readBackProjection = readBack.dashboard as DocumentData | undefined
+  const readBackHash = readBackProjection ? projectionHash(readBackProjection) : ''
+  const storedHash = typeof readBack.projectionHash === 'string' ? readBack.projectionHash : ''
+  const hashMatchesProjection = readBackHash === hash
+  const hashMatchesStoredMetadata = storedHash === hash
+  const authorityMatches = readBack.projectionAuthority === FIRESTORE_PROJECTION_AUTHORITY
+
+  if (!hashMatchesProjection || !hashMatchesStoredMetadata || !authorityMatches) {
+    throw new Error(
+      `Projection read-back verification failed for ${normalizedEmail}: ` +
+        `projectionHash=${hashMatchesProjection ? 'MATCH' : 'MISMATCH'}, ` +
+        `storedHash=${hashMatchesStoredMetadata ? 'MATCH' : 'MISMATCH'}, ` +
+        `authority=${authorityMatches ? 'MATCH' : 'MISMATCH'}`,
+    )
+  }
+
   return {
     studentId: student.studentId,
     studentEmail: normalizedEmail,
@@ -89,5 +111,44 @@ export async function publishCanonicalStudentProjection(email: string) {
     projectionAuthority: FIRESTORE_PROJECTION_AUTHORITY,
     projectionGeneratedAt: generatedAt,
     projectionHash: hash,
+    readBack: {
+      verified: true,
+      projectionHash: readBackHash,
+      storedHash,
+      authority: readBack.projectionAuthority,
+    },
+  }
+}
+
+export async function verifyCanonicalStudentProjection(email: string) {
+  const normalizedEmail = normalizeEmail(email)
+  if (!normalizedEmail) throw new Error('Student email is required')
+
+  const firestore = getFirebaseFirestore()
+  const collectionName = process.env.FIREBASE_STUDENT_COLLECTION || 'students'
+  const documentId = normalizedEmail.replace(/[^a-z0-9]+/g, '-')
+  const snapshot = await firestore.collection(collectionName).doc(documentId).get()
+
+  if (!snapshot.exists) {
+    return { verified: false, reason: 'FIRESTORE_DOCUMENT_NOT_FOUND', documentId, studentEmail: normalizedEmail }
+  }
+
+  const data = snapshot.data() as DocumentData
+  const projection = data.dashboard as DocumentData | undefined
+  const computedHash = projection ? projectionHash(projection) : ''
+  const storedHash = typeof data.projectionHash === 'string' ? data.projectionHash : ''
+  const expectedAuthority = data.projectionAuthority === FIRESTORE_PROJECTION_AUTHORITY
+  const verified = Boolean(projection) && computedHash === storedHash && expectedAuthority
+
+  return {
+    verified,
+    documentId,
+    studentEmail: normalizedEmail,
+    projectionAuthority: data.projectionAuthority ?? null,
+    projectionVersion: data.projectionVersion ?? null,
+    projectionHash: storedHash || null,
+    computedProjectionHash: computedHash || null,
+    authorityMatches: expectedAuthority,
+    hashMatches: Boolean(storedHash) && computedHash === storedHash,
   }
 }
