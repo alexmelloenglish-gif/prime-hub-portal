@@ -5,10 +5,7 @@ import {
   type CanonicalLesson,
   type CanonicalStudentProjection,
 } from '@/lib/canonical-student-projection'
-import type {
-  ClassReportEntry,
-  StudentDashboardData,
-} from '@/lib/student-data'
+import type { ClassReportEntry, StudentDashboardData } from '@/lib/student-data'
 
 function normalizeText(value: unknown) {
   return typeof value === 'string' ? value.trim().toLowerCase() : ''
@@ -19,24 +16,32 @@ function parseDate(value: string) {
   return Number.isFinite(timestamp) ? timestamp : null
 }
 
-function canonicalRecordKey(value: { id?: unknown; lessonId?: unknown; canonicalLessonId?: unknown; date?: unknown; title?: unknown }) {
+function canonicalRecordKey(value: {
+  id?: unknown
+  lessonId?: unknown
+  canonicalLessonId?: unknown
+  date?: unknown
+  title?: unknown
+}) {
   const explicit = canonicalLessonId(value)
   if (explicit) return explicit
 
   const id = typeof value.id === 'string' ? value.id.trim() : ''
   if (id.startsWith('pipeline-attendance-')) return id.slice('pipeline-attendance-'.length)
   if (id.startsWith('pipeline-')) return id.slice('pipeline-'.length)
-  if (id) return id
+  return id || null
+}
 
+function lessonFingerprint(value: { date?: unknown; title?: unknown }) {
   const date = normalizeText(value.date)
   const title = normalizeText(value.title)
   return date || title ? `${date}|${title}` : null
 }
 
-function dedupeByCanonicalKey<T extends { id?: string; lessonId?: string; canonicalLessonId?: string; date?: string; title?: string }>(items: T[]) {
+function dedupeLessons<T extends { id?: string; lessonId?: string; canonicalLessonId?: string; date?: string; title?: string }>(items: T[]) {
   const seen = new Set<string>()
   return items.filter((item) => {
-    const key = canonicalRecordKey(item) ?? `${item.date ?? ''}|${item.title ?? ''}`
+    const key = canonicalRecordKey(item) ?? lessonFingerprint(item) ?? `${item.date ?? ''}|${item.title ?? ''}`
     if (seen.has(key)) return false
     seen.add(key)
     return true
@@ -51,11 +56,10 @@ function temporalLayerForDate(date: string, latestTimestamp: number | null): Can
 }
 
 function buildCanonicalLessons(student: StudentDashboardData): CanonicalLesson[] {
-  const attendance = dedupeByCanonicalKey(
+  const attendance = dedupeLessons(
     student.attendanceOverview.map((entry) => ({
       ...entry,
       lessonId: entry.id,
-      studentId: student.studentId ?? student.studentEmail,
       lessonDate: entry.date,
     }))
   )
@@ -66,7 +70,10 @@ function buildCanonicalLessons(student: StudentDashboardData): CanonicalLesson[]
   const latestTimestamp = timestamps.length ? Math.max(...timestamps) : null
 
   return attendance.map((entry) => ({
-    lessonId: canonicalRecordKey({ id: entry.id, lessonId: entry.lessonId }) ?? `${student.studentId ?? student.studentEmail}-lesson`,
+    lessonId:
+      canonicalRecordKey({ id: entry.id, lessonId: entry.lessonId }) ??
+      lessonFingerprint(entry) ??
+      `${student.studentId ?? student.studentEmail}-lesson`,
     studentId: student.studentId ?? student.studentEmail,
     lessonDate: entry.date ?? '',
     temporalLayer: temporalLayerForDate(entry.date ?? '', latestTimestamp),
@@ -98,14 +105,16 @@ export function buildDashboardProjection(student: StudentDashboardData): Canonic
 }
 
 export function reconcileAttendanceForProjection(student: StudentDashboardData) {
-  const canonical = buildDashboardProjection(student)
-  const recentIds = new Set(canonical.recentLessons.map((lesson) => lesson.lessonId))
-  const memoryIds = new Set(canonical.memoryLessons.map((lesson) => lesson.lessonId))
-  const allowedIds = new Set([...recentIds, ...memoryIds])
-
-  return student.attendanceOverview.filter((entry) => allowedIds.has(canonicalRecordKey(entry) ?? entry.id))
+  return dedupeLessons(student.attendanceOverview)
 }
 
 export function reconcileClassReportsForProjection(reports: ClassReportEntry[]) {
-  return dedupeByCanonicalKey(reports)
+  const seen = new Set<string>()
+  return reports.filter((report) => {
+    const explicitLesson = canonicalRecordKey(report)
+    const key = explicitLesson ?? lessonFingerprint(report) ?? report.id
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
