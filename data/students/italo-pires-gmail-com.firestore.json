@@ -6,6 +6,7 @@
   "identitySource": "calendar_booking_teacher_confirmation",
   "profileStatus": "active",
   "dashboardSourcePolicy": "authorized_repository_snapshot",
+  "profileAsset": "/assets/italo-profile.svg",
   "profileSource": {
     "sourceType": "google_docs_student_portfolio",
     "sourceDocumentId": "1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg",
@@ -144,7 +145,7 @@
   ],
   "cumulativeImpact": {"title":"First-Lesson Learning Snapshot","summary":"One confirmed lesson establishes an initial professional Maritime English baseline. This is a current evidence snapshot, not a cumulative progress claim.","evidence":["1 confirmed lesson represented in the portfolio.","4 curated vocabulary-bank entries.","2 current priorities and 1 recommended next action.","3 grammar and accuracy focus areas."]},
   "lessonRecords": [
-    {"lessonId":"italo-2026-08-18","studentId":"stu_fb5b64e3437e","canonicalLessonId":"italo-2026-08-18","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg","lessonDate":"2026-08-18","meetUrl":"https://meet.google.com/yvr-xrvs-gaw","artifactStatus":"portfolio_confirmed","authorityStatus":"teacher_confirmed","implementationStatus":"dashboard_projection_published"}
+    {"lessonId":"italo-2026-08-18","studentId":"stu_fb5b64e3437e","canonicalLessonId":"italo-2026-08-18","sourceType":"google_docs_student_portfolio","sourceDocumentId":"1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg","lessonDate":"2026-08-18","temporalLayer":"RECENT","meetUrl":"https://meet.google.com/yvr-xrvs-gaw","artifactStatus":"portfolio_confirmed","authorityStatus":"teacher_confirmed","implementationStatus":"dashboard_projection_published"}
   ],
   "returningStudent": true,
   "notes": "Student dashboard profile aligned with the current Template Edition portfolio. Login identity remains itallopires17@gmail.com. Future class history should only be added after attendance is confirmed.",
