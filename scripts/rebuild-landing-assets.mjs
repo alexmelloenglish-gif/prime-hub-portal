@@ -2,18 +2,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const root = process.cwd()
+
+// Only assets that are intentionally reconstructed during build belong here.
+// The approved comparison students are committed source assets and must never be
+// overwritten by this script, otherwise a deploy can silently roll back the visual.
 const specs = [
   {
     name: 'hero',
     sourceDir: 'assets-src/landing-q76/hero',
     expectedBytes: 48406,
     output: 'public/assets/prime-hero-student-hq.webp',
-  },
-  {
-    name: 'context',
-    sourceDir: 'assets-src/landing/context',
-    expectedBytes: 19530,
-    output: 'public/assets/prime-context-person-hq.webp',
   },
   {
     name: 'cta',
