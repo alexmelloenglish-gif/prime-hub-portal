@@ -10,8 +10,37 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'Prime Digital Hub - Student Portal',
-  description: 'Protected learning portal with Google authentication and PostgreSQL-ready data layer.',
+  title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
+  description:
+    'Aulas de inglês personalizadas, com professor no centro, contexto entre encontros e direção clara para sua evolução.',
+  metadataBase: new URL('https://www.primedigitalhub.com.br'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
+    description:
+      'Aulas de inglês personalizadas, com professor no centro, contexto entre encontros e direção clara para sua evolução.',
+    url: 'https://www.primedigitalhub.com.br/',
+    siteName: 'Prime Digital Hub',
+    locale: 'pt_BR',
+    type: 'website',
+    images: [
+      {
+        url: '/assets/prime-hero-student-hq.webp',
+        width: 958,
+        height: 860,
+        alt: 'Aluna estudando inglês online no Prime Digital Hub',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
+    description:
+      'Aulas de inglês personalizadas, com professor no centro, contexto entre encontros e direção clara para sua evolução.',
+    images: ['/assets/prime-hero-student-hq.webp'],
+  },
 }
 
 export default function RootLayout({

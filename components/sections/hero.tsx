@@ -49,9 +49,14 @@ export function HeroSection() {
             </h1>
             <div className="h-1.5 w-28 rounded-full bg-prime-red" />
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              Cada aula se conecta à próxima porque o seu aprendizado não começa de novo. O professor acompanha sua trajetória,
-              registra o que realmente importa e transforma cada encontro em um passo claro para a sua evolução.
+              Aulas de inglês personalizadas para transformar objetivos reais em próximos passos claros. O professor acompanha sua trajetória,
+              registra o que realmente importa e conecta cada encontro ao seguinte — para que você evolua com contexto, direção e continuidade.
             </p>
+            <div className="grid gap-3 text-sm font-semibold text-[#123263] sm:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Contexto entre aulas</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Professor no centro</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco claro</div>
+            </div>
           </div>
 
           <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
