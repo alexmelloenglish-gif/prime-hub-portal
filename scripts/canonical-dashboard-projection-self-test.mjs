@@ -32,6 +32,9 @@ function load(relative) {
 }
 const { parseStudentDocument } = load('lib/student-data.ts')
 const { buildDashboardProjection, reconcileAttendanceForProjection, reconcileClassReportsForProjection } = load('lib/canonical-dashboard.ts')
+const { selectActiveVocabulary, selectRecentReports, DASHBOARD_DISPLAY_BUDGET } = load('lib/dashboard-display-budget.ts')
+
+// Italo remains the original canonical truth witness for the projection mechanism.
 const source = JSON.parse(fs.readFileSync(path.join(root, 'data/students/italo-pires-gmail-com.firestore.json'), 'utf8'))
 const before = JSON.stringify(source)
 const student = parseStudentDocument(source, source.studentEmail)
@@ -66,6 +69,38 @@ const memory = buildDashboardProjection({ ...student, lessonRecords: [{ ...stude
 assert.equal(memory.recentLessons.length, 0)
 assert.equal(memory.memoryLessons.length, 1)
 
+// Rafael is the scale/curation witness: rich memory, bounded NOW/RECENT projection.
+const rafaelSource = JSON.parse(fs.readFileSync(path.join(root, 'data/students/rafael-copolillo.firestore.json'), 'utf8'))
+const rafaelBefore = JSON.stringify(rafaelSource)
+const rafael = parseStudentDocument(rafaelSource, rafaelSource.studentEmail)
+const rafaelProjection = buildDashboardProjection(rafael)
+assert.equal(rafael.currentLevel, 'CEFR B2')
+assert.equal(rafael.targetLevel, 'CEFR C1')
+assert.equal(rafael.attendanceRate, '11/15 confirmed')
+assert.equal(rafael.attendanceOverview.length, 15)
+assert.equal(rafael.attendanceOverview.filter((entry) => entry.status === 'present').length, 11)
+assert.equal(rafael.attendanceOverview.filter((entry) => entry.status === 'absent').length, 4)
+assert.equal(rafaelProjection.currentState.level.value, 'CEFR B2')
+assert.equal(rafaelProjection.currentState.targetLevel.value, 'CEFR C1')
+assert.equal(rafaelProjection.whatChanged.changeType, 'learner-model')
+assert.equal(rafaelProjection.priorities.length, DASHBOARD_DISPLAY_BUDGET.priorities)
+assert.equal(rafaelProjection.nextAction.destination, '/dashboard/metas?studentEmail=rafael.copolillo%40gmail.com')
+assert.equal(rafaelProjection.recentLessons.length, 1)
+assert.equal(rafaelProjection.recentLessons[0].lessonId, 'rafael-2026-08-27')
+assert.equal(rafaelProjection.memoryLessons.length, 14)
+assert.equal(rafael.classReports.length, 10)
+assert.equal(rafael.classReports.some((report) => report.lessonId === 'rafael-2026-08-27'), false)
+assert.equal(selectRecentReports(rafael.classReports).length, DASHBOARD_DISPLAY_BUDGET.recentReports)
+assert.deepEqual(
+  selectActiveVocabulary(rafael.vocabularyBank, rafael.classReports).map((item) => item.term),
+  ['lifelong learning', 'on my own', 'grateful', 'building manager', 'interpersonal skills']
+)
+assert.deepEqual(
+  rafael.grammarOverview.focusPoints.slice(0, DASHBOARD_DISPLAY_BUDGET.grammarItems),
+  rafaelSource.grammarOverview.focusPoints.slice(0, 3)
+)
+assert.equal(JSON.stringify(rafaelSource), rafaelBefore, 'Rafael projection must not mutate the source')
+
 // Run the same mechanism for every authorized repository profile.
 let profiles = 0
 for (const filename of fs.readdirSync(path.join(root, 'data/students')).filter(name => name.endsWith('.firestore.json'))) {
@@ -76,4 +111,4 @@ for (const filename of fs.readdirSync(path.join(root, 'data/students')).filter(n
   assert.equal(new Set(result.lessonIds).size, result.lessonIds.length)
   profiles++
 }
-console.log(`Canonical document -> dashboard projection: PASS (${profiles} student profiles; identity, action metadata, deduplication and temporal boundaries)`)
+console.log(`Canonical document -> dashboard projection: PASS (${profiles} student profiles; identity, action metadata, deduplication, temporal boundaries and Rafael display curation)`)
