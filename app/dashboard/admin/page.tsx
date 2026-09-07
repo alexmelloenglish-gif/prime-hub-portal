@@ -146,6 +146,17 @@ export default async function DashboardAdminPage() {
                       <Plus aria-hidden="true" className="h-4 w-4" />
                       Open lessons view
                     </Link>
+                    {student.studentEmail === 'rafael.copolillo@gmail.com' ? (
+                      <form action="/api/admin/publish-student-projection" method="post">
+                        <input type="hidden" name="email" value="rafael.copolillo@gmail.com" />
+                        <button
+                          type="submit"
+                          className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-700 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-100"
+                        >
+                          Publish Rafael canonical projection
+                        </button>
+                      </form>
+                    ) : null}
                   </div>
                 </div>
               </article>
