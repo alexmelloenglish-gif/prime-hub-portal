@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BookOpen,
   CalendarDays,
-  CheckCircle2,
   Compass,
   FileCheck2,
   MessageSquareQuote,
