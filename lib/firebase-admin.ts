@@ -83,7 +83,7 @@ function createFederatedAuthClient() {
       `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/` +
       `${encodeURIComponent(config.serviceAccountEmail)}:generateAccessToken`,
     subject_token_supplier: {
-      getSubjectToken: () => getVercelOidcToken({ audience: config.audience }),
+      getSubjectToken: () => getVercelOidcToken(),
     },
   })
 
