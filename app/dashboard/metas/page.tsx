@@ -1,7 +1,9 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { SectionShell } from '@/components/dashboard/section-shell'
+import { VocabularyReuseGrid } from '@/components/dashboard/vocabulary-reuse-grid'
 import { authOptions } from '@/lib/auth'
+import { selectActiveVocabulary } from '@/lib/dashboard-display-budget'
 import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
 
 type VocabularyPageProps = {
@@ -32,42 +34,24 @@ export default async function DashboardVocabularyPage({ searchParams }: Vocabula
   }
 
   const student = studentState.student
-  const cardAccents = [
-    'border-amber-300/25 bg-[linear-gradient(145deg,rgba(251,191,36,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(251,191,36,0.12)]',
-    'border-emerald-300/25 bg-[linear-gradient(145deg,rgba(52,211,153,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(16,185,129,0.12)]',
-    'border-sky-300/25 bg-[linear-gradient(145deg,rgba(125,211,252,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(56,189,248,0.12)]',
-    'border-rose-300/25 bg-[linear-gradient(145deg,rgba(253,164,175,0.14),rgba(255,255,255,0.03))] shadow-[0_18px_45px_rgba(244,63,94,0.12)]',
-  ]
+  const activeVocabulary = selectActiveVocabulary(student.vocabularyBank, student.classReports)
 
   return (
     <SectionShell
-      title="My Vocabulary Bank"
-      description="Cumulative vocabulary gathered from this student&apos;s lessons, ready for active review and reuse."
+      title="Vocabulary to Reuse"
+      description="A small active set from your learning record. Write your own sentence, lock it, and your sentence will return whenever this word comes back for review."
     >
-      <div className="grid gap-4 lg:grid-cols-2">
-        {student.vocabularyBank.map((item, index) => (
-          <article
-            key={item.id}
-            className={`rounded-[28px] border p-6 ${cardAccents[index % cardAccents.length]}`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-prime-cream/55">
-                  Active vocabulary
-                </p>
-                <p className="mt-2 text-xl font-semibold text-white">{item.term}</p>
-              </div>
-              <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-prime-cream/65">
-                Reuse
-              </span>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-prime-cream/82">{item.meaning}</p>
-            <p className="mt-4 rounded-2xl border border-black/10 bg-black/20 px-4 py-3 text-sm italic text-prime-cream/72">
-              {item.example}
-            </p>
-          </article>
-        ))}
-      </div>
+      {activeVocabulary.length ? (
+        <VocabularyReuseGrid
+          studentEmail={student.studentEmail}
+          items={activeVocabulary}
+          tone="dark"
+        />
+      ) : (
+        <p className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-prime-cream/65">
+          No vocabulary has been selected for active reuse yet.
+        </p>
+      )}
     </SectionShell>
   )
 }
