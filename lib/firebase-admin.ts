@@ -8,7 +8,7 @@ function readPrivateKey() {
   if (!raw) return undefined
 
   return raw
-    .replace(/^\"|\"$/g, '')
+    .replace(/^"|"$/g, '')
     .replace(/\\+n/g, '\n')
 }
 
@@ -88,7 +88,7 @@ function createFederatedCredential(): Credential | undefined {
   })
 
   if (!authClient) {
-    throw new Error('Google Workload Identity Federation could not create an ExternalAccountClient')
+    throw new Error('Google Workload Identity Federation client initialization failed')
   }
 
   return {
