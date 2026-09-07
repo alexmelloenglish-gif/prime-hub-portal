@@ -8,7 +8,7 @@ function readPrivateKey() {
   if (!raw) return undefined
 
   return raw
-    .replace(/^"|"$/g, '')
+    .replace(/^\"|\"$/g, '')
     .replace(/\\+n/g, '\n')
 }
 
@@ -86,6 +86,10 @@ function createFederatedCredential(): Credential | undefined {
       getSubjectToken: () => getVercelOidcToken({ audience: config.audience }),
     },
   })
+
+  if (!authClient) {
+    throw new Error('Google Workload Identity Federation could not create an ExternalAccountClient')
+  }
 
   return {
     getAccessToken: async () => {
