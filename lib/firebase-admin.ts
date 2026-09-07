@@ -1,7 +1,7 @@
 import { getVercelOidcToken } from '@vercel/oidc'
-import { ExternalAccountClient } from 'google-auth-library'
+import { ExternalAccountClient, GoogleAuth } from 'google-auth-library'
 import { cert, getApps, initializeApp, type Credential } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+import { Firestore, getFirestore } from 'firebase-admin/firestore'
 
 function readPrivateKey() {
   const raw = process.env.FIREBASE_PRIVATE_KEY?.trim()
@@ -70,7 +70,7 @@ function getFederationConfig(): FederationConfig | undefined {
  * The supplier deliberately obtains a fresh Vercel OIDC token for each
  * Google exchange instead of writing a one-time token to disk.
  */
-function createFederatedCredential(): Credential | undefined {
+function createFederatedAuthClient() {
   const config = getFederationConfig()
   if (!config) return undefined
 
@@ -91,20 +91,18 @@ function createFederatedCredential(): Credential | undefined {
     throw new Error('Google Workload Identity Federation client initialization failed')
   }
 
+  authClient.scopes = ['https://www.googleapis.com/auth/cloud-platform']
+  return authClient
+}
+
+function createFederatedCredential(): Credential | undefined {
+  const authClient = createFederatedAuthClient()
+  if (!authClient) return undefined
   return {
     getAccessToken: async () => {
-      const { token, res } = await authClient.getAccessToken()
-      if (!token) {
-        throw new Error('Google Workload Identity Federation returned no access token')
-      }
-
-      const expiresIn =
-        typeof res?.data === 'object' && res.data !== null &&
-        'expires_in' in res.data && typeof res.data.expires_in === 'number'
-          ? res.data.expires_in
-          : 3600
-
-      return { access_token: token, expires_in: expiresIn }
+      const { token } = await authClient.getAccessToken()
+      if (!token) throw new Error('Google Workload Identity Federation returned no access token')
+      return { access_token: token, expires_in: 3600 }
     },
   }
 }
@@ -169,6 +167,23 @@ export function getFirebaseAdminApp() {
   return getApps()[0]
 }
 
+let federatedFirestore: Firestore | undefined
+
 export function getFirebaseFirestore() {
+  if (runtimeMode === 'wif') {
+    if (!federatedFirestore) {
+      const authClient = createFederatedAuthClient()
+      if (!authClient || !federation) {
+        throw new Error('Google Workload Identity Federation configuration is incomplete')
+      }
+      // Pass the Google Auth client directly to the Cloud Firestore SDK.
+      // Firebase Admin's getFirestore rejects custom Credential adapters.
+      federatedFirestore = new Firestore({
+        projectId: federation.projectId,
+        auth: new GoogleAuth({ authClient, projectId: federation.projectId }),
+      })
+    }
+    return federatedFirestore
+  }
   return getFirestore(getFirebaseAdminApp())
 }
