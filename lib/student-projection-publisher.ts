@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import type { DocumentData } from 'firebase-admin/firestore'
-import { getFirebaseFirestore } from '@/lib/firebase-admin'
+import { getFirebaseFirestore, getFirebaseFirestoreWriter } from '@/lib/firebase-admin'
 import { parseStudentDocument, normalizeEmail } from '@/lib/student-data'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
 import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
@@ -62,7 +62,7 @@ export async function publishCanonicalStudentProjection(email: string) {
 
   const hash = projectionHash(projection)
   const generatedAt = new Date().toISOString()
-  const firestore = getFirebaseFirestore()
+  const firestore = getFirebaseFirestoreWriter()
   const collectionName = process.env.FIREBASE_STUDENT_COLLECTION || 'students'
   const documentId = normalizedEmail.replace(/[^a-z0-9]+/g, '-')
 
