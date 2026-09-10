@@ -132,6 +132,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id)
   )
   const allReports = dedupeByDateAndTitle(reconcileClassReportsForProjection(student.classReports))
+    .filter((report) => report.status === 'published' || report.contentStatus === 'published')
+    .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
+
   const latestLessonTimestamp = projection.recentLessons.length
     ? Math.max(...projection.recentLessons.map((lesson) => dateTimestamp(lesson.lessonDate) ?? 0))
     : null
@@ -184,7 +187,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="text-sm leading-6 text-slate-600 md:text-base">A focused view of your authorized learning record: current state, recent evidence, useful memory and the next action.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#244575]">{presentRecentLessons} recent confirmed lesson{presentRecentLessons === 1 ? '' : 's'}</span>
-              <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">Deeper history stays in your portfolio</span>
+              <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">Full class-report history stays available below</span>
             </div>
           </div>
         </div>
@@ -231,16 +234,18 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Confirmed Lessons & Reports</h3><p className="mt-1 text-sm text-slate-500">Only the most recently useful evidence is shown here. Older records remain in memory.</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Confirmed Lessons</h3><p className="mt-1 text-sm text-slate-500">The most recent lesson evidence stays concise here. The complete published report history remains visible immediately below.</p></div>
         <section id="attendance-overview" className="space-y-3">
           {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-medium text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">{lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No recent confirmed lesson is available yet.</p>}
         </section>
 
-        {recentReports.length ? <section id="class-reports" className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Published Class Reports</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={report.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs text-[#345481]">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-500">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{report.teacherInsight ? <p className="mt-3 border-t border-slate-100 pt-3 text-sm leading-6 text-[#49617f]">{report.teacherInsight}</p> : null}</article>)}</div></section> : null}
+        {recentReports.length ? <section className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Recent Report Highlights</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={`recent-${report.id}`} className="rounded-2xl border border-blue-100 bg-blue-50/30 p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p></article>)}</div></section> : null}
       </section>
 
+      {allReports.length ? <section id="class-reports" className="space-y-4"><div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">LONGITUDINAL</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Published Class Reports — Full History</h3><p className="mt-1 text-sm text-slate-500">Every published class report remains available here. New lessons never push older reports out of view.</p></div><div className="grid gap-3 lg:grid-cols-2">{allReports.map((report) => <article key={report.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs text-[#345481]">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-500">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{report.teacherInsight ? <p className="mt-3 border-t border-slate-100 pt-3 text-sm leading-6 text-[#49617f]">{report.teacherInsight}</p> : null}</article>)}</div></section> : null}
+
       <section className="space-y-4">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-500">Useful memory stays visible in small doses. The full longitudinal record remains preserved in your portfolio.</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-500">Useful memory stays visible in small doses, while the complete class-report history remains preserved above and in the portfolio.</p></div>
 
         {visibleProgress.length ? <section id="progress-tracker" className="grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => <article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><h4 className="text-lg font-semibold text-[#0a235c]">{item.title}</h4><p className="mt-2.5 text-sm leading-6 text-slate-500">{item.insight}</p><p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{item.status}</p></article>)}</section> : null}
 
@@ -253,7 +258,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {student.manageSpace.length ? <section id="manage-space" className="rounded-[24px] border border-blue-100 bg-blue-50/40 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-500">Open your class, portfolio or support without adding more learning clutter.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{student.manageSpace.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm hover:border-blue-200"><p className="font-semibold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{link.description}</p></a>)}</div></section> : null}
       </section>
 
-      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: bounded dashboard view + preserved longitudinal memory.</footer>
+      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: bounded NOW/RECENT view + complete published longitudinal class-report history.</footer>
     </div>
   )
 }
