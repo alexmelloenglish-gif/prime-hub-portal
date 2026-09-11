@@ -6,6 +6,7 @@ const italo = JSON.parse(
   await readFile(new URL('data/students/italo-pires-gmail-com.firestore.json', root), 'utf8')
 )
 const dashboardSource = await readFile(new URL('app/dashboard/page.tsx', root), 'utf8')
+const primitiveSource = await readFile(new URL('components/dashboard/student-dashboard-primitives.tsx', root), 'utf8')
 const studentDataSource = await readFile(new URL('lib/student-data.ts', root), 'utf8')
 
 assert.equal(italo.studentId, 'stu_fb5b64e3437e')
@@ -34,15 +35,29 @@ assert.ok(!italo.progressTracker.some((item) => /active growth|improving|develop
 assert.ok(!JSON.stringify(italo).includes('Rafael'))
 
 assert.ok(dashboardSource.includes('What Matters Now'))
-assert.ok(dashboardSource.includes('Canonical action'))
+assert.ok(dashboardSource.includes('<NextActionCard'))
+assert.ok(dashboardSource.includes('<DevelopmentTrajectory'))
+assert.ok(dashboardSource.includes('<AttendanceSummary'))
+assert.ok(dashboardSource.includes('Published Class Reports — Full History'))
 assert.ok(dashboardSource.includes('Learner Memory'))
+assert.ok(dashboardSource.includes("lesson.status === 'present' ? 'attended'"))
 assert.ok(!dashboardSource.includes('isRafael'))
 assert.ok(!dashboardSource.includes('w-[68%]'))
 assert.ok(!dashboardSource.includes('15 scheduled lessons'))
+
+assert.ok(primitiveSource.includes('Teacher validated'))
+assert.ok(primitiveSource.includes('Portfolio confirmed'))
+assert.ok(primitiveSource.includes('Evidence-led progression'))
+assert.ok(primitiveSource.includes('No artificial percentage or gamified score is inferred.'))
+assert.ok(primitiveSource.includes('attended lesson'))
+assert.ok(!primitiveSource.includes('Cláudio'))
+assert.ok(!primitiveSource.includes('Rafael'))
+assert.ok(!primitiveSource.includes('Gustavo'))
+assert.ok(!primitiveSource.includes('Ítalo'))
+
 assert.ok(!studentDataSource.includes('AI Class Report Draft'))
 assert.ok(!studentDataSource.includes('pipeline-draft-'))
-
 assert.ok(studentDataSource.includes("asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot'"))
 assert.ok(studentDataSource.includes("reason: 'firestore_unavailable'"))
 
-console.log('Student Dashboard v1 contract self-test passed for Italo Pires.')
+console.log('Student Dashboard v1 contract self-test passed for Italo Pires and the shared visual system.')
