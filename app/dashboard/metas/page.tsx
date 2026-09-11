@@ -45,10 +45,10 @@ export default async function DashboardVocabularyPage({ searchParams }: Vocabula
         <VocabularyReuseGrid
           studentEmail={student.studentEmail}
           items={activeVocabulary}
-          tone="dark"
+          tone="light"
         />
       ) : (
-        <p className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-prime-cream/65">
+        <p className="rounded-2xl border border-slate-300 bg-white p-5 text-sm text-slate-700 shadow-sm">
           No vocabulary has been selected for active reuse yet.
         </p>
       )}
