@@ -45,7 +45,10 @@ export function HeroSection() {
           <div className="space-y-5">
             <h1 className="max-w-3xl font-display text-[2.35rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
               Aulas de inglês online ao vivo para objetivos reais.
-              <span className="mt-2 block text-[#0b2c5c]">Sua aprendizagem continua evoluindo.</span>
+              <span className="mt-2 block text-[#0b2c5c]">
+                <span className="sm:hidden">Aprendizagem que permanece.</span>
+                <span className="hidden sm:inline">Sua aprendizagem continua evoluindo.</span>
+              </span>
             </h1>
             <div className="h-1.5 w-28 rounded-full bg-prime-red" />
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
