@@ -63,7 +63,10 @@ assert.ok(!primitiveSource.includes('Ítalo'))
 // PRIME Progress Tracker is frozen to exactly four learner-facing states.
 for (const state of ['Strong', 'Improving', 'Needs Focus', 'Not Assessed']) {
   assert.ok(progressStateSource.includes(`'${state}'`), `Missing canonical progress state: ${state}`)
-  assert.ok(progressBadgeSource.includes(`${state}:`), `Missing shared visual treatment for: ${state}`)
+  assert.ok(
+    progressBadgeSource.includes(`${state}:`) || progressBadgeSource.includes(`'${state}':`),
+    `Missing shared visual treatment for: ${state}`
+  )
 }
 for (const legacy of ['very strong', 'secure', 'established', 'active growth', 'developing', 'progressing', 'needs attention', 'priority']) {
   assert.ok(progressStateSource.includes(`${legacy}:`) || progressStateSource.includes(`'${legacy}':`), `Missing legacy normalization: ${legacy}`)
