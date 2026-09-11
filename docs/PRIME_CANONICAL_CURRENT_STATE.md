@@ -36,6 +36,7 @@ The detailed product contract is maintained in:
 
 - `docs/student-dashboard-system-standard.md`
 - `docs/PRIME_PROGRESS_TRACKER_FROZEN_STANDARD.md`
+- `docs/student-learning-portfolio-template-v1.0.md`
 
 ---
 
@@ -244,18 +245,66 @@ Laura is **not the next dashboard processing priority**.
 
 ---
 
-# 10. Louise — NEXT STUDENT PRIORITY
+# 10. Louise — CANONICAL PORTFOLIO + DASHBOARD DONE / PRODUCTION
 
-The next student dashboard processing priority is:
+Louise has now been processed against the frozen shared system rather than through a student-specific implementation path.
+
+Canonical portfolio master contract:
 
 ```text
-LOUISE FIRST
-LAURA LATER
+docs/student-learning-portfolio-template-v1.0.md
 ```
 
-Louise should be processed against the frozen shared dashboard standard rather than through a one-off implementation path.
+Louise portfolio registry:
 
-Processing should preserve the system-wide rules already frozen in this repository.
+```text
+docs/student-portfolios/louise-nogueira-canonical-v1.0.md
+```
+
+Official canonical Google Doc:
+
+```text
+https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit
+```
+
+Canonical student snapshot:
+
+```text
+data/students/louise-d-silva-nogueira.firestore.json
+```
+
+The dashboard snapshot now points `My Portfolio` to the canonical v1.0 document, not the prior legacy portfolio.
+
+Louise's current canonical state remains evidence-bounded:
+
+```text
+Current CEFR = Not Assessed
+Target CEFR = Not Assessed
+Class frequency = Not confirmed
+Attendance = 3 attended lessons documented
+Fluency = Strong
+Analytical & Reflective Communication = Strong
+Grammar Precision = Needs Focus
+Lexical Precision & Reuse = Improving
+```
+
+No CEFR level, recurring schedule or fourth attended lesson was invented.
+
+Reference dashboard commit:
+
+```text
+03e3163855bd07ebc5af42c8a2934a5be246cb7a
+feat: point Louise dashboard to canonical portfolio v1.0
+```
+
+Reference production deployment:
+
+```text
+dpl_9t5bSiYZ63EjTvCJbe3rUdB6x6kR
+READY
+```
+
+The deployment is aliased to `www.primedigitalhub.com.br`. Production responds successfully, but unauthenticated runtime inspection redirects to the login page, so student-specific rendered content is verified through the canonical repository snapshot plus successful production build rather than by bypassing authentication.
 
 ---
 
@@ -351,13 +400,19 @@ Read in this order:
 2. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — **this file**
 3. `docs/student-dashboard-system-standard.md`
 4. `docs/PRIME_PROGRESS_TRACKER_FROZEN_STANDARD.md`
-5. `scripts/student-dashboard-contract-self-test.mjs`
-6. `scripts/canonical-consistency-validator.mjs`
-7. `app/dashboard/page.tsx`
-8. `components/dashboard/student-dashboard-primitives.tsx`
-9. `lib/progress-states.ts`
-10. `app/api/pipeline/ingest/route.ts`
-11. dated 2026-08-31 forensic documents only when historical pipeline evidence is needed
+5. `docs/student-learning-portfolio-template-v1.0.md`
+6. `scripts/student-dashboard-contract-self-test.mjs`
+7. `scripts/canonical-consistency-validator.mjs`
+8. `app/dashboard/page.tsx`
+9. `components/dashboard/student-dashboard-primitives.tsx`
+10. `lib/progress-states.ts`
+11. `app/api/pipeline/ingest/route.ts`
+12. dated 2026-08-31 forensic documents only when historical pipeline evidence is needed
+
+For Louise specifically, also read:
+
+- `docs/student-portfolios/louise-nogueira-canonical-v1.0.md`
+- `data/students/louise-d-silva-nogueira.firestore.json`
 
 ---
 
@@ -366,6 +421,7 @@ Read in this order:
 ```text
 DASHBOARD SHARED VISUAL SYSTEM = IMPLEMENTED / PRODUCTION
 DASHBOARD SYSTEM STANDARD = CANONICAL
+STUDENT LEARNING PORTFOLIO TEMPLATE v1.0 = FROZEN / CANONICAL
 PROGRESS TRACKER = FROZEN TO 4 STATES
 VOCABULARY PAGE CONTRAST = FIXED
 NEXT ACTION / SCHEDULE SEPARATION = CANONICAL
@@ -375,9 +431,12 @@ REPOSITORY-BACKED STUDENT DASHBOARD = ACTIVE
 LEGACY /api/pipeline/ingest = PAUSED BY DEFAULT IN PRODUCTION
 APPS SCRIPT TRIGGER ITSELF = NOT PROVEN DISABLED
 LAURA = DEFERRED
-LOUISE = NEXT STUDENT PROCESSING PRIORITY
+LOUISE PORTFOLIO v1.0 = CANONICALIZED
+LOUISE DASHBOARD = UPDATED / PRODUCTION
+LOUISE DASHBOARD PORTFOLIO LINK = CANONICAL v1.0
+NEXT STUDENT PROCESSING PRIORITY = NOT YET FROZEN
 ```
 
-**NEXT AUTHORIZED PRODUCT ACTION:** process Louise against the frozen canonical dashboard standard, without reactivating the legacy Laura ingestion flow.
+**NEXT AUTHORIZED PRODUCT ACTION:** choose the next student processing priority and process that student against the frozen canonical Portfolio + Dashboard system. Do not reactivate the legacy Laura ingestion flow unless an explicit product decision reverses the pause.
 
 **STATUS: 🚨 CANONICAL CURRENT RETURN POINT — 2026-09-11**
