@@ -189,7 +189,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         title={nextAction?.title}
         description={nextAction?.description}
         evidence={nextAction?.evidence}
-        destination={nextAction?.destination}
+        destination={nextAction?.destination ?? undefined}
         scheduleLabel={scheduleLabel}
       />
 

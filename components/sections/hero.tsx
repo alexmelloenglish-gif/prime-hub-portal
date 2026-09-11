@@ -44,18 +44,23 @@ export function HeroSection() {
 
           <div className="space-y-5">
             <h1 className="max-w-3xl font-display text-[2.35rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
-              Sua escola de inglês continua evoluindo.
-              <span className="mt-2 block text-[#0b2c5c]">Aprendizagem que permanece.</span>
+              Aulas de inglês online ao vivo para objetivos reais.
+              <span className="mt-2 block text-[#0b2c5c]">Sua aprendizagem continua evoluindo.</span>
             </h1>
             <div className="h-1.5 w-28 rounded-full bg-prime-red" />
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              Aulas de inglês personalizadas para transformar objetivos reais em próximos passos claros. O professor acompanha sua trajetória,
-              registra o que realmente importa e conecta cada encontro ao seguinte — para que você evolua com contexto, direção e continuidade.
+              A Prime oferece aulas exclusivamente online ao vivo, personalizadas para transformar seus objetivos em próximos passos claros. Você, aluno,
+              está no centro; o professor interpreta sua evolução, valida as evidências e conduz a próxima aula com contexto, direção e continuidade.
             </p>
+            <div className="flex flex-wrap gap-2 text-sm font-semibold text-[#123263]">
+              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Online ao vivo</span>
+              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Professor como autoridade</span>
+              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Aluno no centro</span>
+            </div>
             <div className="grid gap-3 text-sm font-semibold text-[#123263] sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Você, aluno, no centro</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Professor com autoridade</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória e próxima direção</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Aula conectada à anterior</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco definido pelo professor</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória da aprendizagem preservada</div>
             </div>
           </div>
 
@@ -95,6 +100,7 @@ export function HeroSection() {
               Falar com a Prime
             </a>
           </div>
+          <p className="max-w-2xl text-sm leading-6 text-slate-500">Na aula experimental, você conversa sobre seu momento e seus objetivos — sem precisar saber seu nível antes de começar.</p>
         </div>
 
         <div className="relative min-w-0">

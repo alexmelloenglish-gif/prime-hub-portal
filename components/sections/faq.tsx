@@ -1,15 +1,19 @@
 const questions = [
   {
     question: 'Para quem é a Prime Digital Hub?',
-    answer: 'Para pessoas que querem usar o inglês em objetivos reais e preferem uma aprendizagem acompanhada por professor, com contexto entre os encontros e direção clara sobre o que praticar a seguir.',
+    answer: 'Para pessoas que querem usar o inglês em objetivos reais e preferem aulas exclusivamente online ao vivo, acompanhadas por professor, com contexto entre os encontros e direção clara sobre o que praticar a seguir.',
   },
   {
     question: 'O que acontece na aula experimental?',
-    answer: 'Você conversa sobre seus objetivos e conhece a proposta de acompanhamento da Prime. A aula é o primeiro passo para entender se esse formato faz sentido para o seu momento.',
+    answer: 'Você conversa online sobre seus objetivos, sua rotina e as situações em que deseja usar o inglês. A aula é o primeiro passo para entender seu momento e se o acompanhamento da Prime faz sentido para você.',
   },
   {
     question: 'A tecnologia substitui o professor?',
     answer: 'Não. O professor continua sendo a autoridade pedagógica. A tecnologia trabalha nos bastidores para organizar contexto, evidências e continuidade.',
+  },
+  {
+    question: 'As aulas são presenciais?',
+    answer: 'Não. A Prime trabalha com aulas online ao vivo, com interação em tempo real, a mesma atenção individual e a mesma continuidade no acompanhamento entre os encontros.',
   },
   {
     question: 'Como a Prime acompanha minha evolução?',

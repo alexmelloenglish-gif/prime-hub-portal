@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
   description:
-    'Aulas de inglês personalizadas, com professor com autoridade, você no centro, memória permanente e direção clara para sua evolução.',
+    'Aulas de inglês online ao vivo para objetivos reais, com professor como autoridade, aluno no centro, memória da aprendizagem e direção clara para sua evolução.',
   metadataBase: new URL('https://www.primedigitalhub.com.br'),
   alternates: {
     canonical: '/',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
     description:
-      'Aulas de inglês personalizadas, com professor com autoridade, você no centro, memória permanente e direção clara para sua evolução.',
+      'Aulas de inglês online ao vivo para objetivos reais, com professor como autoridade, aluno no centro, memória da aprendizagem e direção clara para sua evolução.',
     url: 'https://www.primedigitalhub.com.br/',
     siteName: 'Prime Digital Hub',
     locale: 'pt_BR',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Prime Digital Hub | Inglês personalizado com aprendizagem contínua',
     description:
-      'Aulas de inglês personalizadas, com professor com autoridade, você no centro, memória permanente e direção clara para sua evolução.',
+      'Aulas de inglês online ao vivo para objetivos reais, com professor como autoridade, aluno no centro, memória da aprendizagem e direção clara para sua evolução.',
     images: ['/assets/prime-hero-student-hq.webp'],
   },
 }

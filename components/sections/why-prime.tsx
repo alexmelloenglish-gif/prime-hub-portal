@@ -1,4 +1,4 @@
-import { Brain, GraduationCap, Heart, History, ShieldCheck, UserRound } from 'lucide-react'
+import { Brain, GraduationCap, Heart, History, Monitor, ShieldCheck, UserRound } from 'lucide-react'
 
 const values = [
   {
@@ -30,6 +30,11 @@ const values = [
     icon: Heart,
     title: 'Acompanhamento humano',
     description: 'Tecnologia e cuidado trabalham juntos para tornar o ensino mais atento, pessoal e consistente.',
+  },
+  {
+    icon: Monitor,
+    title: 'Online ao vivo',
+    description: 'Aulas ao vivo com flexibilidade, presença real do professor e continuidade para você aprender onde estiver — sem perder o acompanhamento humano.',
   },
 ]
 

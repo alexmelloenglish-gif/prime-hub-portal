@@ -4,7 +4,7 @@ const journey = [
   { step: '01', label: 'A tecnologia organiza', text: 'Ela registra e conecta falas, respostas, correções e tentativas para ampliar o olhar do professor.', icon: MessageSquareText },
   { step: '02', label: 'O professor valida', text: 'O professor confere cada evidência rastreável: o que o aluno produziu, com quanto apoio e em qual contexto.', icon: TrendingUp },
   { step: '03', label: 'O que não consolidou aparece', text: 'Se uma estrutura só aparece com modelo ou ajuda, isso fica registrado como evidência de que ainda precisa de prática — não como domínio comprovado.', icon: Target },
-  { step: '04', label: 'A próxima aula parte daí', text: 'O professor escolhe o próximo foco com base em evidências rastreáveis e comprovadas — não em um palpite ou guessing game.', icon: ArrowRight },
+  { step: '04', label: 'A próxima aula parte daí', text: 'O professor escolhe o próximo foco com base em evidências rastreáveis e comprovadas — não em suposições.', icon: ArrowRight },
 ]
 
 export function LearningLoopDemo() {
@@ -19,10 +19,10 @@ export function LearningLoopDemo() {
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Não é apenas uma aula. É um ciclo que continua.</h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-blue-100 sm:text-lg">
-            Este é um exemplo real de como uma aula da Prime é acompanhada. A tecnologia organiza e conecta as evidências da aprendizagem para ampliar o olhar do professor, mas não decide sozinha. O professor valida o que foi observado, identifica o que ainda precisa de apoio e conduz a próxima aula com base em evidências rastreáveis e comprovadas — não em um guessing game.
+            Este é um exemplo real de como uma aula da Prime é acompanhada. A tecnologia organiza e conecta as evidências da aprendizagem para ampliar o olhar do professor, mas não decide sozinha. O professor valida o que foi observado, identifica o que ainda precisa de apoio e conduz a próxima aula com base em evidências rastreáveis e comprovadas — não em suposições.
           </p>
           <p className="mt-5 max-w-2xl font-display text-xl font-bold leading-8 text-white sm:text-2xl">
-            O aprendizado não acaba quando a aula termina, ele está apenas começando.
+            O aprendizado não acaba quando a aula termina; ele está apenas começando.
           </p>
         </div>
 
