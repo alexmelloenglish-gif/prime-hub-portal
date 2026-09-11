@@ -2,362 +2,382 @@
 
 ## CANONICAL CURRENT STATE — OPERATIONAL SNAPSHOT
 
-> **STOP. READ THIS FIRST.** This document is the canonical return point. Facts marked **PROVEN / DONE / LOCKED** must **NOT be re-investigated or rebuilt** unless new contradictory runtime evidence is produced.
+> **STOP. READ THIS FIRST.** This document is the canonical return point for the current implementation state. Facts marked **PROVEN / DONE / LOCKED / FROZEN** must not be rebuilt or re-litigated without new contradictory runtime evidence or an explicit product decision.
 
-**Anti-rework rule:** Before starting any investigation, read `docs/DO_NOT_REINVESTIGATE.md` and this document. Reopening a closed investigation without new evidence is considered retrabalho.
-
-**Date:** 2026-08-31  
-**Status:** CANONICAL / FROZEN CURRENT STOP POINT  
+**Date:** 2026-09-11  
+**Status:** CANONICAL / CURRENT / FROZEN CHECKPOINT  
 **Repository:** `alexmelloenglish-gif/prime-hub-portal`  
-**Canonical branch:** `main`
+**Canonical branch:** `main`  
+**Production:** `www.primedigitalhub.com.br`
+
+The prior 2026-08-31 forensic checkpoint remains historical evidence in Git history and in the dated forensic documents. This file supersedes it as the **current operational return point**.
 
 ---
 
-# 0. 🚨 DO NOT RE-INVESTIGATE — PROVEN FACTS
+# 0. Current canonical operating model
 
-The following are already established for this checkpoint:
+The student dashboard product is repository-backed and uses one shared visual/pedagogical presentation system.
 
-```text
-NEON SCHEMA FORENSIC AUDIT         = DONE
-SIX HISTORICAL RUN AUDIT           = DONE
-LAURA HISTORICAL RECORD AUDIT      = DONE
-IDEMPOTENCY STRUCTURAL AUDIT       = DONE
-RETRY IMPLEMENTATION               = DONE / DEPLOYED
-APPS SCRIPT PROJECT IDENTIFICATION = DONE
-DRIVE → PORTAL TRANSPORT           = PROVEN
-TRANSCRIPT PERSISTENCE             = PROVEN
-PIPELINERUN CREATION               = PROVEN
-PROMPT 1 REACHED                   = PROVEN
-PORTAL → GEMINI CALL LOCALIZATION  = PROVEN
-```
-
-**Do not redo these audits merely because a new agent/session starts.** Only reopen one when there is new evidence of regression, contradiction, or a changed requirement.
-
-### Current blocker — do not confuse it with the closed investigations
+Canonical presentation sequence:
 
 ```text
-CURRENT ROOT BLOCKER = GOOGLE CLOUD BILLING / GEMINI PROVIDER ACCESS
-GEMINI HEALTHCHECK   = HTTP 403 / PERMISSION_DENIED
-BILLING SETUP        = OR_BACR2_59 / BLOCKED
+STATE → PRIORITY → EVIDENCE → ACTION → HISTORY
 ```
 
-The historical Apps Script → Prompt 1 causality remains:
+Canonical product principle:
 
 ```text
-PROMPT_1_403_CAUSED_BY_APPS_SCRIPT = NOT_PROVEN
+shared system layer + individualized student layer
 ```
+
+The dashboard must not use named-student UI hacks. Cláudio remains a validation case, not a special implementation path.
+
+The detailed product contract is maintained in:
+
+- `docs/student-dashboard-system-standard.md`
+- `docs/PRIME_PROGRESS_TRACKER_FROZEN_STANDARD.md`
 
 ---
 
-# 1. Existing product/runtime and Teacher Intelligence
+# 1. Student dashboard visual system — DONE / PRODUCTION
 
-The product/runtime foundation remains:
+The shared dashboard refinement is implemented and deployed across the student dashboard system.
 
-```text
-Drive
-→ ingestion
-→ transcript
-→ pipeline
-→ projections
-→ dashboard
-```
+Current shared behavior includes:
 
-Teacher Intelligence observability surfaces remain implemented as previously recorded, including PipelineRun, PipelineEvent, transcript/provenance inspection, Evidence Candidate review, Learning Signal Proposal, Teacher Insight Proposal, Class Report/Portfolio inspection, audit/provenance and existing Pipeline ReviewTask workflow.
+- reusable Current State presentation;
+- qualitative Development Trajectory;
+- standardized Next Action card;
+- Attendance Summary using family-facing `attended lesson(s)` terminology;
+- distinct RECENT / LONGITUDINAL / MEMORY visual layers;
+- full published class-report history preserved longitudinally;
+- progressive disclosure for long content;
+- stronger contrast and hierarchy in the light dashboard system;
+- shared component architecture rather than student-specific styling.
 
-These surfaces do not manufacture cognitive lifecycle state.
-
----
-
-# 2. Retry implementation — FROZEN
-
-The targeted retry mechanism is already implemented and deployed to Production.
-
-- Production deployment: `dpl_51Jfb5ZfhcuhffrWB5R2G4gNzF6c`
-- Audited GitHub SHA: `43eda9442732887089a85d23111baa320ab04ca1`
-- Endpoint: `POST /api/admin/pipeline/retry`
-- Path: `retryFailedPipelineRun()` → `processLessonTranscript()`
-
-**Do not implement, refactor, migrate, or modify the retry mechanism during the current investigation.**
-
-Laura retry has not been executed.
+Production implementation has passed the student dashboard self-test and canonical projection validation.
 
 ---
 
-# 3. Neon historical evidence — LOCKED
+# 2. PRIME Progress Tracker — FROZEN
 
-The Neon forensic audit established that the six historical PipelineRuns are intact and remain `failed`.
+Exactly four learner-facing progress states are canonical:
 
-All six have:
+| State | Semantic color | Meaning |
+|---|---|---|
+| **Strong** | Green / emerald | Skill is demonstrated consistently |
+| **Improving** | Blue | Skill shows active, observable development |
+| **Needs Focus** | Amber | Skill requires targeted attention and practice |
+| **Not Assessed** | Neutral gray | Insufficient evidence to classify the skill |
 
-```text
-Transcript persisted
-PipelineRun persisted
-Prompt 1 reached
-GeminiGenerationFailed
-provider = gemini
-stage = prompt-1
-httpStatus = 403
-PipelineRun = failed
-no downstream artifacts
-```
+No visible synonyms or dashboard-specific variants are authorized.
 
-Laura's canonical historical record remains intact:
+Legacy labels are normalized at rendering time, including:
 
 ```text
-PipelineRun = cmtcqbiy800006cqasv3nsziu
-Transcript  = cmtcqbiyy00026cqafg8r788w
-Lesson      = lesson_a3368991e6ba0c79
-Status      = failed
-Error       = GEMINI_HTTP_ERROR / HTTP 403
+Very Strong / Secure / Established → Strong
+Active Growth / Developing / Progressing / On Track → Improving
+Needs Attention / Priority → Needs Focus
+Unknown / unsupported state → Not Assessed
 ```
 
-The retry can structurally reuse the historical Transcript and Lesson without schema migration, using a new PipelineRun identity, new idempotency key and unused attempt number.
+Artificial progress percentages and progress bars are not part of the canonical tracker.
 
-The historical database audit is complete for this checkpoint and should not be repeated without new evidence.
+The frozen implementation is protected by shared code and self-tests.
 
 ---
 
-# 4. Causality separation — LOCKED
+# 3. Next Action — canonical separation
 
-The following remain independent findings unless runtime evidence proves a causal relationship:
+The Next Action component is a shared system component, but its pedagogical action must remain student-specific.
 
-- Firebase `UNAUTHENTICATED`
-- Drive `ingest_http_500`
-- historical Drive `403`
-- historical `invalid_grant`
-- historical Gemini HTTP 403
-- retry/idempotency behavior
-- Apps Script runtime/trigger errors
-- Cloud Billing / Payments restriction
+Canonical rule:
 
-The Apps Script has not been proven to cause the historical Gemini 403.
+```text
+NEXT ACTION
+→ student-specific action
+→ why it matters
+→ supporting evidence when available
+→ CTA
+```
+
+**Schedule information does not belong inside the Next Action card.** Schedule belongs to Attendance / Schedule context.
+
+This avoids mixing pedagogical action with administrative timing metadata.
+
+For Rafael specifically, vocabulary reuse must not be treated as the whole B2→C1 learning objective. His action logic should prioritize precision in speaking while vocabulary reuse remains supporting practice.
 
 ---
 
-# 5. Apps Script — current recorded state
+# 4. Vocabulary workspace contrast — FIXED / PRODUCTION
 
-Primary candidate:
+The `Vocabulary to Reuse` destination previously inherited dark-theme assumptions inside a light dashboard shell, causing weak contrast and poor readability.
 
-- Project: `PRIME Digital Hub — Google Meet Transcript Automation`
-- Script ID: `1ZCiOyQPRQocSMbAER9c0FelY494I5TTLP639XWdrzmNrSqzbekNIByB5`
-- Owner: `alexandre@primedigitalhub.com.br`
+That visual mismatch was corrected in the shared dashboard experience.
 
-The prior forensic audit could identify the project but could not read its manifest, source, triggers or execution history because of access/scope limitations.
-
-Therefore:
+Reference production commit:
 
 ```text
-PROMPT_1_403_CAUSED_BY_APPS_SCRIPT = NOT_PROVEN
+fc713c5f5c52b11836db4a1b7deb757648417904
+fix: align vocabulary reuse page with light dashboard contrast
 ```
 
-Do not infer runtime or trigger behavior without actual Apps Script evidence.
+Do not reintroduce low-contrast dark-theme tokens into light student dashboard pages.
 
 ---
 
-# 6. Portal → Gemini localization
+# 5. Attendance semantics — FROZEN
 
-The audited Production source establishes the portal-side architecture:
-
-```text
-/api/pipeline/ingest
-→ processLessonTranscript()
-→ runPromptOne()
-→ Gemini generation layer
-→ generateContent
-```
-
-The Gemini call is performed in the portal runtime rather than directly by the ingestion route.
-
-Relevant runtime configuration includes:
+Family-facing terminology:
 
 ```text
-GOOGLE_AI_STUDIO_API_KEY
-PRIME_PIPELINE_MODEL
+scheduled = booked / expected, not evidence of attendance
+attended = lesson happened and student was present
+cancelled = lesson did not happen
+unknown = unresolved until evidence exists
 ```
 
-This source evidence localizes the historical Prompt 1 403 to the portal-to-provider call, while preserving the Apps Script causality status as `NOT_PROVEN`.
+Use **attended lesson(s)**, not **confirmed lesson(s)**, in the student/family UI.
+
+Do not convert past `scheduled` items into `attended` or `cancelled` without evidence.
+
+Do not invent attendance percentages, absence trends or scheduled totals merely to complete a visual component.
 
 ---
 
-# 7. NEW CURRENT BLOCKER — CLOUD BILLING / GEMINI ACCESS
+# 6. RECENT vs LONGITUDINAL — FROZEN
 
-A separate audited report has now established the current operational blocker as a Google Cloud Billing / Gemini access issue.
+`RECENT` is bounded presentation context.
 
-The isolated Gemini healthcheck was reported to reach the provider and return:
+`LONGITUDINAL` preserves the complete published class-report history.
 
-```text
-HTTP 403
-PERMISSION_DENIED
-Your project has been denied access. Please contact support.
-```
+New lessons must never push older published reports out of the longitudinal history.
 
-The same audit reported a Cloud Billing setup failure:
-
-```text
-OR_BACR2_59
-Unable to complete billing setup.
-Unable to configure your account.
-```
-
-The report further states that the previously available billing account is closed and that there is currently no active billing account available for the project.
-
-For operational purposes, this snapshot therefore records:
-
-```text
-GOOGLE_CLOUD_BILLING = BLOCKED
-BILLING_SETUP = FAILED / OR_BACR2_59
-ACTIVE_BILLING_ACCOUNT_FOR_PROJECT = NO
-GEMINI_PROVIDER_ACCESS = FAIL
-CURRENT_GEMINI_RESULT = 403 PERMISSION_DENIED
-```
-
-### Public-repository security rule
-
-This repository is public. Do not store payment-card information, full financial identifiers, API keys, tokens, passwords, CVV, or other secrets in GitHub documentation. Detailed billing evidence must remain in the private Google Cloud/Payments environment.
+This is a system invariant, not a per-student exception.
 
 ---
 
-# 8. CURRENT EXECUTION GATE — SUPERSEDING PRIOR GL-003 ORDER
+# 7. Evidence authority — FROZEN
 
-Any earlier section of this file that described immediate GL-003 execution is superseded by this current gate.
+Evidence-status presentation remains distinct from learner progress status.
 
-The order is now:
+Examples of evidence authority include:
 
-```text
-CLOUD BILLING / PAYMENTS
-        ↓
-ACTIVE BILLING ACCOUNT
-        ↓
-PROJECT LINKED TO BILLING
-        ↓
-GEMINI ACCESS ALLOWED
-        ↓
-MINIMAL GEMINI HEALTHCHECK = PASS
-        ↓
-REMAINING RETRY PRE-FLIGHT = PASS
-        ↓
-GL-003 SAFE TO EXECUTE = YES
-        ↓
-ONE CONTROLLED LAURA RETRY
-```
+- Teacher Validated
+- Portfolio Confirmed
+- Qualified Insight
+- Not Available
 
-Until the minimal Gemini healthcheck passes:
+These labels describe **authority/provenance**, not progress quality.
 
-```text
-LAURA RETRY = BLOCKED
-GL-003 = BLOCKED
-FULL PIPELINE = BLOCKED
-```
-
-No code refactor, schema change, Apps Script change or repeated billing-account creation is authorized merely to bypass this gate.
+Never visually or semantically equate an unvalidated automated interpretation with teacher validation.
 
 ---
 
-# 9. Transport/persistence checkpoint — PROVEN
+# 8. Legacy ingestion pipeline — PAUSED IN PRODUCTION
 
-The current `/api/pipeline/ingest` route does not provide a natural stop point before Gemini. Its effective sequence is:
+The old ingestion boundary is now blocked by default in Production.
+
+Canonical endpoint:
 
 ```text
-Drive / external automation
-        ↓
 POST /api/pipeline/ingest
-        ↓
-Transcript persisted
-        ↓
-PipelineRun created
-        ↓
-status = processing
-        ↓
-processLessonTranscript()
-        ↓
-runPromptOne()
-        ↓
-Gemini generateContent
 ```
 
-Historical production executions already provide the evidence needed for this breakpoint.
+Production behavior now requires explicit opt-in:
 
 ```text
-DRIVE SOURCE DISCOVERY              = PROVEN
-TRANSCRIPT READ / PAYLOAD CREATION  = PROVEN
-APPS SCRIPT → CANONICAL ENDPOINT    = PROVEN
-HTTP INGESTION                      = PROVEN
-TRANSCRIPT PERSISTENCE              = PROVEN
-PIPELINERUN CREATION                = PROVEN
-PROMPT 1 INVOCATION REACHED         = PROVEN
-GEMINI GENERATION                   = BLOCKED
-GEMINI PROVIDER RESPONSE            = HTTP 403 PERMISSION_DENIED
-DOWNSTREAM COGNITIVE ARTIFACTS      = BLOCKED
+PRIME_PIPELINE_INGEST_ENABLED=true
 ```
 
-A fresh transcript is therefore **not** required merely to prove transport/persistence while Gemini remains blocked.
-
----
-
-# 10. What is already DONE / what must NOT be redone
+Without that explicit value, the endpoint returns:
 
 ```text
-NEON SCHEMA FORENSIC AUDIT        = DONE
-SIX HISTORICAL RUN AUDIT          = DONE
-LAURA HISTORICAL RECORD AUDIT     = DONE
-IDEMPOTENCY STRUCTURAL AUDIT      = DONE
-RETRY IMPLEMENTATION              = DONE / DEPLOYED
-APPS SCRIPT PROJECT IDENTIFICATION= DONE
-PORTAL GEMINI CALL LOCALIZATION   = DONE
-DRIVE → PORTAL TRANSPORT           = PROVEN
-TRANSCRIPT PERSISTENCE             = PROVEN
-PIPELINERUN CREATION               = PROVEN
-PROMPT 1 REACHED                   = PROVEN
+503
+PIPELINE_INGESTION_PAUSED
+Legacy pipeline ingestion is paused
 ```
 
-Do not repeat these investigations without new contradictory evidence.
-
----
-
-# 11. Future-agent reading order
-
-Any new agent, Codex session or operator continuing this work must read:
-
-1. `docs/DO_NOT_REINVESTIGATE.md` — **first: anti-rework guardrail**.
-2. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — canonical current state.
-3. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md` — cross-layer forensic checkpoint.
-4. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md` — Apps Script / Prompt 1 evidence.
-5. `docs/google-drive-transcript-automation.md` — Drive/transcript architecture.
-6. `app/api/pipeline/ingest/route.ts` — ingestion boundary.
-7. `lib/pipeline/run.ts` — orchestration/failure persistence.
-8. `lib/pipeline/prompts.ts` — Gemini provider call.
-9. Neon `pipeline_runs`, `transcripts`, `pipeline_events` — historical persistence evidence.
-
-Use audited Production SHA `43eda9442732887089a85d23111baa320ab04ca1` when reproducing the source-level reasoning recorded here, unless a newer verified deployment is explicitly recorded.
-
----
-
-# 12. Security and credential handling
-
-If Vercel access is requested, authenticate through the account that owns/has access to the Vercel project/workspace. GitHub credentials and Vercel login credentials are separate systems.
-
-Never place passwords, 2FA codes, API tokens, private keys or production secrets in this repository or in chat.
-
-Provider credentials used by the application are runtime configuration, not human login credentials.
-
----
-
-# 13. CURRENT STOP POINT
+Reference commit:
 
 ```text
-IMPLEMENTATION = FROZEN
-HISTORICAL EVIDENCE = PRESERVED
-RETRY = IMPLEMENTED BUT NOT EXECUTED
-APPS SCRIPT CAUSALITY = NOT_PROVEN
-PROMPT 1 HISTORICAL 403 = CONFIRMED
-CURRENT GEMINI HEALTH = 403 / PERMISSION_DENIED
-CLOUD BILLING = BLOCKED
-GL-003 = BLOCKED
-LAURA = BLOCKED
+75806164ea1f70540a478f4b17fffdd98a5041fc
+chore: pause legacy pipeline ingestion by default
 ```
 
-**CURRENT ROOT BLOCKER:** Google Cloud Billing / Gemini provider access.
+Reference production deployment:
 
-**NEXT AUTHORIZED ACTION:** resolve the Billing/Payments restriction, confirm an active billing account usable by `prime-hub-portal`, then run only the minimal Gemini healthcheck. Do not execute Laura retry or GL-003 before that gate passes.
+```text
+dpl_6KojVB5R1XeSnfg2SM1wdsQrecuu
+READY
+```
 
-**STATUS: 🚨 DO NOT RE-INVESTIGATE — LOCKED FOR CONTINUATION — 2026-08-31**
+This deployment is associated with the production aliases including `www.primedigitalhub.com.br`.
+
+### Important limitation
+
+The external Apps Script trigger itself has **not** been proven disabled or deleted because direct trigger-management access is not available here.
+
+Therefore the canonical statement is:
+
+```text
+APPS SCRIPT MAY STILL ATTEMPT CALLS
+PORTAL LEGACY INGESTION = BLOCKED BY DEFAULT
+LAURA CANNOT ENTER processLessonTranscript() THROUGH THIS LEGACY ENDPOINT WHILE THE KILL SWITCH REMAINS OFF
+```
+
+Do not claim the Apps Script trigger was removed unless direct trigger evidence is later obtained.
+
+---
+
+# 9. Laura — DEFERRED / DO NOT PROCESS NOW
+
+Laura is intentionally deferred.
+
+The legacy pipeline must not be used to keep retrying or reprocessing Laura while this checkpoint is active.
+
+Do not execute a Laura retry merely because historical retry infrastructure exists.
+
+Known unresolved historical `scheduled` items remain unresolved until evidence supports a change.
+
+Laura is **not the next dashboard processing priority**.
+
+---
+
+# 10. Louise — NEXT STUDENT PRIORITY
+
+The next student dashboard processing priority is:
+
+```text
+LOUISE FIRST
+LAURA LATER
+```
+
+Louise should be processed against the frozen shared dashboard standard rather than through a one-off implementation path.
+
+Processing should preserve the system-wide rules already frozen in this repository.
+
+---
+
+# 11. Known non-blocking canonical backlog
+
+The strict canonical validator currently distinguishes contradictions from unresolved historical evidence.
+
+Known warnings include unresolved past `scheduled` items for some students and Rafael's attendance/report mismatch.
+
+Rafael currently has a known evidence backlog:
+
+```text
+11 attended lessons
+10 published class reports
+August 27, 2026 attended lesson has no same-date published report
+```
+
+These are warnings, not facts to auto-repair. Backfill only when source evidence is available.
+
+The current validator principle remains:
+
+```text
+unknown historical state = warning / unresolved
+true contradiction = error
+```
+
+---
+
+# 12. Firestore/runtime architecture — DO NOT REVIVE BY ACCIDENT
+
+The student dashboard runtime is repository-backed for the canonical student snapshots.
+
+Firestore runtime was intentionally frozen/retired from the dashboard path during the previous architecture stabilization.
+
+Do not revive Firestore as the student dashboard source merely as part of visual/dashboard processing unless an explicit architecture decision reverses that freeze.
+
+---
+
+# 13. What is canonical vs what is not
+
+Canonicalize:
+
+- product contracts;
+- data semantics;
+- shared component behavior;
+- evidence-authority rules;
+- progress-state taxonomy;
+- attendance semantics;
+- deployment gates;
+- operational kill switches;
+- known unresolved evidence states;
+- processing order when intentionally frozen;
+- verified production checkpoints.
+
+Do **not** treat every transient artifact as product canon.
+
+Not canonical by itself:
+
+- a failed intermediate deployment;
+- temporary build logs;
+- exploratory wording from chat;
+- abandoned implementation alternatives;
+- screenshots used only for diagnosis;
+- assumptions not backed by code, data or runtime evidence.
+
+Git history preserves those artifacts when useful, but they do not define the product contract.
+
+---
+
+# 14. Regression protection
+
+The repository should continue to protect these invariants through tests/validators:
+
+```text
+NO STUDENT-SPECIFIC UI HACKS
+FOUR PROGRESS STATES ONLY
+NO ARTIFICIAL PROGRESS PERCENTAGES
+ATTENDED ≠ SCHEDULED
+SCHEDULE OUTSIDE NEXT ACTION
+RECENT BOUNDED / LONGITUDINAL COMPLETE
+EVIDENCE AUTHORITY EXPLICIT
+LEGACY INGESTION PAUSED UNLESS EXPLICITLY ENABLED
+UNKNOWN HISTORY NOT SILENTLY REWRITTEN
+```
+
+---
+
+# 15. Current reading order for future agents/operators
+
+Read in this order:
+
+1. `docs/DO_NOT_REINVESTIGATE.md`
+2. `docs/PRIME_CANONICAL_CURRENT_STATE.md` — **this file**
+3. `docs/student-dashboard-system-standard.md`
+4. `docs/PRIME_PROGRESS_TRACKER_FROZEN_STANDARD.md`
+5. `scripts/student-dashboard-contract-self-test.mjs`
+6. `scripts/canonical-consistency-validator.mjs`
+7. `app/dashboard/page.tsx`
+8. `components/dashboard/student-dashboard-primitives.tsx`
+9. `lib/progress-states.ts`
+10. `app/api/pipeline/ingest/route.ts`
+11. dated 2026-08-31 forensic documents only when historical pipeline evidence is needed
+
+---
+
+# 16. CURRENT STOP POINT
+
+```text
+DASHBOARD SHARED VISUAL SYSTEM = IMPLEMENTED / PRODUCTION
+DASHBOARD SYSTEM STANDARD = CANONICAL
+PROGRESS TRACKER = FROZEN TO 4 STATES
+VOCABULARY PAGE CONTRAST = FIXED
+NEXT ACTION / SCHEDULE SEPARATION = CANONICAL
+ATTENDANCE SEMANTICS = FROZEN
+LONGITUDINAL HISTORY = PRESERVED
+REPOSITORY-BACKED STUDENT DASHBOARD = ACTIVE
+LEGACY /api/pipeline/ingest = PAUSED BY DEFAULT IN PRODUCTION
+APPS SCRIPT TRIGGER ITSELF = NOT PROVEN DISABLED
+LAURA = DEFERRED
+LOUISE = NEXT STUDENT PROCESSING PRIORITY
+```
+
+**NEXT AUTHORIZED PRODUCT ACTION:** process Louise against the frozen canonical dashboard standard, without reactivating the legacy Laura ingestion flow.
+
+**STATUS: 🚨 CANONICAL CURRENT RETURN POINT — 2026-09-11**
