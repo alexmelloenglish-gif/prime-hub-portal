@@ -185,10 +185,11 @@ Structure:
 - student-specific action title;
 - concise explanation of why it matters now;
 - evidence or rationale when available;
-- action CTA;
-- schedule context when supported by data.
+- action CTA.
 
 The presentation is standardized. The action remains student-specific.
+
+Schedule/logistics context belongs to the Attendance/Schedule presentation, not inside the Next Action card.
 
 Do not hard-code project names or student-specific CTA behavior.
 
@@ -414,6 +415,8 @@ Self-tests and validators should protect the following invariants:
 - evidence authority remains explicit;
 - artificial CEFR percentages are not introduced;
 - canonical hierarchy remains intact;
+- learner-facing progress uses only the frozen four-state taxonomy;
+- progress colors remain semantically fixed across students;
 - historical unknowns are warnings until evidence resolves them, not silently rewritten facts.
 
 ---
@@ -440,3 +443,28 @@ This must remain true regardless of name length, level, content volume, report c
 The objective is not to make one student's dashboard look better.
 
 The objective is to make every Prime student dashboard communicate the same high-quality pedagogical architecture more clearly while preserving each learner's unique story.
+
+---
+
+# 21. PRIME Progress Tracker — FROZEN
+
+The learner-facing Progress Tracker uses exactly four states, in this fixed order:
+
+| State | Color | Meaning |
+|---|---|---|
+| **Strong** | Green / emerald | The skill is demonstrated consistently. |
+| **Improving** | Blue | The skill is showing active, observable development. |
+| **Needs Focus** | Amber | The skill requires targeted attention and practice. |
+| **Not Assessed** | Neutral gray / slate | There is not yet enough evidence to classify the skill. |
+
+No synonyms or student-specific alternatives may appear in learner-facing dashboards.
+
+Legacy labels must normalize before rendering. Examples include `Very Strong`, `Secure` and `Established` → **Strong**; `Active Growth`, `Developing`, `Progressing` and `On Track` → **Improving**; `Needs Attention`, `Attention`, `Priority` and `Needs Practice` → **Needs Focus**; unknown/pending/unavailable states → **Not Assessed**.
+
+`Not Assessed` is neutral, not a negative judgment. Any unrecognized label defaults to **Not Assessed** rather than inventing a development claim.
+
+The color is supplemental to the visible text label and must not be the only carrier of meaning.
+
+Do not derive percentages, arbitrary progress-bar widths, XP, points or mathematical scores from these four qualitative states.
+
+The implementation details and migration aliases are additionally frozen in `docs/PRIME_PROGRESS_TRACKER_FROZEN_STANDARD.md`.
