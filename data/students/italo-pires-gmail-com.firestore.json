@@ -66,11 +66,11 @@
     {"id":"nav-feedback","title":"Teacher Feedback","href":"#teacher-feedback"}
   ],
   "progressTracker": [
-    {"id":"speaking-confidence","title":"Speaking Confidence","status":"Initial evidence","insight":"In the first confirmed lesson, Italo was willing to speak about meaningful professional topics with context and vocabulary support.","accent":"green"},
-    {"id":"professional-communication","title":"Professional Communication","status":"Baseline observed","insight":"He explained training, experience and career interests in the first lesson; clearer interview-answer structure is the current priority.","accent":"green"},
-    {"id":"technical-vocabulary","title":"Technical Vocabulary","status":"Existing strength","insight":"The first lesson showed that maritime knowledge provides a strong base for English related to vessels, offshore operations and positioning systems.","accent":"yellow"},
-    {"id":"grammar-accuracy","title":"Grammar Accuracy","status":"Current priority","insight":"Current priority: verb patterns, agreement, future forms and present-time descriptions during spontaneous speech.","accent":"pink"},
-    {"id":"independent-english-use","title":"Independent English Use","status":"Self-reported evidence","insight":"Italo reported using English with classmates, friends and music. This is useful context, not a measured progress claim.","accent":"yellow"}
+    {"id":"speaking-confidence","title":"Speaking Confidence","status":"Not Assessed","insight":"There is not yet enough evidence from one confirmed lesson to classify speaking confidence longitudinally.","accent":"gray"},
+    {"id":"professional-communication","title":"Professional Communication","status":"Not Assessed","insight":"There is not yet enough evidence from one confirmed lesson to classify professional communication longitudinally.","accent":"gray"},
+    {"id":"technical-vocabulary","title":"Technical Vocabulary","status":"Not Assessed","insight":"There is not yet enough evidence from one confirmed lesson to classify technical vocabulary as a longitudinal strength or development state.","accent":"gray"},
+    {"id":"grammar-accuracy","title":"Grammar Accuracy","status":"Needs Focus","insight":"Current priority: verb patterns, agreement, future forms and present-time descriptions during spontaneous speech.","accent":"amber"},
+    {"id":"independent-english-use","title":"Independent English Use","status":"Not Assessed","insight":"Independent English use is supported only by self-report so far; there is not yet enough observed evidence to classify it.","accent":"gray"}
   ],
   "attendanceOverview": [
     {"id":"class-2026-08-18","lessonId":"italo-2026-08-18","date":"August 18, 2026","status":"present","title":"Professional self-introduction, maritime career and technical communication","summary":"Maritime career, professional interview preparation and technical communication."}
