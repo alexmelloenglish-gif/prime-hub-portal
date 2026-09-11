@@ -25,6 +25,7 @@ import {
   selectCurrentFeedback,
   selectRecentReports,
 } from '@/lib/dashboard-display-budget'
+import { normalizeProgressState } from '@/lib/progress-states'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -215,7 +216,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <section className="rounded-[28px] border border-slate-300 bg-slate-100/70 p-4 shadow-sm md:p-5">
         <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Useful memory stays visible in small doses, while complete class-report history remains preserved above and in the portfolio.</p></div>
 
-        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={item.status} /></div><p className="mt-2.5 text-sm leading-6 text-slate-700">{item.insight}</p></article>)}</section> : null}
+        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => {
+          const state = normalizeProgressState(item.status)
+          return <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={state} /></div>{state === 'Not Assessed' ? <p className="mt-2.5 text-sm leading-6 text-slate-500">There is not yet enough evidence to classify this skill.</p> : <p className="mt-2.5 text-sm leading-6 text-slate-700">{item.insight}</p>}</article>
+        })}</section> : null}
 
         {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-700">Five words at most. The sentence comes from you, not from the system.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
 
