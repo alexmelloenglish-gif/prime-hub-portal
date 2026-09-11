@@ -90,7 +90,7 @@ function validateStudent(file, student) {
     if (!entry) continue
     const ts = parseDate(entry.date)
     if (entry.status === 'scheduled' && isPast(ts)) {
-      issue('error', file, 'PAST_LESSON_STILL_SCHEDULED', `${name}: ${entry.date} is in the past but is still marked scheduled.`)
+      issue('warning', file, 'PAST_LESSON_STILL_SCHEDULED', `${name}: ${entry.date} is in the past but is still marked scheduled. Resolve when evidence confirms attended/cancelled; do not infer.`)
     }
   }
 
@@ -112,7 +112,7 @@ function validateStudent(file, student) {
     for (const entry of present) {
       const key = dateKey(entry.date)
       if (key && !reportDates.has(key)) {
-        issue('error', file, 'PRESENT_LESSON_WITHOUT_REPORT', `${name}: attended lesson ${entry.date} has no published class report for the same date.`)
+        issue('warning', file, 'PRESENT_LESSON_WITHOUT_REPORT', `${name}: attended lesson ${entry.date} has no published class report for the same date. Backfill when source evidence is available.`)
       }
     }
   }
