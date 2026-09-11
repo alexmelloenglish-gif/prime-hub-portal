@@ -4,6 +4,11 @@ import { parseTranscriptPayload, processLessonTranscript } from '@/lib/pipeline/
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+function isLegacyPipelineIngestionEnabled(): boolean {
+  if (process.env.NODE_ENV !== 'production') return true
+  return process.env.PRIME_PIPELINE_INGEST_ENABLED === 'true'
+}
+
 function isAuthorized(request: Request): boolean {
   const expected = process.env.PRIME_PIPELINE_INGEST_SECRET
   if (!expected) return process.env.NODE_ENV !== 'production'
@@ -11,9 +16,20 @@ function isAuthorized(request: Request): boolean {
 }
 
 export async function POST(request: Request) {
+  if (!isLegacyPipelineIngestionEnabled()) {
+    return NextResponse.json(
+      {
+        error: 'Legacy pipeline ingestion is paused',
+        code: 'PIPELINE_INGESTION_PAUSED',
+      },
+      { status: 503 }
+    )
+  }
+
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
   try {
     const payload = parseTranscriptPayload(await request.json())
     const result = await processLessonTranscript(payload)
