@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { reconcileDriveTranscripts } from '@/lib/drive-reconciliation'
+import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -15,13 +15,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  try {
-    const result = await reconcileDriveTranscripts()
-    console.log(JSON.stringify({ event: 'drive_reconciliation_completed', ...result }))
-    return NextResponse.json({ ok: true, ...result })
-  } catch (error) {
-    const code = error instanceof Error ? error.message.replace(/[^a-zA-Z0-9_ -]/g, '').slice(0, 80) : 'unknown_error'
-    console.error(JSON.stringify({ event: 'drive_reconciliation_failed', code: code || 'unknown_error' }))
-    return NextResponse.json({ error: 'drive_reconciliation_failed', code: code || 'unknown_error' }, { status: 500 })
+  if (PIPELINE_AUTOMATION_FROZEN) {
+    console.warn(JSON.stringify({ event: 'drive_reconciliation_blocked', code: 'PIPELINE_AUTOMATION_FROZEN' }))
+    return NextResponse.json(pipelineFreezePayload('vercel-cron-drive-transcripts'), { status: 503 })
   }
+
+  return NextResponse.json({ error: 'Drive reconciliation is unavailable.' }, { status: 503 })
 }

@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
+import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 import { isAdminUser } from '@/lib/student-data'
-import { reconcileDriveTranscripts } from '@/lib/drive-reconciliation'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -18,11 +18,10 @@ export async function POST() {
     return NextResponse.json({ error: 'Administrator access required' }, { status: 403 })
   }
 
-  try {
-    const result = await reconcileDriveTranscripts()
-    return NextResponse.json({ ok: true, result })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Drive processing could not be completed'
-    return NextResponse.json({ ok: false, error: message.replace(/[^a-zA-Z0-9_ -]/g, '').slice(0, 120) }, { status: 500 })
+  if (PIPELINE_AUTOMATION_FROZEN) {
+    console.warn(JSON.stringify({ event: 'manual_drive_processing_blocked', code: 'PIPELINE_AUTOMATION_FROZEN' }))
+    return NextResponse.json(pipelineFreezePayload('admin-process-drive'), { status: 503 })
   }
+
+  return NextResponse.json({ error: 'Drive processing is unavailable.' }, { status: 503 })
 }

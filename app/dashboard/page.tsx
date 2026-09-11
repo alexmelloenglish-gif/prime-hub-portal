@@ -19,12 +19,14 @@ import { ProgressStateBadge } from '@/components/dashboard/progress-state-badge'
 import { VocabularyReuseGrid } from '@/components/dashboard/vocabulary-reuse-grid'
 import { authOptions } from '@/lib/auth'
 import { canonicalLessonId } from '@/lib/canonical-student-projection'
+import { resolveCanonicalManageSpaceLinks } from '@/lib/canonical-student-links'
 import {
   DASHBOARD_DISPLAY_BUDGET,
   selectActiveVocabulary,
   selectCurrentFeedback,
   selectRecentReports,
 } from '@/lib/dashboard-display-budget'
+import { normalizeProgressState } from '@/lib/progress-states'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -116,6 +118,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const profileImage = resolveStudentProfileAsset(student.studentId, session.user.image)
   const nextAction = projection.nextAction
   const scheduleLabel = String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')
+  const learningLinks = resolveCanonicalManageSpaceLinks(student.studentEmail, student.manageSpace)
 
   return (
     <div className="dashboard-light space-y-7 pb-4">
@@ -129,18 +132,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center">
           <div className="shrink-0">
             {profileImage ? (
-              <Image
-                src={profileImage}
-                alt={`${student.studentName} profile image`}
-                width={144}
-                height={144}
-                priority
-                className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg md:h-36 md:w-36"
-              />
+              <Image src={profileImage} alt={`${student.studentName} profile image`} width={144} height={144} priority className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg md:h-36 md:w-36" />
             ) : (
-              <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-blue-700 text-4xl font-bold text-white shadow-lg md:h-36 md:w-36">
-                {student.studentName.charAt(0)}
-              </div>
+              <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-blue-700 text-4xl font-bold text-white shadow-lg md:h-36 md:w-36">{student.studentName.charAt(0)}</div>
             )}
           </div>
           <div className="min-w-0 max-w-4xl space-y-3">
@@ -186,12 +180,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </article>
       </section>
 
-      <NextActionCard
-        title={nextAction?.title}
-        description={nextAction?.description}
-        evidence={nextAction?.evidence}
-        destination={nextAction?.destination ?? undefined}
-      />
+      <NextActionCard title={nextAction?.title} description={nextAction?.description} evidence={nextAction?.evidence} destination={nextAction?.destination ?? undefined} />
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
         <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Recent evidence stays concise here. Full published history remains available in the longitudinal section.</p></div>
@@ -200,13 +189,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <section id="attendance-overview" className="space-y-3">
               {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{lesson.title}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
             </section>
-
             {recentReports.length ? <section className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Recent Report Highlights</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={`recent-${report.id}`} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p></article>)}</div></section> : null}
           </div>
-
-          <div className="xl:sticky xl:top-5">
-            <AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} />
-          </div>
+          <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} /></div>
         </div>
       </section>
 
@@ -214,16 +199,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
       <section className="rounded-[28px] border border-slate-300 bg-slate-100/70 p-4 shadow-sm md:p-5">
         <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Useful memory stays visible in small doses, while complete class-report history remains preserved above and in the portfolio.</p></div>
-
-        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={item.status} /></div><p className="mt-2.5 text-sm leading-6 text-slate-700">{item.insight}</p></article>)}</section> : null}
-
+        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => { const state = normalizeProgressState(item.status); return <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={state} /></div>{state === 'Not Assessed' ? <p className="mt-2.5 text-sm leading-6 text-slate-500">There is not yet enough evidence to classify this skill.</p> : <p className="mt-2.5 text-sm leading-6 text-slate-700">{item.insight}</p>}</article> })}</section> : null}
         {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-700">Five words at most. The sentence comes from you, not from the system.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
-
         {visibleGrammar.length ? <section id="grammar-overview" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-700">{student.grammarOverview.summary}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => <li key={point} className="rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm leading-6 text-[#334b6d] shadow-sm">{point}</li>)}</ul></section> : null}
-
         {visibleFeedback.length ? <section id="teacher-feedback" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Teacher Feedback</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">{feedback.title}</h4><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">Teacher perspective</p></div></div><p className="mt-4 text-sm leading-7 text-slate-700">{feedback.body}</p></article>)}</div></section> : null}
-
-        {student.manageSpace.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your class, portfolio or support without adding more learning clutter.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{student.manageSpace.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.description}</p></a>)}</div></section> : null}
+        {learningLinks.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your class, portfolio or support without adding more learning clutter.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{learningLinks.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.description}</p></a>)}</div></section> : null}
       </section>
 
       <footer className="flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-3 text-xs leading-5 text-slate-600 shadow-sm"><FileCheck2 className="h-4 w-4 text-emerald-700" /> Projection {projection.version}: standardized STATE → PRIORITY → EVIDENCE → ACTION → HISTORY presentation with complete longitudinal reporting.</footer>

@@ -19,6 +19,7 @@ const aliases: Record<string, PrimeProgressState> = {
   'very strong': 'Strong',
   secure: 'Strong',
   established: 'Strong',
+  'clear strength': 'Strong',
 
   improving: 'Improving',
   'active growth': 'Improving',
@@ -43,7 +44,23 @@ const aliases: Record<string, PrimeProgressState> = {
 
 export function normalizeProgressState(value?: string | null): PrimeProgressState {
   const key = typeof value === 'string' ? value.trim().toLowerCase() : ''
-  return aliases[key] ?? 'Not Assessed'
+  const exact = aliases[key]
+  if (exact) return exact
+
+  // Legacy source records sometimes decorated a pedagogical state with a CEFR
+  // qualifier (for example "Strong B1" or "Developing toward B2"). The CEFR
+  // qualifier belongs in the evidence/insight, not in the four-state status.
+  if (/^(very\s+)?strong\b/.test(key) || key.includes('clear strength')) return 'Strong'
+  if (key.includes('developing') || key.includes('improving') || key.includes('active growth') || key.includes('progressing')) {
+    return 'Improving'
+  }
+  if (key.includes('needs focus') || key.includes('needs attention') || key.includes('needs practice')) return 'Needs Focus'
+
+  return 'Not Assessed'
+}
+
+export function canDisplayProgressInsight(value?: string | null): boolean {
+  return normalizeProgressState(value) !== 'Not Assessed'
 }
 
 export function isCanonicalProgressState(value?: string | null): value is PrimeProgressState {

@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server'
-import { parseTranscriptPayload, processLessonTranscript } from '@/lib/pipeline/run'
+import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-function isLegacyPipelineIngestionEnabled(): boolean {
-  if (process.env.NODE_ENV !== 'production') return true
-  return process.env.PRIME_PIPELINE_INGEST_ENABLED === 'true'
-}
 
 function isAuthorized(request: Request): boolean {
   const expected = process.env.PRIME_PIPELINE_INGEST_SECRET
@@ -16,28 +11,14 @@ function isAuthorized(request: Request): boolean {
 }
 
 export async function POST(request: Request) {
-  if (!isLegacyPipelineIngestionEnabled()) {
-    return NextResponse.json(
-      {
-        error: 'Legacy pipeline ingestion is paused',
-        code: 'PIPELINE_INGESTION_PAUSED',
-      },
-      { status: 503 }
-    )
-  }
-
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  try {
-    const payload = parseTranscriptPayload(await request.json())
-    const result = await processLessonTranscript(payload)
-    return NextResponse.json(result, { status: result.duplicate ? 200 : 202 })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Invalid pipeline request'
-    const isClientContractError = message.includes('required') || message.includes('Invalid JSON') || message.includes('Drive-origin') || message.includes('Only Google Docs') || message.includes('triageStatus=usable_transcript')
-    const status = isClientContractError ? 400 : 500
-    return NextResponse.json({ error: message }, { status })
+  if (PIPELINE_AUTOMATION_FROZEN) {
+    console.warn(JSON.stringify({ event: 'pipeline_ingest_blocked', code: 'PIPELINE_AUTOMATION_FROZEN' }))
+    return NextResponse.json(pipelineFreezePayload('pipeline-ingest'), { status: 503 })
   }
+
+  return NextResponse.json({ error: 'Pipeline ingestion is unavailable.' }, { status: 503 })
 }

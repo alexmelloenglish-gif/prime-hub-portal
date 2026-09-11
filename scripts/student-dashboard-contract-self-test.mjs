@@ -71,7 +71,12 @@ for (const state of ['Strong', 'Improving', 'Needs Focus', 'Not Assessed']) {
 for (const legacy of ['very strong', 'secure', 'established', 'active growth', 'developing', 'progressing', 'needs attention', 'priority']) {
   assert.ok(progressStateSource.includes(`${legacy}:`) || progressStateSource.includes(`'${legacy}':`), `Missing legacy normalization: ${legacy}`)
 }
-assert.ok(progressStateSource.includes("return aliases[key] ?? 'Not Assessed'"))
+// Decorated legacy states (for example Strong B1 / Developing toward B2)
+// must normalize before learner-facing rendering, while unknown values remain neutral.
+assert.ok(progressStateSource.includes("/^(very\\s+)?strong\\b/"))
+assert.ok(progressStateSource.includes("key.includes('developing')"))
+assert.ok(progressStateSource.includes("return 'Not Assessed'"))
+assert.ok(progressStateSource.includes('canDisplayProgressInsight'))
 assert.ok(!progressTrackerSource.includes('statusBarWidth'))
 assert.ok(!progressTrackerSource.includes('w-[95%]'))
 assert.ok(!progressTrackerSource.includes('Very Strong'))

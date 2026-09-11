@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
-    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs",
+    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs && node scripts/canonical-student-consistency-audit.mjs",
     "canonical:validate": "node scripts/canonical-consistency-validator.mjs",
     "canonical:validate:strict": "node scripts/canonical-consistency-validator.mjs --strict",
     "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run canonical:validate:strict && prisma generate && next build",
@@ -19,8 +19,6 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "firestore:seed:rafael": "node scripts/upsert-student-firestore.mjs data/students/rafael-copolillo.firestore.json students rafael-copolillo-gmail-com",
-    "firestore:seed:louise": "node scripts/upsert-student-firestore.mjs data/students/louise-d-silva-nogueira.firestore.json students louise-nogueira-hotmail-com",
     "students:normalize": "node scripts/normalize-student-identities.mjs"
   },
   "dependencies": {
