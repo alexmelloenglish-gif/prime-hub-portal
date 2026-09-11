@@ -11,15 +11,13 @@
       "firestoreDocumentId": "claudio-bit-gmail-com",
       "studentName": "Cláudio Bittencourt",
       "canonicalEmail": "claudio.bit@gmail.com",
-      "emailAliases": [
-        "claudio.bit@gmail.com"
-      ],
+      "emailAliases": ["claudio.bit@gmail.com"],
       "profileStatus": "active",
-      "profileCompleteness": "schedule_mapped_pending_academic_history",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=claudio.bit%40gmail.com",
       "links": {
         "liveClass": "https://meet.google.com/zbz-uiai-xng",
-        "portfolio": null,
+        "portfolio": "https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit",
         "classMaterials": null,
         "homework": null
       },
@@ -27,24 +25,20 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Once a week",
-      "notes": "Calendar booking found; attendance and class-report publication require teacher confirmation. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Canonical longitudinal portfolio verified 2026-09-11. Three attended lessons are represented from authorized evidence; the undated 8K/World Cup lesson remains memory only."
     },
     {
       "studentId": "stu_e01adc4e23d0",
       "firestoreDocumentId": "diegodasiro-gmail-com",
       "studentName": "Diego da Silva Rodrigues",
       "canonicalEmail": "diegodasiro@gmail.com",
-      "emailAliases": [
-        "diegodasiro@gmail.com",
-        "Diego Da Zero",
-        "Diego Dasiro"
-      ],
+      "emailAliases": ["diegodasiro@gmail.com", "Diego Da Zero", "Diego Dasiro"],
       "profileStatus": "active",
-      "profileCompleteness": "onboarding_pending_links_and_history",
+      "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=diegodasiro%40gmail.com",
       "links": {
         "liveClass": null,
-        "portfolio": null,
+        "portfolio": "https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit",
         "classMaterials": null,
         "homework": null
       },
@@ -52,17 +46,14 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Every two weeks",
-      "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Missing live-class/material links remain unavailable rather than guessed."
     },
     {
       "studentId": "stu_e8661006824a",
       "firestoreDocumentId": "eduarda-coelho-gabriel-hotmail-com",
       "studentName": "Eduarda Coelho Gabriel",
       "canonicalEmail": "midias83@hotmail.com",
-      "emailAliases": [
-        "Eduarda Dias",
-        "Eduarda Jesus"
-      ],
+      "emailAliases": ["Eduarda Dias", "Eduarda Jesus"],
       "profileStatus": "active",
       "profileCompleteness": "episodic_remedial_pending_validation",
       "dashboardPath": "/dashboard?studentEmail=midias83%40hotmail.com",
@@ -77,22 +68,20 @@
       "pendingReviewCount": 0,
       "classFrequency": "Episodic on demand; four-lesson remedial blocks",
       "enrollmentMode": "episodic_remedial",
-      "notes": "Teacher confirmed that Eduarda Coelho Gabriel is the same student represented by the booking names Eduarda Dias and Eduarda Jesus. She is a returning former physical-school student and a teenager receiving short remedial blocks, not a regular weekly program. Current school-support topic: Geography in English, economic sectors. Exact grade and age remain to be confirmed."
+      "notes": "Teacher confirmed that Eduarda Coelho Gabriel is the same student represented by the booking names Eduarda Dias and Eduarda Jesus. She is a returning former physical-school student receiving school reinforcement on demand."
     },
     {
       "studentId": "stu_4c4da6c04ac4",
       "firestoreDocumentId": "carolvdrummond-gmail-com",
       "studentName": "Gustavo Drummond De Andrade Salgado",
       "canonicalEmail": "carolvdrummond@gmail.com",
-      "emailAliases": [
-        "carolvdrummond@gmail.com"
-      ],
+      "emailAliases": ["carolvdrummond@gmail.com"],
       "profileStatus": "active",
-      "profileCompleteness": "onboarding_pending_links_and_history",
+      "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=carolvdrummond%40gmail.com",
       "links": {
         "liveClass": null,
-        "portfolio": null,
+        "portfolio": "https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit",
         "classMaterials": null,
         "homework": null
       },
@@ -100,7 +89,7 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Missing operational links remain unavailable rather than guessed."
     },
     {
       "studentId": "stu_fb5b64e3437e",
@@ -109,11 +98,11 @@
       "canonicalEmail": "itallopires17@gmail.com",
       "emailAliases": [],
       "profileStatus": "active",
-      "profileCompleteness": "booking_profile_pending_history",
+      "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=itallopires17%40gmail.com",
       "links": {
         "liveClass": "https://meet.google.com/yvr-xrvs-gaw",
-        "portfolio": null,
+        "portfolio": "https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit",
         "classMaterials": null,
         "homework": null
       },
@@ -122,16 +111,14 @@
       "pendingReviewCount": 0,
       "classFrequency": "Once a week",
       "enrollmentMode": "returning_student",
-      "notes": "Teacher confirmed that Italo Pires is a returning former student. First booked lesson: 2026-08-18, 15:00–16:00 America/Sao_Paulo, event-specific Meet link recorded. Historical profile and links remain to be recovered."
+      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Event-specific Meet link retained."
     },
     {
       "studentId": "stu_b5a6b9640498",
       "firestoreDocumentId": "lauramgcstemp-gmail-com",
       "studentName": "Laura Maria Galvão Costa Stempniewski",
       "canonicalEmail": "lauramgcstemp@gmail.com",
-      "emailAliases": [
-        "lauramgcstemp@gmail.com"
-      ],
+      "emailAliases": ["lauramgcstemp@gmail.com"],
       "profileStatus": "active",
       "profileCompleteness": "schedule_mapped_pending_academic_history",
       "dashboardPath": "/dashboard?studentEmail=lauramgcstemp%40gmail.com",
@@ -145,38 +132,34 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Calendar booking found; attendance and class-report publication require teacher confirmation. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Calendar booking found; dashboard synchronization awaits completed canonical portfolio audit."
     },
     {
       "studentId": "stu_c5930e6e76ae",
       "firestoreDocumentId": "louise-nogueira-hotmail-com",
       "studentName": "Louise D. Silva Nogueira",
       "canonicalEmail": "louise_nogueira@hotmail.com",
-      "emailAliases": [
-        "louise.nogueira@hotmail.com"
-      ],
+      "emailAliases": ["louise.nogueira@hotmail.com"],
       "profileStatus": "active",
-      "profileCompleteness": "partial_pending_validation",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=louise_nogueira%40hotmail.com",
       "links": {
         "liveClass": "https://meet.google.com/kfk-fnbh-odk",
-        "portfolio": "https://docs.google.com/document/d/1hm7mYRHFmhEeXSrhovcCRan7lu0ZlU2aQ23BTi5skN0/edit?usp=sharing",
+        "portfolio": "https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit",
         "classMaterials": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
         "homework": null
       },
       "historicalTranscriptCount": 2,
       "usableTranscriptCount": 1,
-      "pendingReviewCount": 1,
-      "notes": "Initial profile exists. The 2026-08-10 transcript is viable and awaits consolidated teacher review; the 2026-08-17 00:09 source is blocked for insufficient conversation."
+      "pendingReviewCount": 0,
+      "notes": "Canonical v1.0 portfolio and teacher validation synchronized on 2026-09-11."
     },
     {
       "studentId": "stu_c1724b66988e",
       "firestoreDocumentId": "galvaonanda28-gmail-com",
-      "studentName": "Maria fernanda Galvão Costa Stempniewski",
+      "studentName": "Maria Fernanda Galvão Costa Stempniewski",
       "canonicalEmail": "galvaonanda28@gmail.com",
-      "emailAliases": [
-        "galvaonanda28@gmail.com"
-      ],
+      "emailAliases": ["galvaonanda28@gmail.com"],
       "profileStatus": "active",
       "profileCompleteness": "schedule_mapped_pending_academic_history",
       "dashboardPath": "/dashboard?studentEmail=galvaonanda28%40gmail.com",
@@ -190,7 +173,7 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Calendar booking found; attendance and class-report publication require teacher confirmation. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Calendar booking found; dashboard synchronization awaits completed canonical portfolio audit."
     },
     {
       "studentId": "stu_cce1337c71da",
@@ -199,11 +182,11 @@
       "canonicalEmail": "rafael.copolillo@gmail.com",
       "emailAliases": [],
       "profileStatus": "active",
-      "profileCompleteness": "historical_profile_published",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=rafael.copolillo%40gmail.com",
       "links": {
         "liveClass": "https://meet.google.com/xjj-yqcc-wxb",
-        "portfolio": "https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE/edit?usp=sharing",
+        "portfolio": "https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit",
         "classMaterials": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link",
         "homework": "https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link"
       },
@@ -211,16 +194,14 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "publishedHistoryCount": 10,
-      "notes": "Existing ten-lesson published history must remain untouched. The known 2026-08-13 source is blocked for insufficient conversation."
+      "notes": "Canonical v1.0 portfolio verified 2026-09-11. Historical ten-report record remains preserved; the 27 Aug attendance/report mismatch remains explicit rather than invented."
     },
     {
       "studentId": "stu_01dc6d208c8b",
       "firestoreDocumentId": "vcrlima89-gmail-com",
       "studentName": "Valéria Cristina Rangel de Lima",
       "canonicalEmail": "vcrlima89@gmail.com",
-      "emailAliases": [
-        "vcrlima89@gmail.com"
-      ],
+      "emailAliases": ["vcrlima89@gmail.com"],
       "profileStatus": "active",
       "profileCompleteness": "onboarding_pending_links_and_history",
       "dashboardPath": "/dashboard?studentEmail=vcrlima89%40gmail.com",
@@ -234,7 +215,7 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Once a week",
-      "notes": "Student identity supplied in the teacher intake; academic history and schedule remain pending. Missing links and historical academic data remain pending and must not be guessed."
+      "notes": "Student identity supplied in the teacher intake; academic history and links remain pending. Missing data must not be guessed."
     }
   ],
   "requiredFieldsForNewStudent": [
@@ -261,7 +242,7 @@
     "studentId is immutable",
     "canonicalEmail is the identity lookup key",
     "email aliases may route to the same student only after teacher confirmation",
-    "existing Firestore profiles and published history are never overwritten by onboarding",
+    "existing authorized repository profiles and published history are never overwritten by onboarding",
     "a transcript with ambiguous identity is quarantined rather than assigned by guesswork",
     "student-facing content requires one consolidated teacher review decision per review session"
   ]
