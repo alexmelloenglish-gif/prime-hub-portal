@@ -90,11 +90,11 @@ export function NextActionCard({
   destination,
   scheduleLabel,
 }: {
-  title?: string
-  description?: string
-  evidence?: string
-  destination?: string
-  scheduleLabel?: string
+  title?: string | null
+  description?: string | null
+  evidence?: string | null
+  destination?: string | null
+  scheduleLabel?: string | null
 }) {
   const href = destination ?? '#next-action'
   const cta = (
