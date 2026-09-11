@@ -24,7 +24,7 @@
   "attendanceRate": "3 attended lessons",
   "attendanceLabel": "Only portfolio-confirmed or transcript-confirmed lessons are counted as attended.",
   "manageSpace": [
-    {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1hm7mYRHFmhEeXSrhovcCRan7lu0ZlU2aQ23BTi5skN0/edit?usp=sharing","description":"Open Louise's longitudinal learning portfolio.","icon":"folder-open"},
+    {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit","description":"Open Louise's canonical v1.0 longitudinal learning portfolio.","icon":"folder-open"},
     {"id":"live-class","title":"Join My Live Class","href":"https://meet.google.com/kfk-fnbh-odk","description":"Join Louise's live Conversation Master lesson.","icon":"video"},
     {"id":"class-materials","title":"Class Materials","href":"https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing","description":"Open lesson files and supporting class resources.","icon":"book-open"},
     {"id":"support","title":"Prime Support","href":"https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F","description":"Get help with links, platform questions or class logistics.","icon":"headphones"}
@@ -45,10 +45,10 @@
       "focus": {"value":"Grammar precision, complete sentence framing, lexical retrieval and structured argumentation without reducing natural fluency.","qualifier":"Supported by the March portfolio reports and the 10 August 2026 transcript.","status":"portfolio-confirmed"}
     },
     "whatChanged": {
-      "title": "Louise now has a longitudinal evidence-based learning profile",
-      "summary": "The dashboard moved from a pending one-transcript baseline to a three-lesson longitudinal profile combining the existing March portfolio with the full 10 August transcript.",
-      "changeType": "portfolio-canonicalization",
-      "evidence": "Portfolio classes dated 2 March and 16 March 2026 plus the Google Meet transcript from 10 August 2026.",
+      "title": "Louise is now aligned to the canonical Portfolio v1.0",
+      "summary": "Her three-lesson longitudinal evidence set is now consolidated in the official canonical portfolio structure, preserving the March reports and the 10 August transcript without inventing a CEFR level or recurring schedule.",
+      "changeType": "canonical-portfolio-v1.0",
+      "evidence": "Canonical Portfolio v1.0 built from the documented lessons of 2 March, 16 March and 10 August 2026.",
       "status": "portfolio-confirmed"
     },
     "priorities": [
@@ -123,5 +123,5 @@
     {"lessonId":"lesson_7fb6ee4263fd1731","studentId":"stu_c5930e6e76ae","sourceType":"google_docs_transcript","sourceDocumentId":"102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94","sourceHash":"a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50","lessonDate":"2026-08-10","artifactStatus":"confirmed","authorityStatus":"authoritative_learning_evidence","implementationStatus":"published"}
   ],
   "identityAliases": ["louise_nogueira@hotmail.com","louise.nogueira@hotmail.com","Louise Nogueira","Louise D. Silva Nogueira"],
-  "notes": "Canonical Louise profile rebuilt from the existing longitudinal portfolio plus the full 10 August 2026 transcript. No CEFR level or recurring schedule was invented. Four-state PRIME progress taxonomy applied."
+  "notes": "Canonical Louise profile aligned to the official Student Learning Portfolio v1.0 on 2026-09-11. The dashboard now points to the canonical portfolio document. No CEFR level or recurring schedule was invented. Four-state PRIME progress taxonomy applied."
 }
