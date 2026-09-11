@@ -125,8 +125,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     status?: ProjectionEvidenceStatus
   } | null
 
+  const reconciledAttendance = reconcileAttendanceForProjection(student)
+  const attendedLessons = [...reconciledAttendance]
+    .filter((entry) => entry.status === 'present')
+    .sort((a, b) => (dateTimestamp(a.date) ?? 0) - (dateTimestamp(b.date) ?? 0))
+
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
-  const recentAttendance = reconcileAttendanceForProjection(student).filter(
+  const recentAttendance = reconciledAttendance.filter(
     (entry) =>
       recentIds.has(canonicalLessonId(entry) ?? entry.id) ||
       projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id)
@@ -151,7 +156,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const visibleGrammar = student.grammarOverview.focusPoints.slice(0, DASHBOARD_DISPLAY_BUDGET.grammarItems)
   const visibleFeedback = selectCurrentFeedback(student.teacherFeedback)
   const profileImage = resolveStudentProfileAsset(student.studentId, session.user.image)
-  const presentRecentLessons = recentAttendance.filter((entry) => entry.status === 'present').length
   const nextAction = projection.nextAction
   const nextActionDestination = nextAction?.destination ?? '#next-action'
 
@@ -186,7 +190,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <h2 className="text-4xl font-bold tracking-tight text-[#0a235c]">What matters now, <span className="text-blue-600">{student.studentName}.</span></h2>
             <p className="text-sm leading-6 text-slate-600 md:text-base">A focused view of your authorized learning record: current state, recent evidence, useful memory and the next action.</p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#244575]">{presentRecentLessons} recent confirmed lesson{presentRecentLessons === 1 ? '' : 's'}</span>
+              <span className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-[#244575]">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
               <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-700">Full class-report history stays available below</span>
             </div>
           </div>
@@ -233,10 +237,27 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="mt-5 flex items-start gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-blue-200" /><p className="text-xs leading-5 text-blue-100">{String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')}</p></div>
       </section>
 
+      <section id="attendance-summary" className="rounded-[24px] border border-emerald-100 bg-emerald-50/40 p-5 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">ATTENDANCE SUMMARY</p>
+            <h3 className="mt-1 text-2xl font-bold text-[#0a235c]">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</h3>
+            <p className="mt-1 text-sm text-slate-500">Only lessons actually completed with the student present are included.</p>
+          </div>
+          {attendedLessons.length ? (
+            <div className="flex max-w-3xl flex-wrap gap-2">
+              {attendedLessons.map((lesson) => (
+                <span key={`attendance-summary-${lesson.id}`} className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800">{lesson.date}</span>
+              ))}
+            </div>
+          ) : <p className="text-sm text-slate-500">No attended lessons recorded yet.</p>}
+        </div>
+      </section>
+
       <section className="space-y-4">
-        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Confirmed Lessons</h3><p className="mt-1 text-sm text-slate-500">The most recent lesson evidence stays concise here. The complete published report history remains visible immediately below.</p></div>
+        <div><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-500">The most recent attended lesson evidence stays concise here. The complete published report history remains visible immediately below.</p></div>
         <section id="attendance-overview" className="space-y-3">
-          {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-medium text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">{lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No recent confirmed lesson is available yet.</p>}
+          {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-semibold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-medium text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-500">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">No recent attended lesson is available yet.</p>}
         </section>
 
         {recentReports.length ? <section className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Recent Report Highlights</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={`recent-${report.id}`} className="rounded-2xl border border-blue-100 bg-blue-50/30 p-4 shadow-sm"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{report.date}</p><h4 className="mt-1 text-lg font-semibold text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-600">{report.summary}</p></article>)}</div></section> : null}
@@ -258,7 +279,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {student.manageSpace.length ? <section id="manage-space" className="rounded-[24px] border border-blue-100 bg-blue-50/40 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-600" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-500">Open your class, portfolio or support without adding more learning clutter.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{student.manageSpace.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm hover:border-blue-200"><p className="font-semibold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{link.description}</p></a>)}</div></section> : null}
       </section>
 
-      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: bounded NOW/RECENT view + complete published longitudinal class-report history.</footer>
+      <footer className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs leading-5 text-slate-500"><FileCheck2 className="h-4 w-4 text-emerald-600" /> Projection {projection.version}: attended lesson summary + bounded NOW/RECENT view + complete published longitudinal class-report history.</footer>
     </div>
   )
 }
