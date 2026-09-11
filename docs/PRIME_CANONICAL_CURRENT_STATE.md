@@ -247,7 +247,7 @@ Laura is **not the next dashboard processing priority**.
 
 # 10. Louise — CANONICAL PORTFOLIO + DASHBOARD DONE / PRODUCTION
 
-Louise has now been processed against the frozen shared system rather than through a student-specific implementation path.
+Louise has been processed against the frozen shared system rather than through a student-specific implementation path.
 
 Canonical portfolio master contract:
 
@@ -273,38 +273,55 @@ Canonical student snapshot:
 data/students/louise-d-silva-nogueira.firestore.json
 ```
 
-The dashboard snapshot now points `My Portfolio` to the canonical v1.0 document, not the prior legacy portfolio.
+The dashboard snapshot and the portfolio Quick Access block both point to the canonical v1.0 document.
 
-Louise's current canonical state remains evidence-bounded:
+Louise's current teacher-validated canonical state is:
 
 ```text
-Current CEFR = Not Assessed
-Target CEFR = Not Assessed
-Class frequency = Not confirmed
+Current CEFR = B1
+Target CEFR = B2
+Class frequency = Once a week — Monday, 8:00–9:00 AM
 Attendance = 3 attended lessons documented
 Fluency = Strong
 Analytical & Reflective Communication = Strong
 Grammar Precision = Needs Focus
 Lexical Precision & Reuse = Improving
+Pronunciation = Not Assessed
 ```
 
-No CEFR level, recurring schedule or fourth attended lesson was invented.
+The CEFR level, target and recurring schedule are teacher-validated profile data and are not inferred solely from transcripts. No fourth attended lesson was invented.
 
-Reference dashboard commit:
+Quick Access is now aligned across Louise's portfolio and dashboard:
+
+- `My Portfolio` → canonical Louise Portfolio v1.0
+- `Join My Live Class` → Louise's current Meet room
+- `Class Materials` → Louise's Drive materials folder
+- `Prime Support` → the shared PRIME Support WhatsApp destination used system-wide, matching the Rafael/Gustavo pattern
+
+Reference dashboard sync commit:
 
 ```text
-03e3163855bd07ebc5af42c8a2934a5be246cb7a
-feat: point Louise dashboard to canonical portfolio v1.0
+7d711ad85d1574b8a67068726a4fee18969eb84e
+feat: sync Louise teacher-validated profile and shared support links
 ```
 
 Reference production deployment:
 
 ```text
-dpl_9t5bSiYZ63EjTvCJbe3rUdB6x6kR
+dpl_FBzAC5qxFeiTeR7FGP5BtSgLyBqf
 READY
 ```
 
-The deployment is aliased to `www.primedigitalhub.com.br`. Production responds successfully, but unauthenticated runtime inspection redirects to the login page, so student-specific rendered content is verified through the canonical repository snapshot plus successful production build rather than by bypassing authentication.
+The deployment is aliased to `www.primedigitalhub.com.br`.
+
+Portfolio registry sync commit:
+
+```text
+24da82e0c1bf091837fa0f9b4c93641aa8a2ad39
+docs: sync Louise portfolio registry with teacher validation
+```
+
+Production responds successfully, but unauthenticated runtime inspection redirects to the login page, so student-specific rendered content is verified through the canonical repository snapshot plus successful production build rather than by bypassing authentication.
 
 ---
 
@@ -432,8 +449,12 @@ LEGACY /api/pipeline/ingest = PAUSED BY DEFAULT IN PRODUCTION
 APPS SCRIPT TRIGGER ITSELF = NOT PROVEN DISABLED
 LAURA = DEFERRED
 LOUISE PORTFOLIO v1.0 = CANONICALIZED
+LOUISE CURRENT LEVEL = B1 / TEACHER VALIDATED
+LOUISE TARGET LEVEL = B2 / TEACHER VALIDATED
+LOUISE CLASS RHYTHM = MONDAY 8:00–9:00 AM / TEACHER VALIDATED
 LOUISE DASHBOARD = UPDATED / PRODUCTION
 LOUISE DASHBOARD PORTFOLIO LINK = CANONICAL v1.0
+LOUISE PRIME SUPPORT = SHARED SYSTEM-WIDE DESTINATION
 NEXT STUDENT PROCESSING PRIORITY = NOT YET FROZEN
 ```
 
