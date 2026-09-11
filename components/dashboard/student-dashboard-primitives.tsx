@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, CalendarDays, Route } from 'lucide-react'
+import { ArrowRight, Route } from 'lucide-react'
 import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-data'
 
 const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
@@ -88,13 +88,11 @@ export function NextActionCard({
   description,
   evidence,
   destination,
-  scheduleLabel,
 }: {
   title?: string | null
   description?: string | null
   evidence?: string | null
   destination?: string | null
-  scheduleLabel?: string | null
 }) {
   const href = destination ?? '#next-action'
   const cta = (
@@ -112,7 +110,6 @@ export function NextActionCard({
         </div>
         {title ? isExternalLink(href) ? <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{cta}</a> : <Link href={href}>{cta}</Link> : null}
       </div>
-      <div className="mt-5 flex items-start gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-3"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-blue-200" /><p className="text-xs leading-5 text-blue-50">{scheduleLabel ?? 'Schedule information is not available.'}</p></div>
     </section>
   )
 }
