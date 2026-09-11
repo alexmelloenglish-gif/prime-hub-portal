@@ -33,7 +33,9 @@ export function ProgressTracker({ skills }: Props) {
                 <span className="text-sm font-medium text-white">{skill.skill}</span>
                 <ProgressStateBadge status={state} tone="dark" />
               </div>
-              <p className="mt-3 text-xs leading-5 text-prime-cream/70">{skill.insight}</p>
+              <p className="mt-3 text-xs leading-5 text-prime-cream/70">
+                {state === 'Not Assessed' ? PRIME_PROGRESS_STATE_MEANINGS['Not Assessed'] : skill.insight}
+              </p>
             </div>
           )
         })}
