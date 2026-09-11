@@ -70,7 +70,7 @@
     {"id":"professional-communication","title":"Professional Communication","status":"Not Assessed","insight":"There is not enough evidence from one confirmed lesson to classify professional communication longitudinally.","accent":"gray"},
     {"id":"technical-vocabulary","title":"Technical Vocabulary","status":"Not Assessed","insight":"There is not enough evidence from one confirmed lesson to classify technical vocabulary as a longitudinal strength or development state.","accent":"gray"},
     {"id":"grammar-accuracy","title":"Grammar Accuracy","status":"Needs Focus","insight":"Current priority: verb patterns, agreement, future forms and present-time descriptions during spontaneous speech.","accent":"amber"},
-    {"id":"independent-english-use","title":"Independent English Use","status":"Not Assessed","insight":"Independent English use is supported only by self-report so far; there is not enough observed evidence to classify it.","accent":"gray"}
+    {"id":"independent-english-use","title":"Independent English Use","status":"Not Assessed","insight":"There is not enough evidence to classify independent English use; current context is self-reported only.","accent":"gray"}
   ],
   "attendanceOverview": [
     {"id":"class-2026-08-18","lessonId":"italo-2026-08-18","date":"August 18, 2026","status":"present","title":"Professional self-introduction, maritime career and technical communication","summary":"Maritime career, professional interview preparation and technical communication."}
