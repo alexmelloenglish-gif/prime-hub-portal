@@ -10,6 +10,7 @@ import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json
 import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
 import { normalizeEmail } from '@/lib/student-data'
+import { isAuthorizedLearner } from '@/lib/learner-eligibility'
 import { getPrismaClient } from '@/lib/prisma'
 
 type AuthenticatedUser = Session['user'] | null | undefined
@@ -123,7 +124,9 @@ const repositoryStudentDirectory: StudentDirectoryEntry[] = [
 
 function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] {
   console.warn(`[admin-dashboard] Using the repository student directory: ${reason}`)
-  return repositoryStudentDirectory.map((student) => ({ ...student, dataSource: 'repository' as const }))
+  return repositoryStudentDirectory
+    .filter((student) => isAuthorizedLearner(student.studentEmail))
+    .map((student) => ({ ...student, dataSource: 'repository' as const }))
 }
 
 async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
@@ -200,5 +203,5 @@ export async function listRecentPipelineActivity(limit = 12): Promise<PipelineAc
 }
 
 export async function listStudentsForAdmin(_user: AuthenticatedUser): Promise<StudentDirectoryEntry[]> {
-  return enrichWithPipelineState(getRepositoryStudentDirectory('Firestore runtime is frozen; canonical repository/Neon state is active'))
+  return enrichWithPipelineState(getRepositoryStudentDirectory('Eligibility boundary filters the canonical repository directory'))
 }

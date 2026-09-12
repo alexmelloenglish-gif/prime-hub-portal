@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
 import { authOptions } from '@/lib/auth'
 import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
+import { isAuthorizedLearner } from '@/lib/learner-eligibility'
 import { resolveStudentProfileAsset } from '@/lib/canonical-dashboard'
 
 export default async function DashboardLayout({
@@ -34,6 +35,12 @@ export default async function DashboardLayout({
 
   const adminUser = isAdminUser(activeUser)
   const studentState = await getStudentDashboardState(activeUser)
+  const activeStudentEmail = studentState.student?.studentEmail ?? activeUser.email
+  const eligibleLearner = isAuthorizedLearner(activeStudentEmail)
+
+  if (!adminUser && !eligibleLearner && process.env.NODE_ENV !== 'development') {
+    redirect('/pending-access')
+  }
 
   if (!studentState.hasAccess && !adminUser && process.env.NODE_ENV !== 'development') {
     redirect('/pending-access')
