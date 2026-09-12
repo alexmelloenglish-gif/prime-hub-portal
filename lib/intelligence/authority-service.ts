@@ -20,14 +20,27 @@ function asJson(value: unknown): Prisma.InputJsonValue {
 export async function createIntelligenceCandidate(input: CandidateRecordInput) {
   const prisma = getPrismaClient()
   const candidate = normalizeCandidateRecord(input)
-
-  return prisma.intelligenceCandidateRecord.create({
-    data: {
-      ...candidate,
-      payload: asJson(candidate.payload),
-      provenance: asJson(candidate.provenance),
-    },
+  const existing = await prisma.intelligenceCandidateRecord.findUnique({
+    where: { candidateKey: candidate.candidateKey },
   })
+  if (existing) return existing
+
+  try {
+    return await prisma.intelligenceCandidateRecord.create({
+      data: {
+        ...candidate,
+        payload: asJson(candidate.payload),
+        provenance: asJson(candidate.provenance),
+      },
+    })
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') throw error
+    const concurrent = await prisma.intelligenceCandidateRecord.findUnique({
+      where: { candidateKey: candidate.candidateKey },
+    })
+    if (!concurrent) throw error
+    return concurrent
+  }
 }
 
 export async function recordTeacherDecision(input: TeacherDecisionInput) {
