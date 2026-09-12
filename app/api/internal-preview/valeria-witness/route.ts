@@ -12,6 +12,7 @@ export async function GET() {
   }
 
   process.env.PRIME_WIF_PROVIDER_ID = 'vercel-preview'
+  process.env.GOOGLE_MEET_ROOT_FOLDER_ID = '1p7u86xfGCRkbSBiNgSZMnUNO5j4S5vMw'
 
   try {
     const { captureMeetGeminiSourceToCandidate } = await import('@/lib/intelligence/meet-gemini-capture')
@@ -35,9 +36,10 @@ export async function GET() {
       automaticPublicationAllowed: false,
       teacherAttestationApplied: false,
       wifProvider: 'vercel-preview',
+      meetRoot: 'documented',
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Witness capture failed'
-    return NextResponse.json({ error: message, wifProvider: 'vercel-preview' }, { status: 500 })
+    return NextResponse.json({ error: message, wifProvider: 'vercel-preview', meetRoot: 'documented' }, { status: 500 })
   }
 }
