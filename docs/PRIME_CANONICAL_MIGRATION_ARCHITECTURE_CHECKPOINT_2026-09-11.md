@@ -224,7 +224,7 @@ No downstream canonical report
 
 Google Calendar confirms:
 
-- **Event:** `🇬🇧 RAFAEL COPOLILLO | Prime Digital Hub`
+- **Event:** `🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub`
 - **Date:** 27/08/2026
 - **Time:** 09:00–10:00 BRT
 - **Participants:** Rafael and Alexandre
@@ -304,6 +304,53 @@ Canonical report       = NOT PRODUCED
 
 The case demonstrates why source capture, processing completion, evidence validation, and learner-facing publication must remain separate authority states.
 
+### Ítalo — 18/08/2026 positive/partial E2E trace
+
+A controlled reconstruction attempt was made using an existing real historical lesson, without modifying historical data or bypassing production protections.
+
+Known historical source material:
+
+- **Student:** Ítalo Pires
+- **Lesson:** `italo-2026-08-18`
+- **Transcript source:** Google Meet / Gemini
+- **Gemini document:** `13oHYTCiShhOHSIhq4TO2jOXdjxOiDTlob17p6vpBDrc`
+- **Meet:** `yvr-xrvs-gaw`
+- **Generated:** 18/08/2026 at 16:59 BRT
+
+The attempted reconstruction encountered two real architectural protections:
+
+1. The historical pipeline retry route is frozen by `PIPELINE_AUTOMATION_FROZEN` and returned:
+
+```text
+503 Pipeline automation is frozen
+```
+
+2. The execution environment had no authenticated PostgreSQL connection (`DATABASE_URL` / `DATABASE_URL_UNPOOLED`) and no active WebDev environment capable of performing production SQL.
+
+Therefore the reconstruction could not legitimately create a new `PipelineRun`, `PipelineEvent`, `EvidenceCandidate`, `ReviewTask`, `ClassReportProjection`, `PortfolioProjection`, or other historical record.
+
+**No database, GitHub historical record, or learner state was modified.**
+
+#### Current trace classification
+
+```text
+Lesson identity        = PROVEN
+Source / transcript    = PROVEN
+Historical artifact    = PROVEN
+Reconstruction          = BLOCKED BY AUTHORITY BOUNDARY
+Processing              = NOT RECONSTRUCTED
+Evidence validation    = NOT PROVEN BY THIS ATTEMPT
+Assessment              = NOT PROVEN BY THIS ATTEMPT
+Teacher validation     = NOT PROVEN BY THIS ATTEMPT
+Canonical record       = NOT CREATED BY THIS ATTEMPT
+Student projection     = NOT CREATED BY THIS ATTEMPT
+Overall                = POSITIVE / PARTIAL E2E
+```
+
+This is a **valid Gate E observation**, not a failed implementation. The protections prevented an artificial reconstruction from creating records without provenance.
+
+The correct response is **not** to temporarily bypass the freeze or manufacture database state merely to produce a positive trace. A genuine positive end-to-end trace must use an already-authorized historical chain or an explicitly approved reconstruction mechanism that belongs to the replacement architecture.
+
 ---
 
 ## 9. Gate E — next required workstream: End-to-End Authority
@@ -341,6 +388,8 @@ Gate E must include at least:
 
 Rafael 27/08 now serves as a concrete negative witness: source capture existed, but downstream processing failed before validated evidence/assessment/report publication.
 
+Ítalo 18/08 now serves as a positive/partial trace: real source material is proven, but the attempted reconstruction was correctly stopped by the frozen execution boundary and lack of an authenticated database connection. This confirms that Gate E must not be closed merely by successfully writing historical records; the authority to write those records must itself be explicit and auditable.
+
 **Do not infer the replacement automation contract from the old pipeline implementation. Derive it from Gate E evidence.**
 
 ---
@@ -362,7 +411,8 @@ The eventual replacement must preserve at least:
 - canonical learning state as the authoritative learner record;
 - authorized student projection rather than accidental document/pipeline side effects;
 - duplicate control that does not incorrectly suppress legitimate migration/reprocessing;
-- auditable provenance for every transition that can affect learner-facing state.
+- auditable provenance for every transition that can affect learner-facing state;
+- explicit authorization for any historical reconstruction or reprocessing operation.
 
 ---
 
@@ -372,14 +422,15 @@ Future contributors/agents must **not**:
 
 1. reopen Gates A, B, C, D, or H without an explicit new decision based on new evidence;
 2. reactivate the frozen legacy pipeline to “make the numbers work”;
-3. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
-4. rewrite historical evidence to fit the new schema without an explicit migration decision;
-5. treat `COMPLETED` as proof of successful learning assessment;
-6. turn `Not Assessed` into an evaluative judgment;
-7. create a new dashboard source of truth outside the canonical repository/reference layer;
-8. repair the 10 warnings as generic code cleanup without tracing their underlying evidence;
-9. implement replacement automation before Gate E establishes the real authority contract;
-10. add a second competing canonical document for this same migration boundary.
+3. bypass the freeze to manufacture a positive Gate E trace;
+4. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
+5. rewrite historical evidence to fit the new schema without an explicit migration decision;
+6. treat `COMPLETED` as proof of successful learning assessment;
+7. turn `Not Assessed` into an evaluative judgment;
+8. create a new dashboard source of truth outside the canonical repository/reference layer;
+9. repair the 10 warnings as generic code cleanup without tracing their underlying evidence;
+10. implement replacement automation before Gate E establishes the real authority contract;
+11. add a second competing canonical document for this same migration boundary.
 
 If future implementation conflicts with this document, resolve the conflict explicitly before code changes are made.
 
@@ -400,6 +451,8 @@ If future implementation conflicts with this document, resolve the conflict expl
 **Historical evidence:** PRESERVED  
 **Known evidence warnings:** 10, intentionally unresolved  
 **Gate E — End-to-End Authority:** NEXT / OPEN  
+**Gate E negative witness:** Rafael 27/08 — PROVEN processing failure after source capture  
+**Gate E positive/partial witness:** Ítalo 18/08 — source proven; reconstruction correctly blocked  
 **Replacement automation:** BLOCKED  
 
 This document is the **single canonical migration/architecture checkpoint** for this state of PRIME Digital Hub. Do not create a competing canonical document for the same boundary.
