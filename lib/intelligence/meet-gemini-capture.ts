@@ -34,6 +34,7 @@ export type MeetGeminiCaptureInput = {
   lessonOrigin?: 'scheduled' | 'unscheduled'
   speakerDiarizationStatus?: 'reliable' | 'unreliable' | 'unknown'
   teacherAttestedStudent?: boolean
+  previewSourceRootFolderIdOverride?: string
 }
 
 export type MeetGeminiCaptureResult = {
@@ -142,18 +143,19 @@ async function getDriveFile(auth: ReturnType<typeof getReadOnlyDriveAuth>, fileI
 async function assertSourceWithinMeetRoot(
   auth: ReturnType<typeof getReadOnlyDriveAuth>,
   source: DriveFile,
+  rootFolderId: string,
 ): Promise<void> {
   let frontier = [...(source.parents || [])]
   const visited = new Set<string>()
 
   for (let depth = 0; depth < MAX_PARENT_DEPTH && frontier.length; depth += 1) {
-    if (frontier.includes(GOOGLE_MEET_ROOT_FOLDER_ID)) return
+    if (frontier.includes(rootFolderId)) return
     const next: string[] = []
     for (const parentId of frontier) {
       if (visited.has(parentId)) continue
       visited.add(parentId)
       const parent = await getDriveFile(auth, parentId)
-      if (parent.id === GOOGLE_MEET_ROOT_FOLDER_ID) return
+      if (parent.id === rootFolderId) return
       if (parent.mimeType !== GOOGLE_FOLDER_MIME) continue
       next.push(...(parent.parents || []))
     }
@@ -267,11 +269,15 @@ export async function captureMeetGeminiSourceToCandidate(
   const sourceFileId = requireValue(input.sourceFileId, 'sourceFileId')
   const lessonId = requireValue(input.lessonId, 'lessonId')
   const sourceKind = input.sourceKind || 'meet_transcript'
+  const previewRootOverride = process.env.VERCEL_ENV === 'preview'
+    ? input.previewSourceRootFolderIdOverride?.trim()
+    : undefined
+  const sourceRootFolderId = previewRootOverride || GOOGLE_MEET_ROOT_FOLDER_ID
 
   const auth = getReadOnlyDriveAuth()
   const file = await getDriveFile(auth, sourceFileId)
   if (file.mimeType !== GOOGLE_DOC_MIME) throw new Error('NEW INTELLIGENCE capture accepts Google Docs sources only')
-  await assertSourceWithinMeetRoot(auth, file)
+  await assertSourceWithinMeetRoot(auth, file, sourceRootFolderId)
 
   const content = (await readGoogleDoc(auth, sourceFileId)).trim()
   if (content.length < minimumSourceLength(sourceKind)) {
@@ -340,7 +346,8 @@ export async function captureMeetGeminiSourceToCandidate(
       sourceHash,
       sourceKind,
       captureMode: 'read_only_google_drive',
-      sourceRootFolderId: GOOGLE_MEET_ROOT_FOLDER_ID,
+      sourceRootFolderId,
+      sourceBoundaryMode: previewRootOverride ? 'preview_exact_root_override' : 'configured_root',
       studentIdentityResolution: input.expectedStudentEmail ? 'registry_match_plus_expected_student' : 'unique_registry_match',
       lessonIdentity: input.lessonOrigin === 'unscheduled' && input.teacherAttestedStudent === true
         ? {
