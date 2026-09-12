@@ -13,6 +13,8 @@
       "canonicalEmail": "claudio.bit@gmail.com",
       "emailAliases": ["claudio.bit@gmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=claudio.bit%40gmail.com",
       "links": {
@@ -34,6 +36,8 @@
       "canonicalEmail": "diegodasiro@gmail.com",
       "emailAliases": ["diegodasiro@gmail.com", "Diego Da Zero", "Diego Dasiro"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=diegodasiro%40gmail.com",
       "links": {
@@ -55,10 +59,12 @@
       "canonicalEmail": "midias83@hotmail.com",
       "emailAliases": ["Eduarda Dias", "Eduarda Jesus"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "episodic_remedial_pending_validation",
       "dashboardPath": "/dashboard?studentEmail=midias83%40hotmail.com",
       "links": {
-        "liveClass": "https://meet.google.com/shx-eofk-axz",
+        "liveClass": "https://meet.google.com/shx-eof-axz",
         "portfolio": null,
         "classMaterials": null,
         "homework": null
@@ -77,6 +83,8 @@
       "canonicalEmail": "carolvdrummond@gmail.com",
       "emailAliases": ["carolvdrummond@gmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=carolvdrummond%40gmail.com",
       "links": {
@@ -98,6 +106,8 @@
       "canonicalEmail": "itallopires17@gmail.com",
       "emailAliases": [],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_portfolio_verified",
       "dashboardPath": "/dashboard?studentEmail=itallopires17%40gmail.com",
       "links": {
@@ -120,6 +130,8 @@
       "canonicalEmail": "lauramgcstemp@gmail.com",
       "emailAliases": ["lauramgcstemp@gmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "schedule_mapped_pending_academic_history",
       "dashboardPath": "/dashboard?studentEmail=lauramgcstemp%40gmail.com",
       "links": {
@@ -141,6 +153,8 @@
       "canonicalEmail": "louise_nogueira@hotmail.com",
       "emailAliases": ["louise.nogueira@hotmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=louise_nogueira%40hotmail.com",
       "links": {
@@ -161,6 +175,8 @@
       "canonicalEmail": "galvaonanda28@gmail.com",
       "emailAliases": ["galvaonanda28@gmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "schedule_mapped_pending_academic_history",
       "dashboardPath": "/dashboard?studentEmail=galvaonanda28%40gmail.com",
       "links": {
@@ -182,6 +198,8 @@
       "canonicalEmail": "rafael.copolillo@gmail.com",
       "emailAliases": [],
       "profileStatus": "active",
+      "operatingEligibility": "learner",
+      "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=rafael.copolillo%40gmail.com",
       "links": {
@@ -203,6 +221,8 @@
       "canonicalEmail": "vcrlima89@gmail.com",
       "emailAliases": ["vcrlima89@gmail.com"],
       "profileStatus": "active",
+      "operatingEligibility": "prospect",
+      "activationAuthority": null,
       "profileCompleteness": "onboarding_pending_links_and_history",
       "dashboardPath": "/dashboard?studentEmail=vcrlima89%40gmail.com",
       "links": {
@@ -215,7 +235,7 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Once a week",
-      "notes": "Student identity supplied in the teacher intake; academic history and links remain pending. Missing data must not be guessed."
+      "notes": "Student identity supplied in the teacher intake; academic history and links remain pending. Missing data must not be guessed. Operating eligibility is prospect; no learner activation authority is established."
     }
   ],
   "requiredFieldsForNewStudent": [
@@ -244,6 +264,8 @@
     "email aliases may route to the same student only after teacher confirmation",
     "existing authorized repository profiles and published history are never overwritten by onboarding",
     "a transcript with ambiguous identity is quarantined rather than assigned by guesswork",
-    "student-facing content requires one consolidated teacher review decision per review session"
+    "student-facing content requires one consolidated teacher review decision per review session",
+    "operatingEligibility is the explicit boundary between person/contact and authorized learner",
+    "activationAuthority must be present before a learner is authorized; absence of authority never promotes a prospect"
   ]
 }
