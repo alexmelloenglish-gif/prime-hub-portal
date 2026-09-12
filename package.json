@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
-  "engines": {
-    "node": "22.x"
-  },
+  "engines": {"node": "22.x"},
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
     "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs && node scripts/canonical-student-consistency-audit.mjs",
+    "eligibility:self-test": "node scripts/eligibility-boundary-self-test.mjs",
     "canonical:validate": "node scripts/canonical-consistency-validator.mjs",
     "canonical:validate:strict": "node scripts/canonical-consistency-validator.mjs --strict",
-    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run canonical:validate:strict && prisma generate && next build",
+    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && prisma generate && next build",
     "vercel-build": "prisma migrate deploy && npm run build",
     "start": "next start",
     "lint": "next lint",
@@ -32,7 +31,6 @@
     "lucide-react": "^0.344.0",
     "next": "^15.0.0",
     "next-auth": "^4.24.0",
-    "prisma": "^5.8.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.10.3",
@@ -47,6 +45,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.32",
+    "eslint-config-next": "^15.0.0",
     "typescript": "^5.3.3"
   }
 }
