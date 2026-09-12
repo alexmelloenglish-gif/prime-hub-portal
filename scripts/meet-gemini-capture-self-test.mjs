@@ -33,6 +33,9 @@ assert(capture.includes("captureMode: 'read_only_google_drive'"), 'capture prove
 assert(capture.includes('assertSourceWithinMeetRoot'), 'capture rejects Drive files outside the authorized Meet root')
 assert(capture.includes('sourceHash'), 'capture records source hash for traceability')
 assert(!capture.includes('payload: content'), 'raw source content is not persisted as CandidateRecord payload')
+assert(capture.includes("lessonIdentityStatus: 'operator_supplied_unproven'"), 'capture never upgrades operator lesson id to proven identity')
+assert(capture.includes("source: 'operator_supplied'"), 'lesson identity provenance records operator source')
+assert(capture.includes('proven: false'), 'lesson identity remains explicitly unproven before Calendar correlation')
 
 assert(generator.includes("authorityStatus: 'candidate'"), 'Gemini output authority is fixed to candidate')
 assert(generator.includes('requiresReview: true'), 'Gemini output always requires review')
