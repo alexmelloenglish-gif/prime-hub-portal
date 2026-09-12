@@ -21,7 +21,7 @@ const VERCEL_TEAM_SLUG = process.env.PRIME_VERCEL_TEAM_SLUG?.trim() || 'prime-di
 const VERCEL_PROJECT_SLUG = process.env.PRIME_VERCEL_PROJECT_SLUG?.trim() || 'prime-hub-portal'
 const WIF_POOL_ID = process.env.PRIME_WIF_POOL_ID?.trim() || 'vercel-prod'
 const WIF_PROVIDER_ID = process.env.PRIME_WIF_PROVIDER_ID?.trim() || 'vercel'
-const DRIVE_SERVICE_ACCOUNT = process.env.PRIME_DRIVE_SERVICE_ACCOUNT?.trim() || 'prime-drive-pipeline-worker@prime-hub-portal.iam.gserviceaccount.com'
+const DRIVE_SERVICE_ACCOUNT = process.env.PRIME_DRIVE_SERVICE_ACCOUNT?.trim() || process.env.GCP_SERVICE_ACCOUNT_EMAIL?.trim() || 'prime-dashboard-reader@prime-hub-portal.iam.gserviceaccount.com'
 const MAX_PARENT_DEPTH = 12
 
 export type MeetGeminiCaptureInput = {
