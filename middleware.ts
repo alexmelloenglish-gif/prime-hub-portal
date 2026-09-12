@@ -14,8 +14,18 @@ const allowedDashboardPaths = new Set([
   '/dashboard/admin/review',
 ])
 
+const allowedDashboardPrefixes = ['/dashboard/admin/intelligence']
+
 function normalizeDashboardPath(pathname: string) {
-  return allowedDashboardPaths.has(pathname) ? pathname : '/dashboard'
+  if (allowedDashboardPaths.has(pathname)) {
+    return pathname
+  }
+
+  if (allowedDashboardPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
+    return pathname
+  }
+
+  return '/dashboard'
 }
 
 export async function middleware(request: NextRequest) {
@@ -30,7 +40,7 @@ export async function middleware(request: NextRequest) {
   // se não tem token e não está no login → bloqueia
   if (!token && !isLoginPage) {
     const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('callbackUrl', normalizedPathname)
+    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname + request.nextUrl.search)
     return NextResponse.redirect(loginUrl)
   }
 

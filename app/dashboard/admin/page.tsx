@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ClipboardCheck, Eye, PauseCircle, Plus, Shield } from 'lucide-react'
+import { BrainCircuit, ClipboardCheck, Eye, PauseCircle, Plus, Shield } from 'lucide-react'
 import { SectionShell } from '@/components/dashboard/section-shell'
 import { authOptions } from '@/lib/auth'
 import { listRecentPipelineActivity, listStudentsForAdmin } from '@/lib/admin-dashboard'
@@ -41,13 +41,22 @@ export default async function DashboardAdminPage() {
                   New transcript ingest, Drive reconciliation and pipeline retry are disabled while the canonical student state is being repaired. Historical runs remain preserved for audit.
                 </p>
               </div>
-              <Link
-                href="/dashboard/admin/review"
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-prime-red px-4 py-3 text-sm font-bold text-white shadow-[0_12px_26px_rgba(168,34,23,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8f1b13]"
-              >
-                <ClipboardCheck aria-hidden="true" className="h-4 w-4" />
-                Review queue
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/dashboard/admin/review"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-prime-red px-4 py-3 text-sm font-bold text-white shadow-[0_12px_26px_rgba(168,34,23,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8f1b13]"
+                >
+                  <ClipboardCheck aria-hidden="true" className="h-4 w-4" />
+                  Review queue
+                </Link>
+                <Link
+                  href="/dashboard/admin/intelligence"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-bold text-[#263c86] transition hover:-translate-y-0.5 hover:bg-indigo-100"
+                >
+                  <BrainCircuit aria-hidden="true" className="h-4 w-4" />
+                  Teacher Intelligence
+                </Link>
+              </div>
             </div>
           </div>
 
