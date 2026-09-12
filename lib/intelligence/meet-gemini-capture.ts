@@ -30,6 +30,10 @@ export type MeetGeminiCaptureInput = {
   expectedStudentEmail?: string
   sourceKind?: 'meet_transcript' | 'gemini_notes'
   classDate?: string
+  deliveryMode?: 'online' | 'in_person' | 'hybrid'
+  lessonOrigin?: 'scheduled' | 'unscheduled'
+  speakerDiarizationStatus?: 'reliable' | 'unreliable' | 'unknown'
+  teacherAttestedStudent?: boolean
 }
 
 export type MeetGeminiCaptureResult = {
@@ -37,7 +41,7 @@ export type MeetGeminiCaptureResult = {
   candidateKey: string
   studentEmail: string
   lessonId: string
-  lessonIdentityStatus: 'operator_supplied_unproven'
+  lessonIdentityStatus: 'operator_supplied_unproven' | 'unscheduled_teacher_attested'
   sourceRef: string
   sourceHash: string
   status: 'review_required'
@@ -286,7 +290,9 @@ export async function captureMeetGeminiSourceToCandidate(
       candidateKey: existing.candidateKey,
       studentEmail: existing.studentEmail,
       lessonId: existing.lessonId,
-      lessonIdentityStatus: 'operator_supplied_unproven',
+      lessonIdentityStatus: input.lessonOrigin === 'unscheduled' && input.teacherAttestedStudent === true
+        ? 'unscheduled_teacher_attested'
+        : 'operator_supplied_unproven',
       sourceRef: existing.sourceRef,
       sourceHash: existing.sourceHash,
       status: 'review_required',
@@ -308,6 +314,9 @@ export async function captureMeetGeminiSourceToCandidate(
     sourceName: file.name,
     sourceModifiedTime: file.modifiedTime,
     content,
+    deliveryMode: input.deliveryMode || 'online',
+    lessonOrigin: input.lessonOrigin || 'scheduled',
+    speakerDiarizationStatus: input.speakerDiarizationStatus || 'unknown',
   }
   const artifact = await generateGeminiIntelligenceCandidate(generationSource)
 
@@ -333,11 +342,22 @@ export async function captureMeetGeminiSourceToCandidate(
       captureMode: 'read_only_google_drive',
       sourceRootFolderId: GOOGLE_MEET_ROOT_FOLDER_ID,
       studentIdentityResolution: input.expectedStudentEmail ? 'registry_match_plus_expected_student' : 'unique_registry_match',
-      lessonIdentity: {
-        lessonId,
-        source: 'operator_supplied',
-        proven: false,
-      },
+      lessonIdentity: input.lessonOrigin === 'unscheduled' && input.teacherAttestedStudent === true
+        ? {
+            lessonId,
+            source: 'authenticated_teacher_attestation',
+            proven: true,
+            origin: 'unscheduled',
+          }
+        : {
+            lessonId,
+            source: 'operator_supplied',
+            proven: false,
+            origin: input.lessonOrigin || 'scheduled',
+          },
+      deliveryMode: input.deliveryMode || 'online',
+      speakerDiarizationStatus: input.speakerDiarizationStatus || 'unknown',
+      evidenceAttributionRequiresConfidence: true,
       teacherReviewRequired: true,
       automaticPublicationAllowed: false,
     },
@@ -350,7 +370,9 @@ export async function captureMeetGeminiSourceToCandidate(
     candidateKey: record.candidateKey,
     studentEmail: record.studentEmail,
     lessonId: record.lessonId,
-    lessonIdentityStatus: 'operator_supplied_unproven',
+    lessonIdentityStatus: input.lessonOrigin === 'unscheduled' && input.teacherAttestedStudent === true
+      ? 'unscheduled_teacher_attested'
+      : 'operator_supplied_unproven',
     sourceRef: record.sourceRef,
     sourceHash: record.sourceHash,
     status: 'review_required',
