@@ -301,3 +301,96 @@ model VocabularyReuseSentence {
   @@index([studentEmail, vocabularyKey, createdAt])
   @@map("vocabulary_reuse_sentences")
 }
+
+// ---------------------------------------------------------------------------
+// NEW INTELLIGENCE authority boundary
+// These models are deliberately separate from the frozen legacy PipelineRun path.
+// AI creates candidate records only. Teacher review is an append-only authority
+// transition. Canonicalization and projection authorization are separate records,
+// so APPROVED can never mean PROJECTED by field mutation or status aliasing.
+// ---------------------------------------------------------------------------
+
+model IntelligenceCandidateRecord {
+  id               String                            @id @default(cuid())
+  candidateKey     String                            @unique
+  lessonId         String
+  studentEmail     String
+  sourceType       String
+  sourceRef        String
+  sourceHash       String
+  sourceOccurredAt DateTime?
+  candidateType    String
+  payload          Json
+  provenance       Json
+  authorityStatus  String                            @default("candidate")
+  requiresReview   Boolean                           @default(true)
+  generatedBy      String                            @default("ai")
+  promptVersion    String?
+  processorVersion String?
+  generatedAt      DateTime                          @default(now())
+  createdAt        DateTime                          @default(now())
+  reviewTransition IntelligenceReviewTransition?
+  canonicalization IntelligenceCanonicalization?
+
+  @@index([studentEmail, lessonId])
+  @@index([createdAt])
+  @@map("intelligence_candidate_records")
+}
+
+model IntelligenceReviewTransition {
+  id                  String                         @id @default(cuid())
+  candidateRecordId   String                         @unique
+  decision            String
+  authorityTransition String
+  reviewerId          String
+  reviewerRole        String                         @default("teacher")
+  reason              String?                        @db.Text
+  reviewedPayload     Json?
+  reviewedAt          DateTime                       @default(now())
+  createdAt           DateTime                       @default(now())
+  candidate           IntelligenceCandidateRecord    @relation(fields: [candidateRecordId], references: [id], onDelete: Restrict)
+  canonicalization    IntelligenceCanonicalization?
+
+  @@index([decision, reviewedAt])
+  @@index([reviewerId, reviewedAt])
+  @@map("intelligence_review_transitions")
+}
+
+model IntelligenceCanonicalization {
+  id                    String                           @id @default(cuid())
+  candidateRecordId     String                           @unique
+  reviewTransitionId    String                           @unique
+  canonicalRecordKey    String                           @unique
+  studentEmail          String
+  lessonId              String
+  canonicalPayload      Json
+  canonicalizedBy       String
+  authorityStatus       String                           @default("canonical")
+  canonicalizedAt       DateTime                         @default(now())
+  createdAt             DateTime                         @default(now())
+  candidate             IntelligenceCandidateRecord      @relation(fields: [candidateRecordId], references: [id], onDelete: Restrict)
+  reviewTransition      IntelligenceReviewTransition     @relation(fields: [reviewTransitionId], references: [id], onDelete: Restrict)
+  authorizedProjection  IntelligenceAuthorizedProjection?
+
+  @@index([studentEmail, lessonId])
+  @@index([canonicalizedAt])
+  @@map("intelligence_canonicalizations")
+}
+
+model IntelligenceAuthorizedProjection {
+  id                 String                       @id @default(cuid())
+  canonicalizationId String                       @unique
+  projectionKey      String
+  status             String                       @default("authorized_not_projected")
+  authorizedBy       String
+  authorizedAt       DateTime                     @default(now())
+  projectedAt        DateTime?
+  targetRef          String?
+  errorMessage       String?                      @db.Text
+  createdAt          DateTime                     @default(now())
+  updatedAt          DateTime                     @updatedAt
+  canonicalization   IntelligenceCanonicalization @relation(fields: [canonicalizationId], references: [id], onDelete: Restrict)
+
+  @@index([status, authorizedAt])
+  @@map("intelligence_authorized_projections")
+}
