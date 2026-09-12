@@ -8,7 +8,7 @@
 **Production deployment:** `dpl_2PTRmdwc1HLiotddDQc12nuC1Ecq` — READY  
 **Domain:** `www.primedigitalhub.com.br`
 
-> **Purpose:** This document is the single canonical checkpoint for the PRIME migration boundary. Future agents and contributors must read it before changing the legacy pipeline, dashboard projection, learner-state semantics, admin runtime, or beginning replacement automation.
+> **Purpose:** This is the single canonical checkpoint for the PRIME migration boundary. Future agents must read it before changing the legacy pipeline, dashboard projection, learner-state semantics, admin runtime, or implementing the new intelligence/review flow.
 
 ---
 
@@ -21,40 +21,37 @@ The migration boundary is established and hardened in production.
 - **Gate C — Admin Runtime:** CLOSED / MERGED / production smoke PASS
 - **Gate D — Lesson Intelligence:** CLOSED / MERGED
 - **Gate H — Legacy Automation Hardening:** CLOSED / MERGED / production READY
-- **Gate E — End-to-End Authority:** **NEXT / OPEN**
-- **Replacement Automation:** **BLOCKED until Gate E is complete**
+- **Gate E — End-to-End Authority:** **OPEN**
+- **Replacement automation — autonomous publication:** **BLOCKED**
+- **New review-gated intelligence lane:** **ALLOWED TO BEGIN**
 
-The legacy pipeline is frozen. Historical records remain intact. The canonical learner/dashboard reference layer is established. The obsolete Firestore learner-projection publication stack has been removed.
+The legacy pipeline remains frozen. Historical records remain intact. The canonical learner/dashboard reference layer is established. The obsolete Firestore learner-projection publication stack has been removed.
 
-This is an intentional migration boundary, not an unfinished implementation that should be completed by restoring the old automation.
+This is an intentional boundary, not an unfinished implementation that should be completed by restoring the old automation.
 
 ---
 
 ## 2. Production checkpoint and Gate H evidence
 
-PR #17 established the final legacy-automation hardening boundary.
-
-Production main is:
+Production main:
 
 `841a190edf4a1a6d35c2564c06ffc3100ebbe2a2`
 
 Vercel deployment:
 
-`dpl_2PTRmdwc1HLiotddDQc12nuC1Ecq`
-
-Status: **READY**  
+`dpl_2PTRmdwc1HLiotddDQc12nuC1Ecq` — READY  
 Domain: `www.primedigitalhub.com.br`
 
-The two residual mutator workflows were removed:
+The residual mutator workflows were removed:
 
 - `.github/workflows/apply-publication-policy.yml`
 - `.github/workflows/restore-run-policy.yml`
 
-Production explicitly retains:
+Production retains:
 
 `PIPELINE_AUTOMATION_FROZEN=true`
 
-Critical unauthenticated boundary checks returned:
+Unauthenticated boundary checks returned:
 
 | Endpoint | Result |
 |---|---|
@@ -65,19 +62,19 @@ Critical unauthenticated boundary checks returned:
 
 No test call crossed the execution boundary.
 
-**Rule:** Do not interpret these checks as proof that the old pipeline is healthy. They prove that the frozen execution boundary is protected.
+These checks prove the frozen execution boundary is protected; they do not prove the old pipeline is healthy.
 
 ---
 
-## 3. What the completed gates establish
+## 3. Completed gates
 
 ### Gate A — Eligibility Boundary
 
-Learner access is explicit rather than inferred from profile presence. The canonical eligibility contract distinguishes `prospect` from `learner`, preserves the authorized learner registry, and protects dashboard access and admin preview behavior.
+Learner access is explicit: `prospect` versus `learner`. Dashboard access and admin preview behavior are protected by the canonical eligibility contract.
 
 ### Gate B — Evidence / Assessment Contract
 
-Processing, evidence, assessment, and report are independent lifecycle axes:
+Independent lifecycle axes:
 
 - **PROCESSING:** `NOT_STARTED`, `RUNNING`, `COMPLETED`, `FAILED`
 - **EVIDENCE:** `NONE`, `SOURCE_ONLY`, `CANDIDATES_FOUND`, `VALIDATED`
@@ -88,59 +85,41 @@ Unknown values remain unknown rather than silently becoming `NOT_ASSESSED`.
 
 ### Gate C — Admin Runtime
 
-Teacher Intelligence is reachable and separated from Preview Student Dashboard. Lesson Intelligence supports both the general view and the student-filtered view. Production smoke checks passed for auth/authz, navigation, general intelligence, filtered intelligence, and student preview.
+Teacher Intelligence is separated from Preview Student Dashboard. General and student-filtered Lesson Intelligence work in production. Auth/authz and smoke checks passed.
 
 ### Gate D — Lesson Intelligence
 
-Admin lesson intelligence distinguishes lesson identity from processing attempts and exposes the authority chain without inventing attendance, evidence, or pedagogical outcomes. Attendance is `NOT PROVEN` when independent authority is absent.
+Lesson identity is separated from processing attempts. Attendance, evidence, and pedagogical outcomes are not inferred when independent authority is absent.
 
 ### Gate H — Legacy Automation Hardening
 
-All known legacy automatic/manual/retry entry points remain frozen. Residual mutator workflows were removed. Historical runs were not deleted or rewritten. No replacement automation was introduced by the hardening work.
+Legacy automatic/manual/retry entry points remain frozen. Residual mutator workflows were removed. Historical runs were not deleted or rewritten. No replacement automation was introduced by H.
 
 ---
 
-## 4. Legacy pipeline containment
+## 4. Canonical learner-state architecture
 
-The old automatic creation boundary is frozen across the previously identified surfaces:
-
-- Vercel Cron;
-- Google Workspace Events / Pub/Sub webhook processing;
-- canonical ingest endpoint callers such as Apps Script or other callers;
-- retry/manual Drive processing paths;
-- Drive reconciliation/processing paths.
-
-Historical pipeline runs, transcripts, reports, and events are evidence and must remain preserved.
-
-**Do not reactivate, repair, or extend the legacy pipeline as a shortcut.**
-
----
-
-## 5. Canonical learner-state architecture
-
-The intended authority chain remains:
+The learner-facing authority chain remains:
 
 ```text
-TRANSCRIPTS / CLASS EVIDENCE
-          ↓
- Teacher review
-          ↓
+SOURCE / CLASS EVIDENCE
+        ↓
+REVIEW / AUTHORITY
+        ↓
 CANONICAL LEARNING RECORD
-          ↓
-Authorized repository projection
-          ↕
-     Neon / Prisma
-          ↓
+        ↓
+AUTHORIZED PROJECTION
+        ↓
 STUDENT DASHBOARD
 ```
 
-Google Docs may remain a human-readable longitudinal reference, but a document change does not automatically become the dashboard source of truth.
+Google Docs may remain a human-readable longitudinal reference, but a document change does not automatically become dashboard state.
 
-The core registry is the authority for learner-facing canonical portfolio references. Legacy portfolio documents may remain as historical/source evidence, but must not become dashboard destinations.
+The core registry is the authority for learner-facing canonical portfolio references. Legacy portfolio documents remain historical/source evidence only and must not become dashboard destinations.
 
 ---
 
-## 6. Canonical learner-facing assessment states
+## 5. Learner-facing assessment states
 
 The dashboard contract has exactly four learner-facing states:
 
@@ -149,64 +128,36 @@ The dashboard contract has exactly four learner-facing states:
 - `Needs Focus`
 - `Not Assessed`
 
-Decorated or legacy labels must be normalized explicitly into this contract. Unknown values must not silently default to `Not Assessed`.
-
-### `Not Assessed` is an epistemic state
-
-`Not Assessed` means that the available evidence did not permit a confident assessment of that specific domain/item. It is not a negative assessment and is not a processing failure.
-
-Therefore:
-
-- no evaluative insight should be rendered underneath `Not Assessed`;
-- the renderer must defensively enforce this rule;
-- lack of assessment must never be converted into an invented judgment.
+`Not Assessed` means available evidence did not permit confident assessment of that specific domain/item. It is not a negative assessment and not a processing failure. No evaluative insight should render beneath it.
 
 ---
 
-## 7. Execution state is different from learning state
+## 6. Execution state is different from learning state
 
-Do not collapse technical processing status into pedagogical outcome.
+Do not collapse technical status into pedagogical outcome.
 
-Useful distinctions are:
+Useful distinctions include:
 
-1. `NOT_RUN` — no processing attempt is demonstrated.
-2. `INSUFFICIENT_EVIDENCE` — available material is insufficient for the intended assessment.
-3. `FAILED` — processing/extraction/assessment execution failed.
-4. `ASSESSED` — sufficient evidence was processed and an assessment can be supported.
+- `NOT_RUN`
+- `INSUFFICIENT_EVIDENCE`
+- `FAILED`
+- `ASSESSED`
 
-A technical `COMPLETED` pipeline run does **not** by itself prove that evidence was extracted, interpreted, validated, or reflected in the canonical learning record.
-
-A report artifact can therefore exist without proven end-to-end learning intelligence.
+A technical `COMPLETED` run does not prove evidence extraction, interpretation, teacher validation, or canonical learning state.
 
 ---
 
-## 8. Known evidence warnings
+## 7. Known evidence warnings and Rafael 27/08
 
-The current canonical audit retains **10 known warnings** intentionally. They are evidence-reconciliation work, not generic build failures.
+There are still **10 known warnings**, intentionally retained as evidence-reconciliation work.
 
-### Eight historical scheduling warnings
-
-Eight old past lessons across Eduarda, Laura, and Maria Fernanda remain marked as scheduled. They must be traced rather than mechanically cleaned up:
-
-```text
-scheduled
-   → attended?
-   → transcript?
-   → pipeline attempt?
-   → Class Report?
-   → canonical learning evidence?
-   → teacher validation?
-   → canonical learning record?
-   → student projection?
-```
-
-Legitimate outcomes include: scheduled but never happened; happened without transcript; transcript never processed; processing failed; processing completed without report; report with insufficient evidence; or evidence that should enter the canonical learning record.
+Eight historical scheduled warnings across Eduarda, Laura, and Maria Fernanda remain to be traced rather than mechanically cleaned.
 
 ### Rafael — 27/08/2026
 
-The earlier operator-reported hypothesis of a Gemini transcription failure is superseded by stronger evidence.
+The earlier hypothesis of a Gemini transcription failure is superseded.
 
-The evidence chain now established is:
+Established evidence chain:
 
 ```text
 Google Calendar event
@@ -220,216 +171,276 @@ Apps Script processPipeline
 No downstream canonical report
 ```
 
-#### A. Attendance / lesson identity
+Calendar record:
 
-Google Calendar confirms:
+- Event: `🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub`
+- Date/time: 27/08/2026, 09:00–10:00 BRT
+- Participants: Rafael and Alexandre
+- Meet: `https://meet.google.com/iij-zvgn-yct`
+- Event ID: `ddotvrsvhvkqttevnqbdo48nmq_20260827T120000Z`
 
-- **Event:** `🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub`
-- **Date:** 27/08/2026
-- **Time:** 09:00–10:00 BRT
-- **Participants:** Rafael and Alexandre
-- **Meet:** `https://meet.google.com/iij-zvgn-yct`
-- **Event ID:** `ddotvrsvhvkqttevnqbdo48nmq_20260827T120000Z`
+Gemini source evidence:
 
-This establishes the scheduled lesson identity and the attendance context available from the calendar record.
+- Message ID: `1a0436610ba0d0dd`
+- Generated: 27/08/2026 10:24 BRT
+- Gemini document: `1_yQ0gyOnDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
 
-#### B. Source capture / Gemini evidence
+Apps Script failure evidence:
 
-An official Gemini email exists:
+- Message ID: `1a048c4e73870c8f`
+- Script: `PRIME Digital Hub — Google Meet Transcript Automation`
+- Function: `processPipeline`
+- 30 failures from 11:08:15–11:39:15 BRT
+- Error: `The Rhino runtime is deprecated and no longer supported.`
 
-- **Message ID:** `1a0436610ba0d0dd`
-- **Subject:** `Anotações: “🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub”`
-- **Generated:** 27/08/2026 at 10:24 BRT
-- **Gemini document:** `1_yQ0gyOnDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
-
-The generated notes include:
-
-> “Technical configuration session successfully established interface settings and tool functionality for the team.”
-
-Therefore the earlier hypothesis that Gemini failed to receive or generate the lesson notes is contradicted by stronger evidence. A source/notes artifact existed before the downstream processing failure.
-
-#### C. Processing failure
-
-An official Google Apps Script failure email exists:
-
-- **Message ID:** `1a048c4e73870c8f`
-- **Script:** `PRIME Digital Hub — Google Meet Transcript Automation`
-- **Function:** `processPipeline`
-- **Failures:** 30 attempts
-- **Period:** 27/08/2026, 11:08:15–11:39:15 BRT
-- **Error:**
-
-```text
-Execution failed.
-The Rhino runtime is deprecated and no longer supported.
-```
-
-This establishes a processing failure after source capture, not a failure of Gemini note generation.
-
-#### D. Current technical conclusion
-
-The best-supported classification is:
+Classification:
 
 **EXPLAINED / PROCESSING FAILURE AFTER SOURCE CAPTURE**
 
-The evidence supports:
-
-- lesson identity established;
-- Meet/Gemini source artifact existed;
-- downstream `processPipeline` execution was attempted;
-- the process failed repeatedly because the Rhino runtime was deprecated/unsupported;
-- no downstream canonical report was published for this lesson;
-- the 11-attended vs. 10-published-report discrepancy is therefore explained at the processing layer, subject to the exact attendance/report grain remaining consistent with the repository model.
-
-Do **not** manufacture report #11.
-
-Do **not** alter attendance merely to reconcile counts.
-
-The former classification `OPERATOR-REPORTED / PENDING LOG CONFIRMATION` is superseded and should no longer be used for this case.
-
-#### E. Gate E significance
-
-Rafael 27/08 is now a strong negative / insufficient-evidence witness for Gate E:
+Trace:
 
 ```text
-Lesson identity        = PROVEN
-Source capture         = PROVEN
-Processing attempt     = PROVEN
-Processing outcome     = FAILED
-Evidence validation    = NOT PROVEN
-Assessment             = NOT PROVEN
-Teacher validation     = NOT PROVEN
-Canonical report       = NOT PRODUCED
+Lesson identity     = PROVEN
+Source capture      = PROVEN
+Processing attempt  = PROVEN
+Processing outcome  = FAILED
+Evidence validation = NOT PROVEN
+Assessment          = NOT PROVEN
+Teacher validation  = NOT PROVEN
+Canonical report    = NOT PRODUCED
 ```
 
-The case demonstrates why source capture, processing completion, evidence validation, and learner-facing publication must remain separate authority states.
+Do not manufacture report #11 and do not alter attendance merely to equalize counts.
 
-### Ítalo — 18/08/2026 positive/partial E2E trace
-
-A controlled reconstruction attempt was made using an existing real historical lesson, without modifying historical data or bypassing production protections.
-
-Known historical source material:
-
-- **Student:** Ítalo Pires
-- **Lesson:** `italo-2026-08-18`
-- **Transcript source:** Google Meet / Gemini
-- **Gemini document:** `13oHYTCiShhOHSIhq4TO2jOXdjxOiDTlob17p6vpBDrc`
-- **Meet:** `yvr-xrvs-gaw`
-- **Generated:** 18/08/2026 at 16:59 BRT
-
-The attempted reconstruction encountered two real architectural protections:
-
-1. The historical pipeline retry route is frozen by `PIPELINE_AUTOMATION_FROZEN` and returned `503 Pipeline automation is frozen`.
-2. The execution environment had no authenticated PostgreSQL connection (`DATABASE_URL` / `DATABASE_URL_UNPOOLED`) and no active WebDev environment capable of performing production SQL.
-
-Therefore the reconstruction could not legitimately create a new `PipelineRun`, `PipelineEvent`, `EvidenceCandidate`, `ReviewTask`, `ClassReportProjection`, `PortfolioProjection`, or other historical record.
-
-**No database, GitHub historical record, or learner state was modified by the reconstruction attempt.**
-
-#### Current trace classification
-
-```text
-Lesson identity        = PROVEN
-Source / transcript    = PROVEN
-Historical artifact    = PROVEN
-Reconstruction         = BLOCKED BY AUTHORITY BOUNDARY
-Processing              = NOT RECONSTRUCTED
-Evidence validation    = NOT PROVEN BY THIS ATTEMPT
-Assessment              = NOT PROVEN BY THIS ATTEMPT
-Teacher validation     = NOT PROVEN BY THIS ATTEMPT
-Canonical record       = NOT CREATED BY THIS ATTEMPT
-Student projection     = NOT CREATED BY THIS ATTEMPT
-Overall                = POSITIVE / PARTIAL E2E
-```
-
-This is a valid Gate E observation, not a failed implementation. The protections prevented an artificial reconstruction from creating records without provenance.
+This is a strong negative / insufficient-evidence witness for Gate E.
 
 ---
 
-## 9. Gate E — current state and next action
+## 8. Ítalo — 18/08/2026 partial positive witness
 
-Gate E remains **OPEN**. A genuine positive trace has **not yet been established**.
+Known historical material:
 
-The work completed so far provides two important witnesses:
+- Student: Ítalo Pires
+- Lesson: `italo-2026-08-18`
+- Transcript source: Google Meet / Gemini
+- Gemini document: `13oHYTCiShhOHSIhq4TO2jOXdjxOiDTlob17p6vpBDrc`
+- Meet: `yvr-xrvs-gaw`
+- Generated: 18/08/2026 16:59 BRT
 
-- **Rafael 27/08:** strong negative / insufficient-evidence witness. Source capture and processing attempt are proven; processing failed before validated evidence, assessment, teacher validation, and canonical report publication.
-- **Ítalo 18/08:** positive/partial historical source witness. Source and historical artifact are proven, but reconstruction was correctly blocked by the frozen execution boundary and lack of authenticated database access. No state was fabricated.
+A controlled reconstruction attempt was made without modifying historical data.
 
-### Next action: historical positive-trace discovery
+It was correctly blocked because:
 
-**Do not attempt another retrospective reconstruction yet.**
+1. the historical retry route is protected by `PIPELINE_AUTOMATION_FROZEN` and returned `503 Pipeline automation is frozen`;
+2. the execution environment had no authenticated `DATABASE_URL` / `DATABASE_URL_UNPOOLED` and no active WebDev SQL path.
 
-Search the existing historical repository/production evidence for a lesson where the complete or near-complete authority chain already exists **without requiring a new write**:
+No database, historical GitHub record, or learner state was modified.
+
+Trace:
 
 ```text
-Lesson identity
-→ Attendance authority
-→ Source / transcript
-→ Historical processing attempt
-→ Evidence / EvidenceCandidate
-→ Assessment / ReviewTask
-→ Teacher validation
-→ Canonical learning record
-→ Authorized student projection
+Lesson identity     = PROVEN
+Source / transcript = PROVEN
+Historical artifact = PROVEN
+Processing          = NOT RECONSTRUCTED
+Evidence validation = NOT PROVEN BY THIS ATTEMPT
+Assessment          = NOT PROVEN BY THIS ATTEMPT
+Teacher validation  = NOT PROVEN BY THIS ATTEMPT
+Canonical record    = NOT CREATED
+Projection          = NOT CREATED
+Overall             = POSITIVE / PARTIAL E2E
 ```
 
-Candidate cases should be ranked by how many stages are independently persisted and traceable. Start with cases already known to contain both pipeline/review artifacts and an authorized learner projection.
-
-For each candidate, produce a read-only trace first. Do not mutate the database to make a candidate qualify.
-
-### Decision rule
-
-- If an existing historical lesson supplies the full authority chain, use it as the Gate E positive trace.
-- If no historical lesson supplies the chain, **do not reopen or bypass the legacy freeze**. Instead document the missing authority boundary and define the minimum formally authorized reconstruction mechanism required by the replacement architecture.
-
-The purpose of this phase is to discover the real contract, not to make the Gate E dashboard or counts look complete.
+This is a valid Gate E observation. The protection prevented artificial reconstruction.
 
 ---
 
-## 10. Replacement automation boundary
+## 9. Gate E — current authority strategy
 
-Replacement automation remains deliberately **BLOCKED** until Gate E is closed.
+Gate E remains **OPEN**. A complete historical positive trace has not yet been established.
 
-Do not select or implement a replacement provider, model, scheduler, trigger, or processing mechanism merely because the old system is frozen.
+However, Gate E is **not a reason to stop operating the product or to keep new lessons in a queue**.
 
-The eventual replacement must preserve at least:
+There are now three explicit lanes:
 
-- immutable historical evidence during migration;
-- deterministic and traceable lesson identity;
-- explicit evidence availability separate from execution status;
-- processing failure separate from insufficient evidence;
-- technical completion unable to masquerade as assessed learning;
-- explicit teacher authority/validation;
-- canonical learning state as the authoritative learner record;
-- authorized student projection rather than accidental document/pipeline side effects;
-- duplicate control that does not incorrectly suppress legitimate migration/reprocessing;
-- auditable provenance for every transition that can affect learner-facing state;
-- explicit authorization for any historical reconstruction or reprocessing operation.
+### Lane 1 — Product / Canonical learner state
+
+Existing canonical learning records, portfolios, and dashboards continue operating.
+
+Teacher-authorized maintenance of an existing canonical record is allowed. The dashboard continues to read only the canonical learning record / authorized Registry projection.
+
+**Dashboard never reads an AI candidate directly.**
+
+### Lane 2 — New intelligence / shadow + review
+
+The new automation lane may begin immediately for new real lessons, provided its initial output is a candidate/review artifact rather than automatic learner-state publication.
+
+The chain is:
+
+```text
+SOURCE
+Meet / Gemini artifact
+        ↓
+CAPTURE
+lessonId
+studentId
+occurredAt
+sourceRef
+sourceHash / provenance
+        ↓
+INTELLIGENCE
+EvidenceCandidate(s)
+LearningSignal candidate(s)
+Assessment candidate(s)
+        ↓
+REVIEW_REQUIRED
+        ↓
+TEACHER DECISION
+APPROVED / EDITED / REJECTED
+        ↓
+CANONICAL LEARNING RECORD
+        ↓
+AUTHORIZED PROJECTION
+Dashboard / Portfolio
+```
+
+AI must never write canonical learning state directly.
+
+### Lane 3 — Historical Gate E audit
+
+In parallel, search existing read-only historical evidence for a genuine positive trace. Do not manufacture or reprocess history just to close the gate.
 
 ---
 
-## 11. Anti-rework rules
+## 10. Candidate Record and review-transition invariants
 
-Future contributors/agents must **not**:
+The new automation must structurally separate intelligence from authority.
+
+Minimum lifecycle:
+
+```text
+CAPTURED
+   ↓
+CANDIDATE_GENERATED
+   ↓
+REVIEW_REQUIRED
+   ├── REJECTED
+   ├── NEEDS_EDIT
+   └── APPROVED
+          ↓
+     CANONICALIZED
+          ↓
+      PROJECTED
+```
+
+`APPROVED` and `PROJECTED` are distinct events. Approval is a teacher-authority transition; projection is a separate authorized publication transition.
+
+Candidate provenance must include, at minimum where applicable:
+
+```text
+candidateId
+lessonId
+studentId
+sourceType
+sourceRef
+sourceTimestamp
+capturedAt
+processorVersion / model
+promptVersion
+input/provenance reference
+candidateType
+candidatePayload
+generation metadata
+reviewStatus
+reviewedBy
+reviewedAt
+teacherChanges
+canonicalRecordId
+canonicalizedAt
+projectionStatus
+projectedAt
+```
+
+Do not over-engineer fields that are not supported by the actual persistence model. The non-negotiable requirement is traceability: a future reviewer must be able to answer where a learner-facing fact came from and which human decision authorized it.
+
+### Structural firewall
+
+No shadow-automation code may reuse or call the legacy automatic publication capability.
+
+The new lane must produce reviewable candidates and use an explicit teacher-authorized transition for canonicalization. Unreviewed AI output must be technically incapable of becoming dashboard state.
+
+---
+
+## 11. Positive witness policy for Gate E
+
+Gate E does **not** require finding a historical positive witness at all costs.
+
+A historical positive trace is valuable for explaining the legacy system, but the new architecture may create a legitimate positive witness as soon as there is:
+
+- a real lesson;
+- real source evidence;
+- real candidate generation;
+- explicit human review;
+- teacher approval;
+- canonicalization;
+- authorized projection.
+
+That new witness is valid because it is created through the new authority chain, not by rewriting history.
+
+Therefore:
+
+- **historical positive trace:** preferred for legacy reconciliation, searched read-only;
+- **new positive witness:** allowed through the new review-gated architecture;
+- **artificial retrospective reconstruction:** forbidden unless a separately authorized reconstruction mechanism is introduced.
+
+---
+
+## 12. Replacement automation boundary
+
+The following remain blocked:
+
+- autonomous AI → canonical learning state;
+- autonomous AI → portfolio/dashboard publication;
+- reactivation of the legacy pipeline;
+- bypassing teacher review;
+- retrospective database reconstruction without explicit authority.
+
+The following are allowed to begin now:
+
+- source capture for new real lessons;
+- candidate generation;
+- provenance recording;
+- review queue / teacher decision workflow;
+- canonicalization after explicit teacher approval;
+- authorized projection after canonicalization;
+- read-only historical positive-trace discovery.
+
+This is the immediate operational strategy: **build the new intelligence lane in shadow/review while preserving the canonical learner product.**
+
+---
+
+## 13. Anti-rework rules
+
+Future contributors/agents must not:
 
 1. reopen Gates A, B, C, D, or H without an explicit new decision based on new evidence;
-2. reactivate the frozen legacy pipeline to make the numbers work;
-3. bypass the freeze to manufacture a positive Gate E trace;
-4. perform additional retrospective database writes until an explicit reconstruction authority exists;
-5. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
-6. rewrite historical evidence to fit the new schema without an explicit migration decision;
-7. treat `COMPLETED` as proof of successful learning assessment;
-8. turn `Not Assessed` into an evaluative judgment;
-9. create a new dashboard source of truth outside the canonical repository/reference layer;
-10. repair the 10 warnings as generic code cleanup without tracing their underlying evidence;
-11. implement replacement automation before Gate E establishes the real authority contract;
-12. add a second competing canonical document for this same migration boundary.
+2. reactivate the frozen legacy pipeline;
+3. bypass the freeze to manufacture a Gate E trace;
+4. delete historical pipeline runs, transcripts, reports, or events;
+5. rewrite historical evidence without an explicit migration decision;
+6. treat `COMPLETED` as proof of successful learning assessment;
+7. turn `Not Assessed` into an evaluative judgment;
+8. let the dashboard consume candidate data directly;
+9. allow AI output to write canonical learning state without explicit teacher approval;
+10. couple `APPROVED` automatically to `PROJECTED`;
+11. repair warnings as generic cleanup without evidence tracing;
+12. create another competing canonical migration document.
 
-If future implementation conflicts with this document, resolve the conflict explicitly before code changes are made.
+If implementation conflicts with this checkpoint, resolve the conflict explicitly before code changes.
 
 ---
 
-## 12. Canonical status
+## 14. Canonical status
 
 **Migration boundary:** ESTABLISHED  
 **Legacy pipeline:** FROZEN  
@@ -443,7 +454,10 @@ If future implementation conflicts with this document, resolve the conflict expl
 **Production:** READY  
 **Historical evidence:** PRESERVED  
 **Known evidence warnings:** 10, intentionally unresolved  
-**Gate E — End-to-End Authority:** OPEN / POSITIVE TRACE DISCOVERY NEXT  
-**Replacement automation:** BLOCKED  
+**Gate E:** OPEN / AUTHORITY + TRACEABILITY  
+**Historical positive trace:** SEARCH IN PARALLEL  
+**New review-gated automation:** ALLOWED TO BEGIN  
+**Unreviewed AI publication:** FORBIDDEN  
+**Legacy pipeline reactivation:** FORBIDDEN
 
-This document is the single canonical migration/architecture checkpoint for this state of PRIME Digital Hub. Do not create a competing canonical document for the same boundary.
+This document is the **single canonical migration/architecture checkpoint** for this state of PRIME Digital Hub. Do not create a competing canonical document for the same boundary.
