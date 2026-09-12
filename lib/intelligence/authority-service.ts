@@ -7,6 +7,7 @@ import {
   assertTeacherDecisionCanCanonicalize,
   normalizeCandidateRecord,
   resolveCanonicalPayload,
+  TEACHER_DECISIONS,
   type CandidateRecordInput,
   type CanonicalizationInput,
   type ProjectionAuthorizationInput,
@@ -47,6 +48,10 @@ export async function recordTeacherDecision(input: TeacherDecisionInput) {
   const prisma = getPrismaClient()
   const reviewerId = input.reviewerId.trim()
   if (!reviewerId) throw new Error('reviewerId is required')
+  if (!TEACHER_DECISIONS.includes(input.decision)) throw new Error('A valid teacher decision is required')
+  if (input.decision === 'edited' && (input.reviewedPayload === undefined || input.reviewedPayload === null)) {
+    throw new Error('Edited decisions require an explicit reviewedPayload')
+  }
 
   const candidate = await prisma.intelligenceCandidateRecord.findUnique({
     where: { id: input.candidateRecordId },
@@ -71,6 +76,23 @@ export async function recordTeacherDecision(input: TeacherDecisionInput) {
       reason: input.reason?.trim() || null,
       ...(reviewedPayload === undefined ? {} : { reviewedPayload }),
     },
+  })
+}
+
+export async function listReviewableIntelligenceCandidates() {
+  const prisma = getPrismaClient()
+  return prisma.intelligenceCandidateRecord.findMany({
+    where: { reviewTransition: null },
+    orderBy: { createdAt: 'asc' },
+    include: { reviewTransition: true },
+  })
+}
+
+export async function getIntelligenceCandidate(candidateRecordId: string) {
+  const prisma = getPrismaClient()
+  return prisma.intelligenceCandidateRecord.findUnique({
+    where: { id: candidateRecordId },
+    include: { reviewTransition: true },
   })
 }
 
