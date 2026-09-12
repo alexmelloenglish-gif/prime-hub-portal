@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic'
 
 const SOURCE_FILE_ID = '1V2cBuJvgljvE92lWOdjqltjgpX7u0-zSI5SEeSzFa4c'
 const LESSON_ID = 'unscheduled-2026-09-12-valeria-in-person-demo'
-const SOURCE_PARENT_ID = '1ykQNe2tNBUvGY19L85I__Aou37dmX-zp'
 
 export async function GET() {
   if (process.env.VERCEL_ENV !== 'preview' || process.env.VERCEL_GIT_COMMIT_REF !== 'codex/meet-gemini-capture') {
@@ -26,7 +25,7 @@ export async function GET() {
       lessonOrigin: 'unscheduled',
       speakerDiarizationStatus: 'unreliable',
       teacherAttestedStudent: false,
-      previewSourceRootFolderIdOverride: SOURCE_PARENT_ID,
+      previewExactSourceFileIdAllowlist: SOURCE_FILE_ID,
     })
 
     return NextResponse.json({
@@ -37,10 +36,10 @@ export async function GET() {
       automaticPublicationAllowed: false,
       teacherAttestationApplied: false,
       wifProvider: 'vercel-preview',
-      sourceBoundary: 'exact_parent',
+      sourceBoundary: 'exact_file',
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Witness capture failed'
-    return NextResponse.json({ error: message, wifProvider: 'vercel-preview', sourceBoundary: 'exact_parent' }, { status: 500 })
+    return NextResponse.json({ error: message, wifProvider: 'vercel-preview', sourceBoundary: 'exact_file' }, { status: 500 })
   }
 }
