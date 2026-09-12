@@ -13,7 +13,6 @@ export async function GET() {
   }
 
   process.env.PRIME_WIF_PROVIDER_ID = 'vercel-preview'
-  process.env.GOOGLE_MEET_ROOT_FOLDER_ID = SOURCE_PARENT_ID
 
   try {
     const { captureMeetGeminiSourceToCandidate } = await import('@/lib/intelligence/meet-gemini-capture')
@@ -27,6 +26,7 @@ export async function GET() {
       lessonOrigin: 'unscheduled',
       speakerDiarizationStatus: 'unreliable',
       teacherAttestedStudent: false,
+      previewSourceRootFolderIdOverride: SOURCE_PARENT_ID,
     })
 
     return NextResponse.json({
