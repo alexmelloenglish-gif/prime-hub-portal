@@ -25,6 +25,12 @@ export async function POST(request: Request) {
       : undefined
     const classDate = typeof body.classDate === 'string' ? body.classDate.trim() : undefined
     const sourceKind = body.sourceKind === 'gemini_notes' ? 'gemini_notes' : 'meet_transcript'
+    const deliveryMode = body.deliveryMode === 'in_person' || body.deliveryMode === 'hybrid' ? body.deliveryMode : 'online'
+    const lessonOrigin = body.lessonOrigin === 'unscheduled' ? 'unscheduled' : 'scheduled'
+    const speakerDiarizationStatus = body.speakerDiarizationStatus === 'reliable' || body.speakerDiarizationStatus === 'unreliable'
+      ? body.speakerDiarizationStatus
+      : 'unknown'
+    const teacherAttestedStudent = body.teacherAttestedStudent === true
 
     if (!sourceFileId || !lessonId) {
       return NextResponse.json({ error: 'sourceFileId and lessonId are required' }, { status: 400 })
@@ -36,6 +42,10 @@ export async function POST(request: Request) {
       expectedStudentEmail,
       classDate,
       sourceKind,
+      deliveryMode,
+      lessonOrigin,
+      speakerDiarizationStatus,
+      teacherAttestedStudent,
     })
 
     return NextResponse.json({
