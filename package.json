@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
-  "engines": {"node": "22.x"},
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
@@ -31,6 +33,7 @@
     "lucide-react": "^0.344.0",
     "next": "^15.0.0",
     "next-auth": "^4.24.0",
+    "prisma": "^5.8.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.10.3",
