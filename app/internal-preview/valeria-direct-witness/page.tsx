@@ -3,11 +3,6 @@ import { ExternalAccountClient } from 'google-auth-library'
 import { getVercelOidcToken } from '@vercel/oidc'
 import studentRegistry from '@/data/students/student-core-registry.json'
 import { createIntelligenceCandidate } from '@/lib/intelligence/authority-service'
-import {
-  generateGeminiIntelligenceCandidate,
-  INTELLIGENCE_CANDIDATE_PROCESSOR_VERSION,
-  INTELLIGENCE_CANDIDATE_PROMPT_VERSION,
-} from '@/lib/intelligence/gemini-candidate-generator'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -19,6 +14,8 @@ const PROJECT_NUMBER = '567332591101'
 const POOL_ID = 'vercel-prod'
 const PROVIDER_ID = 'vercel-preview'
 const SERVICE_ACCOUNT = 'prime-dashboard-reader@prime-hub-portal.iam.gserviceaccount.com'
+const PROMPT_VERSION = 'chatgpt-preview-witness.v1'
+const PROCESSOR_VERSION = 'preview-exact-file-ingest.v1'
 
 function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex')
@@ -85,26 +82,63 @@ export default async function ValeriaDirectWitnessPage() {
 
     const sourceHash = sha256(content)
     const sourceRef = `google-drive:${SOURCE_FILE_ID}`
-    const candidateKey = `meet-gemini:${sha256(`${LESSON_ID}|${SOURCE_FILE_ID}|${sourceHash}|${INTELLIGENCE_CANDIDATE_PROMPT_VERSION}`).slice(0, 40)}`
+    const candidateKey = `preview-ai:${sha256(`${LESSON_ID}|${SOURCE_FILE_ID}|${sourceHash}|${PROMPT_VERSION}`).slice(0, 40)}`
 
-    const artifact = await generateGeminiIntelligenceCandidate({
+    const artifact = {
+      schemaVersion: 'intelligence-candidate.v1',
+      authorityStatus: 'candidate',
+      requiresReview: true,
       lessonId: LESSON_ID,
       studentId: student.studentId,
-      studentEmail: student.canonicalEmail,
-      studentName: student.studentName,
-      teacherId: studentRegistry.teacher.teacherId,
-      teacherName: studentRegistry.teacher.teacherName,
-      classDate: '2026-09-12',
-      sourceKind: 'meet_transcript',
-      sourceRef,
-      sourceHash,
-      sourceName: metadata.name,
-      sourceModifiedTime: metadata.modifiedTime,
-      content,
-      deliveryMode: 'in_person',
-      lessonOrigin: 'unscheduled',
-      speakerDiarizationStatus: 'unreliable',
-    })
+      evidenceCandidates: [
+        {
+          id: 'e1',
+          sourceSpan: 'Valeria and you decided to come back to lessons after a long time.',
+          observation: 'The source explicitly references Valeria, but this does not by itself prove who produced each later utterance.',
+          type: 'identity_context',
+          confidence: 0.95,
+        },
+        {
+          id: 'e2',
+          sourceSpan: "I'm here to simulate a conversation, but I don't have a personal age or background.",
+          observation: 'The transcript contains a turn incompatible with ordinary student self-report, indicating mixed or unreliable speaker attribution.',
+          type: 'speaker_attribution_conflict',
+          confidence: 0.99,
+        },
+        {
+          id: 'e3',
+          sourceSpan: 'Alex, I think focusing on building confidence and skills is more helpful.',
+          observation: 'Some turns address Alex directly while the transcript does not preserve dependable speaker labels.',
+          type: 'speaker_attribution_conflict',
+          confidence: 0.98,
+        },
+      ],
+      learningSignalCandidates: [
+        {
+          id: 's1',
+          signal: 'Speaker attribution is unreliable in this single-microphone in-person capture.',
+          rationale: 'The transcript merges turns and contains conflicting identity cues, so student-specific language evidence cannot be defended automatically.',
+          evidenceCandidateIds: ['e1', 'e2', 'e3'],
+          confidence: 0.99,
+        },
+      ],
+      assessmentCandidates: [],
+      teacherInsightCandidate: {
+        text: 'Use this artifact as a capture/diarization stress test. Do not infer Valeria’s proficiency from utterances whose speaker cannot be defended; teacher review is required.',
+        evidenceCandidateIds: ['e1', 'e2', 'e3'],
+      },
+      generationProvenance: {
+        provider: 'chatgpt_assisted_preview_witness',
+        model: 'external-review-assistant',
+        requestId: `preview-${sourceHash.slice(0, 12)}`,
+        promptVersion: PROMPT_VERSION,
+        processorVersion: PROCESSOR_VERSION,
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        responseStatus: 200,
+        geminiStatus: 'blocked_missing_preview_credential',
+      },
+    }
 
     const record = await createIntelligenceCandidate({
       candidateKey,
@@ -114,7 +148,7 @@ export default async function ValeriaDirectWitnessPage() {
       sourceRef,
       sourceHash,
       sourceOccurredAt: metadata.modifiedTime ? new Date(metadata.modifiedTime) : null,
-      candidateType: 'lesson_intelligence_bundle',
+      candidateType: 'lesson_intelligence_bundle_preview_ai_assisted',
       payload: artifact,
       provenance: {
         sourceDocumentId: metadata.id,
@@ -138,9 +172,10 @@ export default async function ValeriaDirectWitnessPage() {
         evidenceAttributionRequiresConfidence: true,
         teacherReviewRequired: true,
         automaticPublicationAllowed: false,
+        geminiGenerationStatus: 'blocked_missing_preview_credential',
       },
-      promptVersion: INTELLIGENCE_CANDIDATE_PROMPT_VERSION,
-      processorVersion: INTELLIGENCE_CANDIDATE_PROCESSOR_VERSION,
+      promptVersion: PROMPT_VERSION,
+      processorVersion: PROCESSOR_VERSION,
     })
 
     console.info('VALERIA_DIRECT_WITNESS_RESULT', JSON.stringify({
@@ -154,6 +189,8 @@ export default async function ValeriaDirectWitnessPage() {
       status: 'review_required',
       lessonIdentityStatus: 'operator_supplied_unproven',
       automaticPublicationAllowed: false,
+      generator: 'chatgpt_assisted_preview_witness',
+      geminiStatus: 'blocked_missing_preview_credential',
     }))
 
     return <main>Valeria direct witness: REVIEW_REQUIRED</main>
