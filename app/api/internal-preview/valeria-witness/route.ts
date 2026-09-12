@@ -4,6 +4,7 @@ import { captureMeetGeminiSourceToCandidate } from '@/lib/intelligence/meet-gemi
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+// Preview witness runner; this touch intentionally redeploys after Preview auth env changes.
 const SOURCE_FILE_ID = '1V2cBuJvgljvE92lWOdjqltjgpX7u0-zSI5SEeSzFa4c'
 const LESSON_ID = 'unscheduled-2026-09-12-valeria-in-person-demo'
 
