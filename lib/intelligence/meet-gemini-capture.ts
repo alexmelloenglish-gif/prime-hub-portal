@@ -37,6 +37,7 @@ export type MeetGeminiCaptureResult = {
   candidateKey: string
   studentEmail: string
   lessonId: string
+  lessonIdentityStatus: 'operator_supplied_unproven'
   sourceRef: string
   sourceHash: string
   status: 'review_required'
@@ -285,6 +286,7 @@ export async function captureMeetGeminiSourceToCandidate(
       candidateKey: existing.candidateKey,
       studentEmail: existing.studentEmail,
       lessonId: existing.lessonId,
+      lessonIdentityStatus: 'operator_supplied_unproven',
       sourceRef: existing.sourceRef,
       sourceHash: existing.sourceHash,
       status: 'review_required',
@@ -330,7 +332,12 @@ export async function captureMeetGeminiSourceToCandidate(
       sourceKind,
       captureMode: 'read_only_google_drive',
       sourceRootFolderId: GOOGLE_MEET_ROOT_FOLDER_ID,
-      identityResolution: input.expectedStudentEmail ? 'registry_match_plus_expected_student' : 'unique_registry_match',
+      studentIdentityResolution: input.expectedStudentEmail ? 'registry_match_plus_expected_student' : 'unique_registry_match',
+      lessonIdentity: {
+        lessonId,
+        source: 'operator_supplied',
+        proven: false,
+      },
       teacherReviewRequired: true,
       automaticPublicationAllowed: false,
     },
@@ -343,6 +350,7 @@ export async function captureMeetGeminiSourceToCandidate(
     candidateKey: record.candidateKey,
     studentEmail: record.studentEmail,
     lessonId: record.lessonId,
+    lessonIdentityStatus: 'operator_supplied_unproven',
     sourceRef: record.sourceRef,
     sourceHash: record.sourceHash,
     status: 'review_required',
