@@ -35,6 +35,7 @@ export type MeetGeminiCaptureInput = {
   speakerDiarizationStatus?: 'reliable' | 'unreliable' | 'unknown'
   teacherAttestedStudent?: boolean
   previewSourceRootFolderIdOverride?: string
+  previewExactSourceFileIdAllowlist?: string
 }
 
 export type MeetGeminiCaptureResult = {
@@ -269,15 +270,16 @@ export async function captureMeetGeminiSourceToCandidate(
   const sourceFileId = requireValue(input.sourceFileId, 'sourceFileId')
   const lessonId = requireValue(input.lessonId, 'lessonId')
   const sourceKind = input.sourceKind || 'meet_transcript'
-  const previewRootOverride = process.env.VERCEL_ENV === 'preview'
-    ? input.previewSourceRootFolderIdOverride?.trim()
-    : undefined
+  const isPreview = process.env.VERCEL_ENV === 'preview'
+  const previewRootOverride = isPreview ? input.previewSourceRootFolderIdOverride?.trim() : undefined
+  const previewExactSource = isPreview ? input.previewExactSourceFileIdAllowlist?.trim() : undefined
   const sourceRootFolderId = previewRootOverride || GOOGLE_MEET_ROOT_FOLDER_ID
 
   const auth = getReadOnlyDriveAuth()
   const file = await getDriveFile(auth, sourceFileId)
   if (file.mimeType !== GOOGLE_DOC_MIME) throw new Error('NEW INTELLIGENCE capture accepts Google Docs sources only')
-  await assertSourceWithinMeetRoot(auth, file, sourceRootFolderId)
+  const exactPreviewSourceAllowed = Boolean(previewExactSource && previewExactSource === sourceFileId)
+  if (!exactPreviewSourceAllowed) await assertSourceWithinMeetRoot(auth, file, sourceRootFolderId)
 
   const content = (await readGoogleDoc(auth, sourceFileId)).trim()
   if (content.length < minimumSourceLength(sourceKind)) {
@@ -346,8 +348,12 @@ export async function captureMeetGeminiSourceToCandidate(
       sourceHash,
       sourceKind,
       captureMode: 'read_only_google_drive',
-      sourceRootFolderId,
-      sourceBoundaryMode: previewRootOverride ? 'preview_exact_root_override' : 'configured_root',
+      sourceRootFolderId: exactPreviewSourceAllowed ? null : sourceRootFolderId,
+      sourceBoundaryMode: exactPreviewSourceAllowed
+        ? 'preview_exact_file_allowlist'
+        : previewRootOverride
+          ? 'preview_exact_root_override'
+          : 'configured_root',
       studentIdentityResolution: input.expectedStudentEmail ? 'registry_match_plus_expected_student' : 'unique_registry_match',
       lessonIdentity: input.lessonOrigin === 'unscheduled' && input.teacherAttestedStudent === true
         ? {
