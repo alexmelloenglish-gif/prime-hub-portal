@@ -4,6 +4,31 @@ import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
 
+const isProductionDeployment = process.env.VERCEL_ENV === 'production'
+const isPreviewDeployment = process.env.VERCEL_ENV === 'preview'
+
+const inferredNextAuthUrl =
+  process.env.NEXTAUTH_URL?.trim() ||
+  (process.env.VERCEL_URL?.trim() ? `https://${process.env.VERCEL_URL.trim()}` : undefined)
+
+// NextAuth reads NEXTAUTH_URL from process.env. In Preview only, allow Vercel's
+// deployment URL to provide it automatically instead of requiring a stored env var.
+if (isPreviewDeployment && !process.env.NEXTAUTH_URL && inferredNextAuthUrl) {
+  process.env.NEXTAUTH_URL = inferredNextAuthUrl
+}
+
+// Preview deployments remain protected by Vercel Deployment Protection. This
+// fallback is deliberately predictable and MUST NOT be treated as a real secret.
+const previewOnlyFallbackSecret = isPreviewDeployment
+  ? `preview-only-${process.env.VERCEL_GIT_COMMIT_SHA ?? 'local-test'}`
+  : undefined
+
+const nextAuthSecret = process.env.NEXTAUTH_SECRET?.trim() || previewOnlyFallbackSecret
+
+if (isProductionDeployment && !nextAuthSecret) {
+  throw new Error('NEXTAUTH_SECRET is required in production')
+}
+
 export const isGoogleAuthConfigured = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
 )
@@ -119,5 +144,5 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/dashboard`
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: nextAuthSecret,
 }
