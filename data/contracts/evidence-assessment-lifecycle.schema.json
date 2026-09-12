@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.primedigitalhub.com.br/contracts/evidence-assessment-lifecycle.schema.json",
+  "title": "PRIME Evidence / Assessment Lifecycle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["processing", "evidence", "assessment", "report"],
+  "properties": {
+    "processing": {
+      "type": "string",
+      "enum": ["NOT_STARTED", "RUNNING", "COMPLETED", "FAILED"]
+    },
+    "evidence": {
+      "type": "string",
+      "enum": ["NONE", "SOURCE_ONLY", "CANDIDATES_FOUND", "VALIDATED"]
+    },
+    "assessment": {
+      "type": "string",
+      "enum": ["NOT_ASSESSED", "REVIEW_REQUIRED", "TEACHER_VALIDATED"]
+    },
+    "report": {
+      "type": "string",
+      "enum": ["NONE", "PLACEHOLDER", "DRAFT", "VALIDATED", "PUBLISHED"]
+    }
+  },
+  "examples": [
+    {
+      "processing": "COMPLETED",
+      "evidence": "NONE",
+      "assessment": "NOT_ASSESSED",
+      "report": "PLACEHOLDER"
+    }
+  ],
+  "description": "The four axes are independent. Presence or completion on one axis must never be used to infer a state on another axis. Unknown values are invalid and must not be silently converted to NOT_ASSESSED."
+}
