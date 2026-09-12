@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import { captureMeetGeminiSourceToCandidate } from '@/lib/intelligence/meet-gemini-capture'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Preview witness runner; this touch intentionally redeploys after Preview auth env changes.
 const SOURCE_FILE_ID = '1V2cBuJvgljvE92lWOdjqltjgpX7u0-zSI5SEeSzFa4c'
 const LESSON_ID = 'unscheduled-2026-09-12-valeria-in-person-demo'
 
@@ -13,7 +11,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Preview-only witness route' }, { status: 404 })
   }
 
+  process.env.PRIME_WIF_PROVIDER_ID = 'vercel-preview'
+
   try {
+    const { captureMeetGeminiSourceToCandidate } = await import('@/lib/intelligence/meet-gemini-capture')
     const result = await captureMeetGeminiSourceToCandidate({
       sourceFileId: SOURCE_FILE_ID,
       lessonId: LESSON_ID,
@@ -33,9 +34,10 @@ export async function GET() {
       requiresReview: true,
       automaticPublicationAllowed: false,
       teacherAttestationApplied: false,
+      wifProvider: 'vercel-preview',
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Witness capture failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: message, wifProvider: 'vercel-preview' }, { status: 500 })
   }
 }
