@@ -202,36 +202,107 @@ scheduled
 
 Legitimate outcomes include: scheduled but never happened; happened without transcript; transcript never processed; processing failed; processing completed without report; report with insufficient evidence; or evidence that should enter the canonical learning record.
 
-### Two Rafael warnings
+### Rafael — 27/08/2026
 
-Rafael has an August 27 attended lesson without a corresponding report, producing the observed discrepancy of **11 attended lessons vs. 10 published reports**.
+The earlier operator-reported hypothesis of a Gemini transcription failure is **superseded by stronger evidence**.
 
-Do not manufacture report #11 merely to equalize counts. The reconciliation must establish whether the case is a missing report, duplicate/mismatched lesson identity, deliberately unpublished report, or attendance/report grain mismatch.
+The evidence chain now established is:
 
-### Rafael 27/08 operator report — pending technical confirmation
+```text
+Google Calendar event
+      ↓
+Google Meet / Gemini notes generated
+      ↓
+Apps Script processPipeline
+      ↓
+30 execution failures
+      ↓
+No downstream canonical report
+```
 
-Additional operational information now indicates that the **Rafael lesson on 27/08 was actually attended** and that the case involved a **transcription failure**: the Gemini processing path reportedly did not receive or did not successfully complete the lesson transcript. The reported consequence is consistent with the observed absence of downstream evidence, assessment, and a lesson-specific published report.
+#### A. Attendance / lesson identity
 
-This information is relevant to Gate E but is **not yet an independent technical proof** of the causal chain.
+Google Calendar confirms:
 
-Current classification:
+- **Event:** `🇬🇧 RAFAEL COPOLILLO | Prime Digital Hub`
+- **Date:** 27/08/2026
+- **Time:** 09:00–10:00 BRT
+- **Participants:** Rafael and Alexandre
+- **Meet:** `https://meet.google.com/iij-zvgn-yct`
+- **Event ID:** `ddotvrsvhvkqttevnqbdo48nmq_20260827T120000Z`
 
-**PARTIALLY EXPLAINED / NOT PROVEN IN REPOSITORY**  
-**Source:** operator-reported failure  
-**Status:** `OPERATOR-REPORTED / PENDING LOG CONFIRMATION`  
-**Overall reconciliation:** `UNRESOLVED`
+This establishes the scheduled lesson identity and the attendance context available from the calendar record.
 
-The technical confirmation still required is a persisted record that links the failure to `rafael-2026-08-27`, such as:
+#### B. Source capture / Gemini evidence
 
-- processing-attempt ID;
-- Gemini request/model invocation identifier, if persisted;
-- timestamp of the attempt;
-- persisted error code/message;
-- pipeline event corresponding to the failure;
-- transcript/source-file reference;
-- or equivalent provenance record that independently ties the failed transcription to the specific lesson.
+An official Gemini email exists:
 
-Until such evidence is recovered, do **not** upgrade the case to `PROVEN`, do not invent report #11, and do not alter attendance merely to reconcile the counts.
+- **Message ID:** `1a0436610ba0d0dd`
+- **Subject:** `Anotações: “🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub”`
+- **Generated:** 27/08/2026 at 10:24 BRT
+- **Gemini document:** `1_yQ0gyOncDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
+
+The generated notes include:
+
+> “Technical configuration session successfully established interface settings and tool functionality for the team.”
+
+Therefore the earlier hypothesis that Gemini failed to receive or generate the lesson notes is contradicted by stronger evidence. A source/notes artifact existed before the downstream processing failure.
+
+#### C. Processing failure
+
+An official Google Apps Script failure email exists:
+
+- **Message ID:** `1a048c4e73870c8f`
+- **Script:** `PRIME Digital Hub — Google Meet Transcript Automation`
+- **Function:** `processPipeline`
+- **Failures:** 30 attempts
+- **Period:** 27/08/2026, 11:08:15–11:39:15 BRT
+- **Error:**
+
+```text
+Execution failed.
+The Rhino runtime is deprecated and no longer supported.
+```
+
+This establishes a processing failure **after source capture**, not a failure of Gemini note generation.
+
+#### D. Current technical conclusion
+
+The best-supported classification is:
+
+**EXPLAINED / PROCESSING FAILURE AFTER SOURCE CAPTURE**
+
+The evidence supports:
+
+- lesson identity established;
+- Meet/Gemini source artifact existed;
+- downstream `processPipeline` execution was attempted;
+- the process failed repeatedly because the Rhino runtime was deprecated/unsupported;
+- no downstream canonical report was published for this lesson;
+- the 11-attended vs. 10-published-report discrepancy is therefore explained at the processing layer, subject to the exact attendance/report grain remaining consistent with the repository model.
+
+Do **not** manufacture report #11.
+
+Do **not** alter attendance merely to reconcile counts.
+
+The former classification `OPERATOR-REPORTED / PENDING LOG CONFIRMATION` is superseded and should no longer be used for this case.
+
+#### E. Gate E significance
+
+Rafael 27/08 is now a strong **negative / insufficient-evidence witness** for Gate E:
+
+```text
+Lesson identity        = PROVEN
+Source capture         = PROVEN
+Processing attempt     = PROVEN
+Processing outcome     = FAILED
+Evidence validation    = NOT PROVEN
+Assessment             = NOT PROVEN
+Teacher validation     = NOT PROVEN
+Canonical report       = NOT PRODUCED
+```
+
+The case demonstrates why source capture, processing completion, evidence validation, and learner-facing publication must remain separate authority states.
 
 ---
 
@@ -265,10 +336,10 @@ Gate E must include at least:
 
 1. a **positive trace** where the chain can be demonstrated end-to-end;
 2. a **negative/insufficient-evidence trace** showing where and why the chain stops without inventing state;
-3. explicit handling of the Rafael 27/08 false-success witness and the scheduled-warning cases;
+3. explicit handling of the Rafael 27/08 case and the scheduled-warning cases;
 4. the observed data contract required by future automation.
 
-The historical Rafael 27/08 case is especially useful as a negative witness because a technically completed historical run did not establish validated evidence-based learning intelligence.
+Rafael 27/08 now serves as a concrete negative witness: source capture existed, but downstream processing failed before validated evidence/assessment/report publication.
 
 **Do not infer the replacement automation contract from the old pipeline implementation. Derive it from Gate E evidence.**
 
@@ -299,7 +370,7 @@ The eventual replacement must preserve at least:
 
 Future contributors/agents must **not**:
 
-1. reopen Gates A, B, or D without an explicit new decision based on new evidence;
+1. reopen Gates A, B, C, D, or H without an explicit new decision based on new evidence;
 2. reactivate the frozen legacy pipeline to “make the numbers work”;
 3. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
 4. rewrite historical evidence to fit the new schema without an explicit migration decision;
