@@ -88,9 +88,11 @@ export type TeacherCommandCenter = {
   recentLessons: TeacherLessonSummary[]
 }
 
-export async function listTeacherLessons(limit = 50): Promise<TeacherLessonSummary[]> {
+export async function listTeacherLessons(limit = 50, studentEmail?: string): Promise<TeacherLessonSummary[]> {
   const prisma = getPrismaClient()
+  const normalizedStudentEmail = studentEmail?.trim() || undefined
   const runs = await prisma.pipelineRun.findMany({
+    where: normalizedStudentEmail ? { studentEmail: normalizedStudentEmail } : undefined,
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 100),
     include: {

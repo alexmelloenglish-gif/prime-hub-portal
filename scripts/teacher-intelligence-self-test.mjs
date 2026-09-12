@@ -9,6 +9,7 @@ const files = {
   signals: 'app/dashboard/admin/intelligence/signals/page.tsx',
   insights: 'app/dashboard/admin/intelligence/insights/page.tsx',
   learningState: 'app/dashboard/admin/intelligence/learning-state/page.tsx',
+  lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
 }
@@ -37,6 +38,10 @@ assert.match(source.reviewPage, /BLOCK/, 'Evidence review must expose BLOCK')
 assert.match(source.signals, /LearningSignalProposal ≠ canonical Learning Signal/, 'Signal proposal and canonical Signal must remain distinct')
 assert.match(source.insights, /TeacherInsightProposal ≠ published Teacher Insight/, 'Insight proposal and published Insight must remain distinct')
 assert.match(source.learningState, /No verified state transition/, 'Learning State UI must not manufacture a state transition')
+assert.match(source.lessonsPage, /studentEmail/, 'Lesson Intelligence must consume the studentEmail route parameter')
+assert.match(source.lessonsPage, /listTeacherLessons\(100, requestedStudent \|\| undefined\)/, 'Lesson Intelligence must pass the optional student filter to the query')
+assert.match(source.intelligence, /studentEmail\?: string/, 'Teacher lesson listing must expose an optional studentEmail filter')
+assert.match(source.intelligence, /where: normalizedStudentEmail \? \{ studentEmail: normalizedStudentEmail \} : undefined/, 'Lesson listing must filter by studentEmail only when provided')
 assert.match(source.lessonTrace, /Zero persisted Evidence Candidates/, 'Lesson trace must expose the zero-evidence condition')
 assert.match(source.intelligence, /GEMINI PROVENANCE/, 'Runtime trace must expose Gemini provenance')
 assert.doesNotMatch(allTeacherSource, /OPENAI|openai|chat\/completions/, 'Teacher Intelligence must not introduce a second AI provider path')

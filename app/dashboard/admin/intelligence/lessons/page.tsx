@@ -25,10 +25,7 @@ export default async function TeacherLessonsPage({
 }) {
   const { studentEmail } = await searchParams
   const requestedStudent = studentEmail?.trim().toLowerCase() || null
-  const allRuns = await listTeacherLessons(100)
-  const runs = requestedStudent
-    ? allRuns.filter((run) => run.studentEmail.toLowerCase() === requestedStudent)
-    : allRuns
+  const runs = await listTeacherLessons(100, requestedStudent || undefined)
   const lessons = groupByLesson(runs)
 
   return (
