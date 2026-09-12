@@ -3,31 +3,17 @@ import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
+import { getNextAuthSecret, getNextAuthUrl } from '@/lib/auth-runtime'
 
-const isProductionDeployment = process.env.VERCEL_ENV === 'production'
-const isPreviewDeployment = process.env.VERCEL_ENV === 'preview'
+const inferredNextAuthUrl = getNextAuthUrl()
 
-const inferredNextAuthUrl =
-  process.env.NEXTAUTH_URL?.trim() ||
-  (process.env.VERCEL_URL?.trim() ? `https://${process.env.VERCEL_URL.trim()}` : undefined)
-
-// NextAuth reads NEXTAUTH_URL from process.env. In Preview only, allow Vercel's
-// deployment URL to provide it automatically instead of requiring a stored env var.
-if (isPreviewDeployment && !process.env.NEXTAUTH_URL && inferredNextAuthUrl) {
+// NextAuth reads NEXTAUTH_URL from process.env. In Preview, VERCEL_URL can
+// supply it automatically instead of requiring a stored environment variable.
+if (!process.env.NEXTAUTH_URL && inferredNextAuthUrl) {
   process.env.NEXTAUTH_URL = inferredNextAuthUrl
 }
 
-// Preview deployments remain protected by Vercel Deployment Protection. This
-// fallback is deliberately predictable and MUST NOT be treated as a real secret.
-const previewOnlyFallbackSecret = isPreviewDeployment
-  ? `preview-only-${process.env.VERCEL_GIT_COMMIT_SHA ?? 'local-test'}`
-  : undefined
-
-const nextAuthSecret = process.env.NEXTAUTH_SECRET?.trim() || previewOnlyFallbackSecret
-
-if (isProductionDeployment && !nextAuthSecret) {
-  throw new Error('NEXTAUTH_SECRET is required in production')
-}
+const nextAuthSecret = getNextAuthSecret()
 
 export const isGoogleAuthConfigured = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -94,9 +80,6 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as { role?: string }).role ?? 'student'
       }
 
-      // Refresh authorization from the canonical database on every JWT refresh.
-      // This makes role changes effective for an existing session instead of
-      // leaving a stale role embedded in the JWT until the next sign-in.
       if (isDatabaseConfigured && token.email) {
         const dbUser = await getPrismaClient().user.findUnique({
           where: { email: token.email },
