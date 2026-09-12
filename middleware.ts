@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { getNextAuthSecret } from '@/lib/auth-runtime'
 
 const allowedDashboardPaths = new Set([
   '/dashboard',
@@ -32,12 +33,11 @@ export async function middleware(request: NextRequest) {
   const normalizedPathname = normalizeDashboardPath(request.nextUrl.pathname)
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: getNextAuthSecret(),
   })
 
   const isLoginPage = request.nextUrl.pathname.startsWith('/login')
 
-  // se não tem token e não está no login → bloqueia
   if (!token && !isLoginPage) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname + request.nextUrl.search)
