@@ -204,7 +204,7 @@ Legitimate outcomes include: scheduled but never happened; happened without tran
 
 ### Rafael — 27/08/2026
 
-The earlier operator-reported hypothesis of a Gemini transcription failure is **superseded by stronger evidence**.
+The earlier operator-reported hypothesis of a Gemini transcription failure is superseded by stronger evidence.
 
 The evidence chain now established is:
 
@@ -240,7 +240,7 @@ An official Gemini email exists:
 - **Message ID:** `1a0436610ba0d0dd`
 - **Subject:** `Anotações: “🇬🇧 RAFAEL COPILOTTO | Prime Digital Hub”`
 - **Generated:** 27/08/2026 at 10:24 BRT
-- **Gemini document:** `1_yQ0gyOncDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
+- **Gemini document:** `1_yQ0gyOnDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
 
 The generated notes include:
 
@@ -264,7 +264,7 @@ Execution failed.
 The Rhino runtime is deprecated and no longer supported.
 ```
 
-This establishes a processing failure **after source capture**, not a failure of Gemini note generation.
+This establishes a processing failure after source capture, not a failure of Gemini note generation.
 
 #### D. Current technical conclusion
 
@@ -289,7 +289,7 @@ The former classification `OPERATOR-REPORTED / PENDING LOG CONFIRMATION` is supe
 
 #### E. Gate E significance
 
-Rafael 27/08 is now a strong **negative / insufficient-evidence witness** for Gate E:
+Rafael 27/08 is now a strong negative / insufficient-evidence witness for Gate E:
 
 ```text
 Lesson identity        = PROVEN
@@ -319,17 +319,12 @@ Known historical source material:
 
 The attempted reconstruction encountered two real architectural protections:
 
-1. The historical pipeline retry route is frozen by `PIPELINE_AUTOMATION_FROZEN` and returned:
-
-```text
-503 Pipeline automation is frozen
-```
-
+1. The historical pipeline retry route is frozen by `PIPELINE_AUTOMATION_FROZEN` and returned `503 Pipeline automation is frozen`.
 2. The execution environment had no authenticated PostgreSQL connection (`DATABASE_URL` / `DATABASE_URL_UNPOOLED`) and no active WebDev environment capable of performing production SQL.
 
 Therefore the reconstruction could not legitimately create a new `PipelineRun`, `PipelineEvent`, `EvidenceCandidate`, `ReviewTask`, `ClassReportProjection`, `PortfolioProjection`, or other historical record.
 
-**No database, GitHub historical record, or learner state was modified.**
+**No database, GitHub historical record, or learner state was modified by the reconstruction attempt.**
 
 #### Current trace classification
 
@@ -337,7 +332,7 @@ Therefore the reconstruction could not legitimately create a new `PipelineRun`, 
 Lesson identity        = PROVEN
 Source / transcript    = PROVEN
 Historical artifact    = PROVEN
-Reconstruction          = BLOCKED BY AUTHORITY BOUNDARY
+Reconstruction         = BLOCKED BY AUTHORITY BOUNDARY
 Processing              = NOT RECONSTRUCTED
 Evidence validation    = NOT PROVEN BY THIS ATTEMPT
 Assessment              = NOT PROVEN BY THIS ATTEMPT
@@ -347,56 +342,53 @@ Student projection     = NOT CREATED BY THIS ATTEMPT
 Overall                = POSITIVE / PARTIAL E2E
 ```
 
-This is a **valid Gate E observation**, not a failed implementation. The protections prevented an artificial reconstruction from creating records without provenance.
-
-The correct response is **not** to temporarily bypass the freeze or manufacture database state merely to produce a positive trace. A genuine positive end-to-end trace must use an already-authorized historical chain or an explicitly approved reconstruction mechanism that belongs to the replacement architecture.
+This is a valid Gate E observation, not a failed implementation. The protections prevented an artificial reconstruction from creating records without provenance.
 
 ---
 
-## 9. Gate E — next required workstream: End-to-End Authority
+## 9. Gate E — current state and next action
 
-Gate E is the only required open gate before replacement automation can be designed/implemented.
+Gate E remains **OPEN**. A genuine positive trace has **not yet been established**.
 
-The goal is to demonstrate, with real historical evidence, the complete authority chain:
+The work completed so far provides two important witnesses:
+
+- **Rafael 27/08:** strong negative / insufficient-evidence witness. Source capture and processing attempt are proven; processing failed before validated evidence, assessment, teacher validation, and canonical report publication.
+- **Ítalo 18/08:** positive/partial historical source witness. Source and historical artifact are proven, but reconstruction was correctly blocked by the frozen execution boundary and lack of authenticated database access. No state was fabricated.
+
+### Next action: historical positive-trace discovery
+
+**Do not attempt another retrospective reconstruction yet.**
+
+Search the existing historical repository/production evidence for a lesson where the complete or near-complete authority chain already exists **without requiring a new write**:
 
 ```text
 Lesson identity
-      ↓
-Attendance authority
-      ↓
-Source / transcript
-      ↓
-Processing
-      ↓
-Evidence availability
-      ↓
-Assessment
-      ↓
-Teacher validation
-      ↓
-Canonical learning record
-      ↓
-Authorized student projection
+→ Attendance authority
+→ Source / transcript
+→ Historical processing attempt
+→ Evidence / EvidenceCandidate
+→ Assessment / ReviewTask
+→ Teacher validation
+→ Canonical learning record
+→ Authorized student projection
 ```
 
-Gate E must include at least:
+Candidate cases should be ranked by how many stages are independently persisted and traceable. Start with cases already known to contain both pipeline/review artifacts and an authorized learner projection.
 
-1. a **positive trace** where the chain can be demonstrated end-to-end;
-2. a **negative/insufficient-evidence trace** showing where and why the chain stops without inventing state;
-3. explicit handling of the Rafael 27/08 case and the scheduled-warning cases;
-4. the observed data contract required by future automation.
+For each candidate, produce a read-only trace first. Do not mutate the database to make a candidate qualify.
 
-Rafael 27/08 now serves as a concrete negative witness: source capture existed, but downstream processing failed before validated evidence/assessment/report publication.
+### Decision rule
 
-Ítalo 18/08 now serves as a positive/partial trace: real source material is proven, but the attempted reconstruction was correctly stopped by the frozen execution boundary and lack of an authenticated database connection. This confirms that Gate E must not be closed merely by successfully writing historical records; the authority to write those records must itself be explicit and auditable.
+- If an existing historical lesson supplies the full authority chain, use it as the Gate E positive trace.
+- If no historical lesson supplies the chain, **do not reopen or bypass the legacy freeze**. Instead document the missing authority boundary and define the minimum formally authorized reconstruction mechanism required by the replacement architecture.
 
-**Do not infer the replacement automation contract from the old pipeline implementation. Derive it from Gate E evidence.**
+The purpose of this phase is to discover the real contract, not to make the Gate E dashboard or counts look complete.
 
 ---
 
 ## 10. Replacement automation boundary
 
-Replacement automation is deliberately **BLOCKED** until Gate E is closed.
+Replacement automation remains deliberately **BLOCKED** until Gate E is closed.
 
 Do not select or implement a replacement provider, model, scheduler, trigger, or processing mechanism merely because the old system is frozen.
 
@@ -421,16 +413,17 @@ The eventual replacement must preserve at least:
 Future contributors/agents must **not**:
 
 1. reopen Gates A, B, C, D, or H without an explicit new decision based on new evidence;
-2. reactivate the frozen legacy pipeline to “make the numbers work”;
+2. reactivate the frozen legacy pipeline to make the numbers work;
 3. bypass the freeze to manufacture a positive Gate E trace;
-4. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
-5. rewrite historical evidence to fit the new schema without an explicit migration decision;
-6. treat `COMPLETED` as proof of successful learning assessment;
-7. turn `Not Assessed` into an evaluative judgment;
-8. create a new dashboard source of truth outside the canonical repository/reference layer;
-9. repair the 10 warnings as generic code cleanup without tracing their underlying evidence;
-10. implement replacement automation before Gate E establishes the real authority contract;
-11. add a second competing canonical document for this same migration boundary.
+4. perform additional retrospective database writes until an explicit reconstruction authority exists;
+5. delete historical pipeline runs, transcripts, reports, or events to remove warnings;
+6. rewrite historical evidence to fit the new schema without an explicit migration decision;
+7. treat `COMPLETED` as proof of successful learning assessment;
+8. turn `Not Assessed` into an evaluative judgment;
+9. create a new dashboard source of truth outside the canonical repository/reference layer;
+10. repair the 10 warnings as generic code cleanup without tracing their underlying evidence;
+11. implement replacement automation before Gate E establishes the real authority contract;
+12. add a second competing canonical document for this same migration boundary.
 
 If future implementation conflicts with this document, resolve the conflict explicitly before code changes are made.
 
@@ -450,9 +443,7 @@ If future implementation conflicts with this document, resolve the conflict expl
 **Production:** READY  
 **Historical evidence:** PRESERVED  
 **Known evidence warnings:** 10, intentionally unresolved  
-**Gate E — End-to-End Authority:** NEXT / OPEN  
-**Gate E negative witness:** Rafael 27/08 — PROVEN processing failure after source capture  
-**Gate E positive/partial witness:** Ítalo 18/08 — source proven; reconstruction correctly blocked  
+**Gate E — End-to-End Authority:** OPEN / POSITIVE TRACE DISCOVERY NEXT  
 **Replacement automation:** BLOCKED  
 
-This document is the **single canonical migration/architecture checkpoint** for this state of PRIME Digital Hub. Do not create a competing canonical document for the same boundary.
+This document is the single canonical migration/architecture checkpoint for this state of PRIME Digital Hub. Do not create a competing canonical document for the same boundary.
