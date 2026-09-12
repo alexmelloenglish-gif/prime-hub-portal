@@ -208,6 +208,31 @@ Rafael has an August 27 attended lesson without a corresponding report, producin
 
 Do not manufacture report #11 merely to equalize counts. The reconciliation must establish whether the case is a missing report, duplicate/mismatched lesson identity, deliberately unpublished report, or attendance/report grain mismatch.
 
+### Rafael 27/08 operator report — pending technical confirmation
+
+Additional operational information now indicates that the **Rafael lesson on 27/08 was actually attended** and that the case involved a **transcription failure**: the Gemini processing path reportedly did not receive or did not successfully complete the lesson transcript. The reported consequence is consistent with the observed absence of downstream evidence, assessment, and a lesson-specific published report.
+
+This information is relevant to Gate E but is **not yet an independent technical proof** of the causal chain.
+
+Current classification:
+
+**PARTIALLY EXPLAINED / NOT PROVEN IN REPOSITORY**  
+**Source:** operator-reported failure  
+**Status:** `OPERATOR-REPORTED / PENDING LOG CONFIRMATION`  
+**Overall reconciliation:** `UNRESOLVED`
+
+The technical confirmation still required is a persisted record that links the failure to `rafael-2026-08-27`, such as:
+
+- processing-attempt ID;
+- Gemini request/model invocation identifier, if persisted;
+- timestamp of the attempt;
+- persisted error code/message;
+- pipeline event corresponding to the failure;
+- transcript/source-file reference;
+- or equivalent provenance record that independently ties the failed transcription to the specific lesson.
+
+Until such evidence is recovered, do **not** upgrade the case to `PROVEN`, do not invent report #11, and do not alter attendance merely to reconcile the counts.
+
 ---
 
 ## 9. Gate E — next required workstream: End-to-End Authority
