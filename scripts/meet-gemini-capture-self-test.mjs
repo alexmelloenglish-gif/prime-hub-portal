@@ -16,6 +16,11 @@ const route = read('app/api/admin/intelligence/capture/route.ts')
 const authority = read('lib/intelligence/authority-service.ts')
 const legacyFreeze = read('lib/pipeline-freeze.ts')
 
+if (process.env.VERCEL_ENV === 'preview') {
+  assert(Boolean(process.env.NEXTAUTH_SECRET?.trim()), 'Preview has NEXTAUTH_SECRET configured')
+  assert(Boolean(process.env.NEXTAUTH_URL?.trim()), 'Preview has NEXTAUTH_URL configured')
+}
+
 assert(capture.includes('https://www.googleapis.com/auth/drive.readonly'), 'capture uses Drive read-only scope')
 assert(capture.includes('https://www.googleapis.com/auth/documents.readonly'), 'capture uses Docs read-only scope')
 assert(!capture.includes('https://www.googleapis.com/auth/drive.file'), 'capture has no Drive write scope')
