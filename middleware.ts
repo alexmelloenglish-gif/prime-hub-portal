@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { nextAuthSecret } from '@/lib/nextauth-runtime'
 
 const allowedDashboardPaths = new Set([
   '/dashboard',
@@ -32,7 +33,7 @@ export async function middleware(request: NextRequest) {
   const normalizedPathname = normalizeDashboardPath(request.nextUrl.pathname)
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: nextAuthSecret,
   })
 
   const isLoginPage = request.nextUrl.pathname.startsWith('/login')

@@ -3,6 +3,7 @@ import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
+import { nextAuthSecret } from '@/lib/nextauth-runtime'
 
 export const isGoogleAuthConfigured = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -119,5 +120,5 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/dashboard`
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: nextAuthSecret,
 }
