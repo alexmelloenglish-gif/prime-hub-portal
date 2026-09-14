@@ -6,7 +6,9 @@ Publish a clearer, lighter and more credible Prime Digital Hub landing page cent
 
 **Public thesis:** Cada aula ajuda a orientar a próxima.
 
-**Human mechanism:** Você pratica → Seu professor observa → O próximo foco fica mais claro.
+**Human mechanism:** Você pratica → Seu professor observa e interpreta → O próximo foco fica mais claro.
+
+The continuity section is locked in [`PHASE_1_CONTINUITY_COPY_LOCK.md`](./PHASE_1_CONTINUITY_COPY_LOCK.md).
 
 The Phase 1 Design & Evidence Report remains the rationale. This checklist is the operational source of truth for implementation.
 
@@ -38,8 +40,8 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 ### B. Copy and section lock
 
 - [ ] Lock the hero as one offer, one short explanation and one primary action: **Agendar aula experimental grátis**.
-- [ ] Lock the continuity thesis: **Cada aula ajuda a orientar a próxima**. If retained, “A próxima aula não começa do zero” is supporting language only, never the central argument.
-- [ ] Use one student-facing mechanism only: **Você pratica → Seu professor observa → O próximo foco fica mais claro**.
+- [ ] Implement the continuity thesis and Section 2 exactly from [`PHASE_1_CONTINUITY_COPY_LOCK.md`](./PHASE_1_CONTINUITY_COPY_LOCK.md).
+- [ ] Use one student-facing mechanism only: **Você pratica → Seu professor observa e interpreta → O próximo foco fica mais claro**.
 - [ ] Keep fragmented signals, AI, pipelines, architecture and Learning Intelligence Engine language out of the student-facing page.
 - [ ] Label the demonstration **illustrative** until its source, wording and authorization are verified as a real case.
 - [ ] Keep Calendar as the primary CTA, WhatsApp as support and Portal as a utility for current students.
@@ -80,6 +82,7 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 - PRIME remembers everything forever.
 - Traditional classes start from zero.
 - “A próxima aula não começa do zero” as the standalone thesis or sole explanation of PRIME continuity.
+- Absolute capture claims such as “Nada importante do que acontece na sua aula se perde.”
 - Unsupported claims of faster results, superior retention or guaranteed progress.
 - Any illustrative example described as a real student case without verification.
 
