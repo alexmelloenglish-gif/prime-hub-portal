@@ -120,10 +120,16 @@ This naming/model remains open to brand refinement, but the separation of respon
 
 **Decision:** Phase 1 of the landing-page refurbishment is conceptually ready. The public page will use the seven-section architecture defined in [`PHASE_1_EXECUTION_CHECKLIST.md`](../reconnection/PHASE_1_EXECUTION_CHECKLIST.md).
 
-**Student-facing model:** `Você pratica → Seu professor observa → Você sabe o próximo passo.`
+**Student-facing thesis:** `Cada aula ajuda a orientar a próxima.`
+
+**Student-facing mechanism:** `Você pratica → Seu professor observa → O próximo foco fica mais claro.`
+
+**Conceptual distinction:** The existence of lesson records is not the differentiator. PRIME communicates how specific signals from what the learner practiced, managed to do and still needed help with remain useful for the teacher's next pedagogical decision.
 
 **Claim boundary:** The landing page demonstrates continuity, teacher attention and the learner's next step. Fragmented signals, AI, pipelines and the PRIME Learning Intelligence Engine remain part of the professional/product narrative rather than the student acquisition page.
 
 **Conversion hierarchy:** Calendar is the primary action, WhatsApp is support and Portal is a utility for current students.
 
 **Evidence rule:** An illustrative example cannot be presented as a real learner case without verified provenance and authorization.
+
+**Deprecated as central thesis:** `A próxima aula não começa do zero.` It may be retained only as supporting language after the continuity mechanism is already clear.
