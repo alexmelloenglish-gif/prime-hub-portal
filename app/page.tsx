@@ -1,4 +1,3 @@
-import { getServerSession } from 'next-auth'
 import { Header } from '@/components/layout/header'
 import { HeroSection } from '@/components/sections/hero'
 import { LearningLoopDemo } from '@/components/sections/learning-loop-demo'
@@ -6,11 +5,11 @@ import { FeaturesGrid } from '@/components/sections/features-grid'
 import { FAQSection } from '@/components/sections/faq'
 import { CTASection } from '@/components/sections/cta'
 import { Footer } from '@/components/layout/footer'
-import { authOptions } from '@/lib/auth'
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
-  const portalHref = session ? '/dashboard' : '/login'
+  // Keep the public landing independent from NextAuth configuration.
+  // The dashboard owns authentication and redirects unauthenticated visitors.
+  const portalHref = '/dashboard'
 
   return (
     <main className="min-h-screen bg-white text-[#0b2c5c]">
