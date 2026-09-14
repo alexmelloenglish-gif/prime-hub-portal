@@ -15,10 +15,10 @@ const whatsappHref =
   'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de%20falar%20com%20a%20Prime%20Digital%20Hub.&type=phone_number&app_absent=0'
 
 const flow = [
-  { icon: CalendarCheck, label: 'Próxima aula', text: 'Mais contexto' },
-  { icon: BookOpen, label: 'Aula', text: 'Interações reais e decisões pedagógicas' },
-  { icon: History, label: 'Memória da aprendizagem', text: 'O que importa permanece para a próxima aula' },
-  { icon: Target, label: 'Direção do professor', text: 'O próximo foco ganha clareza' },
+  { icon: CalendarCheck, label: 'Próxima aula', text: 'Chega com contexto útil, não apenas com o conteúdo anterior' },
+  { icon: BookOpen, label: 'Aula', text: 'Interações reais geram sinais sobre a aprendizagem' },
+  { icon: History, label: 'Memória da aprendizagem', text: 'O que importa permanece organizado e disponível' },
+  { icon: Target, label: 'Direção do professor', text: 'O professor valida o que merece orientar o próximo foco' },
 ]
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -45,25 +45,23 @@ export function HeroSection() {
           <div className="space-y-5">
             <h1 className="max-w-3xl font-display text-[2.35rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
               Aulas de inglês online ao vivo para objetivos reais.
-              <span className="mt-2 block text-[#0b2c5c]">
-                <span className="sm:hidden">Aprendizagem que permanece.</span>
-                <span className="hidden sm:inline">Sua aprendizagem continua evoluindo.</span>
+              <span className="mt-3 block text-[#0b2c5c]">
+                Sua próxima aula não esqueceu nada sobre você.
               </span>
             </h1>
             <div className="h-1.5 w-28 rounded-full bg-prime-red" />
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              A Prime oferece aulas exclusivamente online ao vivo, personalizadas para transformar seus objetivos em próximos passos claros. Você, aluno,
-              está no centro; o professor interpreta sua evolução, valida as evidências e conduz a próxima aula com contexto, direção e continuidade.
+              Cada aula produz muito mais do que conteúdo concluído: dificuldades recorrentes, avanços observados, objetivos, dúvidas, vocabulário útil e decisões pedagógicas. A Prime organiza esses sinais para que o professor valide o que realmente importa e conduza a próxima aula com contexto, direção e continuidade.
             </p>
             <div className="flex flex-wrap gap-2 text-sm font-semibold text-[#123263]">
               <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Online ao vivo</span>
               <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Professor como autoridade</span>
-              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Aluno no centro</span>
+              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Contexto que permanece</span>
             </div>
             <div className="grid gap-3 text-sm font-semibold text-[#123263] sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Aula conectada à anterior</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco definido pelo professor</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória da aprendizagem preservada</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Sinais úteis preservados entre as aulas</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco validado pelo professor</div>
+              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória da aprendizagem organizada</div>
             </div>
           </div>
 
@@ -127,8 +125,8 @@ export function HeroSection() {
         <div className="grid min-w-0 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-[#f7fafd] shadow-[0_18px_50px_rgba(14,43,82,0.07)] md:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
           <div className="min-w-0 p-6 sm:p-7">
             <h2 className="font-display text-2xl font-bold text-[#0b2c5c]">Sua aprendizagem, com o seu contexto.</h2>
-            <p className="mt-2 font-semibold text-[#123263]">A próxima aula não começa do zero.</p>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Ela começa com a memória do que foi trabalhado, observado e direcionado pelo professor.</p>
+            <p className="mt-2 font-semibold text-[#123263]">A próxima aula não começa sem contexto.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Ela começa com sinais úteis da sua aprendizagem organizados e disponíveis para orientar a decisão do professor — não apenas com a lembrança do último conteúdo.</p>
             <p className="mt-5 border-l-4 border-prime-red pl-4 font-display text-lg font-bold italic text-[#0b2c5c]">Faça cada aula contar.</p>
           </div>
           {flow.map(({ icon: Icon, label, text }, index) => (
