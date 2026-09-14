@@ -2,9 +2,11 @@
 
 ## Objective
 
-Publish a clearer, lighter and more credible Prime Digital Hub landing page centered on the student experience:
+Publish a clearer, lighter and more credible Prime Digital Hub landing page centered on the student experience.
 
-**Você pratica → Seu professor observa → Você sabe o próximo passo.**
+**Public thesis:** Cada aula ajuda a orientar a próxima.
+
+**Human mechanism:** Você pratica → Seu professor observa → O próximo foco fica mais claro.
 
 The Phase 1 Design & Evidence Report remains the rationale. This checklist is the operational source of truth for implementation.
 
@@ -36,8 +38,8 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 ### B. Copy and section lock
 
 - [ ] Lock the hero as one offer, one short explanation and one primary action: **Agendar aula experimental grátis**.
-- [ ] Lock the continuity benefit: **A próxima aula não começa do zero** and **Cada aula ajuda a preparar a próxima**.
-- [ ] Use one student-facing model only: **Você pratica → Seu professor observa → Você sabe o próximo passo**.
+- [ ] Lock the continuity thesis: **Cada aula ajuda a orientar a próxima**. If retained, “A próxima aula não começa do zero” is supporting language only, never the central argument.
+- [ ] Use one student-facing mechanism only: **Você pratica → Seu professor observa → O próximo foco fica mais claro**.
 - [ ] Keep fragmented signals, AI, pipelines, architecture and Learning Intelligence Engine language out of the student-facing page.
 - [ ] Label the demonstration **illustrative** until its source, wording and authorization are verified as a real case.
 - [ ] Keep Calendar as the primary CTA, WhatsApp as support and Portal as a utility for current students.
@@ -67,6 +69,7 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 ### Approved directions
 
 - The teacher uses what the learner actually practiced to decide the next focus.
+- What the learner practiced, managed to do and still needed help with continues to inform the teacher.
 - Relevant learning information remains available to support future lessons.
 - The experience connects what happened in one lesson to what happens next.
 - Technology supports the experience; the teacher observes, interprets and decides.
@@ -76,6 +79,7 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 - PRIME predicts learning.
 - PRIME remembers everything forever.
 - Traditional classes start from zero.
+- “A próxima aula não começa do zero” as the standalone thesis or sole explanation of PRIME continuity.
 - Unsupported claims of faster results, superior retention or guaranteed progress.
 - Any illustrative example described as a real student case without verification.
 
