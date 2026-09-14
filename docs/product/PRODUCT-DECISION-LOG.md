@@ -122,9 +122,11 @@ This naming/model remains open to brand refinement, but the separation of respon
 
 **Student-facing thesis:** `Cada aula ajuda a orientar a próxima.`
 
-**Student-facing mechanism:** `Você pratica → Seu professor observa → O próximo foco fica mais claro.`
+**Student-facing mechanism:** `Você pratica → Seu professor observa e interpreta → O próximo foco fica mais claro.`
 
 **Conceptual distinction:** The existence of lesson records is not the differentiator. PRIME communicates how specific signals from what the learner practiced, managed to do and still needed help with remain useful for the teacher's next pedagogical decision.
+
+**“Zero” definition:** If the legacy phrase is referenced, “zero” cannot mean absence of content records or teacher memory. It refers to the loss of specific, useful signals about the learner's current performance. This distinction is internal; the public page should explain the positive mechanism.
 
 **Claim boundary:** The landing page demonstrates continuity, teacher attention and the learner's next step. Fragmented signals, AI, pipelines and the PRIME Learning Intelligence Engine remain part of the professional/product narrative rather than the student acquisition page.
 
@@ -132,4 +134,6 @@ This naming/model remains open to brand refinement, but the separation of respon
 
 **Evidence rule:** An illustrative example cannot be presented as a real learner case without verified provenance and authorization.
 
-**Deprecated as central thesis:** `A próxima aula não começa do zero.` It may be retained only as supporting language after the continuity mechanism is already clear.
+**Deprecated as central thesis:** `A próxima aula não começa do zero.` It may be retained only as a consequence after the continuity mechanism is already clear: the next lesson does not continue only from where the content stopped; it also considers what the learner's performance showed.
+
+**Copy lock:** The canonical continuity copy and its constraints are recorded in [`PHASE_1_CONTINUITY_COPY_LOCK.md`](../reconnection/PHASE_1_CONTINUITY_COPY_LOCK.md).
