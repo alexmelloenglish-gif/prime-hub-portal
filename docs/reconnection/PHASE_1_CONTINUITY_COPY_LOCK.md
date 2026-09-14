@@ -8,6 +8,12 @@
 
 **Cada aula ajuda a orientar a próxima.**
 
+## Approved emotional subline
+
+**Sua próxima aula não esquece o que importa sobre a sua aprendizagem.**
+
+This is supporting emotional language, not a literal claim that PRIME captures or remembers everything. It must remain subordinate to the concrete continuity mechanism below.
+
 ## Section 2
 
 ### Title
@@ -38,6 +44,7 @@ The public page should make that value understandable through the learner's expe
 
 - “A próxima aula não começa do zero” is not a headline or central thesis.
 - If the idea is retained, it must be expressed as a consequence: the next lesson does not continue only from where the content stopped; it also considers what the learner's performance showed.
+- “Sua próxima aula não esquece o que importa sobre a sua aprendizagem” is approved only as a supporting emotional subline after the concrete thesis; it is not a claim of total capture, permanent memory or omniscience.
 - Do not claim that nothing important is ever lost, that everything is captured, or that PRIME remembers everything.
 - Do not imply that other teachers or schools lack records, memory or continuity.
 - Do not present “sua aula lembra de você” as a literal product capability.
