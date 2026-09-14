@@ -5,11 +5,11 @@ const questions = [
   },
   {
     question: 'Preciso saber meu nível para começar?',
-    answer: 'Não. Conte sobre seus objetivos e sobre as situações em que deseja usar o inglês. O professor ajuda a identificar seu ponto de partida.',
+    answer: 'Não. Na sua primeira sessão, fazemos um diagnóstico do seu nível de inglês e conversamos sobre seus objetivos. A partir disso, você já participa de uma aula experimental adequada ao seu momento de aprendizagem.',
   },
   {
     question: 'O que acontece na aula experimental?',
-    answer: 'Você conhece o acompanhamento da Prime, conversa sobre seus objetivos e compartilha suas dúvidas. É uma oportunidade para entender se a experiência faz sentido para você.',
+    answer: 'A sessão dura aproximadamente 60 minutos e combina levantamento dos seus objetivos, diagnóstico do seu nível e uma experiência de aula personalizada. Assim, você não recebe uma aula genérica: a prática é ajustada ao nível identificado e ao que você pretende alcançar.',
   },
   {
     question: 'Como acompanho meu aprendizado?',
