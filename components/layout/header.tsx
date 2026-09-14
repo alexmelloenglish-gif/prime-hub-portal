@@ -11,11 +11,10 @@ interface HeaderProps {
 const bookingHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 
 const navigationLinks = [
-  { href: '#inicio', label: 'Início' },
   { href: '#como-funciona', label: 'Como funciona' },
-  { href: '#metodo-prime', label: 'Método PRIME' },
-  { href: '#diferenciais', label: 'Diferenciais' },
-  { href: '#comparativo', label: 'Antes e depois' },
+  { href: '#exemplo', label: 'Exemplo de acompanhamento' },
+  { href: '#professor', label: 'Professor' },
+  { href: '#duvidas', label: 'Dúvidas' },
 ]
 
 export function Header({ portalHref }: HeaderProps) {
@@ -45,7 +44,7 @@ export function Header({ portalHref }: HeaderProps) {
             )}
           >
             <span className="sm:hidden">Portal</span>
-            <span className="hidden sm:inline">Acessar portal</span>
+            <span className="hidden sm:inline">Portal do aluno</span>
           </Link>
           <a
             href={bookingHref}
@@ -53,11 +52,11 @@ export function Header({ portalHref }: HeaderProps) {
             rel="noreferrer"
             className={cn(
               buttonVariants(),
-              'hidden h-auto min-h-10 rounded-full bg-prime-red px-5 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(168,34,23,0.22)] hover:bg-red-700 md:inline-flex'
+              'hidden h-auto min-h-10 rounded-full bg-[#1565D8] px-5 py-2 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(21,101,216,0.22)] hover:bg-[#0f56bd] md:inline-flex'
             )}
           >
             <CalendarDays className="mr-2 h-4 w-4" />
-            Aula experimental grátis
+            Agendar aula experimental grátis
           </a>
         </div>
 
@@ -71,9 +70,9 @@ export function Header({ portalHref }: HeaderProps) {
             {navigationLinks.map(({ href, label }) => (
               <a key={href} href={href} className="flex min-h-11 items-center rounded-lg px-3 py-2 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-prime-red">{label}</a>
             ))}
-            <a href={bookingHref} target="_blank" rel="noreferrer" className="flex min-h-11 items-center rounded-lg px-3 py-2 text-prime-red hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-prime-red md:hidden">
+            <a href={bookingHref} target="_blank" rel="noreferrer" className="flex min-h-11 items-center rounded-lg px-3 py-2 text-[#1565D8] hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1565D8] md:hidden">
               <CalendarDays aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
-              Aula experimental grátis
+              Agendar aula experimental grátis
             </a>
           </div>
         </details>
