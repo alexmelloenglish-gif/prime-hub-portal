@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  BookOpen,
-  CalendarCheck,
-  History,
-  Target,
-} from 'lucide-react'
+import { ArrowRight, CalendarCheck } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -13,13 +7,6 @@ const heroStudentImage = '/assets/prime-hero-student-hq.webp'
 const bookingHref = 'https://calendar.app.google/z1N7yrhvrVr6WyfFA'
 const whatsappHref =
   'https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de%20falar%20com%20a%20Prime%20Digital%20Hub.&type=phone_number&app_absent=0'
-
-const flow = [
-  { icon: CalendarCheck, label: 'Próxima aula', text: 'Mais contexto' },
-  { icon: BookOpen, label: 'Aula', text: 'Interações reais e decisões pedagógicas' },
-  { icon: History, label: 'Memória da aprendizagem', text: 'O que importa permanece para a próxima aula' },
-  { icon: Target, label: 'Direção do professor', text: 'O próximo foco ganha clareza' },
-]
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -35,49 +22,24 @@ export function HeroSection() {
       <div className="pointer-events-none absolute right-[-10rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#eaf2fb] blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute left-[-12rem] top-[28rem] h-[28rem] w-[28rem] rounded-full bg-red-50 blur-3xl" aria-hidden="true" />
 
-      <div className="container relative z-10 grid min-w-0 items-center gap-10 pb-10 pt-10 lg:grid-cols-[0.93fr_1.07fr] lg:pb-12 lg:pt-14">
+      <div className="container relative z-10 grid min-w-0 items-center gap-10 pb-16 pt-10 lg:grid-cols-[0.93fr_1.07fr] lg:pb-20 lg:pt-14">
         <div className="min-w-0 space-y-7">
           <div className="inline-flex max-w-full items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#244571] sm:text-sm sm:tracking-[0.22em]">
             <span className="h-2 w-2 shrink-0 rounded-full bg-prime-red" />
-            Prime Digital Hub · Seu ecossistema de aprendizagem
+            Prime Digital Hub · Aulas de inglês online ao vivo
           </div>
 
           <div className="space-y-5">
-            <h1 className="max-w-3xl font-display text-[2.35rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
+            <h1 className="max-w-3xl font-display text-[2.45rem] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0b2c5c] sm:text-5xl lg:text-[4.3rem]">
               Aulas de inglês online ao vivo para objetivos reais.
-              <span className="mt-2 block text-[#0b2c5c]">
-                <span className="sm:hidden">Aprendizagem que permanece.</span>
-                <span className="hidden sm:inline">Sua aprendizagem continua evoluindo.</span>
-              </span>
             </h1>
             <div className="h-1.5 w-28 rounded-full bg-prime-red" />
             <p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              A Prime oferece aulas exclusivamente online ao vivo, personalizadas para transformar seus objetivos em próximos passos claros. Você, aluno,
-              está no centro; o professor interpreta sua evolução, valida as evidências e conduz a próxima aula com contexto, direção e continuidade.
+              Pratique o inglês para a escola, o trabalho ou o dia a dia, com atenção do professor ao que você já consegue fazer e ao que precisa desenvolver.
             </p>
-            <div className="flex flex-wrap gap-2 text-sm font-semibold text-[#123263]">
-              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Online ao vivo</span>
-              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Professor como autoridade</span>
-              <span className="rounded-full border border-[#c9d9eb] bg-[#f7fafd] px-4 py-2">Aluno no centro</span>
-            </div>
-            <div className="grid gap-3 text-sm font-semibold text-[#123263] sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Aula conectada à anterior</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Próximo foco definido pelo professor</div>
-              <div className="rounded-2xl border border-slate-200 bg-[#f7fafd] px-4 py-3">Memória da aprendizagem preservada</div>
-            </div>
           </div>
 
           <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <a
-              href="#metodo-prime"
-              className={cn(
-                buttonVariants({ size: 'lg' }),
-                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full bg-prime-red px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(168,34,23,0.22)] hover:bg-red-700 sm:w-auto sm:px-7'
-              )}
-            >
-              Conhecer o método PRIME
-              <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
-            </a>
             <a
               href={bookingHref}
               target="_blank"
@@ -88,7 +50,17 @@ export function HeroSection() {
               )}
             >
               <CalendarCheck className="mr-2 h-5 w-5 shrink-0" />
-              Agende sua aula experimental grátis
+              Agendar aula experimental grátis
+            </a>
+            <a
+              href="#como-funciona"
+              className={cn(
+                buttonVariants({ size: 'lg', variant: 'outline' }),
+                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border-[#123263]/25 bg-white px-6 py-3 text-center text-base font-semibold leading-5 text-[#123263] hover:bg-slate-50 hover:text-[#123263] sm:w-auto sm:px-7'
+              )}
+            >
+              Como funciona
+              <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
             </a>
             <a
               href={whatsappHref}
@@ -96,14 +68,17 @@ export function HeroSection() {
               rel="noreferrer"
               className={cn(
                 buttonVariants({ size: 'lg' }),
-                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640] bg-[#118640] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_18px_42px_rgba(17,134,64,0.20)] hover:bg-[#0f753a] sm:w-auto sm:px-7'
+                'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640] bg-[#118640] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_16px_34px_rgba(17,134,64,0.16)] hover:bg-[#0f753a] sm:w-auto sm:px-7'
               )}
             >
               <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />
               Falar com a Prime
             </a>
           </div>
-          <p className="max-w-2xl text-sm leading-6 text-slate-500">Na aula experimental, você conversa sobre seu momento e seus objetivos — sem precisar saber seu nível antes de começar.</p>
+
+          <p className="max-w-2xl text-sm leading-6 text-slate-500">
+            Conte sobre seus objetivos e conheça o acompanhamento da Prime. Você não precisa saber seu nível antes de começar.
+          </p>
         </div>
 
         <div className="relative min-w-0">
@@ -120,27 +95,6 @@ export function HeroSection() {
               <p className="font-display text-lg font-bold tracking-[-0.01em] text-[#0b2c5c] sm:text-xl">Better English, Brighter Future.</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div id="como-funciona" className="container relative z-10 scroll-mt-6 pb-16">
-        <div className="grid min-w-0 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-[#f7fafd] shadow-[0_18px_50px_rgba(14,43,82,0.07)] md:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
-          <div className="min-w-0 p-6 sm:p-7">
-            <h2 className="font-display text-2xl font-bold text-[#0b2c5c]">Sua aprendizagem, com o seu contexto.</h2>
-            <p className="mt-2 font-semibold text-[#123263]">A próxima aula não começa do zero.</p>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Ela começa com a memória do que foi trabalhado, observado e direcionado pelo professor.</p>
-            <p className="mt-5 border-l-4 border-prime-red pl-4 font-display text-lg font-bold italic text-[#0b2c5c]">Faça cada aula contar.</p>
-          </div>
-          {flow.map(({ icon: Icon, label, text }, index) => (
-            <div key={label} className="relative min-w-0 border-t border-slate-200 bg-white p-5 md:border-l md:border-t-0">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#eef4fa]">
-                <Icon className="h-6 w-6 text-[#123263]" />
-              </div>
-              <p className="font-display text-base font-bold text-[#0b2c5c]">{label}</p>
-              <p className="mt-2 break-words text-sm leading-5 text-slate-600">{text}</p>
-              {index < flow.length - 1 ? <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-5 w-5 -translate-y-1/2 text-[#123263] md:block" /> : null}
-            </div>
-          ))}
         </div>
       </div>
     </section>
