@@ -3,77 +3,97 @@
 **Atualizado:** 15/09/2026  
 **Finalidade:** ponto de entrada para consultar o que cada piloto acrescenta, quais claims são defensáveis e o que ainda falta verificar. Os casos usam rótulos anonimizados.
 
-## O que já temos
+## Visão consolidada
 
-| Caso | Contribuição | Nível de verificação |
-| --- | --- | --- |
-| Piloto G | Memória de quatro aulas preservada, conectada ao estado atual, às prioridades e a uma próxima ação registrada | Portfólio, fontes de aula e snapshots antes/depois inspecionados; texto do dashboard fornecido corrobora a apresentação |
-| Piloto R | Histórico ligado a prioridades, atividade específica e entradas exibidas como memória pessoal | Texto do dashboard fornecido pelo usuário; leitura direta do navegador não realizada |
-| Piloto V | Captura de fonte real e Candidate assistido persistido em Preview | Código e logs de execução inspecionados; conteúdo do Candidate predefinido |
+| Caso | Contribuição mais forte | Nível de verificação | Limite principal |
+| --- | --- | --- | --- |
+| Piloto G | Personalização cumulativa documentada: memória de quatro aulas preservada, conectada ao estado atual, prioridades e próxima ação | Portfólio, fontes de aula e snapshots antes/depois inspecionados | Não prova a nova cadeia Candidate/Review/Canonicalization nem impacto causal |
+| Piloto V | Captura de fonte real e Candidate assistido persistido em Preview | Código e logs de execução inspecionados; Candidate predefinido | Downstream de autoridade e segundo ciclo não demonstrados |
+| Piloto L | Projeção longitudinal com múltiplas aulas, estado/target teacher-validated, prioridades, ação e memória | Admin Preview fornecido + commits canônicos de validação docente | Não prova execução da ação ou novo ciclo |
+| Piloto I | Uma aula produz estado inicial contextualizado, prioridades e tarefa estruturada | Admin Preview fornecido | Personalização inicial; não demonstra acúmulo entre aulas |
+| Piloto C | Síntese longitudinal cumulativa de múltiplas aulas + próxima ação ligada ao contexto/interesse | Admin Preview fornecido | Não demonstra ciclo sucessivo executado |
+| Piloto R | Histórico → estado/prioridade → ação → entradas exibidas em memória | Admin Preview fornecido | Autoria, timestamp, persistência e downstream review não verificados |
+| Piloto D | Projeção parcial com contexto, vocabulário e feedback, preservando lacunas de autoridade | Admin Preview fornecido | Priority/action autorizados permanecem incompletos |
 
-## Novos dashboards incorporados
+A matriz consolidada está em [PILOT_EVIDENCE_MATRIX_CONSOLIDATED_2026-09-15.md](audits/PILOT_EVIDENCE_MATRIX_CONSOLIDATED_2026-09-15.md).
 
-| Caso | O que acrescenta | Limite |
-| --- | --- | --- |
-| Piloto I | Uma aula gera objetivo contextualizado, prioridades e tarefa estruturada | Personalização inicial; não demonstra acúmulo entre aulas nem envio da tarefa |
-| Piloto D | Contexto de várias aulas, vocabulário e feedback, com lacunas explícitas nos campos validados | Projeção parcial; orientação no feedback não equivale a prioridade/ação autorizada |
-| Piloto G | Texto da interface exibe as quatro aulas, a prioridade de reduzir apoio e a ação pós-avaliação | Corrobora os artefatos já auditados; não demonstra execução do acompanhamento |
+## Piloto G — distinção entre evidência pedagógica e runs históricos
 
-Os três textos foram fornecidos pelo usuário em Admin preview. Não equivalem a observação direta do navegador ou ação autenticada do aluno.
+A personalização cumulativa permanece **demonstrada no nível do piloto controlado e mediado pelo professor**, porque os artefatos primários e snapshots antes/depois mostram que evidência anterior permaneceu disponível, alterou a representação atual, informou prioridades e mudou a próxima ação.
 
-**Pendência concreta do Piloto D:** reconciliar feedback com as seções que informam ausência de prioridade e ação validadas. Não preencher por inferência. O texto copiado não mostra a seção completa de relatórios; verificar antes de concluir que o histórico está ausente.
+Separadamente, três historical `PipelineRun` traces fornecidos depois mostram:
 
-## Como interpretar “Pipeline” e “Published reports” no Admin
+- `processing completed`;
+- `evidence 0`;
+- `0 persisted candidate refs`;
+- `review no_pending_review`;
+- `report published/not_proven`;
+- attendance explicitamente **NOT PROVEN at the operational run layer**.
+
+Portanto, esses runs demonstram processamento técnico concluído, não a cadeia nova:
+
+**Source → Candidate → Teacher Review → Teacher Decision → Canonicalization → Projection Authorization → Learner-facing Projection**.
+
+Os traces não reduzem a evidência pedagógica já estabelecida; apenas impedem usar o status técnico `completed` como prova do novo Engine E2E.
+
+## Como interpretar `Pipeline` e `Published reports` no Admin
 
 A tela Teacher Intelligence enriquece o diretório com dois campos técnicos vindos do banco:
 
-- **Pipeline** mostra o `status` do `PipelineRun` mais recente encontrado para aquele aluno.
+- **Pipeline** mostra o `status` do `PipelineRun` mais recente encontrado para o aluno;
 - **Published reports** conta registros de `ClassReportProjection` com `documentStatus = published`.
 
 Esses rótulos são metadados operacionais/históricos. Portanto:
 
-- `Pipeline: completed` significa que o run técnico mais recente terminou com status `completed`; **não significa**, por si só, teacher review concluído, canonicalização, projeção autorizada, personalização cumulativa ou learning loop fechado.
-- `Published reports: N` significa que existem `N` projeções de class report marcadas como publicadas; **não significa** `N` evidências validadas, `N` aulas canônicas completas ou fechamento do Engine.
-- `failed` ou `NO DATA` também não provam ausência de memória longitudinal no dashboard atual, porque o diretório e as projeções canônicas podem usar snapshots do repositório independentes do último run histórico.
-
-Assim, por exemplo, os rótulos técnicos exibidos para Pilotos R e G não elevam nem reduzem seus claims pedagógicos. A evidência de personalização cumulativa precisa vir da cadeia **histórico/evidência → estado/prioridade → próxima ação**, e o fechamento do Engine precisa de transições vinculadas de autoridade e tentativa.
+- `Pipeline: completed` significa que o run técnico mais recente terminou com status `completed`; **não significa**, por si só, teacher review concluído, canonicalização, projeção autorizada, personalização cumulativa ou learning loop fechado;
+- `Published reports: N` significa que existem `N` projeções de class report marcadas como publicadas; **não significa** `N` evidências validadas, `N` aulas canônicas completas ou fechamento do Engine;
+- `failed` ou `NO DATA` também não provam ausência de memória longitudinal no dashboard atual, porque projeções canônicas podem usar snapshots do repositório independentes do último run histórico.
 
 Código de referência: [`lib/admin-dashboard.ts`](../lib/admin-dashboard.ts) e [`app/dashboard/admin/intelligence/students/page.tsx`](../app/dashboard/admin/intelligence/students/page.tsx).
 
-## O que o Piloto R acrescentou
+## O que os novos casos acrescentam
 
-A projeção apresenta **STATE → PRIORITY → EVIDENCE → ACTION → HISTORY**, com relações pedagógicas concretas:
+### Piloto L
 
-1. Relatórios anteriores sustentam a interpretação do estado atual.
-2. Evidências específicas fundamentam prioridades de precisão e reutilização.
-3. A prioridade de reutilização vira uma atividade delimitada de frases pessoais.
-4. O texto fornecido mostra entradas em “Your locked sentences”.
+A projeção longitudinal conecta três aulas, estado atual e target explicitamente validados pelo professor, objetivo/foco, prioridades, ação contextualizada, memória pedagógica e feedback. O caso demonstra continuidade apresentada na interface e sustentada pelo registro canônico; não comprova execução da ação, autoria de tentativa, novo Candidate ou novo ciclo.
 
-Isso acrescenta evidência de continuidade apresentada na interface e de uma atividade conectada à memória. As entradas aparecem em contexto de **Admin preview**: autoria do aluno, persistência durável e revisão posterior não foram verificadas. O histórico preserva os relatórios disponíveis e explicita a lacuna entre presença e relatório; não se deve afirmar que cada presença possui relatório detalhado.
+### Piloto I
+
+Uma primeira aula é transformada em objetivo profissional específico, prioridades de linguagem e uma ação estruturada. O caso demonstra personalização inicial contextualizada e um baseline acionável; não demonstra ainda personalização cumulativa entre múltiplas interações.
+
+### Piloto C
+
+A projeção sintetiza múltiplas aulas em estado atual, prioridades e uma próxima ação ligada ao contexto forte do aluno. Também preserva memória histórica sem inventar data ou presença. Isso demonstra representação longitudinal cumulativa e personalização da próxima ação, mas não a execução de um ciclo sucessivo.
+
+### Piloto R
+
+A projeção preserva onze presenças e dez relatórios detalhados, explicitando a lacuna quando uma presença não tem report detalhado. A prioridade de reciclagem lexical vira uma atividade concreta, e a interface exibe entradas sob `Your locked sentences`. Isso fortalece a cadeia **histórico → prioridade → ação → memória exibida**, mas Admin Preview não prova autoria autenticada, timestamp, persistência durável, novo Candidate ou revisão posterior.
 
 ## Claims defensáveis agora
 
 - **Piloto G:** “O PRIME demonstra personalização cumulativa documentada em um caso controlado, mediado pelo professor.”
-- **Piloto R:** “O dashboard apresentado conecta evidências longitudinais, prioridades e uma atividade de prática, com entradas de memória exibidas.”
-- **Piloto V:** “Um teste assistido em Preview demonstrou captura de fonte real e persistência de Candidate.”
+- **Conjunto dos pilotos:** “O PRIME já demonstra representações longitudinais que preservam evidências selecionadas, conectam histórico a prioridades atuais e produzem próximas ações contextualizadas com limites explícitos de autoridade e evidência.”
+- **Piloto V:** “Um teste assistido em Preview demonstrou captura de fonte real e persistência de Candidate sob review gating.”
+- **Piloto R:** “Uma projeção apresentada conecta evidência longitudinal a uma atividade concreta e a entradas de memória exibidas; autoria e downstream review ainda não foram verificados.”
 
-Esses resultados não comprovam capacidade universal, execução completa do Engine ou impacto causal em motivação, retenção, proficiência ou resultados institucionais.
+Esses resultados **não comprovam** capacidade universal, execução completa do Engine, automação full-loop ou impacto causal em motivação, retenção, proficiência ou resultados institucionais.
 
 ## O que falta para demonstrar o ciclo completo
 
 **Primeiro percurso:** fonte → Candidate → revisão docente → decisão docente → canonicalização → autorização de projeção → projeção ao aluno.
 
-**Percurso subsequente:** ação autorizada → tentativa real com autoria e data → novo Candidate → segunda revisão e decisão → estado/próxima ação mantidos ou atualizados com justificativa.
+**Percurso subsequente:** ação autorizada → tentativa real autenticada com autoria/data → novo Candidate → segunda revisão/decisão → estado e próxima ação mantidos ou atualizados com justificativa.
 
-Cada transição precisa de registros vinculados. Trabalho manual é compatível com end-to-end; uma etapa não pode ser inferida apenas pela existência da anterior.
+Cada transição precisa de registros vinculados. Trabalho manual ou assistido é compatível com end-to-end; o critério é a evidência da cadeia, não o grau de automação.
 
 ## Onde consultar e como atualizar
 
 - [Auditoria detalhada e fontes públicas](audits/PRIME_CLAIM_EVIDENCE_STATUS_2026-09-15.md)
+- [Matriz consolidada dos sete pilotos](audits/PILOT_EVIDENCE_MATRIX_CONSOLIDATED_2026-09-15.md)
 - [Tese de produto](product/PRIME-LEARNING-OS-PRODUCT-THESIS.md)
 - [Checkpoint de autoridade](PRIME_CANONICAL_MIGRATION_ARCHITECTURE_CHECKPOINT_2026-09-11.md)
 - [PR de documentação #20](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/20)
 
 Ao receber nova evidência, atualizar este resumo e acrescentar a evidência datada à auditoria. Preservar a distinção entre fonte primária, texto fornecido, implementação, execução e impacto. Não reiniciar a investigação nem reduzir um achado verificado a “relato” por falta de contexto. Não publicar contatos, transcrições, frases pessoais ou links privados de alunos.
 
-**Integração:** consulte o estado do PR #20; a existência deste documento na branch não equivale a merge em main.
+**Integração:** consulte o estado do PR #20; a existência destes documentos na branch não equivale a merge em `main`.
