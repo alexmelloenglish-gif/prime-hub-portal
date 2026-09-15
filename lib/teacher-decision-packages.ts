@@ -1,8 +1,9 @@
 import gustavoPackage from '@/data/teacher-intelligence/gustavo-drummond-v2.json'
+import eduardaPackage from '@/data/teacher-intelligence/eduarda-coelho-gabriel-v2.json'
 
 export type TeacherDecisionPackage = typeof gustavoPackage
 
-const packages: TeacherDecisionPackage[] = [gustavoPackage]
+const packages: TeacherDecisionPackage[] = [gustavoPackage, eduardaPackage]
 
 export function listTeacherDecisionPackages() {
   return packages
