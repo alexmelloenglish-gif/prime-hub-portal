@@ -23,6 +23,23 @@ Os três textos foram fornecidos pelo usuário em Admin preview. Não equivalem 
 
 **Pendência concreta do Piloto D:** reconciliar feedback com as seções que informam ausência de prioridade e ação validadas. Não preencher por inferência. O texto copiado não mostra a seção completa de relatórios; verificar antes de concluir que o histórico está ausente.
 
+## Como interpretar “Pipeline” e “Published reports” no Admin
+
+A tela Teacher Intelligence enriquece o diretório com dois campos técnicos vindos do banco:
+
+- **Pipeline** mostra o `status` do `PipelineRun` mais recente encontrado para aquele aluno.
+- **Published reports** conta registros de `ClassReportProjection` com `documentStatus = published`.
+
+Esses rótulos são metadados operacionais/históricos. Portanto:
+
+- `Pipeline: completed` significa que o run técnico mais recente terminou com status `completed`; **não significa**, por si só, teacher review concluído, canonicalização, projeção autorizada, personalização cumulativa ou learning loop fechado.
+- `Published reports: N` significa que existem `N` projeções de class report marcadas como publicadas; **não significa** `N` evidências validadas, `N` aulas canônicas completas ou fechamento do Engine.
+- `failed` ou `NO DATA` também não provam ausência de memória longitudinal no dashboard atual, porque o diretório e as projeções canônicas podem usar snapshots do repositório independentes do último run histórico.
+
+Assim, por exemplo, os rótulos técnicos exibidos para Pilotos R e G não elevam nem reduzem seus claims pedagógicos. A evidência de personalização cumulativa precisa vir da cadeia **histórico/evidência → estado/prioridade → próxima ação**, e o fechamento do Engine precisa de transições vinculadas de autoridade e tentativa.
+
+Código de referência: [`lib/admin-dashboard.ts`](../lib/admin-dashboard.ts) e [`app/dashboard/admin/intelligence/students/page.tsx`](../app/dashboard/admin/intelligence/students/page.tsx).
+
 ## O que o Piloto R acrescentou
 
 A projeção apresenta **STATE → PRIORITY → EVIDENCE → ACTION → HISTORY**, com relações pedagógicas concretas:
