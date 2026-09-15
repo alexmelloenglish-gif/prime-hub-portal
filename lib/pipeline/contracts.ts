@@ -127,8 +127,16 @@ export type PromptOneOutput = {
   presentation_candidates: {
     class_report_facts: string[]
     student_facing_summary?: string
+    learner_production_candidates?: string[]
+    successful_production_candidates?: string[]
+    error_instability_candidates?: string[]
+    support_scaffolding_candidates?: string[]
+    uptake_candidates?: string[]
+    correction_candidates?: Array<{ original?: string; improved?: string; explanation?: string; source_span?: string }>
     vocabulary_candidates: string[]
     grammar_focus_candidates: string[]
+    boundary_candidates?: string[]
+    next_verification_candidates?: string[]
     homework_recommendation?: {
       mode: string
       task: string

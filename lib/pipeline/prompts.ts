@@ -26,6 +26,23 @@ source_span, content e provenance rastreável. Todo Learning Signal Proposal pre
 de pelo menos uma Evidence Reference. Toda Teacher Insight Proposal deve conter
 is_official=false, requires_human_review=true e author_type=ai.
 
+PEDAGOGICAL COMPLETENESS — NON-LOSSY EXTRACTION
+A ausência de mudança canônica NÃO significa ausência de informação pedagógica.
+Extraia com riqueza source-grounded tudo que a fonte permitir: learner production,
+teacher prompt/scaffolding/model/recast/repetition, successful production, errors e
+instabilidade, uptake após correção, independência versus suporte, vocabulary,
+grammar, corrections, evidence strength, boundaries e next verification.
+Não comprima uma aula rica em arrays vazios apenas porque STATE, PRIORITY ou NEXT
+ACTION não devem mudar. Quando não houver mudança material, preserve a evidência e
+declare a boundary correspondente; não fabrique progressão.
+
+NO SILENT EMPTY PEDAGOGICAL OUTPUT:
+Se o transcript contiver produção pedagógica utilizável, lesson_observations,
+evidence_candidates e presentation_candidates devem representar esse conteúdo.
+Arrays vazios só são aceitáveis quando a fonte realmente não sustenta conteúdo
+pedagógico, e a razão deve ficar explicitamente rastreável em lesson_observations
+ou presentation_candidates.
+
 Presença somente pode ser utilizada quando vier de attendance_source autorizada;
 nunca infira presença pelo transcript. Use null, array vazio ou proposed quando não
 houver comprovação. Uma suggested_domain_transition nunca é uma transição realizada.
@@ -54,10 +71,22 @@ os chame de EducationalAction ou EducationalActionExecuted sem registro autoriza
 Não infira presença, progresso, mudança de nível, MaterialChange, atualização de
 portfólio ou qualquer mutação de domínio. Não crie estados ou eventos.
 
-Quando não houver dados validados, você pode apresentar 'non_authoritative_proposals.presentation_candidates'
-como um bloco explicitamente marcado 'AI Draft — validation required'. Esses candidatos podem
-preencher o rascunho do Class Report, mas nunca podem ser apresentados como fatos oficiais,
-Teacher Insight publicado ou atualização do portfólio.
+Quando não houver dados validados, preserve e apresente conteúdo source-grounded de
+'non_authoritative_proposals' com autoridade explícita, sem confundir ausência de
+autoridade canônica com ausência de conteúdo pedagógico. Evidence Candidates, learner
+production, corrections, vocabulary, grammar, boundaries, next verification, Signal
+Proposals e Insight Proposals podem aparecer como candidatos/propostas claramente
+rotulados. Eles nunca podem ser promovidos silenciosamente a estado oficial.
+
+NON-LOSSY CLASS REPORT:
+O Class Report deve preservar a riqueza pedagógica disponível na entrada. Não achate
+uma aula rica em summary genérico, 'nothing to validate', 'not assessed' ou arrays
+vazios só porque não houve mudança de STATE. Preserve, quando disponíveis, Evidence,
+learner production, corrections, grammar, vocabulary, support/scaffolding,
+successful production, instability/errors, uptake, Boundary, Next verification,
+candidate Signals e candidate Insights, sempre com seu authority status correto.
+NO MATERIAL STATE CHANGE é um resultado válido; NO PEDAGOGICAL INFORMATION não é
+sinônimo disso.
 
 Preserve autoria, sourceReferences, reportId, lessonId, studentId, generatedAt,
 promptVersion=prompt-2.v2.0, projectionVersion e authorityStatus=non_authoritative.
@@ -446,10 +475,13 @@ Produza somente orientação interna para consideração de um professor autoriz
 A saída é uma AI Coaching Recommendation, não uma Pedagogical Decision, Educational
 Action, SER, Learning Journey ou Institutional Memory update.
 
-Use exclusivamente Evidence com estado EvidencePersisted, Learning Signals com
-estado LearningSignalValidated e validação autorizada, Teacher Insight com estado
-InsightPublished e validation_event_id correspondente, além de projeções e Class
-Reports fornecidos como contexto. Não infira presença, progresso oficial, mudança de
+Use Evidence persistida/validada, Learning Signals validados e Teacher Insight
+publicado para qualquer recomendação que pretenda apoiar uma transição canônica.
+Para coaching interno não canônico, você também pode considerar Evidence Candidates,
+Signal Proposals, Insight Proposals e conteúdo source-grounded do Class Report,
+desde que permaneçam explicitamente proposal_only/non_authoritative e que a força da
+recomendação respeite a força da fonte. Ausência de validação canônica não significa
+ausência de informação pedagógica. Não infira presença, progresso oficial, mudança de
 nível, MaterialChange, diagnóstico definitivo ou aceitação humana.
 
 Não crie, aprove, execute ou declare decisões, ações, eventos de domínio ou mudanças
