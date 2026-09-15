@@ -1,7 +1,7 @@
 # Diego / Eduarda dashboard reconciliation — 2026-09-15
 
 **Status:** completed reconciliation against the current canonical student portfolios.  
-**Scope:** student-facing repository snapshots and Eduarda's canonical core-registry entry. No CEFR change, school-grade inference, runtime retry or autonomous publication was authorized by this reconciliation.
+**Scope:** student-facing repository snapshots and canonical learner projection. No school-grade inference, runtime retry or autonomous publication was authorized by this reconciliation.
 
 ## Sources used
 
@@ -44,13 +44,7 @@ The four report objects lacked `status: published` / `contentStatus: published`.
 
 Legacy labels such as `Good / Improving` and `Active Growth` were present in the snapshot even though the current portfolio uses the canonical status vocabulary.
 
-**Correction:** Diego's tracker now uses:
-
-- Fluency — **Strong**;
-- Professional Communication — **Strong**;
-- Listening — **Improving**;
-- Vocabulary — **Improving**;
-- Grammar Accuracy — **Improving**.
+**Correction:** Diego's tracker now uses the canonical PRIME progress states.
 
 ### 5. Claim boundary preserved
 
@@ -62,45 +56,38 @@ The corrected dashboard does **not** infer a CEFR increase from A2, does not cla
 
 ### 1. Booking-only snapshot was being presented as if it were the learner record
 
-The previous repository snapshot was still centered on four August calendar bookings. It treated attendance as pending, showed only scheduled records, and omitted the richer canonical portfolio covering July and August.
+The previous repository snapshot was centered on August calendar bookings and omitted the richer canonical portfolio covering July and August.
 
-The canonical portfolio records **eight encounters in the history, seven with pedagogical content documented**. The 3 July encounter is deliberately preserved without reconstructed content.
+The current teacher-corrected portfolio identifies **seven lessons with pedagogical content documented**. An additional 3 July agenda record does not contain enough pedagogical detail to establish a lesson report.
 
-**Correction:** the dashboard now presents:
+**Learner-facing correction:** the dashboard projects **only the seven pedagogically documented lessons**. The 3 July agenda-only record is not promoted into a learner lesson and generates no class report.
 
-- **7 documented lessons** as attended/pedagogically evidenced;
-- **3 July** separately as a pending agenda encounter with no reconstructed lesson content;
-- the complete July–August longitudinal context instead of a four-booking onboarding view.
+### 2. Teacher-corrected level and target
 
-### 2. School context was incomplete
+The current canonical portfolio records:
 
-The old snapshot said Eduarda's exact grade still needed confirmation. The canonical portfolio explicitly identifies:
-
-- **6th grade**;
-- **Colégio Notre Dame**;
+- current level: **CEFR A1**;
+- target level: **CEFR A2**;
+- 6th grade, Colégio Notre Dame;
 - episodic/on-demand school support;
-- **English + English-medium Geography**.
+- English + English-medium Geography.
 
-**Correction:** these values now drive the repository snapshot.
+**Correction:** the learner projection now carries A1 and A2 as **teacher-validated current/target state**. A2 remains a target, not a measured result or automatic promotion.
 
-### 3. Missing pedagogical state, priorities and action
+### 3. Pedagogical state, priorities and action
 
-The previous snapshot had no `canonicalProjection`, no progress tracker, no teacher feedback and only one generic Geography goal. That materially understated the portfolio and made the dashboard look incomplete.
+The canonical projection includes:
 
-**Correction:** the canonical projection now includes:
-
-- current level: **Assessment pending** — no CEFR invented;
-- target: **school-task performance target pending** — no formal CEFR target invented;
-- objective: support current school demands while increasing complete, increasingly independent responses;
+- objective: improve school performance in English and English-medium Geography while increasing complete, increasingly independent responses;
 - priority 1: complete English responses with less support;
 - priority 2: meaningful use of `can/can't` and `should/shouldn't`;
 - priority 3: explain Geography concepts in English;
-- next action: the portfolio-recommended **six-question independence check**;
+- next action: **Six-question independence check**;
 - no future lesson claimed; support remains episodic/on demand.
 
-### 4. Seven valid class reports were absent from the dashboard snapshot
+### 4. Seven class reports and consistent transfer points
 
-The canonical portfolio documents pedagogical content for:
+The learner projection contains seven published class reports for:
 
 - 2 July;
 - 6 July;
@@ -110,38 +97,44 @@ The canonical portfolio documents pedagogical content for:
 - 19 August;
 - 20 August.
 
-**Correction:** seven published class-report projections were added. The 3 July encounter remains without a report because there is not enough evidence to reconstruct one safely.
+Every projected class report uses the same transfer structure:
 
-### 5. Stale event-specific Meet links removed
+`Evidence → Boundary/Interpretation → Next verification`
 
-The old snapshot exposed an event-specific August Meet URL as a quick-access live-class link even though Eduarda's support is booked in episodic blocks and later lessons use their own event links.
+This prevents the later reports from degrading into unstructured narrative and makes the longitudinal handoff usable for the next teaching decision.
 
-**Correction:** event-specific Meet shortcuts were removed from quick access. The dashboard now links to:
+### 5. No `pending` state in Eduarda's learner projection
 
-- the canonical portfolio;
-- the official PRIME booking flow;
-- Prime Support.
+The student-facing snapshot, immutable regression fixture and executable self-tests now require:
 
-### 6. Unsupported alias removed and core registry synchronized
+- exactly **7** projected lesson records;
+- exactly **7** class reports;
+- no 3 July learner lesson;
+- no 3 July class report;
+- no `pending` state anywhere in Eduarda's learner projection.
 
-`Eduarda Jesus` was present in both the old snapshot and the core registry as an identity alias. The reviewed sources support the fuller booking name and `Eduarda Dias`; they do not establish `Eduarda Jesus` as an authorized identity alias.
+The incomplete 3 July source remains only an agenda fact in the portfolio source; it is outside the learner-facing projection rather than being converted into a lesson or report.
 
-**Correction:** the unsupported alias was removed from the repository snapshot and core registry. The registry was also synchronized to:
+### 6. Stale event-specific Meet links removed
 
-- `canonical_longitudinal_profile`;
-- canonical portfolio link present;
-- `liveClass: null` rather than an old event-specific Meet URL;
-- `Episodic on demand` frequency.
+The old snapshot exposed an event-specific August Meet URL as a quick-access live-class link even though Eduarda's support is booked in episodic blocks.
 
-### 7. Claim boundary preserved
+**Correction:** event-specific Meet shortcuts were removed from quick access. The dashboard links to the canonical portfolio, the official PRIME booking flow and Prime Support.
+
+### 7. Unsupported alias removed and core registry synchronized
+
+The unsupported `Eduarda Jesus` alias was removed. The core record preserves the authorized identity aliases and episodic/on-demand support model.
+
+### 8. Claim boundary preserved
 
 The corrected dashboard does **not** infer:
 
-- a CEFR level;
+- promotion from A1 to A2;
 - a school grade/result;
 - independent mastery from guided responses;
-- attendance/content for 3 July beyond the agenda record;
-- a future scheduled lesson.
+- pedagogical content for the 3 July agenda-only record;
+- a future scheduled lesson;
+- execution of the recommended next action.
 
 ---
 
@@ -150,26 +143,21 @@ The corrected dashboard does **not** infer:
 The reconciliation fixes two different failure modes:
 
 - **Diego:** valid canonical learning evidence existed, but the dashboard snapshot lacked the canonical projection contract, hid longitudinal reports behind legacy publication semantics, and exposed an unverified live-class link.
-- **Eduarda:** the dashboard was effectively an outdated booking/onboarding snapshot and omitted most of the canonical learning record.
+- **Eduarda:** the dashboard was an outdated booking/onboarding snapshot and omitted most of the canonical learning record; the corrected projection now contains the seven documented lessons, A1 → A2 teacher-validated state, seven reports and consistent transfer points, without exposing an unresolved agenda item as learner state.
 
-After this reconciliation, both repository records use `student-dashboard-v1.0`, preserve evidence boundaries and project the strongest current portfolio evidence without inventing missing authority.
+Both repository records use `student-dashboard-v1.0`, preserve evidence boundaries and project the strongest current portfolio evidence without inventing missing authority.
 
-## Validation
+## Current regression protection
 
-The production build for commit `4e26f05d67e3f041943f31e6640a4c2f968c9540` passed the relevant gates before deployment:
+Eduarda's current executable contract requires seven lessons, seven reports, CEFR A1 current, CEFR A2 target, three priorities, the `Six-question independence check`, distinct action from Diego, and zero `pending` state in her learner projection.
 
-- Teacher Intelligence static regression: **PASS**;
-- Student Dashboard v1 contract self-test: **PASS**;
-- canonical document → dashboard projection: **PASS** for all 10 profiles;
-- canonical student consistency audit: **PASS**;
-- eligibility boundary self-test: **PASS**;
-- strict canonical validator: **0 errors**.
+The dashboard contract remains part of the production build and GitHub CI contract.
 
-The validator retained six unrelated pre-existing warnings concerning Laura, Maria Fernanda and Rafael. No Diego/Eduarda error or warning remained. The Vercel production deployment reached **READY** and was aliased to the production domains.
-
-## Files changed
+## Files covered by this reconciliation
 
 - `data/students/diegodasiro-gmail-com.firestore.json`
 - `data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json`
-- `data/students/student-core-registry.json`
-- `docs/audits/DIEGO_EDUARDA_DASHBOARD_RECONCILIATION_2026-09-15.md`
+- `tests/fixtures/student-dashboard/eduarda.canonical.fixture.json`
+- `scripts/student-dashboard-contract-self-test.mjs`
+- `scripts/student-dashboard-contract-regression-self-test.mjs`
+- `docs/governance/STUDENT_DASHBOARD_CONTRACT_FREEZE_v1.0.md`
