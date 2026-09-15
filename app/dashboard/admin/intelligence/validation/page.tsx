@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, Clock3, ShieldCheck } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
 import { listTeacherDecisionPackages } from '@/lib/teacher-decision-packages'
+import { listTeacherIntelligenceCandidatePackages } from '@/lib/teacher-intelligence-candidates'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,6 +23,7 @@ export default async function TeacherValidationPage() {
 
   const prisma = getPrismaClient()
   const teacherPackages = listTeacherDecisionPackages()
+  const candidatePackages = listTeacherIntelligenceCandidatePackages()
   const [pending, recentResolved] = await Promise.all([
     prisma.validationTask.findMany({
       where: { status: 'pending' },
@@ -48,9 +50,13 @@ export default async function TeacherValidationPage() {
         </p>
       </header>
 
-      <section className="grid gap-4 sm:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+          <div className="flex items-center gap-2 text-sm font-semibold text-amber-800"><Clock3 className="h-4 w-4" aria-hidden="true" /> Pedagogical pending</div>
+          <div className="mt-2 text-3xl font-bold text-amber-950">{candidatePackages.length}</div>
+        </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Clock3 className="h-4 w-4" aria-hidden="true" /> Pending</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Clock3 className="h-4 w-4" aria-hidden="true" /> Operational pending</div>
           <div className="mt-2 text-3xl font-bold text-slate-950">{pending.length}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -62,10 +68,39 @@ export default async function TeacherValidationPage() {
           <div className="mt-2 text-3xl font-bold text-slate-950">{recentResolved.length}</div>
         </div>
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-authorized packages</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-authorized</div>
           <div className="mt-2 text-3xl font-bold text-emerald-950">{teacherPackages.length}</div>
         </div>
       </section>
+
+      {candidatePackages.length ? (
+        <section className="rounded-2xl border border-amber-200 bg-white shadow-sm">
+          <div className="border-b border-amber-100 px-5 py-4">
+            <h2 className="font-bold text-slate-950">Pending pedagogical authority transitions</h2>
+            <p className="mt-1 text-sm text-slate-500">Evidence, signals, interpretations, boundaries and next verification are prepared first. The teacher then decides the bounded current-state / priority / next-action transition.</p>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {candidatePackages.map((pkg) => (
+              <article key={pkg.packageId} className="px-5 py-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-700"><Clock3 className="h-4 w-4" aria-hidden="true" /> Awaiting teacher decision</div>
+                    <h3 className="mt-1 font-semibold text-slate-950">{pkg.studentName} — V2 source-grounded candidate</h3>
+                    <p className="mt-1 text-sm text-slate-600">{pkg.sourceLessons.length} primary-source lessons · {pkg.classReportsV2.length} rebuilt V2 reports · canonical projection blocked.</p>
+                    <div className="mt-2 text-xs text-slate-500">Prepared {pkg.preparedAt} · legacy preserved · no automatic CEFR change</div>
+                  </div>
+                  <Link
+                    href={`/dashboard/admin/intelligence/validation/candidates/${encodeURIComponent(pkg.studentEmail)}`}
+                    className="inline-flex shrink-0 items-center justify-center rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-100"
+                  >
+                    Review candidate package
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {teacherPackages.length ? (
         <section className="rounded-2xl border border-emerald-200 bg-white shadow-sm">
