@@ -70,11 +70,18 @@ A known implementation/runtime artifact that must not be counted as pedagogical 
 | Failed processing is not applied to Portfolio | Laura trace says `portfolio apply: not applied` and no PortfolioProjection sourced from the run | Specific failed trace | **PROVADO** |
 | Technical failure is not converted into learner judgment | Failed Laura attempt produces no assessment, evidence, review approval, report authority or portfolio projection | Specific trace; does not prove all successful paths | **PROVADO** |
 | Identity is a security boundary | Authorized student directory explicitly states `Identity remains a security boundary` | Demonstrates product rule and implementation surface | **PROVADO** |
+| Production learner dashboard requires authentication | Direct production requests to Diego and Eduarda dashboard URLs were routed to `/login` with the requested student target preserved in the callback | Proves unauthenticated access is blocked; does not by itself prove every post-login cross-account authorization case | **PROVADO** |
 | Canonical student directory exists | Students page explicitly says it reuses the existing canonical student directory rather than creating a parallel profile store | Directory behavior | **PROVADO** |
 | Student projection and runtime lessons are separate surfaces | Students page exposes separate `Student projection` and `Runtime lessons` links | Surface separation | **PROVADO** |
 | Identity, level/target, pipeline state and report count remain distinct dimensions | Student directory displays them as separate fields/states | Does not prove pedagogical provenance of every displayed level/target | **PROVADO** |
 | Pipeline state can be completed, failed or no data independently of student identity | Current directory shows all three states across learners | Operational state only | **PROVADO** |
 | Published report count is distinct from pipeline state | Rafael: completed/1; Gustavo: completed/2; Louise/Laura/Cláudio: failed/0; others: no data/0 | Counts do not prove learning quality | **PROVADO** |
+| Learner-facing canonical projections are deployed for real learner records | Diego and Eduarda repository records use `student-dashboard-v1.0`; the production dashboard route renders current state, priorities, evidence, next action, recent lessons and longitudinal reports from that contract; production deployment reached READY | Demonstrates deployed projection capability for two real learner records; authenticated student-session viewing was not directly witnessed in this audit | **PROVADO** |
+| Longitudinal evidence is reused to determine present priorities and next actions | Diego's four-lesson record supports executive-clarity / accuracy priorities and a 60–90 second executive-response action; Eduarda's seven documented lessons support complete-response / modal / Geography priorities and a six-question independence check | Proves cumulative pedagogical decision support in the canonical records and learner-facing projection; does not prove the next action was executed or caused improvement | **PROVADO** |
+| Personalization is learner-specific rather than one generic state | Diego's projection is professional English for marketing/beauty/global business with A2→B1 pathway; Eduarda's is episodic 6th-grade school support with CEFR deliberately unassessed and different priorities/actions | Proves distinct learner models and projections; does not prove AI autonomously generated the personalization | **PROVADO** |
+| PRIME preserves uncertainty instead of reconstructing missing learning evidence | Eduarda's 3 July encounter remains an agenda-only/pending record with no fabricated class report, while seven evidence-backed lessons are preserved as attended/documented | Specific real learner case; demonstrates selective longitudinal memory and epistemic restraint | **PROVADO** |
+| CEFR is not inferred merely from lesson volume or dashboard presence | Diego retains portfolio-confirmed A2 with B1 target; Eduarda remains `Assessment pending / Not Assessed` despite seven documented pedagogical lessons | Proves evidence-bounded level handling in two contrasting real learner records | **PROVADO** |
+| Published longitudinal history remains available to the learner projection | Diego has four published class reports and Eduarda seven; dashboard code renders the full published history and explicitly states that new lessons do not push older reports out of view | Demonstrates persistence in the deployed projection model; does not prove each student has personally opened every report | **PROVADO** |
 | Longitudinal projection can contain validated state/priorities, evidence, action and memory | Louise pilot shows B1 current/B2 target validated by teacher, three attended lessons, reports, priorities, contextualized action and pedagogical memory | Does not prove action execution or a subsequent closed cycle | **PROVADO NO PREVIEW** |
 | Cumulative personalization in Gustavo case | Reported use of prior lesson evidence to inform priorities/next actions | Primary Lessons 1–4 artifacts were not independently verified in the current audit | **RELATADO / PENDENTE DE VERIFICAÇÃO** |
 | Valéria capture and Candidate creation | Assisted Preview test demonstrated source capture and persisted Candidate | Later stages were not demonstrated | **PROVADO NO PREVIEW** |
@@ -348,6 +355,72 @@ Status: **PROVADO NO PREVIEW**.
 
 ---
 
+# 9A. Diego and Eduarda — production-deployed longitudinal projection evidence
+
+The Diego and Eduarda reconciliations materially strengthen the proof base because they are not just generic interface examples. They are two distinct real learner records whose canonical portfolios are projected through the production `student-dashboard-v1.0` contract.
+
+## Diego da Silva Rodrigues
+
+Canonical record currently preserves:
+
+- four attended lessons: 6 June, 27 June, 12 July and 25 July 2026;
+- portfolio-confirmed current level **CEFR A2** and target **CEFR B1**;
+- longitudinal professional-English context across trade marketing, beauty, retail and global business;
+- current priorities for executive clarity, high-frequency accuracy and active business-language reuse;
+- next action: **60–90 Second Executive Response** using Claim → Reason → Example → Conclusion;
+- four published class reports in longitudinal history;
+- no current live-class link or future event invented when the canonical portfolio cannot verify one.
+
+### Diego — safe proven claim
+
+> **Across four documented lessons, PRIME preserves Diego's professional-learning history and reuses that history to project a current priority set and a concrete next pedagogical action.**
+
+This is evidence of **longitudinal decision support / cumulative personalization at the record-and-projection level**.
+
+It does **not** prove that Diego executed the action, that the action improved his English, or that a new cycle subsequently updated his state.
+
+## Eduarda Coelho Gabriel
+
+Canonical record currently preserves:
+
+- seven lessons with pedagogical content documented across July and August 2026;
+- one additional 3 July agenda encounter explicitly preserved without reconstructed lesson content;
+- episodic/on-demand support for **6th grade, Colégio Notre Dame**;
+- English plus English-medium Geography;
+- no invented CEFR level: current level remains **Assessment pending / Not Assessed**;
+- current priorities for complete English responses with less support, meaningful modal use and explaining Geography concepts in English;
+- next action: **Six-question independence check**, explicitly derived from the prior evidence set;
+- seven published class reports in longitudinal history;
+- official booking flow rather than a stale historical Meet link.
+
+### Eduarda — safe proven claim
+
+> **Across seven documented pedagogical lessons, PRIME preserves Eduarda's learning context, preserves uncertainty where evidence is missing, and uses the longitudinal record to define what should be checked next without inventing mastery or CEFR status.**
+
+This is strong evidence for the thesis that **learning memory can be selective, cumulative and pedagogically actionable without pretending to know more than the evidence supports**.
+
+It does **not** prove independent mastery, a school-grade outcome, causal improvement, or execution of the proposed next action.
+
+## Production validation boundary
+
+The corrected records were included in production builds that passed:
+
+- Student Dashboard v1 contract self-test;
+- canonical document → dashboard projection validation for all 10 profiles;
+- canonical student consistency audit;
+- eligibility boundary self-test;
+- strict canonical validator with **0 errors**.
+
+The production deployment reached **READY** and was aliased to the production domains.
+
+Direct unauthenticated requests to both Diego and Eduarda dashboard URLs were routed to the PRIME Google login surface with the requested dashboard preserved as callback. Therefore the audit directly observed the production authentication boundary.
+
+What this production check does **not** prove is that Diego or Eduarda personally opened the dashboard in an authenticated session during the audit. The proof is of deployed learner-specific projection capability plus the production access boundary, not of individual student usage analytics.
+
+Status for the specific deployed projection / longitudinal decision-support claims above: **PROVADO**.
+
+---
+
 # 10. Gustavo — cumulative personalization evidence boundary
 
 The Gustavo case has been reported as demonstrating use of prior lesson information to inform subsequent pedagogical priorities/actions.
@@ -461,11 +534,11 @@ The following architectural behavior is strongly supported:
 
 However, the complete chain is **not demonstrated universally and end-to-end** across the current evidence set.
 
-What is demonstrated is the existence and separation of important boundaries and several concrete projections/pilot states.
+What is now additionally demonstrated is that the authorized-projection side is not merely theoretical: real learner records can preserve multiple lessons, maintain evidence boundaries, carry distinct current priorities and expose a next action through the production dashboard contract.
 
 The strongest current claim is therefore:
 
-> **PRIME is an operating learning-intelligence product being developed and validated inside a real educational environment. Its runtime preserves provenance, separates technical processing from pedagogical authority, keeps AI outputs subordinate to teacher validation, and prevents unsupported downstream states from being fabricated.**
+> **PRIME is an operating learning-intelligence product being developed and validated inside a real educational environment. Its runtime preserves provenance, separates technical processing from pedagogical authority, keeps AI outputs subordinate to teacher validation, and can project real longitudinal learner records into evidence-bounded current priorities and next actions without fabricating unsupported state.**
 
 ---
 
@@ -481,6 +554,8 @@ Do not claim that:
 - every Evidence Candidate becomes canonical Evidence;
 - every AI proposal becomes a teacher decision;
 - every recommendation becomes a teaching action;
+- a projected next action has necessarily been executed;
+- dashboard deployment proves that a student personally viewed the page;
 - PRIME has proven causal improvement in motivation;
 - PRIME has proven causal improvement in retention;
 - PRIME has proven causal improvement in proficiency;
@@ -508,7 +583,9 @@ And:
 
 > **The challenge is not only to personalize learning. It is to make personalization cumulative.**
 
-The evidence currently supports this as the product thesis and supports several concrete pieces of the mechanism. It does not yet establish causal educational impact.
+The Diego and Eduarda cases now provide concrete support for the mechanism behind that thesis: prior evidence is preserved across multiple lessons, current priorities differ by learner, and a next action is explicitly grounded in the accumulated record while uncertainty remains visible where evidence is insufficient.
+
+The evidence still does not establish causal educational impact.
 
 ---
 
@@ -521,6 +598,13 @@ The evidence currently supports this as the product thesis and supports several 
 - AI proposal ≠ Teacher Decision;
 - AI proposal ≠ Educational Action;
 - canonical student directory and identity boundary;
+- production authentication boundary for learner dashboards;
+- production-deployed `student-dashboard-v1.0` projections for distinct real learner records;
+- longitudinal evidence reused to define current priorities and next-action guidance in Diego and Eduarda;
+- learner-specific projections rather than one generic learner state;
+- preservation of uncertainty / missing evidence without fabricated reconstruction in Eduarda;
+- evidence-bounded CEFR handling across contrasting learner records;
+- persistent published longitudinal history in the learner projection model;
 - separation of identity, pipeline status and report state;
 - provenance of source and processing attempts;
 - explicit technical failure handling;
@@ -536,16 +620,17 @@ The evidence currently supports this as the product thesis and supports several 
 
 ### Demonstrated in preview / pilot scope
 
-- longitudinal projection with teacher-validated state/priorities;
-- contextualized teaching action displayed in projection;
-- pedagogical memory displayed across lessons;
-- source capture and Candidate persistence in assisted Preview.
+- Louise longitudinal projection with teacher-validated state/priorities;
+- contextualized teaching action displayed in Louise projection;
+- pedagogical memory displayed across Louise lessons;
+- source capture and Candidate persistence in assisted Valéria Preview.
 
 ### Still requiring primary-artifact verification
 
 - Gustavo Lessons 1–4 as evidence of cumulative personalization;
 - broader real-student closed cycles;
-- subsequent Candidate/review/state-update cycles.
+- subsequent Candidate/review/state-update cycles;
+- authenticated student-session witness for Diego/Eduarda personal dashboard usage.
 
 ### Not demonstrated
 
@@ -587,4 +672,4 @@ The Git history preserves the evolution of implementation. This document preserv
 
 When new evidence is verified, update this register rather than creating another disconnected proof list.
 
-**Last consolidated:** 15 September 2026.
+**Last consolidated:** 15 September 2026 — Diego/Eduarda production projection evidence added.
