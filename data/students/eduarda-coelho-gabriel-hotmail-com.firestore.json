@@ -70,8 +70,8 @@
     {"id":"complete-responses","title":"Complete Responses","status":"Needs Focus","insight":"Return to student-authored production; August tasks frequently required teacher support or models.","accent":"yellow"},
     {"id":"modals","title":"Modals in Context","status":"Needs Focus","insight":"Can and should were practiced with models; independent choice and construction still need verification.","accent":"yellow"},
     {"id":"geography","title":"Geography in English","status":"Needs Focus","insight":"Continue explaining concepts in complete sentences, not only recognizing key terms.","accent":"yellow"},
-    {"id":"independent-listening","title":"Independent Listening","status":"Not Assessed","insight":"Guided interaction does not substitute for a specific independent-listening assessment.","accent":"blue"},
-    {"id":"cefr","title":"Overall CEFR Level","status":"Not Assessed","insight":"No formal level instrument or teacher decision is recorded in the current portfolio.","accent":"blue"}
+    {"id":"independent-listening","title":"Independent Listening","status":"Not Assessed","insight":"Not enough evidence is available to assess independent listening; guided interaction does not substitute for a specific assessment.","accent":"blue"},
+    {"id":"cefr","title":"Overall CEFR Level","status":"Not Assessed","insight":"Assessment pending: no formal level instrument or teacher decision is recorded in the current portfolio.","accent":"blue"}
   ],
   "attendanceOverview": [
     {"id":"class-2026-07-02","lessonId":"eduarda-2026-07-02","date":"July 2, 2026","status":"present","title":"English: routines and advice","summary":"Present Simple, do/does, frequency and should/shouldn't were practiced; independent mastery was not measured."},
