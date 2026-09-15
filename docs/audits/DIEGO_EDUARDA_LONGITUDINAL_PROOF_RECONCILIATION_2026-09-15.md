@@ -52,7 +52,7 @@ It contains:
 - explicit evidence tying the follow-up to the longitudinal portfolio evidence;
 - consistent report transfer points using `Evidence → Boundary/Interpretation → Next verification`.
 
-The 3 July agenda-only source record is **not projected as a learner lesson**, generates **no class report**, and contributes no synthetic pedagogical state.
+The canonical source also contains a 3 July agenda record. That fact is preserved in the repository as `sourceProvenance.nonProjectedRecords`, with `classification = source-only`. It is **not projected as a learner lesson**, generates **no class report**, and contributes no synthetic pedagogical state.
 
 ## 4. Same engine contract, different learner result
 
@@ -69,14 +69,19 @@ The two next-action IDs and the two current objectives are asserted to be differ
 
 ## 5. Evidence-bounded behavior
 
-Eduarda demonstrates the final clause of the claim without exposing an unresolved source item as learner state:
+Eduarda demonstrates the final clause of the claim through a deliberate source/projection separation:
 
 - only the seven pedagogically documented lessons enter the learner-facing projection;
-- the 3 July agenda-only source record is excluded from the projected lesson history;
+- the 3 July agenda fact remains preserved as source provenance;
+- the source-only 3 July record is excluded from learner lesson history;
 - no report is created for 3 July;
 - A1 remains current while A2 remains a target;
 - guided practice is not promoted to independent mastery;
 - the recommended next action remains unexecuted until new evidence exists.
+
+The required rule is:
+
+`source provenance ≠ learner lesson ≠ pedagogical evidence ≠ learner-facing projection`
 
 Diego's projection similarly preserves the boundary between current level and target level rather than claiming advancement.
 
@@ -95,7 +100,7 @@ They now verify:
 1. canonical longitudinal profile/source declarations;
 2. `student-dashboard-v1.0` for both learners;
 3. Diego's 4 lessons / 4 reports;
-4. Eduarda's 7 lessons / 7 reports;
+4. Eduarda's 7 learner-facing lessons / 7 reports;
 5. priorities for both learners;
 6. distinct next actions;
 7. action authorization/status boundaries;
@@ -103,9 +108,11 @@ They now verify:
 9. Eduarda A1/A2 with both states teacher-validated and A2 treated only as target;
 10. absence of a 3 July learner lesson;
 11. absence of a 3 July class report;
-12. absence of any `pending` state in Eduarda's learner projection;
-13. standardized transfer points across all seven Eduarda class reports;
-14. distinct learner objectives.
+12. preservation of the 3 July source fact in `sourceProvenance.nonProjectedRecords`;
+13. classification of that source record as `source-only`;
+14. regression failure if that provenance is removed or promoted to learning evidence;
+15. standardized transfer points across all seven Eduarda class reports;
+16. distinct learner objectives.
 
 Historical proof baseline:
 
@@ -123,9 +130,11 @@ The actual repository records for Diego and Eduarda demonstrate that PRIME can t
 
 The two learners do not receive the same current objective, priority set or next action. The test asserts this explicitly.
 
-### PROVED — unsupported source material is not promoted into learner state
+### PROVED — source truth is preserved without pedagogical promotion
 
-Eduarda's agenda-only 3 July record does not become a learner-facing lesson or class report. Her current A1 state is not silently promoted to target A2. Diego's target B1 is likewise not presented as achieved.
+Eduarda's 3 July agenda fact remains auditable as source provenance while being excluded from learner-facing lesson/report state. Her current A1 state is not silently promoted to target A2. Diego's target B1 is likewise not presented as achieved.
+
+This is stronger than either erasing the source record or displaying it as an unresolved learner item: the provenance remains intact while the learner projection contains only authorized pedagogical material.
 
 ## 8. Still not proved by this witness
 
