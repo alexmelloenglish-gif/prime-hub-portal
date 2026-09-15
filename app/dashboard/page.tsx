@@ -98,6 +98,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const attendedLessons = [...reconciledAttendance]
     .filter((entry) => entry.status === 'present')
     .sort((a, b) => (dateTimestamp(a.date) ?? 0) - (dateTimestamp(b.date) ?? 0))
+  const pendingAttendance = [...reconciledAttendance]
+    .filter((entry) => entry.status === 'pending')
+    .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
 
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
   const recentAttendance = reconciledAttendance.filter(
@@ -152,6 +155,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A focused view of your authorized learning record: current state, recent evidence, useful memory and the next action.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
+              {pendingAttendance.length ? <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-950">{pendingAttendance.length} pending evidence record{pendingAttendance.length === 1 ? '' : 's'}</span> : null}
               <span className="rounded-full border border-violet-300 bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-950">Full class-report history available below</span>
             </div>
           </div>
@@ -198,6 +202,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <section id="attendance-overview" className="space-y-3">
               {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{lesson.title}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
             </section>
+            {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">EVIDENCE BOUNDARY</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Pending / Evidence Incomplete</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records remain in the learning history without being converted into a class report or learning claim.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div></section> : null}
             {recentReports.length ? <section className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Recent Report Highlights</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={`recent-${report.id}`} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p></article>)}</div></section> : null}
           </div>
           <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} /></div>
