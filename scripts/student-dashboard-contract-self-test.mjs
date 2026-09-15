@@ -5,6 +5,12 @@ const root = new URL('../', import.meta.url)
 const italo = JSON.parse(
   await readFile(new URL('data/students/italo-pires-gmail-com.firestore.json', root), 'utf8')
 )
+const diego = JSON.parse(
+  await readFile(new URL('data/students/diegodasiro-gmail-com.firestore.json', root), 'utf8')
+)
+const eduarda = JSON.parse(
+  await readFile(new URL('data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json', root), 'utf8')
+)
 const dashboardSource = await readFile(new URL('app/dashboard/page.tsx', root), 'utf8')
 const primitiveSource = await readFile(new URL('components/dashboard/student-dashboard-primitives.tsx', root), 'utf8')
 const progressStateSource = await readFile(new URL('lib/progress-states.ts', root), 'utf8')
@@ -30,6 +36,65 @@ assert.equal(italo.grammarOverview.focusPoints.length, 3)
 assert.equal(italo.classReports.length, 1)
 assert.equal(italo.classReports[0].contentStatus, 'published')
 assert.ok(italo.classReports[0].vocabulary.length > italo.vocabularyBank.length)
+
+// Longitudinal proof witnesses: the two real learner snapshots used in the
+// 15/09/2026 reconciliation must carry history, current interpretation,
+// evidence-bounded priorities and a distinct next action through the same
+// student-dashboard-v1.0 projection contract.
+assert.equal(diego.studentName, 'Diego da Silva Rodrigues')
+assert.equal(diego.dashboardSourcePolicy, 'authorized_repository_snapshot')
+assert.equal(diego.profileCompleteness, 'canonical_longitudinal_profile')
+assert.equal(diego.profileSource.sourceAuthority, 'canonical_portfolio')
+assert.equal(diego.canonicalProjection.version, 'student-dashboard-v1.0')
+assert.equal(diego.attendanceOverview.filter((lesson) => lesson.status === 'present').length, 4)
+assert.equal(diego.classReports.length, 4)
+assert.equal(diego.lessonRecords.length, 4)
+assert.equal(diego.canonicalProjection.priorities.length, 3)
+assert.equal(diego.canonicalProjection.nextAction.title, '60–90 Second Executive Response')
+assert.equal(diego.canonicalProjection.nextAction.authorizationStatus, 'portfolio-confirmed')
+assert.equal(diego.canonicalProjection.nextAction.status, 'portfolio-confirmed')
+assert.equal(diego.canonicalProjection.currentState.level.status, 'portfolio-confirmed')
+assert.equal(diego.canonicalProjection.currentState.targetLevel.status, 'portfolio-confirmed')
+assert.equal(diego.canonicalProjection.currentState.level.value, 'CEFR A2')
+assert.equal(diego.canonicalProjection.currentState.targetLevel.value, 'CEFR B1')
+assert.equal(diego.cumulativeImpact.evidence.length, 3)
+assert.ok(diego.cumulativeImpact.summary.includes('Four attended lessons'))
+assert.ok(diego.canonicalProjection.nextAction.evidence.includes('canonical Portfolio v1.0'))
+
+assert.equal(eduarda.studentName, 'Eduarda Coelho Gabriel')
+assert.equal(eduarda.dashboardSourcePolicy, 'authorized_repository_snapshot')
+assert.equal(eduarda.profileCompleteness, 'canonical_longitudinal_profile')
+assert.equal(eduarda.profileSource.sourceAuthority, 'canonical_portfolio')
+assert.equal(eduarda.canonicalProjection.version, 'student-dashboard-v1.0')
+assert.equal(eduarda.attendanceOverview.filter((lesson) => lesson.status === 'present').length, 7)
+assert.equal(eduarda.classReports.length, 7)
+assert.equal(eduarda.canonicalProjection.priorities.length, 3)
+assert.equal(eduarda.canonicalProjection.nextAction.title, 'Six-question independence check')
+assert.equal(eduarda.canonicalProjection.nextAction.authorizationStatus, 'qualified')
+assert.equal(eduarda.canonicalProjection.nextAction.status, 'qualified')
+assert.equal(eduarda.canonicalProjection.currentState.level.value, 'Assessment pending')
+assert.equal(eduarda.canonicalProjection.currentState.targetLevel.value, 'School-task performance target pending')
+assert.equal(eduarda.canonicalProjection.currentState.level.status, 'portfolio-confirmed')
+assert.equal(eduarda.canonicalProjection.currentState.targetLevel.status, 'portfolio-confirmed')
+assert.equal(eduarda.canonicalProjection.currentState.level.value.includes('CEFR'), false)
+assert.equal(eduarda.canonicalProjection.currentState.targetLevel.value.includes('CEFR'), false)
+const eduardaUnknownEncounter = eduarda.attendanceOverview.find((lesson) => lesson.date === 'July 3, 2026')
+assert.ok(eduardaUnknownEncounter)
+assert.equal(eduardaUnknownEncounter.status, 'pending')
+assert.equal(eduardaUnknownEncounter.summary.includes('not reconstructed'), true)
+assert.equal(eduarda.classReports.some((report) => report.lessonId === 'eduarda-2026-07-03'), false)
+assert.ok(eduarda.canonicalProjection.nextAction.evidence.includes('canonical portfolio'))
+
+// The two projections are intentionally different; personalization is not a
+// single hard-coded action shared across learners.
+assert.notEqual(
+  diego.canonicalProjection.nextAction.id,
+  eduarda.canonicalProjection.nextAction.id,
+)
+assert.notEqual(
+  diego.canonicalProjection.currentState.objective.value,
+  eduarda.canonicalProjection.currentState.objective.value,
+)
 
 const manageIds = new Set(italo.manageSpace.map((item) => item.id))
 assert.deepEqual([...manageIds].sort(), ['portfolio', 'support'])
@@ -88,4 +153,4 @@ assert.ok(!studentDataSource.includes('pipeline-draft-'))
 assert.ok(studentDataSource.includes("asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot'"))
 assert.ok(studentDataSource.includes("reason: 'firestore_unavailable'"))
 
-console.log('Student Dashboard v1 contract self-test passed: shared visual system + frozen four-state PRIME progress taxonomy.')
+console.log('Student Dashboard v1 contract self-test passed: shared visual system + Diego/Eduarda longitudinal proof witnesses + frozen four-state PRIME progress taxonomy.')
