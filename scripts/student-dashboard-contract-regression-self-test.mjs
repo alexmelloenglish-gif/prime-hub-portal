@@ -43,7 +43,14 @@ if (eduarda.canonicalProjection.nextAction.title !== 'Six-question independence 
 const july3 = eduarda.lessonRecords.find((item) => item.lessonId.includes('2026-07-03'))
 if (!july3 || july3.status !== 'pending' || july3.report !== null) fail('Eduarda 3 July incomplete encounter must remain pending with no report')
 if (eduarda.canonicalProjection.currentState.level.value === eduarda.canonicalProjection.currentState.targetLevel.value) fail('Eduarda current level cannot be silently promoted to target')
-if (diego.canonicalProjection.nextAction.title === eduarda.canonicalProjection.nextAction.title) fail('Diego and Eduarda must keep distinct next actions')
+
+function crossLearnerChecks(diegoFixture, eduardaFixture) {
+  if (diegoFixture.canonicalProjection.nextAction.title === eduardaFixture.canonicalProjection.nextAction.title) {
+    fail('Diego and Eduarda must keep distinct next actions')
+  }
+}
+
+crossLearnerChecks(diego, eduarda)
 
 function semanticChecks(fixture, label) {
   if (label === 'Eduarda') {
@@ -60,10 +67,18 @@ function expectSchemaFailure(label, mutate) {
   try { validate(copy, schema, label) } catch { failed = true }
   if (!failed) fail(`${label} mutation was accepted`)
 }
+
 function expectSemanticFailure(label, mutate, targetLabel) {
   const copy = JSON.parse(JSON.stringify(mutate()))
   let failed = false
   try { semanticChecks(copy, targetLabel) } catch { failed = true }
+  if (!failed) fail(`${label} mutation was accepted`)
+}
+
+function expectCrossLearnerFailure(label, mutateEduarda) {
+  const copy = JSON.parse(JSON.stringify(mutateEduarda()))
+  let failed = false
+  try { crossLearnerChecks(diego, copy) } catch { failed = true }
   if (!failed) fail(`${label} mutation was accepted`)
 }
 
@@ -74,9 +89,6 @@ expectSemanticFailure('Eduarda silent promotion to A2', () => { const x = struct
 expectSemanticFailure('Eduarda target mutation', () => { const x = structuredClone(eduarda); x.canonicalProjection.currentState.targetLevel.value = 'CEFR B1'; return x }, 'Eduarda')
 expectSemanticFailure('completed unexecuted action', () => { const x = structuredClone(diego); x.canonicalProjection.nextAction.status = 'completed'; return x }, 'Diego')
 expectSemanticFailure('invented 3 July report', () => { const x = structuredClone(eduarda); x.lessonRecords.find((item) => item.lessonId.includes('2026-07-03')).report = 'invented-report'; return x }, 'Eduarda')
-
-const swappedAction = structuredClone(eduarda)
-swappedAction.canonicalProjection.nextAction.title = diego.canonicalProjection.nextAction.title
-if (swappedAction.canonicalProjection.nextAction.title === diego.canonicalProjection.nextAction.title) fail('cross-learner action swap was accepted')
+expectCrossLearnerFailure('cross-learner action swap', () => { const x = structuredClone(eduarda); x.canonicalProjection.nextAction.title = diego.canonicalProjection.nextAction.title; return x })
 
 console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + teacher-corrected Eduarda A1→A2 state + negative semantic mutations.')
