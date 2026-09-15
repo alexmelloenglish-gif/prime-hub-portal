@@ -97,7 +97,14 @@ for (const student of registry.students) {
 }
 
 const vercelConfig = JSON.parse(await readFile(new URL('vercel.json', root), 'utf8'))
-assert.ok(!Array.isArray(vercelConfig.crons) || vercelConfig.crons.length === 0, 'Legacy Vercel cron must remain disabled during repair')
+const configuredCrons = Array.isArray(vercelConfig.crons) ? vercelConfig.crons : []
+const allowedOperationalCronPaths = new Set(['/api/cron/meet-attendance'])
+for (const cron of configuredCrons) {
+  assert.ok(
+    allowedOperationalCronPaths.has(String(cron?.path ?? '')),
+    `Only explicitly authorized operational reconciliation crons may run while the pedagogical pipeline remains frozen: ${cron?.path ?? 'missing-path'}`
+  )
+}
 assert.ok(!JSON.stringify(vercelConfig).includes('/api/ingest'), 'Legacy /api/ingest rewrite must remain removed')
 
 const pipelineFreeze = await readFile(new URL('lib/pipeline-freeze.ts', root), 'utf8')
