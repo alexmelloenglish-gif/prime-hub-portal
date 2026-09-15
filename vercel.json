@@ -2,6 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "buildCommand": "prisma migrate deploy && npm run build",
+  "crons": [
+    {
+      "path": "/api/cron/meet-attendance",
+      "schedule": "*/15 * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/dashboard/student",
