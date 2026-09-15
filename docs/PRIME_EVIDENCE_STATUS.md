@@ -7,9 +7,21 @@
 
 | Caso | Contribuição | Nível de verificação |
 | --- | --- | --- |
-| Piloto G | Memória de quatro aulas preservada, conectada ao estado atual, às prioridades e a uma próxima ação registrada | Portfólio, fontes de aula e snapshots antes/depois inspecionados |
+| Piloto G | Memória de quatro aulas preservada, conectada ao estado atual, às prioridades e a uma próxima ação registrada | Portfólio, fontes de aula e snapshots antes/depois inspecionados; texto do dashboard fornecido corrobora a apresentação |
 | Piloto R | Histórico ligado a prioridades, atividade específica e entradas exibidas como memória pessoal | Texto do dashboard fornecido pelo usuário; leitura direta do navegador não realizada |
 | Piloto V | Captura de fonte real e Candidate assistido persistido em Preview | Código e logs de execução inspecionados; conteúdo do Candidate predefinido |
+
+## Novos dashboards incorporados
+
+| Caso | O que acrescenta | Limite |
+| --- | --- | --- |
+| Piloto I | Uma aula gera objetivo contextualizado, prioridades e tarefa estruturada | Personalização inicial; não demonstra acúmulo entre aulas nem envio da tarefa |
+| Piloto D | Contexto de várias aulas, vocabulário e feedback, com lacunas explícitas nos campos validados | Projeção parcial; orientação no feedback não equivale a prioridade/ação autorizada |
+| Piloto G | Texto da interface exibe as quatro aulas, a prioridade de reduzir apoio e a ação pós-avaliação | Corrobora os artefatos já auditados; não demonstra execução do acompanhamento |
+
+Os três textos foram fornecidos pelo usuário em Admin preview. Não equivalem a observação direta do navegador ou ação autenticada do aluno.
+
+**Pendência concreta do Piloto D:** reconciliar feedback com as seções que informam ausência de prioridade e ação validadas. Não preencher por inferência. O texto copiado não mostra a seção completa de relatórios; verificar antes de concluir que o histórico está ausente.
 
 ## O que o Piloto R acrescentou
 
