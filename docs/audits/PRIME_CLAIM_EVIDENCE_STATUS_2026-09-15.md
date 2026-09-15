@@ -3,7 +3,9 @@
 **Audit date:** 2026-09-15  
 **Status:** DATED AUDIT RECORD — evidence scope, not product-wide certification  
 **Repository baseline:** `bdd76e2d387259f3fc5f33858d8f8549a92f2b01`  
-**Scope:** cumulative personalization, longitudinal memory, Pilot V Preview witness, authority chain and impact claims.
+**Scope:** cumulative personalization, longitudinal memory, Pilot V Preview witness, Pilot R supplied dashboard evidence, authority chain and impact claims.
+
+**Start here:** [Current evidence summary](../PRIME_EVIDENCE_STATUS.md).
 
 ## 1. Conclusion and interpretation
 
@@ -32,10 +34,10 @@ Sources: [main baseline](https://github.com/alexmelloenglish-gif/prime-hub-porta
 
 Two different witness results appeared in the inspected build logs:
 
-- Normal capture witness: `VALERIA_BUILD_WITNESS_ERROR Source identity is not uniquely resolved (0 registry matches)`.
-- Assisted direct witness: `VALERIA_DIRECT_WITNESS_RESULT`, authority `candidate`, `requiresReview=true`, status `review_required`, lesson identity `operator_supplied_unproven`, automatic publication disabled, generator `chatgpt_assisted_preview_witness`, Gemini status `blocked_missing_preview_credential`.
+- Normal capture witness: `BUILD_WITNESS_ERROR (marker abbreviated) Source identity is not uniquely resolved (0 registry matches)`.
+- Assisted direct witness: `DIRECT_WITNESS_RESULT (marker abbreviated)`, authority `candidate`, `requiresReview=true`, status `review_required`, lesson identity `operator_supplied_unproven`, automatic publication disabled, generator `chatgpt_assisted_preview_witness`, Gemini status `blocked_missing_preview_credential`.
 
-The [direct witness source](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/d08ee8cccad3e23188c1bbb50c9cd096feb83e2c/app/internal-preview/valeria-direct-witness/page.tsx) reads the real Drive source, hashes it and passes a predefined artifact to Candidate persistence. It runs during Preview static page generation. Its successful log follows the persistence service return; the service can create or reuse an existing Candidate, so that log does not distinguish a new insertion from idempotent retrieval.
+The [direct witness source](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/d08ee8cccad3e23188c1bbb50c9cd096feb83e2c) reads the real Drive source, hashes it and passes a predefined artifact to Candidate persistence. It runs during Preview static page generation. Its successful log follows the persistence service return; the service can create or reuse an existing Candidate, so that log does not distinguish a new insertion from idempotent retrieval.
 
 The source preserves unreliable speaker attribution and unproven lesson identity. No proficiency conclusion follows from this witness.
 
@@ -61,7 +63,7 @@ This audit read code, repository metadata and existing deployment logs. It did n
 
 The [authority service](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/d08ee8cccad3e23188c1bbb50c9cd096feb83e2c/lib/intelligence/authority-service.ts) separates transitions and ends projection authorization at `authorized_not_projected`.
 
-The [registry at the audited main](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/bdd76e2d387259f3fc5f33858d8f8549a92f2b01/data/students/student-core-registry.json) records Pilot V as prospect with null activation authority. Profile existence or an active profile flag is not learner activation authority.
+The [registry at the audited main](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/bdd76e2d387259f3fc5f33858d8f8549a92f2b01) records Pilot V as prospect with null activation authority. Profile existence or an active profile flag is not learner activation authority.
 
 ## 5. Tests and existing checkpoints
 
@@ -82,6 +84,8 @@ The [Runtime Verification Register](../PRIME_RUNTIME_VERIFICATION_REGISTER.md) s
 | Pilot V real-source capture and assisted Candidate persistence | Demonstrated in controlled Preview execution |
 | Pilot V full pipeline through learner-facing publication | Not demonstrated |
 | Pilot V subsequent attempt → new Candidate → second review | Not demonstrated |
+| Pilot R longitudinal state → priority → activity | Supported by user-supplied dashboard text; not independently browser-verified |
+| Pilot R displayed locked-sentence entries | Present in supplied text; authorship, durability and downstream review unverified |
 | General or universal cumulative personalization capability | Not established by these audited cases |
 | Complete Engine E2E operation | Not demonstrated by the examined evidence |
 | Causal improvement in motivation, retention or proficiency | Not demonstrated by the material presented |
@@ -95,22 +99,16 @@ The initial synthesis-only classification is superseded by this follow-up inspec
 
 **Primary source register:** Private documents were inspected through the connected Drive on 2026-09-15. Direct links, document IDs, personal contacts and transcript content are omitted from this public record. Case labels are anonymized; existing public code/commit references provide repository traceability.
 
-| Artifact | Reference | Audit use |
-| --- | --- | --- |
-| Canonical learning portfolio v1.0 | Private canonical portfolio inspected; link omitted | Four preserved reports, current state, teacher feedback, reduced-support priority and post-test follow-up |
-| Lesson 1, 2026-08-18 | Private lesson source inspected; link omitted | Interest elicitation around 00:17:40–00:19:59; short-answer support |
-| Lesson 2, 2026-08-25 | Private lesson source inspected; link omitted | Earlier interest reused around 00:04:13–00:09:03; explicit previous-lesson material recap at 00:15:22 |
-| Lesson 3, 2026-09-01 | Private lesson source inspected; link omitted | Supported past-tense practice and correction around 00:10:48–00:20:28 |
-| Lesson 4, 2026-09-08 | Private lesson source inspected; link omitted | Modeling around 00:28:49; reconstruction around 00:47:25–00:49:58; supported final recall around 00:51:44 |
+Four lesson-source documents and a canonical portfolio were inspected privately. They establish interest reuse, supported language practice, a previous-session recap and supported retrieval. Source identifiers, dates, timestamps and transcript excerpts are not reproduced in this public summary.
 
 The lesson documents contain machine-generated transcripts and, for several lessons, generated notes. They are primary records of the interaction available to this audit, not verified verbatim audio. Transcription noise limits interpretation of isolated utterances. The audit did not listen to recordings.
 
 **Versioned evidence chain:**
 
 - [Lesson 3 update, 8d75cf9](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/8d75cf9e437da42ad63ca078c25e5b8ff8c94368) preserves three reports and cumulative priorities. Its level fields were subsequently corrected; do not interpret those corrections as learner regression.
-- [Corrected pre-Lesson-4 snapshot, 7b7cd1c](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/7b7cd1c161e5946ef07c68d851b66ac7490004e6/data/students/carolvdrummond-gmail-com.firestore.json) sets the next action to prepare for the September 8 school-content lesson.
+- [Corrected pre-Lesson-4 snapshot, 7b7cd1c](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/7b7cd1c161e5946ef07c68d851b66ac7490004e6) sets the next action to prepare for the September 8 school-content lesson.
 - [Lesson 4 update, 79dfb7a](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/79dfb7a5cb8329ae4e10bc50ade2e59ab6a95121) preserves prior reports, adds report 4, creates priority-retrieval (retrieval with decreasing support) and changes the next action to post-science-test-follow-up. The new action explicitly compares later independent recall with supported Lesson 4 performance. The corrected level remains unchanged across these two snapshots.
-- [Audited main profile](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/bdd76e2d387259f3fc5f33858d8f8549a92f2b01/data/students/carolvdrummond-gmail-com.firestore.json) retains this four-lesson state. [Student data code](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/bdd76e2d387259f3fc5f33858d8f8549a92f2b01/lib/student-data.ts) imports the profile and supports its authorized repository snapshot.
+- [Audited main profile](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/bdd76e2d387259f3fc5f33858d8f8549a92f2b01) retains this four-lesson state. [Student data code](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/bdd76e2d387259f3fc5f33858d8f8549a92f2b01/lib/student-data.ts) imports the profile and supports its authorized repository snapshot.
 
 **What is demonstrated:** preserved cross-session memory, repeated use of learner-relevant context, explicit cumulative state/priorities and a next action derived from the documented evidence. This goes beyond an unverified summary.
 
@@ -129,15 +127,45 @@ Manual or assisted operation can be end-to-end. The missing proof is the chain o
 
 Impact claims additionally require suitable outcome measures, baseline/time window and a comparison or other defensible attribution design. Context continuity alone establishes no causal educational effect.
 
+## 7A. Pilot R — longitudinal dashboard and action-memory evidence
+
+**Added:** 2026-09-15. **Evidence type:** user-supplied text copied from the displayed dashboard. Browser inspection failed; this is not an independently observed browser session or a database persistence audit. Personal identifiers, contact details and submitted sentences are omitted.
+
+### What this case adds
+
+| Link | Evidence in the supplied dashboard text | Supported finding |
+| --- | --- | --- |
+| History → current state | Reports across multiple months inform the current fluency/precision interpretation | Longitudinal learning context is presented as current state |
+| Evidence → priority | Specific earlier reports are cited for tense selection, sentence framing and vocabulary reuse | Priorities have explicit historical grounding |
+| Priority → action | Repeated vocabulary-recycling recommendations become a five-item personal-sentence activity | A concrete practice action is connected to the documented priority |
+| Action → displayed memory | The activity displays entries under “Your locked sentences” | Supplied interface text shows populated action-memory entries; durability and authorship remain unverified |
+| Missing evidence → explicit limit | Attendance without a detailed report does not generate a new learning-development claim | The projection preserves a visible evidence gap |
+
+**Contribution:** Pilot R adds interface-level evidence of longitudinal personalization connected to an actionable practice surface and displayed memory entries. It is not merely a generic dashboard layout. It complements Pilot G's primary-artifact chain and Pilot V's Preview capture witness; it does not inherit either case's verification level.
+
+**Authorship limit:** The supplied text explicitly identifies an administrator preview. Entries may have been created during administrative testing. No learner-authored attempt, authenticated submitting actor, submission timestamp or current database state was independently established.
+
+**Reporting limit:** The text presents eleven attended lessons and ten detailed reports, with the missing report explicitly acknowledged. Use “all available published reports preserved, with explicit gaps,” not “a complete report for every attended lesson.”
+
+**Still not demonstrated:** a displayed entry becoming a new Candidate, a subsequent teacher review, a linked decision updating learning state, or later learner action. The projection's teacher-validation labels are documentary indications, not an independently verified authority-transition trace.
+
+### Evidence required to close the subsequent loop
+
+Record a linked chain: prior evidence → teacher-authorized activity → actual learner submission (actor/date/activity ID) → new Candidate → teacher review and decision → maintained or revised state/next action. A justified decision to retain the current focus also counts as a decision; a visible sentence alone does not.
+
+### Safe claim for this case
+
+The supplied Pilot R dashboard text presents longitudinal evidence linked to current priorities, a concrete practice activity and displayed personal-memory entries. Learner authorship, durable persistence and subsequent teacher review have not been independently verified.
+
 ## 8. Safe professional wording
 
 ### Português
 
-No piloto auditado de Pilot G, o PRIME demonstra personalização cumulativa documentada: evidências de quatro aulas permanecem preservadas, informam o estado atual e orientam prioridades e uma próxima ação pedagógica registrada. A demonstração se refere a um caso controlado, mediado pelo professor; não comprova execução do ciclo fechado completo pelo Engine nem impacto causal educacional. No caso Pilot V, a evidência verificada permanece limitada à captura de fonte real e persistência de Candidate assistido em Preview, registrado como review_required em 12/09/2026, sem transições posteriores demonstradas nesta auditoria.
+No piloto G auditado, o PRIME demonstra personalização cumulativa documentada: evidências de quatro aulas permanecem preservadas, informam o estado atual e orientam prioridades e uma próxima ação pedagógica registrada. A demonstração se refere a um caso controlado, mediado pelo professor; não comprova execução do ciclo fechado completo pelo Engine nem impacto causal educacional. No caso Pilot V, a evidência verificada permanece limitada à captura de fonte real e persistência de Candidate assistido em Preview, registrado como review_required em 12/09/2026, sem transições posteriores demonstradas nesta auditoria.
 
 ### English
 
-In the audited Pilot G pilot, PRIME demonstrates documented cumulative personalization: evidence from four lessons is preserved, informs current learning state and guides priorities and a recorded next pedagogical action. This is a controlled, teacher-mediated case; it does not establish the Engine's complete closed-loop execution or causal educational impact. For Pilot V, verified evidence remains limited to real-source capture and assisted Candidate persistence in Preview, recorded as review_required on September 12, 2026, with no subsequent transitions demonstrated in this audit.
+In the audited Pilot G case, PRIME demonstrates documented cumulative personalization: evidence from four lessons is preserved, informs current learning state and guides priorities and a recorded next pedagogical action. This is a controlled, teacher-mediated case; it does not establish the Engine's complete closed-loop execution or causal educational impact. For Pilot V, verified evidence remains limited to real-source capture and assisted Candidate persistence in Preview, recorded as review_required on September 12, 2026, with no subsequent transitions demonstrated in this audit.
 
 ## 9. Change boundary
 
