@@ -43,24 +43,17 @@ function normalizeName(value: string | undefined): string {
 async function getMeetAccessToken(): Promise<string> {
   const configured = process.env.GOOGLE_MEET_ACCESS_TOKEN?.trim()
   if (configured) return configured
-
   if (!ORGANIZER_EMAIL) throw new Error('PRIME_MEET_ORGANIZER_EMAIL_NOT_CONFIGURED')
 
   const prisma = getPrismaClient()
   const account = await prisma.account.findFirst({
-    where: {
-      provider: 'google',
-      user: { email: ORGANIZER_EMAIL },
-    },
+    where: { provider: 'google', user: { email: ORGANIZER_EMAIL } },
     select: { id: true, access_token: true, refresh_token: true, expires_at: true, scope: true },
   })
-
   if (!account) throw new Error('MEET_ORGANIZER_GOOGLE_ACCOUNT_NOT_CONNECTED')
 
   const scope = account.scope || ''
-  if (!scope.split(/\s+/).includes(MEET_SCOPE)) {
-    throw new Error('MEET_SCOPE_REAUTH_REQUIRED')
-  }
+  if (!scope.split(/\s+/).includes(MEET_SCOPE)) throw new Error('MEET_SCOPE_REAUTH_REQUIRED')
 
   const expiresAt = account.expires_at ? account.expires_at * 1000 : 0
   if (account.access_token && expiresAt > Date.now() + 60_000) return account.access_token
@@ -81,8 +74,8 @@ async function getMeetAccessToken(): Promise<string> {
     }),
     cache: 'no-store',
   })
-
   if (!response.ok) throw new Error(`MEET_TOKEN_REFRESH_HTTP_${response.status}`)
+
   const refreshed = await response.json() as { access_token?: string; expires_in?: number; scope?: string }
   if (!refreshed.access_token) throw new Error('MEET_TOKEN_REFRESH_EMPTY')
 
@@ -94,7 +87,6 @@ async function getMeetAccessToken(): Promise<string> {
       scope: refreshed.scope || account.scope,
     },
   })
-
   return refreshed.access_token
 }
 
@@ -110,37 +102,29 @@ async function meetGet<T>(token: string, path: string): Promise<T> {
 async function listConferences(token: string, start: Date, end: Date, meetingSpace?: string): Promise<ConferenceRecord[]> {
   const records: ConferenceRecord[] = []
   let pageToken: string | undefined
-
   do {
     const params = new URLSearchParams({ pageSize: '100' })
-    const filter = meetingSpace
+    params.set('filter', meetingSpace
       ? `space.name = "${meetingSpace.replace(/"/g, '')}"`
-      : `start_time>="${start.toISOString()}" AND start_time<="${end.toISOString()}"`
-    params.set('filter', filter)
+      : `start_time>="${start.toISOString()}" AND start_time<="${end.toISOString()}"`)
     if (pageToken) params.set('pageToken', pageToken)
     const response = await meetGet<ConferenceListResponse>(token, `/conferenceRecords?${params.toString()}`)
     records.push(...(response.conferenceRecords || []))
     pageToken = response.nextPageToken
   } while (pageToken)
-
   return records
 }
 
 async function listParticipants(token: string, conferenceRecordId: string): Promise<ParticipantResource[]> {
   const participants: ParticipantResource[] = []
   let pageToken: string | undefined
-
   do {
     const params = new URLSearchParams({ pageSize: '250' })
     if (pageToken) params.set('pageToken', pageToken)
-    const response = await meetGet<ParticipantListResponse>(
-      token,
-      `/${conferenceRecordId}/participants?${params.toString()}`,
-    )
+    const response = await meetGet<ParticipantListResponse>(token, `/${conferenceRecordId}/participants?${params.toString()}`)
     participants.push(...(response.participants || []))
     pageToken = response.nextPageToken
   } while (pageToken)
-
   return participants
 }
 
@@ -184,12 +168,6 @@ async function resolveConference(token: string, effectiveAt: Date, metadata: unk
   const start = new Date(effectiveAt.getTime() - 90 * 60_000)
   const end = new Date(effectiveAt.getTime() + 90 * 60_000)
   const conferences = await listConferences(token, start, end, meetingSpace)
-
-  if (meetingSpace) {
-    if (conferences.length === 1) return conferences[0]
-    return undefined
-  }
-
   if (conferences.length !== 1) return undefined
   return conferences[0]
 }
@@ -198,13 +176,7 @@ function participantNameMatch(participant: MeetParticipant, studentName: string)
   return normalizeName(participant.displayName) === normalizeName(studentName)
 }
 
-export type AttendanceCollectorResult = {
-  scanned: number
-  proven: number
-  unresolved: number
-  skipped: number
-  errors: number
-}
+export type AttendanceCollectorResult = { scanned: number; proven: number; unresolved: number; skipped: number; errors: number }
 
 export async function reconcileExistingMeetAttendance(): Promise<AttendanceCollectorResult> {
   const token = await getMeetAccessToken()
@@ -213,15 +185,7 @@ export async function reconcileExistingMeetAttendance(): Promise<AttendanceColle
     where: { source: 'google_meet' },
     orderBy: { recordedAt: 'desc' },
     take: 250,
-    select: {
-      id: true,
-      lessonId: true,
-      studentEmail: true,
-      effectiveAt: true,
-      recordedAt: true,
-      metadata: true,
-      studentEmail: true,
-    },
+    select: { id: true, lessonId: true, studentEmail: true, effectiveAt: true, recordedAt: true, metadata: true },
   })
 
   const result: AttendanceCollectorResult = { scanned: transcripts.length, proven: 0, unresolved: 0, skipped: 0, errors: 0 }
@@ -249,28 +213,14 @@ export async function reconcileExistingMeetAttendance(): Promise<AttendanceColle
         await prisma.validationTask.upsert({
           where: { type_entityType_entityId: { type: 'attendance_reconciliation', entityType: 'Transcript', entityId: transcript.id } },
           update: { status: 'pending', description: 'No unique Google Meet conference could be reconciled to this lesson.', evidence: { transcriptId: transcript.id, lessonId: transcript.lessonId, effectiveAt: effectiveAt.toISOString() } },
-          create: {
-            type: 'attendance_reconciliation',
-            entityType: 'Transcript',
-            entityId: transcript.id,
-            status: 'pending',
-            priority: 100,
-            studentEmail: transcript.studentEmail.toLowerCase(),
-            lessonId: transcript.lessonId,
-            title: 'Attendance conference unresolved',
-            description: 'No unique Google Meet conference could be reconciled to this lesson.',
-            evidence: { transcriptId: transcript.id, lessonId: transcript.lessonId, effectiveAt: effectiveAt.toISOString() },
-          },
+          create: { type: 'attendance_reconciliation', entityType: 'Transcript', entityId: transcript.id, status: 'pending', priority: 100, studentEmail: transcript.studentEmail.toLowerCase(), lessonId: transcript.lessonId, title: 'Attendance conference unresolved', description: 'No unique Google Meet conference could be reconciled to this lesson.', evidence: { transcriptId: transcript.id, lessonId: transcript.lessonId, effectiveAt: effectiveAt.toISOString() } },
         })
         continue
       }
 
       const participants = await listParticipants(token, conference.name)
       const meetConference = toMeetConference(conference, participants)
-      const student = await prisma.user.findFirst({
-        where: { email: transcript.studentEmail },
-        select: { name: true, email: true },
-      })
+      const student = await prisma.user.findFirst({ where: { email: transcript.studentEmail }, select: { name: true } })
       const studentName = student?.name || transcript.studentEmail.split('@')[0]
       const matched = meetConference.participants.filter((participant) => participantNameMatch(participant, studentName))
 
@@ -278,35 +228,13 @@ export async function reconcileExistingMeetAttendance(): Promise<AttendanceColle
         result.unresolved += 1
         await prisma.validationTask.upsert({
           where: { type_entityType_entityId: { type: 'attendance_reconciliation', entityType: 'Transcript', entityId: transcript.id } },
-          update: {
-            status: 'pending',
-            evidence: { conferenceRecordId: conference.name, participantCount: participants.length, matchedNameCount: matched.length, signedInMatchRequired: true },
-            suggestedValue: { status: 'attended' },
-          },
-          create: {
-            type: 'attendance_reconciliation',
-            entityType: 'Transcript',
-            entityId: transcript.id,
-            status: 'pending',
-            priority: 100,
-            studentEmail: transcript.studentEmail.toLowerCase(),
-            lessonId: transcript.lessonId,
-            title: 'Attendance identity unresolved',
-            description: 'Google Meet conference exists, but no unique signed-in participant matched the canonical learner identity.',
-            evidence: { conferenceRecordId: conference.name, participantCount: participants.length, matchedNameCount: matched.length, signedInMatchRequired: true },
-            suggestedValue: { status: 'attended' },
-          },
+          update: { status: 'pending', evidence: { conferenceRecordId: conference.name, participantCount: participants.length, matchedNameCount: matched.length, signedInMatchRequired: true }, suggestedValue: { status: 'attended' } },
+          create: { type: 'attendance_reconciliation', entityType: 'Transcript', entityId: transcript.id, status: 'pending', priority: 100, studentEmail: transcript.studentEmail.toLowerCase(), lessonId: transcript.lessonId, title: 'Attendance identity unresolved', description: 'Google Meet conference exists, but no unique signed-in participant matched the canonical learner identity.', evidence: { conferenceRecordId: conference.name, participantCount: participants.length, matchedNameCount: matched.length, signedInMatchRequired: true }, suggestedValue: { status: 'attended' } },
         })
         continue
       }
 
-      const persisted = await persistMeetAttendance({
-        lessonId: transcript.lessonId,
-        studentEmail: transcript.studentEmail,
-        studentName,
-        conference: meetConference,
-      })
-
+      const persisted = await persistMeetAttendance({ lessonId: transcript.lessonId, studentEmail: transcript.studentEmail, studentName, conference: meetConference })
       if (persisted.authorityStatus === 'authoritative') {
         result.proven += 1
         const run = await prisma.pipelineRun.findFirst({ where: { transcriptId: transcript.id }, orderBy: { attemptNumber: 'desc' }, select: { id: true } })
@@ -317,9 +245,7 @@ export async function reconcileExistingMeetAttendance(): Promise<AttendanceColle
             create: { pipelineRunId: run.id, eventType: 'AttendanceReconciled', aggregateType: 'AttendanceRecord', aggregateId: `${transcript.lessonId}:${transcript.studentEmail.toLowerCase()}`, payload: { source: 'google_meet', authorityStatus: 'authoritative', conferenceRecordId: conference.name, participantId: matched[0].participantId } },
           })
         }
-      } else {
-        result.unresolved += 1
-      }
+      } else result.unresolved += 1
     } catch (error) {
       result.errors += 1
       console.warn(JSON.stringify({ event: 'meet_attendance_reconciliation_failed', lessonId: transcript.lessonId, studentEmail: transcript.studentEmail, error: error instanceof Error ? error.message : 'unknown_error' }))
