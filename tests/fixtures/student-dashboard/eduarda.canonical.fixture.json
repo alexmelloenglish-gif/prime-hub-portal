@@ -1,0 +1,43 @@
+{
+  "studentId": "fixture-eduarda",
+  "studentName": "Fixture Eduarda",
+  "dashboardSourcePolicy": "authorized_repository_snapshot",
+  "profileCompleteness": "canonical_longitudinal_profile",
+  "profileSource": { "sourceAuthority": "canonical_portfolio" },
+  "canonicalProjection": {
+    "version": "student-dashboard-v1.0",
+    "currentState": {
+      "assessment": { "value": "Assessment pending", "status": "pending" },
+      "target": { "value": "School-task performance target pending", "status": "pending" }
+    },
+    "priorities": [
+      { "id": "priority-independence", "title": "Build independent task performance" },
+      { "id": "priority-school-context", "title": "Connect English to current school demands" },
+      { "id": "priority-confidence", "title": "Increase independent production" }
+    ],
+    "nextAction": {
+      "authorizationStatus": "qualified",
+      "title": "Six-question independence check",
+      "status": "qualified"
+    }
+  },
+  "lessonRecords": [
+    { "lessonId": "fixture-eduarda-1" },
+    { "lessonId": "fixture-eduarda-2" },
+    { "lessonId": "fixture-eduarda-3" },
+    { "lessonId": "fixture-eduarda-4" },
+    { "lessonId": "fixture-eduarda-5" },
+    { "lessonId": "fixture-eduarda-6" },
+    { "lessonId": "fixture-eduarda-7" },
+    { "lessonId": "fixture-eduarda-2026-07-03-pending", "status": "pending", "report": null }
+  ],
+  "classReports": [
+    { "id": "fixture-eduarda-report-1" },
+    { "id": "fixture-eduarda-report-2" },
+    { "id": "fixture-eduarda-report-3" },
+    { "id": "fixture-eduarda-report-4" },
+    { "id": "fixture-eduarda-report-5" },
+    { "id": "fixture-eduarda-report-6" },
+    { "id": "fixture-eduarda-report-7" }
+  ]
+}
