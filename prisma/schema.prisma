@@ -288,6 +288,67 @@ model PipelineEvent {
   @@map("pipeline_events")
 }
 
+model AttendanceRecord {
+  id                  String   @id @default(cuid())
+  lessonId            String
+  studentEmail        String
+  studentId           String?
+  studentName         String?
+  teacherId           String?
+  teacherName         String?
+  status              String   @default("unknown")
+  authorityStatus     String   @default("not_proven")
+  source              String
+  sourceReference     String
+  meetingId           String?
+  conferenceRecordId  String?
+  participantId       String?
+  participantUserId   String?
+  scheduledStartAt    DateTime?
+  scheduledEndAt      DateTime?
+  conferenceStartAt   DateTime?
+  conferenceEndAt     DateTime?
+  participantStartAt  DateTime?
+  participantEndAt    DateTime?
+  reconciledAt        DateTime?
+  evidence            Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([lessonId, studentEmail])
+  @@index([studentEmail, scheduledStartAt])
+  @@index([authorityStatus, status])
+  @@index([conferenceRecordId])
+  @@map("attendance_records")
+}
+
+model ValidationTask {
+  id              String   @id @default(cuid())
+  type            String
+  entityType      String
+  entityId        String
+  status          String   @default("pending")
+  priority        Int      @default(0)
+  studentEmail    String?
+  lessonId        String?
+  title           String
+  description     String   @db.Text
+  evidence        Json
+  suggestedValue  Json?
+  reviewerId      String?
+  reviewedAt      DateTime?
+  decision        String?
+  reason          String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([type, entityType, entityId])
+  @@index([status, priority, createdAt])
+  @@index([studentEmail, status])
+  @@index([lessonId, status])
+  @@map("validation_tasks")
+}
+
 model VocabularyReuseSentence {
   id            String   @id @default(cuid())
   studentId     String?
