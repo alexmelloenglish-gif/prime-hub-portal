@@ -311,7 +311,6 @@ async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: st
     if (tabText.trim()) return tabText
   }
 
-  // Fallback for documents where the Docs API is unavailable or has no body.
   const exportUrl = `${DRIVE_API}/files/${encodeURIComponent(fileId)}/export?mimeType=text%2Fplain`
   const exportResponse = await fetch(exportUrl, { headers, cache: 'no-store' })
   if (!exportResponse.ok) throw new Error(`drive_export_http_${exportResponse.status}`)
@@ -338,8 +337,10 @@ function buildPayload(file: DriveFile, transcript: string, triage: TriageResult)
     transcript,
     source: 'google_meet' as const,
     recordedAt: file.modifiedTime || file.createdTime,
-    attendanceStatus: 'attended' as const,
-    attendanceSource: 'google_meet',
+    // Transcript provenance never establishes attendance.
+    // Attendance is reconciled independently from Google Meet participant data.
+    attendanceStatus: 'unknown' as const,
+    attendanceSource: undefined,
     metadata: {
       sourceFileId: file.id,
       sourceDocumentId: file.id,
@@ -354,6 +355,7 @@ function buildPayload(file: DriveFile, transcript: string, triage: TriageResult)
       triageStatus: triage.status,
       identityVerified: true,
       identityMatches: triage.identityMatches,
+      attendanceAuthority: 'not_established_by_transcript',
     },
   }
 }
@@ -433,12 +435,9 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
         await moveToProcessed(auth, file)
         console.log(JSON.stringify({ event: 'drive_source_archived', fileRef: safeFileRef(file.id), destinationRef: safeFileRef(PROCESSED_FOLDER_ID) }))
       } catch (error) {
-        // The ingest is already accepted; surface archive failure without treating it as a new ingest failure.
         console.warn(JSON.stringify({ event: 'drive_archive_failed', fileRef: safeFileRef(file.id), error: sanitizeError(error) }))
       }
     }
-    // Continue scanning the same folder so one trigger can submit every eligible file
-    // up to MAX_SOURCE_READS_PER_RUN; sourceFileId idempotency prevents duplicates.
   }
 
   return result
