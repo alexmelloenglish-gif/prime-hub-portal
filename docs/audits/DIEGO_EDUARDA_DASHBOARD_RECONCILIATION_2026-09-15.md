@@ -1,7 +1,7 @@
 # Diego / Eduarda dashboard reconciliation — 2026-09-15
 
 **Status:** completed reconciliation against the current canonical student portfolios.  
-**Scope:** student-facing repository snapshots only. No CEFR change, school-grade inference, runtime retry or autonomous publication was authorized by this reconciliation.
+**Scope:** student-facing repository snapshots and Eduarda's canonical core-registry entry. No CEFR change, school-grade inference, runtime retry or autonomous publication was authorized by this reconciliation.
 
 ## Sources used
 
@@ -122,11 +122,16 @@ The old snapshot exposed an event-specific August Meet URL as a quick-access liv
 - the official PRIME booking flow;
 - Prime Support.
 
-### 6. Unsupported alias removed
+### 6. Unsupported alias removed and core registry synchronized
 
-`Eduarda Jesus` was present as an identity alias in the old snapshot. The reviewed sources support the fuller booking name and `Eduarda Dias`; they do not establish `Eduarda Jesus` as an authorized identity alias.
+`Eduarda Jesus` was present in both the old snapshot and the core registry as an identity alias. The reviewed sources support the fuller booking name and `Eduarda Dias`; they do not establish `Eduarda Jesus` as an authorized identity alias.
 
-**Correction:** the unsupported alias was removed.
+**Correction:** the unsupported alias was removed from the repository snapshot and core registry. The registry was also synchronized to:
+
+- `canonical_longitudinal_profile`;
+- canonical portfolio link present;
+- `liveClass: null` rather than an old event-specific Meet URL;
+- `Episodic on demand` frequency.
 
 ### 7. Claim boundary preserved
 
@@ -149,8 +154,22 @@ The reconciliation fixes two different failure modes:
 
 After this reconciliation, both repository records use `student-dashboard-v1.0`, preserve evidence boundaries and project the strongest current portfolio evidence without inventing missing authority.
 
+## Validation
+
+The production build for commit `4e26f05d67e3f041943f31e6640a4c2f968c9540` passed the relevant gates before deployment:
+
+- Teacher Intelligence static regression: **PASS**;
+- Student Dashboard v1 contract self-test: **PASS**;
+- canonical document → dashboard projection: **PASS** for all 10 profiles;
+- canonical student consistency audit: **PASS**;
+- eligibility boundary self-test: **PASS**;
+- strict canonical validator: **0 errors**.
+
+The validator retained six unrelated pre-existing warnings concerning Laura, Maria Fernanda and Rafael. No Diego/Eduarda error or warning remained. The Vercel production deployment reached **READY** and was aliased to the production domains.
+
 ## Files changed
 
 - `data/students/diegodasiro-gmail-com.firestore.json`
 - `data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json`
+- `data/students/student-core-registry.json`
 - `docs/audits/DIEGO_EDUARDA_DASHBOARD_RECONCILIATION_2026-09-15.md`
