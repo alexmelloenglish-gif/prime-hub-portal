@@ -119,5 +119,10 @@
   ],
   "identityAliases": ["Eduarda Dias Costa Coelho da Cunha Gabriel","Eduarda Dias"],
   "studentContext": {"grade":"6th grade","school":"Colégio Notre Dame, Rio de Janeiro","schoolSupportMode":"episodic on-demand support","subjectContext":"English as a foreign language plus Geography taught in English","portfolioCoverage":"July and August 2026"},
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected canonical portfolio. CEFR A1 is the current teacher-validated level and CEFR A2 is the target; neither is inferred from lesson count. The learner-facing projection contains only the seven lessons with documented pedagogical evidence. Class reports use one consistent evidence → boundary → next-verification transfer-point pattern."
+  "sourceProvenance": {
+    "nonProjectedRecords": [
+      {"date":"2026-07-03","sourceType":"agenda_record","classification":"source-only","reason":"An agenda encounter exists in the portfolio source, but no pedagogical content is authorized for learner projection. It is not a lesson, attendance item, class report or learning claim."}
+    ]
+  },
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected canonical portfolio. CEFR A1 is the current teacher-validated level and CEFR A2 is the target; neither is inferred from lesson count. The learner-facing projection contains only the seven lessons with documented pedagogical evidence. Source-only provenance is retained separately and is not rendered as learner-facing learning state. Class reports use one consistent evidence → boundary → next-verification transfer-point pattern."
 }
