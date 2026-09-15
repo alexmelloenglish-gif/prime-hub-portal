@@ -33,18 +33,23 @@ if (diego.canonicalProjection.priorities.length !== 3) fail('Diego must retain t
 if (diego.canonicalProjection.nextAction.title !== '60–90 Second Executive Response') fail('Diego next action changed')
 
 if (eduarda.lessonRecords.filter((item) => item.status !== 'pending').length !== 7 || eduarda.classReports.length !== 7) fail('Eduarda seven-lesson/seven-report witness contract changed')
-if (eduarda.canonicalProjection.currentState.assessment.value !== 'Assessment pending') fail('Eduarda assessment must remain pending')
-if (eduarda.canonicalProjection.currentState.target.value !== 'School-task performance target pending') fail('Eduarda target must remain pending')
+if (eduarda.canonicalProjection.currentState.level.value !== 'CEFR A1') fail('Eduarda current teacher-corrected level must remain A1')
+if (eduarda.canonicalProjection.currentState.targetLevel.value !== 'CEFR A2') fail('Eduarda teacher-corrected target must remain A2')
+if (eduarda.canonicalProjection.currentState.level.status !== 'teacher-validated') fail('Eduarda current level must remain teacher-validated')
+if (eduarda.canonicalProjection.currentState.targetLevel.status !== 'teacher-validated') fail('Eduarda target must remain teacher-validated')
 if (eduarda.canonicalProjection.priorities.length !== 3) fail('Eduarda must retain three priorities')
 if (eduarda.canonicalProjection.nextAction.title !== 'Six-question independence check') fail('Eduarda next action changed')
 
 const july3 = eduarda.lessonRecords.find((item) => item.lessonId.includes('2026-07-03'))
 if (!july3 || july3.status !== 'pending' || july3.report !== null) fail('Eduarda 3 July incomplete encounter must remain pending with no report')
-if ('currentLevel' in eduarda.canonicalProjection.currentState || 'targetLevel' in eduarda.canonicalProjection.currentState) fail('Eduarda fixture must not invent CEFR state')
+if (eduarda.canonicalProjection.currentState.level.value === eduarda.canonicalProjection.currentState.targetLevel.value) fail('Eduarda current level cannot be silently promoted to target')
 if (diego.canonicalProjection.nextAction.title === eduarda.canonicalProjection.nextAction.title) fail('Diego and Eduarda must keep distinct next actions')
 
 function semanticChecks(fixture, label) {
-  if (label === 'Eduarda' && String(fixture.canonicalProjection.currentState.assessment?.value || '').startsWith('CEFR ')) fail('Eduarda cannot acquire CEFR from an assessment-pending state')
+  if (label === 'Eduarda') {
+    if (fixture.canonicalProjection.currentState.level?.value !== 'CEFR A1') fail('Eduarda current level cannot change without a new teacher-authorized source correction')
+    if (fixture.canonicalProjection.currentState.targetLevel?.value !== 'CEFR A2') fail('Eduarda target cannot change without a new teacher-authorized source correction')
+  }
   if (fixture.lessonRecords.some((item) => item.status === 'pending' && item.report !== null)) fail(`${label} cannot create a report for a pending lesson`)
   if (fixture.canonicalProjection.nextAction?.status === 'completed') fail(`${label} cannot encode an unexecuted next action as completed`)
 }
@@ -65,7 +70,8 @@ function expectSemanticFailure(label, mutate, targetLabel) {
 expectSchemaFailure('missing dashboardSourcePolicy', () => { const x = structuredClone(diego); delete x.dashboardSourcePolicy; return x })
 expectSchemaFailure('wrong contract version', () => { const x = structuredClone(diego); x.canonicalProjection.version = 'student-dashboard-v2.0'; return x })
 expectSchemaFailure('wrong profile completeness', () => { const x = structuredClone(diego); x.profileCompleteness = 'partial'; return x })
-expectSemanticFailure('Eduarda CEFR injection', () => { const x = structuredClone(eduarda); x.canonicalProjection.currentState.assessment.value = 'CEFR A1'; return x }, 'Eduarda')
+expectSemanticFailure('Eduarda silent promotion to A2', () => { const x = structuredClone(eduarda); x.canonicalProjection.currentState.level.value = 'CEFR A2'; return x }, 'Eduarda')
+expectSemanticFailure('Eduarda target mutation', () => { const x = structuredClone(eduarda); x.canonicalProjection.currentState.targetLevel.value = 'CEFR B1'; return x }, 'Eduarda')
 expectSemanticFailure('completed unexecuted action', () => { const x = structuredClone(diego); x.canonicalProjection.nextAction.status = 'completed'; return x }, 'Diego')
 expectSemanticFailure('invented 3 July report', () => { const x = structuredClone(eduarda); x.lessonRecords.find((item) => item.lessonId.includes('2026-07-03')).report = 'invented-report'; return x }, 'Eduarda')
 
@@ -73,4 +79,4 @@ const swappedAction = structuredClone(eduarda)
 swappedAction.canonicalProjection.nextAction.title = diego.canonicalProjection.nextAction.title
 if (swappedAction.canonicalProjection.nextAction.title === diego.canonicalProjection.nextAction.title) fail('cross-learner action swap was accepted')
 
-console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + negative semantic mutations.')
+console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + teacher-corrected Eduarda A1→A2 state + negative semantic mutations.')
