@@ -51,6 +51,18 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID ?? '',
           clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+          authorization: {
+            params: {
+              scope: [
+                'openid',
+                'email',
+                'profile',
+                'https://www.googleapis.com/auth/meetings.space.readonly',
+              ].join(' '),
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+          },
         }),
       ]
     : [],
@@ -69,9 +81,6 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as { role?: string }).role ?? 'student'
       }
 
-      // Refresh authorization from the canonical database on every JWT refresh.
-      // This makes role changes effective for an existing session instead of
-      // leaving a stale role embedded in the JWT until the next sign-in.
       if (isDatabaseConfigured && token.email) {
         const dbUser = await getPrismaClient().user.findUnique({
           where: { email: token.email },
