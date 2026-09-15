@@ -17,12 +17,7 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=claudio.bit%40gmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/zbz-uiai-xng",
-        "portfolio": "https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit",
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":"https://meet.google.com/zbz-uiai-xng","portfolio":"https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -38,19 +33,14 @@
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "canonical_portfolio_verified",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=diegodasiro%40gmail.com",
-      "links": {
-        "liveClass": null,
-        "portfolio": "https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit",
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Every two weeks",
-      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Missing live-class/material links remain unavailable rather than guessed."
+      "notes": "Canonical longitudinal portfolio verified and dashboard reconciled 2026-09-15. Missing live-class/material links remain unavailable rather than guessed."
     },
     {
       "studentId": "stu_e8661006824a",
@@ -63,12 +53,7 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=midias83%40hotmail.com",
-      "links": {
-        "liveClass": null,
-        "portfolio": "https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit",
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -85,19 +70,14 @@
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "canonical_portfolio_verified",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=carolvdrummond%40gmail.com",
-      "links": {
-        "liveClass": null,
-        "portfolio": "https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit",
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Missing operational links remain unavailable rather than guessed."
+      "notes": "Canonical longitudinal portfolio verified. Four attended lessons and cumulative priorities are preserved; missing operational links remain unavailable rather than guessed."
     },
     {
       "studentId": "stu_fb5b64e3437e",
@@ -108,20 +88,15 @@
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "canonical_portfolio_verified",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=itallopires17%40gmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/yvr-xrvs-gaw",
-        "portfolio": "https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit",
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":"https://meet.google.com/yvr-xrvs-gaw","portfolio":"https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
-      "classFrequency": "Once a week",
+      "classFrequency": "No recurring schedule confirmed",
       "enrollmentMode": "returning_student",
-      "notes": "Canonical student-facing portfolio verified in the central canonical folder. Event-specific Meet link retained."
+      "notes": "Canonical longitudinal dashboard is complete relative to one confirmed lesson; no cumulative progress claim is inferred."
     },
     {
       "studentId": "stu_b5a6b9640498",
@@ -132,19 +107,14 @@
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "schedule_mapped_pending_academic_history",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=lauramgcstemp%40gmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/ogt-ubat-jan",
-        "portfolio": null,
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":"https://meet.google.com/ogt-ubat-jan","portfolio":"https://docs.google.com/document/d/1oFi0k61KNLEsLkfvzXfUuMUBwR_vk0lnvhqU44ETghY/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
-      "classFrequency": "Twice a week",
-      "notes": "Calendar booking found; dashboard synchronization awaits completed canonical portfolio audit."
+      "classFrequency": "Individual lessons — schedule according to the Prime calendar",
+      "notes": "Canonical Portfolio v1.0 reconciled 2026-09-15. Three evidence-backed lessons now drive the learner-facing longitudinal projection; later calendar bookings are not promoted to attendance."
     },
     {
       "studentId": "stu_c5930e6e76ae",
@@ -157,12 +127,7 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=louise_nogueira%40hotmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/kfk-fnbh-odk",
-        "portfolio": "https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit",
-        "classMaterials": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
-        "homework": null
-      },
+      "links": {"liveClass":"https://meet.google.com/kfk-fnbh-odk","portfolio":"https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit","classMaterials":"https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing","homework":null},
       "historicalTranscriptCount": 2,
       "usableTranscriptCount": 1,
       "pendingReviewCount": 0,
@@ -177,19 +142,14 @@
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "schedule_mapped_pending_academic_history",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=galvaonanda28%40gmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/uzg-sumq-ttv",
-        "portfolio": null,
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":"https://meet.google.com/uzg-sumq-ttv","portfolio":"https://docs.google.com/document/d/1GEd4AZjP2PoSQUNuFucUPxfv1qlwZ-r8DGgMPNpsHsc/edit","classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
-      "classFrequency": "Twice a week",
-      "notes": "Calendar booking found; dashboard synchronization awaits completed canonical portfolio audit."
+      "classFrequency": "Not confirmed",
+      "notes": "Canonical Portfolio v2.0 source-integrity reconstruction reconciled 2026-09-15. Three evidence-backed lessons drive the B2→C1 learner projection; old August bookings are not treated as attendance."
     },
     {
       "studentId": "stu_cce1337c71da",
@@ -202,12 +162,7 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=rafael.copolillo%40gmail.com",
-      "links": {
-        "liveClass": "https://meet.google.com/xjj-yqcc-wxb",
-        "portfolio": "https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit",
-        "classMaterials": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link",
-        "homework": "https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link"
-      },
+      "links": {"liveClass":"https://meet.google.com/xjj-yqcc-wxb","portfolio":"https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit","classMaterials":"https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link","homework":"https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link"},
       "historicalTranscriptCount": 1,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -225,12 +180,7 @@
       "activationAuthority": null,
       "profileCompleteness": "onboarding_pending_links_and_history",
       "dashboardPath": "/dashboard?studentEmail=vcrlima89%40gmail.com",
-      "links": {
-        "liveClass": null,
-        "portfolio": null,
-        "classMaterials": null,
-        "homework": null
-      },
+      "links": {"liveClass":null,"portfolio":null,"classMaterials":null,"homework":null},
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -238,26 +188,8 @@
       "notes": "Student identity supplied in the teacher intake; academic history and links remain pending. Missing data must not be guessed. Operating eligibility is prospect; no learner activation authority is established."
     }
   ],
-  "requiredFieldsForNewStudent": [
-    "studentId",
-    "studentName",
-    "canonicalEmail",
-    "teacherId",
-    "profileStatus",
-    "liveClassLink",
-    "portfolioLink",
-    "classMaterialsLink",
-    "dashboardPath"
-  ],
-  "optionalFieldsForNewStudent": [
-    "emailAliases",
-    "homeworkLink",
-    "driveFolderId",
-    "classFrequency",
-    "program",
-    "targetLevel",
-    "notes"
-  ],
+  "requiredFieldsForNewStudent": ["studentId","studentName","canonicalEmail","teacherId","profileStatus","liveClassLink","portfolioLink","classMaterialsLink","dashboardPath"],
+  "optionalFieldsForNewStudent": ["emailAliases","homeworkLink","driveFolderId","classFrequency","program","targetLevel","notes"],
   "invariants": [
     "studentId is immutable",
     "canonicalEmail is the identity lookup key",
