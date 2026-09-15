@@ -3,6 +3,17 @@ import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { getPrismaClient } from '@/lib/prisma'
+import { getNextAuthSecret, getNextAuthUrl } from '@/lib/auth-runtime'
+
+const inferredNextAuthUrl = getNextAuthUrl()
+
+// NextAuth reads NEXTAUTH_URL from process.env. In Preview, VERCEL_URL can
+// supply it automatically instead of requiring a stored environment variable.
+if (!process.env.NEXTAUTH_URL && inferredNextAuthUrl) {
+  process.env.NEXTAUTH_URL = inferredNextAuthUrl
+}
+
+const nextAuthSecret = getNextAuthSecret()
 
 export const isGoogleAuthConfigured = Boolean(
   process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
@@ -69,9 +80,6 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as { role?: string }).role ?? 'student'
       }
 
-      // Refresh authorization from the canonical database on every JWT refresh.
-      // This makes role changes effective for an existing session instead of
-      // leaving a stale role embedded in the JWT until the next sign-in.
       if (isDatabaseConfigured && token.email) {
         const dbUser = await getPrismaClient().user.findUnique({
           where: { email: token.email },
@@ -119,5 +127,5 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/dashboard`
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: nextAuthSecret,
 }
