@@ -20,8 +20,8 @@
   "targetLevel": "CEFR A2",
   "focus": "Improve school performance in English and English-medium Geography through complete responses and progressively less teacher support.",
   "objective": "Support current school demands in English and Geography taught in English while increasing complete, increasingly independent responses.",
-  "attendanceRate": "7 documented lessons + 1 pending encounter",
-  "attendanceLabel": "Seven lessons have pedagogical content documented in the canonical portfolio. The 3 July encounter remains pending because there is not enough evidence to reconstruct a class report.",
+  "attendanceRate": "7 documented lessons",
+  "attendanceLabel": "Seven lessons have pedagogical content documented in the canonical portfolio and are projected in the learner dashboard.",
   "manageSpace": [
     {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit","description":"Open Eduarda's canonical longitudinal learning portfolio.","icon":"folder-open"},
     {"id":"calendar","title":"Book My Next Support Lesson","href":"https://calendar.app.google/p85dYVaZomqCuPyj6","description":"Open the official PRIME booking link for Eduarda's on-demand school-support lessons.","icon":"calendar"},
@@ -44,9 +44,9 @@
     },
     "whatChanged": {
       "title": "Teacher correction and longitudinal evidence are now reconciled",
-      "summary": "Eduarda's projection now preserves the teacher-corrected CEFR A1 current level and CEFR A2 target, seven lessons with documented pedagogical content, and one 3 July encounter that remains pending rather than being reconstructed.",
+      "summary": "Eduarda's projection now preserves the teacher-corrected CEFR A1 current level, CEFR A2 target and seven lessons with documented pedagogical content.",
       "changeType": "learner-model",
-      "evidence": "Teacher-corrected canonical portfolio plus documented lessons from 2 July through 20 August 2026; 3 July remains pending with no class report.",
+      "evidence": "Teacher-corrected canonical portfolio plus seven documented lessons from 2 July through 20 August 2026.",
       "status": "teacher-validated"
     },
     "priorities": [
@@ -75,7 +75,6 @@
   ],
   "attendanceOverview": [
     {"id":"class-2026-07-02","lessonId":"eduarda-2026-07-02","date":"July 2, 2026","status":"present","title":"English: routines and advice","summary":"Present Simple, do/does, frequency and should/shouldn't were practiced; independent mastery was not measured."},
-    {"id":"agenda-2026-07-03","lessonId":"eduarda-2026-07-03","date":"July 3, 2026","status":"pending","title":"Pending encounter — evidence incomplete","summary":"The encounter is registered in the agenda, but no detailed pedagogical record is available. Content is not reconstructed and no class report is created."},
     {"id":"class-2026-07-06","lessonId":"eduarda-2026-07-06","date":"July 6, 2026","status":"present","title":"Geography: economic activities","summary":"Economic sectors and production-chain concepts were worked on; retention was not independently assessed."},
     {"id":"class-2026-07-08","lessonId":"eduarda-2026-07-08","date":"July 8, 2026","status":"present","title":"Geography: sectors and environment","summary":"Economic-sector content was revisited in English; continuity of content is not presented as measured progress."},
     {"id":"class-2026-08-17","lessonId":"eduarda-2026-08-17","date":"August 17, 2026","status":"present","title":"Geography and written responses","summary":"Eduarda reported difficulty with written Geography responses; complete answers became a priority. No school grade is inferred."},
@@ -106,13 +105,11 @@
   "grammarOverview": {"title":"Grammar & Accuracy Overview","summary":"The portfolio keeps grammar tied to school tasks and separates supported practice from independent performance.","focusPoints":["Present Simple: practiced in July for statements, negatives, questions and frequency; current independent control still needs checking.","Can / can't: practiced in August for ability and permission; verify student-authored sentences with the base verb.","Should / shouldn't: practiced in July and August for advice; verify modal choice and base-verb construction without a model."]},
   "teacherFeedback": [
     {"id":"feedback-general","title":"General Feedback","body":"Eduarda participates in school-support tasks and produces responses in guided practice. The follow-up considers not only the final answer but also the amount of support needed to reach it."},
-    {"id":"feedback-priority","title":"Growth Priority","body":"Increase complete student-authored responses and gradually reduce the need for teacher support."},
-    {"id":"feedback-pending","title":"Evidence Boundary","body":"The 3 July encounter remains pending: it is preserved in history but does not generate a class report or invented learning claim."}
+    {"id":"feedback-priority","title":"Growth Priority","body":"Increase complete student-authored responses and gradually reduce the need for teacher support."}
   ],
-  "cumulativeImpact": {"title":"Longitudinal School-Support Record","summary":"Seven documented lessons preserve Eduarda's July–August school-support history across English and English-medium Geography. The teacher-corrected portfolio records CEFR A1 as current level and CEFR A2 as target; the lesson history does not by itself establish advancement to A2 or independent mastery.","evidence":["7 lessons with pedagogical content documented in the canonical portfolio.","1 additional 3 July encounter is preserved as pending and is not reconstructed as a class report.","Teacher-corrected current/target levels are CEFR A1 → CEFR A2.","Current priorities and next action are tied to complete responses, modals and Geography with reduced support."]},
+  "cumulativeImpact": {"title":"Longitudinal School-Support Record","summary":"Seven documented lessons preserve Eduarda's July–August school-support history across English and English-medium Geography. The teacher-corrected portfolio records CEFR A1 as current level and CEFR A2 as target; the lesson history does not by itself establish advancement to A2 or independent mastery.","evidence":["7 lessons with pedagogical content documented in the canonical portfolio.","Teacher-corrected current/target levels are CEFR A1 → CEFR A2.","Current priorities and next action are tied to complete responses, modals and Geography with reduced support."]},
   "lessonRecords": [
     {"lessonId":"eduarda-2026-07-02","studentId":"stu_e8661006824a","lessonDate":"2026-07-02","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-07-03","studentId":"stu_e8661006824a","lessonDate":"2026-07-03","temporalLayer":"MEMORY","status":"pending","sourceType":"agenda_record"},
     {"lessonId":"eduarda-2026-07-06","studentId":"stu_e8661006824a","lessonDate":"2026-07-06","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
     {"lessonId":"eduarda-2026-07-08","studentId":"stu_e8661006824a","lessonDate":"2026-07-08","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
     {"lessonId":"eduarda-2026-08-17","studentId":"stu_e8661006824a","lessonDate":"2026-08-17","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
@@ -122,5 +119,5 @@
   ],
   "identityAliases": ["Eduarda Dias Costa Coelho da Cunha Gabriel","Eduarda Dias"],
   "studentContext": {"grade":"6th grade","school":"Colégio Notre Dame, Rio de Janeiro","schoolSupportMode":"episodic on-demand support","subjectContext":"English as a foreign language plus Geography taught in English","portfolioCoverage":"July and August 2026"},
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected canonical portfolio. CEFR A1 is the current teacher-validated level and CEFR A2 is the target; neither is inferred from lesson count. The 3 July encounter remains pending with no class report. Class reports now use one consistent evidence → boundary → next-verification transfer-point pattern."
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected canonical portfolio. CEFR A1 is the current teacher-validated level and CEFR A2 is the target; neither is inferred from lesson count. The learner-facing projection contains only the seven lessons with documented pedagogical evidence. Class reports use one consistent evidence → boundary → next-verification transfer-point pattern."
 }
