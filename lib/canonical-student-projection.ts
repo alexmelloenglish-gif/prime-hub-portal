@@ -88,12 +88,12 @@ function parseTransferPoints(value: string) {
   if (!value.startsWith('Transfer points —')) return {}
   const body = value.slice('Transfer points —'.length).trim()
   const segments = body
-    .split(/(?=(?:Evidence|Boundary|Interpretation|Next verification):)/)
+    .split(/(?=(?:Evidence|Signal|Boundary|Interpretation|Next verification):)/)
     .map((segment) => segment.trim())
     .filter(Boolean)
   const result: Record<string, string> = {}
   for (const segment of segments) {
-    const match = segment.match(/^(Evidence|Boundary|Interpretation|Next verification):\s*(.*)$/s)
+    const match = segment.match(/^(Evidence|Signal|Boundary|Interpretation|Next verification):\s*(.*)$/s)
     if (match) result[match[1]] = match[2].trim()
   }
   return result
@@ -118,13 +118,12 @@ function buildLearningIntelligence(
       const hasStructuredInterpretation = Boolean(transfer.Interpretation)
       if (!lessonId || !hasStructuredEvidence || !hasStructuredInterpretation) return null
 
-      const signal = transfer.Signal || 'No separate learning signal was published for this lesson.'
       return {
         lessonId,
         date,
         title,
         evidence: transfer.Evidence,
-        signal,
+        signal: transfer.Signal || 'No separate learning signal was published for this lesson.',
         insight: transfer.Interpretation,
         boundary: transfer.Boundary || 'No additional boundary statement was published.',
         nextVerification: transfer['Next verification'] || 'No next verification statement was published.',
