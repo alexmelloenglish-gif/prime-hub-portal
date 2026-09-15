@@ -28,8 +28,7 @@
     { "lessonId": "fixture-eduarda-4" },
     { "lessonId": "fixture-eduarda-5" },
     { "lessonId": "fixture-eduarda-6" },
-    { "lessonId": "fixture-eduarda-7" },
-    { "lessonId": "fixture-eduarda-2026-07-03-pending", "status": "pending", "report": null }
+    { "lessonId": "fixture-eduarda-7" }
   ],
   "classReports": [
     { "id": "fixture-eduarda-report-1" },
