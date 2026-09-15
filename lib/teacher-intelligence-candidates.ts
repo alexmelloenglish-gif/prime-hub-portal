@@ -2,7 +2,7 @@ import eduardaCandidate from '@/data/teacher-intelligence/eduarda-coelho-gabriel
 
 export type TeacherIntelligenceCandidatePackage = typeof eduardaCandidate
 
-const candidates: TeacherIntelligenceCandidatePackage[] = [eduardaCandidate]
+const candidates: TeacherIntelligenceCandidatePackage[] = []
 
 export function listTeacherIntelligenceCandidatePackages() {
   return candidates
