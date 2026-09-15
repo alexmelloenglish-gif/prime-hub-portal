@@ -1,0 +1,136 @@
+{
+  "packageId": "teacher-decision-eduarda-v2-2026-09-15",
+  "packageVersion": "teacher-decision-v2",
+  "studentId": "stu_e8661006824a",
+  "studentEmail": "midias83@hotmail.com",
+  "studentName": "Eduarda Dias Costa Coelho da Cunha Gabriel",
+  "status": "teacher_authorized",
+  "canonicalizationStatus": "authorized_for_projection",
+  "decisionDate": "2026-09-15",
+  "teacher": {
+    "name": "Alexandre Mello",
+    "role": "teacher"
+  },
+  "governance": {
+    "mode": "exception_based_human_authority",
+    "rule": "Human authority is required for pedagogical authority transitions, not for every extraction step.",
+    "legacyPolicy": "additive_versioned_no_deletion",
+    "sourceFactsAutoProcessed": true,
+    "individualEvidenceCheckboxesRequired": false
+  },
+  "teacherDecision": {
+    "currentStatePriorityPackage": "accepted_v2_proposed_update",
+    "nextAction": "accepted_v2_proposed_next_action",
+    "levelAssessment": "no_change",
+    "canonicalProjection": "authorized"
+  },
+  "legacyLineage": {
+    "portfolioDocumentId": "1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8",
+    "portfolioPolicy": "preserved_not_overwritten",
+    "historicalEncounters": 8,
+    "pedagogicalLessonsWithPrimarySource": 7,
+    "sourceOnlyEncounterDate": "2026-07-03",
+    "sourceOnlyEncounterRule": "Preserve as agenda/source provenance only. Do not convert to lesson, Class Report, attendance claim, learning claim or learner-facing pending state."
+  },
+  "sourceLessons": [
+    {"date":"2026-07-02","sourceDocumentId":"1OxvfGTCZ583y_PmjA34Q0ngdKXqytMovnDhXDfq5WMk","provider":"tactiq","sourceQuality":"low","status":"source_grounded"},
+    {"date":"2026-07-06","sourceDocumentId":"1-BS8Zph34VXiLn7mK9elejvUZnz--K2Vu2hIN82eo3g","provider":"tactiq","sourceQuality":"low","status":"source_grounded"},
+    {"date":"2026-07-08","sourceDocumentId":"1IQtWgNc-gU7VddBJhB2pSTRGBLrCsYsNwGTwe0uJmCQ","provider":"tactiq","sourceQuality":"low","status":"source_grounded"},
+    {"date":"2026-08-17","sourceDocumentId":"1yUmbbEkHoStcUrlN58GwLsYDUPdAs_-Xjv4-LipDnvo","provider":"google_meet_gemini","sourceQuality":"moderate","status":"source_grounded"},
+    {"date":"2026-08-18","sourceDocumentId":"1eL756OtNGQ9W9ujKmt5h3VzyZr4EWV-jxk4YsTvj6WI","provider":"google_meet_gemini","sourceQuality":"moderate_low","status":"source_grounded"},
+    {"date":"2026-08-19","sourceDocumentId":"1MCcHgorBOwlcz1g5AggtAoBxQQALctkb3-8nlyiypC0","provider":"google_meet_gemini","sourceQuality":"moderate","status":"source_grounded"},
+    {"date":"2026-08-20","sourceDocumentId":"1e8IqSHqMBpFi5yl8Z0q3Qr3D7yVosPxo9vjBicA6KNQ","provider":"google_meet_gemini","sourceQuality":"moderate_low","status":"source_grounded"}
+  ],
+  "classReportsV2": [
+    {
+      "date":"2026-07-02",
+      "title":"Present Simple, short answers, frequency and modeled advice",
+      "evidence":["First attempt 'I playing games' is immediately recast to 'I play games'.","Controlled direct production includes 'I play volleyball' and 'She plays games'.","Repeated guided short answers include 'Yes, I do' and 'No, I don't'.","Negative transformation work exposes unstable do/does and third-person/base-form control.","'I sometimes eat pizza' is produced in a frequency-adverb drill; should/shouldn't output is largely modeled."],
+      "signal":"Controlled Present Simple affirmative and short-answer forms are more available than third-person negative auxiliary control; frequency/advice language is strongly scaffolded.",
+      "interpretation":"Use low-support first-attempt tasks to separate independent retrieval from successful immediate uptake after recast/model.",
+      "boundary":"Tactiq ASR is severely noisy and the lesson is highly guided. Same-turn correction/repetition does not establish mastery.",
+      "nextVerification":"Two affirmatives, two negatives contrasting I/you with he/she, two do/does questions, one frequency sentence and one advice sentence without a model."
+    },
+    {
+      "date":"2026-07-06",
+      "title":"Economic sectors: classification stronger than explanation",
+      "evidence":["Agriculture and forestry are retrieved in structured Geography work.","Service examples include firefighter; selected sector classifications are correctly produced in controlled tasks.","Explanation of extractivism/natural-resource use requires substantial teacher scaffolding and is heavily affected by ASR noise."],
+      "signal":"Some concrete economic-sector categories and vocabulary are accessible in structured tasks, while independent explanatory language is substantially less stable.",
+      "interpretation":"Track sector categorization separately from the ability to explain why an activity belongs to that sector.",
+      "boundary":"Severe ASR noise and narrowed-choice prompting prevent a retention or mastery claim.",
+      "nextVerification":"Classify three fresh examples with no answer choices and explain each reason in one complete English sentence."
+    },
+    {
+      "date":"2026-07-08",
+      "title":"Geography continuity: recognition/classification versus explanation",
+      "evidence":["Primary/secondary/tertiary classifications recur in structured tasks.","'Opportunity' is retrieved in a push/pull-factor context.","Migration/environment items are often answered through multiple choice or strong prompting; explanation remains more scaffolded."],
+      "signal":"Economic-sector concepts remain available across the July 6 to July 8 sequence under structured conditions, but recognition/classification is stronger than independent explanation.",
+      "interpretation":"Require a one-sentence reason after each category choice so continuity is not mistaken for measured progress.",
+      "boundary":"Continuity across lessons does not itself prove improvement; Tactiq ASR remains severely noisy.",
+      "nextVerification":"Use unseen sector and migration/environment examples requiring both answer and reason without a model."
+    },
+    {
+      "date":"2026-08-17",
+      "title":"Written-answer difficulty and Geography concept reasoning",
+      "evidence":["Eduarda directly reports that Geography was harder because it was based on written responses; this is self-report, not a verified school result.","Primary-sector explanation shows partial conceptual confusion that is explicitly repaired by the teacher.","Water-cycle reasoning appears in learner-generated Portuguese explanations even when English lexical formulation is incomplete.","A connected English answer about water importance is assembled with scaffolding, and a Water Cycle sequence is retrieved after rehearsal."],
+      "signal":"Relevant Geography concept knowledge can be stronger than independent English formulation; complete written/oral answer production is a material support need.",
+      "interpretation":"Preserve content knowledge and English-expression control as separate evidence layers in bilingual school support.",
+      "boundary":"No school grade is available; learner self-report and teacher-supported formulation do not establish independent assessment performance.",
+      "nextVerification":"Ask two no-model Geography questions, capture the complete English first attempt, and permit a separate Portuguese concept response if English blocks content demonstration."
+    },
+    {
+      "date":"2026-08-18",
+      "title":"Water Cycle consolidation under repeated support",
+      "evidence":["Evaporation, precipitation and sequence language are practiced through repeated elicitation/modeling.","Advanced terms such as transpiration, sublimation, percolation/deposition and runoff are repeatedly rehearsed; most are not independently introduced by the learner.","Several Water Cycle terms become available by lesson end with prompts/corrections."],
+      "signal":"Repeated review supports same-lesson availability of Water Cycle terminology and sequence fragments, while advanced vocabulary remains cue-dependent.",
+      "interpretation":"Treat this as a consolidation trace and test what survives after a delay without visual/text/model support.",
+      "boundary":"Reading/repetition is not spontaneous formulation; same-lesson supported availability is not delayed retention.",
+      "nextVerification":"Later, elicit a no-model Water Cycle sequence and two term-to-function explanations before any cue."
+    },
+    {
+      "date":"2026-08-19",
+      "title":"Modal language present; function and word order remain uneven",
+      "evidence":["Controlled ability language includes 'I can speak English'.","'I can make cakes' follows modeling and is followed by the personalized 'I can make tapioca'.","First attempt 'can you I play soccer?' is recast to 'Can you play soccer?', directly exposing question-word-order instability.","should/shouldn't is available with support, but semantic selection is inconsistent in some advice contexts.","A can-to-should correction in an advice task shows functional selection improves after explicit contrast."],
+      "signal":"can/can't and should/shouldn't are available in guided production, while functional selection, question word order and complete independent formulation remain unstable.",
+      "interpretation":"Do not label modals as absent; test function choice and sentence form separately in student-authored no-model responses.",
+      "boundary":"Repeated short answers and modeled sentences do not establish generalized independent modal control.",
+      "nextVerification":"One ability statement, one permission question, one advice statement, one can-question and one frequency sentence without stems."
+    },
+    {
+      "date":"2026-08-20",
+      "title":"First-attempt evidence strengthens complete-formulation priority",
+      "evidence":["Direct first attempt 'I can I play volleyball' shows can-sentence word-order instability.","A personalized classroom-rule sentence is produced under support.","First attempt 'I always I go to volleyball...' is reformulated by the teacher, exposing frequency-adverb sentence-organization instability.","'I never drink coffee' is correctly reconstructed in a controlled jumbled-sentence task.","A test-preparation should-response begins as a relevant but incomplete/unstable formulation before teacher reformulation."],
+      "signal":"Across the August 19 to 20 sequence, modal/frequency language is available, while independent complete-sentence organization and word order remain a recurring verification target.",
+      "interpretation":"Make first-attempt capture the default so teacher-supported final answers do not erase the learner's actual starting point.",
+      "boundary":"Consecutive-day continuity is not delayed retention; supplied reading is not spontaneous production.",
+      "nextVerification":"Use new no-model modal/frequency prompts plus one complete Geography answer, recording first attempt, self-correction and supported final form separately."
+    }
+  ],
+  "acceptedLongitudinalSignals": [
+    {"id":"complete-answer-formulation","signal":"Across multiple primary sources, relevant meaning often appears before Eduarda can independently produce a complete, stable English sentence.","boundary":"This does not quantify improvement and support levels differ by lesson."},
+    {"id":"content-vs-english-formulation","signal":"Geography concept knowledge can be stronger than the learner's independent English expression of that knowledge.","boundary":"The transcripts do not independently establish school achievement or test score."},
+    {"id":"economic-sector-continuity","signal":"Economic-sector categorization remains accessible across separated lessons in structured contexts.","boundary":"Cross-lesson availability is continuity evidence, not a quantified progress claim."},
+    {"id":"water-cycle-supported-continuity","signal":"The August 17 to 18 sequence shows genuine Water Cycle continuity and supported term/concept availability.","boundary":"Same/next-day supported availability does not establish delayed independent retention."},
+    {"id":"modal-control-not-absence","signal":"Modal language is present under guidance; independent functional selection, question/sentence word order and complete formulation remain uneven.","boundary":"Guided availability is not independent mastery."},
+    {"id":"scaffold-responsive-uptake","signal":"Immediate improvement after model, contrast or recast recurs across the corpus.","boundary":"Immediate uptake must not be equated with delayed retention or mastery."}
+  ],
+  "authorizedCurrentState": {
+    "level":"CEFR A1",
+    "targetLevel":"CEFR A2",
+    "levelDecision":"no_change",
+    "learningFocus":"Build complete student-authored English responses with decreasing support while preserving Geography concept knowledge as a separate evidence layer.",
+    "priorities":["Complete student-authored answers with decreasing support.","Separate Geography concept knowledge from English-expression control.","Stabilize modal/function/word-order control in no-model production.","Test delayed retrieval instead of counting immediate modeled or repeated output as mastery."]
+  },
+  "authorizedNextAction": {
+    "title":"Six-question Independence Check V2",
+    "steps":["One economic-sector question: classify and explain why in one English sentence.","One Water Cycle question without a model.","One can ability/permission statement or question without a sentence stem.","One should advice response without a sentence stem.","One frequency-adverb sentence with independent word order.","One short school-content question requiring a complete English answer.","For every item capture FIRST ATTEMPT → SELF-CORRECTION → TEACHER-SUPPORTED FINAL ANSWER; if English blocks concept demonstration, preserve a short Portuguese concept response separately."],
+    "status":"teacher_authorized"
+  },
+  "nonAutoPromotableClaims": ["CEFR progression or level change without teacher authority.","Independent mastery inferred only from corrected or repeated output.","Attendance inferred only from transcript existence.","Homework or presentation completion without separate evidence.","Causal claims that PRIME or a specific intervention caused improvement.","School-test results not supplied by the appropriate source.","Delayed retention without a delayed low-support verification.","Any pedagogical content reconstructed for the 03 July source-only encounter."],
+  "driveArtifacts": {
+    "portfolioV2Candidate":"https://docs.google.com/document/d/1v7to7TEsQMg51d74a6kAqyCTdQYnhPp7Fr8kzBv-IVQ/edit",
+    "v1V2Confrontation":"https://docs.google.com/document/d/1tTedg4L_yrC270u3bNUdC0Qvl3Yqlop7-69hd1e98CM/edit",
+    "teacherDecisionGate":"https://docs.google.com/document/d/1fZ3p8u9k1-7W0QJKbOFSWLhu4TpbgA3oHNUULJtOSsI/edit"
+  },
+  "auditNote":"Teacher authorization was explicitly supplied by Alexandre Mello on 15 September 2026 for the bounded Eduarda V2 current-state/priority package, proposed next action, no CEFR change, and canonical projection. Seven primary transcript-bearing lessons remain source-grounded; two technical partials remain provenance-only; 03 July remains source-only. No legacy Portfolio or Class Report is deleted or rewritten."
+}
