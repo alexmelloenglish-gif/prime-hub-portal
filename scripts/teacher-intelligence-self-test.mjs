@@ -16,7 +16,9 @@ const files = {
   decisionPackages: 'lib/teacher-decision-packages.ts',
   candidatePackages: 'lib/teacher-intelligence-candidates.ts',
   gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
+  eduardaPackage: 'data/teacher-intelligence/eduarda-coelho-gabriel-v2.json',
   eduardaCandidate: 'data/teacher-intelligence/eduarda-coelho-gabriel-v2-candidate.json',
+  eduardaDashboard: 'data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
@@ -28,7 +30,9 @@ const entries = await Promise.all(
 const source = Object.fromEntries(entries)
 const allTeacherSource = Object.values(source).join('\n')
 const gustavoPackage = JSON.parse(source.gustavoPackage)
+const eduardaPackage = JSON.parse(source.eduardaPackage)
 const eduardaCandidate = JSON.parse(source.eduardaCandidate)
+const eduardaDashboard = JSON.parse(source.eduardaDashboard)
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
@@ -56,7 +60,8 @@ assert.match(source.candidateValidation, /canonical projection remains blocked|c
 assert.match(source.learners, /Teacher-authorized V2/, 'Learner directory must expose available teacher-authorized V2 packages')
 assert.match(source.learnerDecision, /Evidence → Signal → Interpretation → Boundary → Verification/, 'Learner decision view must preserve the evidence chain')
 assert.match(source.decisionPackages, /gustavo-drummond-v2\.json/, 'Teacher decision package registry must include Gustavo V2')
-assert.match(source.candidatePackages, /eduarda-coelho-gabriel-v2-candidate\.json/, 'Teacher candidate registry must include Eduarda V2 candidate')
+assert.match(source.decisionPackages, /eduarda-coelho-gabriel-v2\.json/, 'Teacher decision package registry must include Eduarda V2')
+assert.match(source.candidatePackages, /const candidates: TeacherIntelligenceCandidatePackage\[\] = \[\]/, 'Eduarda must leave the pending candidate registry after teacher authorization')
 assert.equal(gustavoPackage.status, 'teacher_authorized')
 assert.equal(gustavoPackage.teacherDecision.currentStatePriorityPackage, 'accepted_v2_proposed_update')
 assert.equal(gustavoPackage.teacherDecision.nextAction, 'accepted_v2_proposed_next_action')
@@ -65,10 +70,19 @@ assert.equal(gustavoPackage.teacherDecision.canonicalProjection, 'authorized')
 assert.equal(gustavoPackage.sourceLessons.length, 4)
 assert.equal(gustavoPackage.classReportsV2.length, 4)
 assert.equal(gustavoPackage.governance.legacyPolicy, 'additive_versioned_no_deletion')
+assert.equal(eduardaPackage.status, 'teacher_authorized')
+assert.equal(eduardaPackage.teacherDecision.currentStatePriorityPackage, 'accepted_v2_proposed_update')
+assert.equal(eduardaPackage.teacherDecision.nextAction, 'accepted_v2_proposed_next_action')
+assert.equal(eduardaPackage.teacherDecision.levelAssessment, 'no_change')
+assert.equal(eduardaPackage.teacherDecision.canonicalProjection, 'authorized')
+assert.equal(eduardaPackage.sourceLessons.length, 7)
+assert.equal(eduardaPackage.classReportsV2.length, 7)
+assert.equal(eduardaPackage.legacyLineage.historicalEncounters, 8)
+assert.equal(eduardaPackage.legacyLineage.sourceOnlyEncounterDate, '2026-07-03')
+assert.equal(eduardaPackage.governance.legacyPolicy, 'additive_versioned_no_deletion')
+assert.equal(eduardaDashboard.studentName, 'Eduarda Dias Costa Coelho da Cunha Gabriel')
 assert.equal(eduardaCandidate.status, 'awaiting_teacher_decision')
 assert.equal(eduardaCandidate.canonicalizationStatus, 'not_authorized')
-assert.equal(eduardaCandidate.teacher.decisionStatus, 'pending')
-assert.equal(eduardaCandidate.teacherDecision.canonicalProjection, 'not_authorized')
 assert.equal(eduardaCandidate.sourceLessons.length, 7)
 assert.equal(eduardaCandidate.classReportsV2.length, 7)
 assert.equal(eduardaCandidate.legacyLineage.historicalEncounters, 8)
