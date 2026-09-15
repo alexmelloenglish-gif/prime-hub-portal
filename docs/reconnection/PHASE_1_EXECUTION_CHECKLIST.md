@@ -20,9 +20,10 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 - **Baseline Candidate:** `057dafc97c91e59e5ba7cfb99528cc25530a5175`
 - **Baseline commit message:** `copy(faq): clarify level diagnosis in trial lesson`
 - **Implementation branch:** `reconnection-phase1-landing-v2`
+- **Documentation checkpoint before this update:** `366b9f04d376776aa2a9de8c86c9853acaf88876`
 - **Current `main`:** `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9`
 - **Merge base:** `0a552a43dcc423d2a2b68f392015b1bf82e093c5`
-- **Branch divergence:** 19 commits ahead / 2 commits behind `main` — intentionally diverged after temporary preview work was reverted from production.
+- **Branch divergence before this documentation update:** 20 commits ahead / 2 commits behind `main` — intentionally diverged after temporary preview work was reverted from production.
 - **Production:** UNCHANGED from the approved production state.
 - **Concept status:** LOCKED
 - **Copy/design status:** FROZEN AS BASELINE
@@ -43,29 +44,43 @@ The Baseline Candidate is **not yet the Release Candidate**. Release Candidate s
 
 ## Release gates
 
-### G1 — Final Preview stable
+### G1 — Final Preview stable — PASS
 
-- [ ] Confirm the Vercel deployment corresponding to Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` reaches READY.
-- [ ] Confirm the final Preview returns HTTP 200.
-- [ ] Confirm the rendered page corresponds to the Baseline Candidate before QA begins.
+- [x] Confirm the Vercel deployment corresponding to Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` reaches READY.
+- [x] Confirm the final Preview returns HTTP 200.
+- [x] Confirm the rendered page corresponds to the Baseline Candidate before QA begins.
 
-### G2 — Independent QA
+**Evidence:**
+
+- Deployment: `dpl_AJaD7tNmZjSZzuPfXoCVi2ZQtDJU`
+- Deployment state: `READY`
+- Deployment commit metadata: `057dafc97c91e59e5ba7cfb99528cc25530a5175`
+- Direct Preview fetch: HTTP `200 OK`
+- Rendered FAQ contains the approved level-diagnosis copy from the Baseline Candidate.
+
+### G2 — Independent QA — IN PROGRESS
 
 The QA agent is read-only for this gate. It does **not** edit code, redesign the page, rewrite copy or propose taste-based improvements.
 
+Current checkpoint from independent QA:
+
+- Desktop visual review: PASS.
+- Basic functional QA: PASS.
+- Still pending: authenticated visual review at 320 px / 390 px, keyboard/focus verification and technical metrics where measurable.
+
 Required coverage:
 
-- [ ] Desktop layout and hierarchy.
+- [x] Desktop layout and hierarchy.
 - [ ] Mobile layout and hierarchy.
 - [ ] 320 px reflow.
 - [ ] Keyboard navigation and visible focus.
-- [ ] Header navigation anchors.
-- [ ] Calendar CTA destination and behavior.
-- [ ] WhatsApp CTA destination and behavior.
-- [ ] Portal destination and authentication boundary.
+- [x] Header navigation anchors — basic functional pass; final keyboard verification remains under the keyboard check.
+- [x] Calendar CTA destination and behavior — basic functional pass.
+- [x] WhatsApp CTA destination and behavior — basic functional pass.
+- [x] Portal destination and authentication boundary — basic functional pass.
 - [ ] FAQ interaction and keyboard accessibility.
-- [ ] Approved image quality, loading and alternatives.
-- [ ] CTA visibility and readability.
+- [x] Approved image quality, loading and alternatives — desktop/basic pass; mobile visual confirmation remains.
+- [x] CTA visibility and readability — desktop pass; mobile visual confirmation remains.
 - [ ] Contrast and target-size checks.
 - [ ] LCP, INP and CLS review.
 
@@ -83,17 +98,32 @@ Examples:
 - `P1 — Mobile 390 px — overlap or clipping observed — screenshot/evidence — minimal correction.`
 - `PASS — FAQ accordion — keyboard interaction and visible focus verified.`
 
-### G3 — Controlled reconciliation with `main`
+### G3 — Controlled reconciliation with `main` — DRY-RUN COMPLETE / MERGE NOT STARTED
 
 Do not perform an automatic blind merge and do not force-push.
 
-- [ ] Preserve Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the pre-reconciliation reference.
-- [ ] Review the two commits present on `main` after the shared merge base and determine the minimal safe reconciliation path.
+- [x] Preserve Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the pre-reconciliation reference.
+- [x] Review the two commits present on `main` after the shared merge base and determine the minimal safe reconciliation path.
 - [ ] Integrate the current `main` state into the Phase 1 branch in a controlled manner.
 - [ ] Resolve conflicts without changing frozen copy/design unless a conflict requires a mechanical adaptation.
 - [ ] Re-run build, canonical self-tests and final Preview validation after reconciliation.
 - [ ] Re-run any QA checks affected by reconciliation.
 - [ ] Only after successful revalidation designate the resulting commit as **Release Candidate**.
+
+#### G3 dry-run finding
+
+The two commits that exist only on `main` are:
+
+1. `429cb742cc3614b0b6b3644f2e4ce831799b8000` — `feat(preview): expose public Phase 1 landing preview route`
+   - Added `app/phase1-preview/page.tsx` as a temporary public Preview route.
+2. `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9` — `revert(preview): keep Phase 1 work out of main`
+   - Removed that same temporary route.
+
+A direct comparison from merge base `0a552a43dcc423d2a2b68f392015b1bf82e093c5` to current `main` `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9` reports **zero changed files**. Therefore the two `main`-only commits have **zero net tree delta** relative to the shared base.
+
+**Reconciliation conclusion:** this is a history reconciliation, not a product-content reconciliation. The minimal safe path, once G2 is complete, is an ordinary non-force merge of current `main` into `reconnection-phase1-landing-v2`, preserving `057dafc...` as the immutable product baseline reference. Because `main` has zero net tree delta from the merge base, no Phase 1 copy/design change is expected from the merge. The merge must still be followed by build/self-tests and Preview revalidation before Release Candidate designation.
+
+**Explicitly prohibited:** rebase that rewrites the frozen baseline history, force-push, blind conflict acceptance, or production deployment during G3.
 
 ### G4 — Product Owner decision
 
@@ -142,7 +172,7 @@ No production release occurs without explicit Product Owner approval.
 - [x] Eligibility boundary self-test: PASS.
 - [x] Canonical strict validator: **0 errors**; existing data warnings remain outside Phase 1 landing scope.
 - [x] Next.js optimized production build: PASS on the corrected public landing path.
-- [ ] Complete G1 against the Baseline Candidate.
+- [x] Complete G1 against the Baseline Candidate.
 - [ ] Complete G2 independent QA.
 - [ ] Complete G3 controlled reconciliation and revalidation.
 
