@@ -35,7 +35,7 @@ Every authorized repository snapshot must expose:
 
 The structural schema is `data/contracts/student-dashboard-projection.schema.json`.
 
-The schema intentionally does **not** require identical pedagogical maturity across learners. Pending assessment, qualified actions, portfolio-confirmed state, teacher-validated state, and justified absence of a future schedule remain valid states.
+The schema intentionally does **not** require identical pedagogical maturity across learners. `Not Assessed`, qualified actions, portfolio-confirmed state, teacher-validated state, and justified absence of a future schedule remain valid states.
 
 ## Regression witnesses
 
@@ -61,16 +61,18 @@ The executable regression test preserves:
 
 The witness was updated on 2026-09-15 after a **teacher-authorized correction in the canonical portfolio source**. This is a factual learner-state correction, not a breaking change to the `student-dashboard-v1.0` contract.
 
-The current witness preserves:
+The current learner-facing witness preserves:
 
-- seven pedagogical lesson witnesses;
+- seven pedagogically documented lesson witnesses;
 - seven report witnesses;
 - current `CEFR A1`, teacher-validated from the corrected source;
 - target `CEFR A2`, teacher-validated and explicitly treated as a target rather than a result;
 - three priorities;
 - `Six-question independence check`;
 - no automatic promotion from A1 to A2;
-- 3 July incomplete encounter remains pending with no report;
+- only lessons with documented pedagogical evidence are projected;
+- the 3 July agenda-only source record is **not projected as a lesson** and generates **no class report**;
+- no `pending` state is exposed in Eduarda's learner projection;
 - action remains distinct from Diego's.
 
 ## Negative regression protection
@@ -83,7 +85,9 @@ The regression suite must fail if a mutation:
 - silently promotes Eduarda from current A1 to target A2;
 - changes Eduarda's A2 target without a new teacher-authorized source correction;
 - marks an unexecuted action as completed;
-- creates a report for Eduarda's incomplete 3 July encounter;
+- projects the 3 July agenda-only record as a learner lesson;
+- creates a report for the 3 July agenda-only record;
+- reintroduces a `pending` state into Eduarda's learner projection;
 - collapses the two learners into the same next action.
 
 ## Semantic boundaries
@@ -107,7 +111,7 @@ Published reports: N
 ≠ N Engine cycles
 ```
 
-A proposal is not a teacher decision. An authorized next action is not proof that the action was executed. A target is not a result. An incomplete source is not converted into a completed report. A teacher-authorized correction may update a learner's factual state without changing the projection contract version, but it must update the executable witness and regression assertions explicitly.
+A proposal is not a teacher decision. An authorized next action is not proof that the action was executed. A target is not a result. An incomplete source is not converted into a completed learner-facing report or lesson. A teacher-authorized correction may update a learner's factual state without changing the projection contract version, but it must update the executable witness and regression assertions explicitly.
 
 ## Baseline
 
