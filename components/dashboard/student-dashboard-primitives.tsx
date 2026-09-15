@@ -25,6 +25,25 @@ function compactText(value: string, max = 150) {
   return { visible: `${value.slice(0, max).trimEnd()}…`, overflow: true }
 }
 
+function parseLearningChain(value: string) {
+  const labels = ['Evidence', 'Signal', 'Insight', 'Boundary', 'Next verification'] as const
+  const result: Partial<Record<(typeof labels)[number], string>> = {}
+  for (const label of labels) {
+    const marker = `${label}:`
+    const start = value.indexOf(marker)
+    if (start < 0) continue
+    const contentStart = start + marker.length
+    const nextPositions = labels
+      .filter((candidate) => candidate !== label)
+      .map((candidate) => value.indexOf(`${candidate}:`, contentStart))
+      .filter((position) => position >= 0)
+    const end = nextPositions.length ? Math.min(...nextPositions) : value.length
+    const content = value.slice(contentStart, end).trim()
+    if (content) result[label] = content
+  }
+  return result
+}
+
 export function EvidenceStatus({ status }: { status: ProjectionEvidenceStatus }) {
   return (
     <span className={`inline-flex shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${evidenceStatusClasses[status]}`}>
@@ -95,6 +114,8 @@ export function NextActionCard({
   destination?: string | null
 }) {
   const href = destination ?? '#next-action'
+  const learningChain = evidence ? parseLearningChain(evidence) : {}
+  const hasChain = Boolean(learningChain.Evidence || learningChain.Signal || learningChain.Insight)
   const cta = (
     <span className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#0a235c] shadow-sm transition hover:bg-blue-50 sm:w-auto">
       <ArrowRight className="h-4 w-4" /> Open action
@@ -106,7 +127,17 @@ export function NextActionCard({
       <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
           <div className="flex items-center gap-3"><Route className="h-5 w-5 text-blue-300" /><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">Next action</p></div>
-          {title ? <><h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>{description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}{evidence ? <p className="mt-4 border-t border-white/15 pt-3 text-xs leading-5 text-blue-200">Evidence: {evidence}</p> : null}</> : <h3 className="mt-3 text-xl font-semibold">No validated next action is available yet.</h3>}
+          {title ? <><h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>{description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}
+            {hasChain ? (
+              <div className="mt-5 grid gap-3 md:grid-cols-3">
+                {learningChain.Evidence ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Evidence</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Evidence}</p></div> : null}
+                {learningChain.Signal ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Learning signal</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Signal}</p></div> : null}
+                {learningChain.Insight ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Insight</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Insight}</p></div> : null}
+              </div>
+            ) : evidence ? <p className="mt-4 border-t border-white/15 pt-3 text-xs leading-5 text-blue-200">Evidence: {evidence}</p> : null}
+            {learningChain.Boundary ? <p className="mt-4 border-t border-white/15 pt-3 text-xs leading-5 text-blue-200">Boundary: {learningChain.Boundary}</p> : null}
+            {learningChain['Next verification'] ? <p className="mt-2 text-xs leading-5 text-blue-200">Next verification: {learningChain['Next verification']}</p> : null}
+          </> : <h3 className="mt-3 text-xl font-semibold">No validated next action is available yet.</h3>}
         </div>
         {title ? isExternalLink(href) ? <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{cta}</a> : <Link href={href}>{cta}</Link> : null}
       </div>
