@@ -22,6 +22,9 @@ export type StudentDirectoryEntry = {
   currentLevel: string
   targetLevel: string
   attendanceRate: string
+  learningRecordStatus?: 'ready' | 'partial'
+  learningRecordLabel?: string
+  canonicalReportCount?: number
   publishedReportCount?: number
   latestPipelineStatus?: string | null
   dataSource?: 'firestore' | 'repository'
@@ -41,84 +44,34 @@ export type PipelineActivityEntry = {
 
 const repositoryStudentDirectory: StudentDirectoryEntry[] = [
   {
-    id: 'rafael-copolillo-gmail-com',
-    studentEmail: normalizeEmail(String(rafaelProfile.studentEmail)),
-    studentName: String(rafaelProfile.studentName),
-    currentLevel: String(rafaelProfile.currentLevel),
-    targetLevel: String(rafaelProfile.targetLevel),
-    attendanceRate: String(rafaelProfile.attendanceRate),
+    id: 'rafael-copolillo-gmail-com', studentEmail: normalizeEmail(String(rafaelProfile.studentEmail)), studentName: String(rafaelProfile.studentName), currentLevel: String(rafaelProfile.currentLevel), targetLevel: String(rafaelProfile.targetLevel), attendanceRate: String(rafaelProfile.attendanceRate), canonicalReportCount: rafaelProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
   {
-    id: 'louise-nogueira-hotmail-com',
-    studentEmail: normalizeEmail(String(louiseProfile.studentEmail)),
-    studentName: String(louiseProfile.studentName),
-    currentLevel: String(louiseProfile.currentLevel),
-    targetLevel: String(louiseProfile.targetLevel),
-    attendanceRate: String(louiseProfile.attendanceRate),
+    id: 'louise-nogueira-hotmail-com', studentEmail: normalizeEmail(String(louiseProfile.studentEmail)), studentName: String(louiseProfile.studentName), currentLevel: String(louiseProfile.currentLevel), targetLevel: String(louiseProfile.targetLevel), attendanceRate: String(louiseProfile.attendanceRate), canonicalReportCount: louiseProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
   {
-    id: 'italo-pires-gmail-com',
-    studentEmail: normalizeEmail(String(italoProfile.studentEmail)),
-    studentName: String(italoProfile.studentName),
-    currentLevel: String(italoProfile.currentLevel),
-    targetLevel: String(italoProfile.targetLevel),
-    attendanceRate: String(italoProfile.attendanceRate),
+    id: 'italo-pires-gmail-com', studentEmail: normalizeEmail(String(italoProfile.studentEmail)), studentName: String(italoProfile.studentName), currentLevel: String(italoProfile.currentLevel), targetLevel: String(italoProfile.targetLevel), attendanceRate: String(italoProfile.attendanceRate), canonicalReportCount: italoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
   },
   {
-    id: 'eduarda-coelho-gabriel-hotmail-com',
-    studentEmail: normalizeEmail(String(eduardaProfile.studentEmail)),
-    studentName: String(eduardaProfile.studentName),
-    currentLevel: String(eduardaProfile.currentLevel),
-    targetLevel: String(eduardaProfile.targetLevel),
-    attendanceRate: String(eduardaProfile.attendanceRate),
+    id: 'eduarda-coelho-gabriel-hotmail-com', studentEmail: normalizeEmail(String(eduardaProfile.studentEmail)), studentName: String(eduardaProfile.studentName), currentLevel: String(eduardaProfile.currentLevel), targetLevel: String(eduardaProfile.targetLevel), attendanceRate: String(eduardaProfile.attendanceRate), canonicalReportCount: eduardaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
   {
-    id: 'lauramgcstemp-gmail-com',
-    studentEmail: normalizeEmail(String(lauraProfile.studentEmail)),
-    studentName: String(lauraProfile.studentName),
-    currentLevel: String(lauraProfile.currentLevel),
-    targetLevel: String(lauraProfile.targetLevel),
-    attendanceRate: String(lauraProfile.attendanceRate),
+    id: 'lauramgcstemp-gmail-com', studentEmail: normalizeEmail(String(lauraProfile.studentEmail)), studentName: String(lauraProfile.studentName), currentLevel: String(lauraProfile.currentLevel), targetLevel: String(lauraProfile.targetLevel), attendanceRate: String(lauraProfile.attendanceRate), canonicalReportCount: lauraProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
   {
-    id: 'galvaonanda28-gmail-com',
-    studentEmail: normalizeEmail(String(mariaFernandaProfile.studentEmail)),
-    studentName: String(mariaFernandaProfile.studentName),
-    currentLevel: String(mariaFernandaProfile.currentLevel),
-    targetLevel: String(mariaFernandaProfile.targetLevel),
-    attendanceRate: String(mariaFernandaProfile.attendanceRate),
+    id: 'galvaonanda28-gmail-com', studentEmail: normalizeEmail(String(mariaFernandaProfile.studentEmail)), studentName: String(mariaFernandaProfile.studentName), currentLevel: String(mariaFernandaProfile.currentLevel), targetLevel: String(mariaFernandaProfile.targetLevel), attendanceRate: String(mariaFernandaProfile.attendanceRate), canonicalReportCount: mariaFernandaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
   },
   {
-    id: 'diegodasiro-gmail-com',
-    studentEmail: normalizeEmail(String(diegoProfile.studentEmail)),
-    studentName: String(diegoProfile.studentName),
-    currentLevel: String(diegoProfile.currentLevel),
-    targetLevel: String(diegoProfile.targetLevel),
-    attendanceRate: String(diegoProfile.attendanceRate),
+    id: 'diegodasiro-gmail-com', studentEmail: normalizeEmail(String(diegoProfile.studentEmail)), studentName: String(diegoProfile.studentName), currentLevel: String(diegoProfile.currentLevel), targetLevel: String(diegoProfile.targetLevel), attendanceRate: String(diegoProfile.attendanceRate), canonicalReportCount: diegoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
   {
-    id: 'claudio-bit-gmail-com',
-    studentEmail: normalizeEmail(String(claudioProfile.studentEmail)),
-    studentName: String(claudioProfile.studentName),
-    currentLevel: String(claudioProfile.currentLevel),
-    targetLevel: String(claudioProfile.targetLevel),
-    attendanceRate: String(claudioProfile.attendanceRate),
+    id: 'claudio-bit-gmail-com', studentEmail: normalizeEmail(String(claudioProfile.studentEmail)), studentName: String(claudioProfile.studentName), currentLevel: String(claudioProfile.currentLevel), targetLevel: String(claudioProfile.targetLevel), attendanceRate: String(claudioProfile.attendanceRate), canonicalReportCount: claudioProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
   },
   {
-    id: 'vcrlima89-gmail-com',
-    studentEmail: normalizeEmail(String(valeriaProfile.studentEmail)),
-    studentName: String(valeriaProfile.studentName),
-    currentLevel: String(valeriaProfile.currentLevel),
-    targetLevel: String(valeriaProfile.targetLevel),
-    attendanceRate: String(valeriaProfile.attendanceRate),
+    id: 'vcrlima89-gmail-com', studentEmail: normalizeEmail(String(valeriaProfile.studentEmail)), studentName: String(valeriaProfile.studentName), currentLevel: String(valeriaProfile.currentLevel), targetLevel: String(valeriaProfile.targetLevel), attendanceRate: String(valeriaProfile.attendanceRate), canonicalReportCount: valeriaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
   },
   {
-    id: 'carolvdrummond-gmail-com',
-    studentEmail: normalizeEmail(String(gustavoProfile.studentEmail)),
-    studentName: String(gustavoProfile.studentName),
-    currentLevel: String(gustavoProfile.currentLevel),
-    targetLevel: String(gustavoProfile.targetLevel),
-    attendanceRate: String(gustavoProfile.attendanceRate),
+    id: 'carolvdrummond-gmail-com', studentEmail: normalizeEmail(String(gustavoProfile.studentEmail)), studentName: String(gustavoProfile.studentName), currentLevel: String(gustavoProfile.currentLevel), targetLevel: String(gustavoProfile.targetLevel), attendanceRate: String(gustavoProfile.attendanceRate), canonicalReportCount: gustavoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
   },
 ]
 
@@ -135,28 +88,20 @@ async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
     return await Promise.all(
       students.map(async (student) => {
         const [publishedReportCount, latestRun] = await Promise.all([
-          prisma.classReportProjection.count({
-            where: { studentEmail: student.studentEmail, documentStatus: 'published' },
-          }),
-          prisma.pipelineRun.findFirst({
-            where: { studentEmail: student.studentEmail },
-            orderBy: { createdAt: 'desc' },
-            select: { status: true },
-          }),
+          prisma.classReportProjection.count({ where: { studentEmail: student.studentEmail, documentStatus: 'published' } }),
+          prisma.pipelineRun.findFirst({ where: { studentEmail: student.studentEmail }, orderBy: { createdAt: 'desc' }, select: { status: true } }),
         ])
 
         return {
           ...student,
-          publishedReportCount,
+          publishedReportCount: Math.max(student.canonicalReportCount ?? 0, publishedReportCount),
           latestPipelineStatus: latestRun?.status ?? null,
         }
       })
     )
   } catch (error) {
-    console.warn('[admin-dashboard] Pipeline status unavailable', {
-      errorName: error instanceof Error ? error.name : 'UnknownError',
-    })
-    return students
+    console.warn('[admin-dashboard] Pipeline status unavailable', { errorName: error instanceof Error ? error.name : 'UnknownError' })
+    return students.map((student) => ({ ...student, publishedReportCount: student.canonicalReportCount ?? 0 }))
   }
 }
 
@@ -166,38 +111,16 @@ export async function listRecentPipelineActivity(limit = 12): Promise<PipelineAc
     const runs = await prisma.pipelineRun.findMany({
       orderBy: { createdAt: 'desc' },
       take: limit,
-      select: {
-        id: true,
-        studentEmail: true,
-        lessonId: true,
-        status: true,
-        createdAt: true,
-        completedAt: true,
-        portfolioApplyStatus: true,
-        transcript: { select: { source: true } },
-      },
+      select: { id: true, studentEmail: true, lessonId: true, status: true, createdAt: true, completedAt: true, portfolioApplyStatus: true, transcript: { select: { source: true } } },
     })
     const publishedReports = await prisma.classReportProjection.findMany({
       where: { pipelineRunId: { in: runs.map((run) => run.id) }, documentStatus: 'published' },
       select: { pipelineRunId: true },
     })
     const publishedRunIds = new Set(publishedReports.map((report) => report.pipelineRunId))
-
-    return runs.map((run) => ({
-      id: run.id,
-      studentEmail: run.studentEmail,
-      lessonId: run.lessonId,
-      status: run.status,
-      source: run.transcript?.source || 'unknown',
-      createdAt: run.createdAt.toISOString(),
-      completedAt: run.completedAt?.toISOString() || null,
-      portfolioApplyStatus: run.portfolioApplyStatus,
-      publishedReport: publishedRunIds.has(run.id),
-    }))
+    return runs.map((run) => ({ id: run.id, studentEmail: run.studentEmail, lessonId: run.lessonId, status: run.status, source: run.transcript?.source || 'unknown', createdAt: run.createdAt.toISOString(), completedAt: run.completedAt?.toISOString() || null, portfolioApplyStatus: run.portfolioApplyStatus, publishedReport: publishedRunIds.has(run.id) }))
   } catch (error) {
-    console.warn('[admin-dashboard] Pipeline activity unavailable', {
-      errorName: error instanceof Error ? error.name : 'UnknownError',
-    })
+    console.warn('[admin-dashboard] Pipeline activity unavailable', { errorName: error instanceof Error ? error.name : 'UnknownError' })
     return []
   }
 }
