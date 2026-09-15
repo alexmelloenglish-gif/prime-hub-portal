@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prime-digital-hub.local/contracts/student-dashboard-projection.schema.json",
+  "title": "PRIME Student Dashboard Projection",
+  "description": "Structural contract for authorized longitudinal learner projections. It does not require every learner to have identical pedagogical maturity.",
+  "type": "object",
+  "required": [
+    "studentId",
+    "studentName",
+    "dashboardSourcePolicy",
+    "profileCompleteness",
+    "profileSource",
+    "canonicalProjection"
+  ],
+  "properties": {
+    "studentId": { "type": "string", "minLength": 1 },
+    "studentName": { "type": "string", "minLength": 1 },
+    "dashboardSourcePolicy": { "const": "authorized_repository_snapshot" },
+    "profileCompleteness": { "const": "canonical_longitudinal_profile" },
+    "profileSource": {
+      "type": "object",
+      "required": ["sourceAuthority"],
+      "properties": {
+        "sourceAuthority": { "type": "string", "minLength": 1 }
+      }
+    },
+    "canonicalProjection": {
+      "type": "object",
+      "required": ["version", "currentState", "priorities", "nextAction"],
+      "properties": {
+        "version": { "const": "student-dashboard-v1.0" },
+        "currentState": { "type": "object" },
+        "priorities": { "type": "array" },
+        "nextAction": {
+          "type": "object",
+          "required": ["authorizationStatus", "title", "status"],
+          "properties": {
+            "authorizationStatus": { "type": "string", "minLength": 1 },
+            "title": { "type": "string", "minLength": 1 },
+            "status": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}
