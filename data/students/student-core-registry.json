@@ -57,24 +57,24 @@
       "firestoreDocumentId": "eduarda-coelho-gabriel-hotmail-com",
       "studentName": "Eduarda Coelho Gabriel",
       "canonicalEmail": "midias83@hotmail.com",
-      "emailAliases": ["Eduarda Dias", "Eduarda Jesus"],
+      "emailAliases": ["Eduarda Dias Costa Coelho da Cunha Gabriel", "Eduarda Dias"],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
-      "profileCompleteness": "episodic_remedial_pending_validation",
+      "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=midias83%40hotmail.com",
       "links": {
-        "liveClass": "https://meet.google.com/shx-eofk-axz",
-        "portfolio": null,
+        "liveClass": null,
+        "portfolio": "https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit",
         "classMaterials": null,
         "homework": null
       },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
-      "classFrequency": "Episodic on demand; four-lesson remedial blocks",
+      "classFrequency": "Episodic on demand",
       "enrollmentMode": "episodic_remedial",
-      "notes": "Teacher confirmed that Eduarda Coelho Gabriel is the same student represented by the booking names Eduarda Dias and Eduarda Jesus. She is a returning former physical-school student receiving school reinforcement on demand."
+      "notes": "Canonical longitudinal portfolio reconciled 2026-09-15. Eduarda is a returning learner receiving English and English-medium Geography school support on demand; no current event-specific live-class link is treated as canonical."
     },
     {
       "studentId": "stu_4c4da6c04ac4",
