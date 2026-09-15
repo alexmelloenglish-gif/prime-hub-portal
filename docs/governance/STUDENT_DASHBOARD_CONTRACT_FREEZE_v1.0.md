@@ -35,7 +35,7 @@ Every authorized repository snapshot must expose:
 
 The structural schema is `data/contracts/student-dashboard-projection.schema.json`.
 
-The schema intentionally does **not** require identical pedagogical maturity across learners. Pending assessment, qualified actions, portfolio-confirmed state, and justified absence of a future schedule remain valid states.
+The schema intentionally does **not** require identical pedagogical maturity across learners. Pending assessment, qualified actions, portfolio-confirmed state, teacher-validated state, and justified absence of a future schedule remain valid states.
 
 ## Regression witnesses
 
@@ -59,13 +59,17 @@ The executable regression test preserves:
 
 ### Eduarda
 
+The witness was updated on 2026-09-15 after a **teacher-authorized correction in the canonical portfolio source**. This is a factual learner-state correction, not a breaking change to the `student-dashboard-v1.0` contract.
+
+The current witness preserves:
+
 - seven pedagogical lesson witnesses;
 - seven report witnesses;
-- `Assessment pending`;
-- `School-task performance target pending`;
+- current `CEFR A1`, teacher-validated from the corrected source;
+- target `CEFR A2`, teacher-validated and explicitly treated as a target rather than a result;
 - three priorities;
 - `Six-question independence check`;
-- no invented CEFR state;
+- no automatic promotion from A1 to A2;
 - 3 July incomplete encounter remains pending with no report;
 - action remains distinct from Diego's.
 
@@ -76,7 +80,8 @@ The regression suite must fail if a mutation:
 - removes `dashboardSourcePolicy`;
 - changes the contract version;
 - weakens profile completeness;
-- injects CEFR into Eduarda's assessment-pending state;
+- silently promotes Eduarda from current A1 to target A2;
+- changes Eduarda's A2 target without a new teacher-authorized source correction;
 - marks an unexecuted action as completed;
 - creates a report for Eduarda's incomplete 3 July encounter;
 - collapses the two learners into the same next action.
@@ -102,7 +107,7 @@ Published reports: N
 ≠ N Engine cycles
 ```
 
-A proposal is not a teacher decision. An authorized next action is not proof that the action was executed. A target is not a result. An incomplete source is not converted into a completed report.
+A proposal is not a teacher decision. An authorized next action is not proof that the action was executed. A target is not a result. An incomplete source is not converted into a completed report. A teacher-authorized correction may update a learner's factual state without changing the projection contract version, but it must update the executable witness and regression assertions explicitly.
 
 ## Baseline
 
@@ -110,7 +115,7 @@ Historical proof baseline:
 
 `dc98ad11f9e1c3eaccc4b412674840f6cca8f3f5`
 
-This SHA is a historical evidence baseline, **not** a permanent pin in executable code. The current branch may advance while preserving the v1.0 contract.
+This SHA remains a historical evidence baseline, **not** a permanent pin in executable code. The corrected Eduarda witness on 2026-09-15 supersedes the learner-state facts encoded in that earlier baseline while preserving the same v1.0 structural and semantic contract.
 
 The contract version must not be silently changed. A future breaking contract requires:
 
