@@ -75,6 +75,25 @@ The [migration checkpoint](../PRIME_CANONICAL_MIGRATION_ARCHITECTURE_CHECKPOINT_
 
 The [Runtime Verification Register](../PRIME_RUNTIME_VERIFICATION_REGISTER.md) separately preserves Pilot G GL-002 as a historical rejected E2E trace. Do not conflate that historical processing run with the reported Lessons 1–4 longitudinal portfolio case. Neither substitutes for auditing the other's artifacts.
 
+### 5A. Admin labels: `Pipeline` and `Published reports`
+
+The Teacher Intelligence student directory exposes two operational fields that must not be interpreted as pedagogical proof.
+
+At the audited main, [`lib/admin-dashboard.ts`](../../lib/admin-dashboard.ts) derives:
+
+- `latestPipelineStatus` from the `status` of the most recent `PipelineRun` for the learner;
+- `publishedReportCount` from the count of `ClassReportProjection` rows for that learner where `documentStatus = 'published'`.
+
+The Admin root already labels the first field as **Historical pipeline**; the Intelligence student directory shortens it to **Pipeline**. This distinction matters.
+
+Therefore:
+
+- `Pipeline: completed` means the latest historical technical processing run ended with status `completed`. It does **not** establish teacher review, canonicalization, projection authorization, learner-facing projection, cumulative personalization or a closed learning loop.
+- `Published reports: N` means `N` class-report projection records are marked `published`. It is not a count of teacher-validated evidence, complete lessons, canonical learning-state transitions or learner attempts.
+- `failed` or `NO DATA` does not prove absence of a current longitudinal dashboard state, because the Admin directory can fall back to canonical repository snapshots independently of the latest historical run.
+
+Accordingly, the `completed` labels supplied for Pilots R and G and their displayed published-report counts are **technical metadata only**. They neither upgrade nor invalidate the pedagogical claim status established from the underlying longitudinal evidence chain.
+
 ## 6. Claim status
 
 | Claim | Status within this audit |
