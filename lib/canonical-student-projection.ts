@@ -101,40 +101,37 @@ function parseTransferPoints(value: string) {
 
 function buildLearningIntelligence(
   reports: Array<Record<string, unknown>>,
-  priorities: Array<Record<string, unknown>>,
 ): LearningIntelligenceThread[] {
   return reports
-    .map((report): LearningIntelligenceThread => {
+    .map((report): LearningIntelligenceThread | null => {
       const lessonId = stringValue(report.lessonId) || stringValue(report.id)
       const date = stringValue(report.date)
       const title = stringValue(report.title, 'Class report')
       const teacherInsight = stringValue(report.teacherInsight)
       const transfer = parseTransferPoints(teacherInsight)
-      const reportFocus = Array.isArray(report.focus)
-        ? report.focus.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).join(', ')
-        : ''
-      const matchingPriority = priorities.find((priority) => {
-        const evidence = stringValue(priority.evidence).toLowerCase()
-        return date && evidence.includes(date.toLowerCase().replace(/\s+/g, ' '))
-      })
-      const signal = matchingPriority
-        ? stringValue(matchingPriority.why)
-        : reportFocus
-          ? `Current learning signal: ${reportFocus}.`
-          : 'No separate learning signal was published for this lesson.'
+
+      // A narrative Class Report is not, by itself, an Evidence → Signal → Insight
+      // record. Do not promote summary/focus/teacherInsight into canonical learning
+      // intelligence unless the report explicitly carries the structured transfer
+      // point contract. The report remains visible as a Class Report elsewhere.
+      const hasStructuredEvidence = Boolean(transfer.Evidence)
+      const hasStructuredInterpretation = Boolean(transfer.Interpretation)
+      if (!lessonId || !hasStructuredEvidence || !hasStructuredInterpretation) return null
+
+      const signal = transfer.Signal || 'No separate learning signal was published for this lesson.'
       return {
         lessonId,
         date,
         title,
-        evidence: transfer.Evidence || stringValue(report.summary),
+        evidence: transfer.Evidence,
         signal,
-        insight: transfer.Interpretation || stringValue(report.teacherInsight),
+        insight: transfer.Interpretation,
         boundary: transfer.Boundary || 'No additional boundary statement was published.',
         nextVerification: transfer['Next verification'] || 'No next verification statement was published.',
-        status: teacherInsight ? 'portfolio-confirmed' : 'not-available',
+        status: 'portfolio-confirmed',
       }
     })
-    .filter((item) => item.lessonId && (item.evidence || item.insight))
+    .filter((item): item is LearningIntelligenceThread => Boolean(item))
 }
 
 /**
@@ -153,7 +150,7 @@ export function buildCanonicalStudentProjection(
   const priorities = Array.isArray(projection?.priorities)
     ? projection.priorities.map(objectValue).filter((v): v is Record<string, unknown> => Boolean(v))
     : []
-  const learningIntelligence = buildLearningIntelligence(record.classReports ?? [], priorities)
+  const learningIntelligence = buildLearningIntelligence(record.classReports ?? [])
 
   const actionObject = objectValue(projection?.nextAction)
   const authorization = stringValue(actionObject?.authorizationStatus) || stringValue(actionObject?.status) || 'qualified'
