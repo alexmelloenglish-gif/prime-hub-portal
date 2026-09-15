@@ -58,9 +58,11 @@ The corrected dashboard does **not** infer a CEFR increase from A2, does not cla
 
 The previous repository snapshot was centered on August calendar bookings and omitted the richer canonical portfolio covering July and August.
 
-The current teacher-corrected portfolio identifies **seven lessons with pedagogical content documented**. An additional 3 July agenda record does not contain enough pedagogical detail to establish a lesson report.
+The current teacher-corrected portfolio identifies **seven lessons with pedagogical content documented**. The source also contains an agenda record dated 3 July that does not carry enough pedagogical information to authorize a learner lesson or class report.
 
-**Learner-facing correction:** the dashboard projects **only the seven pedagogically documented lessons**. The 3 July agenda-only record is not promoted into a learner lesson and generates no class report.
+**Learner-facing correction:** the dashboard projects **only the seven pedagogically documented lessons**. The 3 July source-only record is not promoted into a learner lesson and generates no class report.
+
+**Provenance correction:** the 3 July source fact is retained separately in `sourceProvenance.nonProjectedRecords`, classified as `source-only`. It remains auditable without being rendered as learner-facing learning state.
 
 ### 2. Teacher-corrected level and target
 
@@ -103,17 +105,22 @@ Every projected class report uses the same transfer structure:
 
 This prevents the later reports from degrading into unstructured narrative and makes the longitudinal handoff usable for the next teaching decision.
 
-### 5. No `pending` state in Eduarda's learner projection
+### 5. Source truth and learner projection are deliberately different layers
 
-The student-facing snapshot, immutable regression fixture and executable self-tests now require:
+The executable contract now requires:
 
-- exactly **7** projected lesson records;
+- exactly **7** learner-facing lesson records;
 - exactly **7** class reports;
 - no 3 July learner lesson;
 - no 3 July class report;
-- no `pending` state anywhere in Eduarda's learner projection.
+- the 3 July agenda fact preserved separately as source provenance;
+- no source-only/incomplete record rendered as learner-facing learning state.
 
-The incomplete 3 July source remains only an agenda fact in the portfolio source; it is outside the learner-facing projection rather than being converted into a lesson or report.
+The required semantic rule is:
+
+`source provenance ≠ learner lesson ≠ pedagogical evidence ≠ learner-facing projection`
+
+This fixes the earlier mistake of treating “do not show a pending item” as permission to erase provenance.
 
 ### 6. Stale event-specific Meet links removed
 
@@ -132,7 +139,7 @@ The corrected dashboard does **not** infer:
 - promotion from A1 to A2;
 - a school grade/result;
 - independent mastery from guided responses;
-- pedagogical content for the 3 July agenda-only record;
+- pedagogical content for the 3 July source-only record;
 - a future scheduled lesson;
 - execution of the recommended next action.
 
@@ -143,13 +150,13 @@ The corrected dashboard does **not** infer:
 The reconciliation fixes two different failure modes:
 
 - **Diego:** valid canonical learning evidence existed, but the dashboard snapshot lacked the canonical projection contract, hid longitudinal reports behind legacy publication semantics, and exposed an unverified live-class link.
-- **Eduarda:** the dashboard was an outdated booking/onboarding snapshot and omitted most of the canonical learning record; the corrected projection now contains the seven documented lessons, A1 → A2 teacher-validated state, seven reports and consistent transfer points, without exposing an unresolved agenda item as learner state.
+- **Eduarda:** the dashboard was an outdated booking/onboarding snapshot and omitted most of the canonical learning record; the corrected projection now contains the seven documented lessons, A1 → A2 teacher-validated state, seven reports and consistent transfer points, while source-only provenance remains preserved outside the learner-facing learning record.
 
 Both repository records use `student-dashboard-v1.0`, preserve evidence boundaries and project the strongest current portfolio evidence without inventing missing authority.
 
 ## Current regression protection
 
-Eduarda's current executable contract requires seven lessons, seven reports, CEFR A1 current, CEFR A2 target, three priorities, the `Six-question independence check`, distinct action from Diego, and zero `pending` state in her learner projection.
+Eduarda's executable contract requires seven learner-facing lessons, seven reports, CEFR A1 current, CEFR A2 target, three priorities, the `Six-question independence check`, distinct action from Diego, preservation of the 3 July source-only provenance, and rejection of any attempt to promote that source record into a learner lesson or report.
 
 The dashboard contract remains part of the production build and GitHub CI contract.
 
