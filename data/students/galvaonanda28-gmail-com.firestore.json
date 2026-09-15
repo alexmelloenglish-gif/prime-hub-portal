@@ -71,7 +71,7 @@
     {"id":"speaking-academic","title":"Speaking & Academic Interaction","status":"Improving","insight":"Three records show participation in discussion and attempts to express abstract ideas; precision and independence remain development targets.","accent":"blue"},
     {"id":"advanced-grammar","title":"Advanced Grammar Precision","status":"Needs Focus","insight":"19 June shows productive inversion work alongside recurring need for support with auxiliary selection and base forms.","accent":"amber"},
     {"id":"discourse-semantic","title":"Discourse Markers & Semantic Interpretation","status":"Improving","insight":"6 June shows productive understanding of contrast/limitation and semantic analysis in exam-style texts.","accent":"blue"},
-    {"id":"listening-no-subtitles","title":"Listening Without Subtitles","status":"Not Assessed","insight":"Independent listening has not been assessed with a dedicated authorized measure in the current evidence set.","accent":"gray"}
+    {"id":"listening-no-subtitles","title":"Listening Without Subtitles","status":"Not Assessed","insight":"Not yet assessed: the current evidence set does not contain a dedicated authorized independent-listening measure.","accent":"gray"}
   ],
   "attendanceOverview": [
     {"id":"class-2026-04-24","lessonId":"maria-2026-04-24","date":"April 24, 2026","status":"present","title":"Future of Work, careers, AI and authentic listening","summary":"Discussion covered medicine, career choices, AI, automation, remote work and future skills. Authentic listening occurred, but independent listening mastery is not inferred.","sourceType":"google_drive_transcript","sourceDocumentId":"1ah12lkYxIG9lugcxYZ81q7XNfioFzE39","authorityStatus":"portfolio-confirmed"},
