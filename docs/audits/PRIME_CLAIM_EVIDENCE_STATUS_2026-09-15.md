@@ -157,6 +157,26 @@ Record a linked chain: prior evidence → teacher-authorized activity → actual
 
 The supplied Pilot R dashboard text presents longitudinal evidence linked to current priorities, a concrete practice activity and displayed personal-memory entries. Learner authorship, durable persistence and subsequent teacher review have not been independently verified.
 
+## 7B. Additional supplied dashboards — Pilots I, D and G
+
+**Evidence source:** three dashboard text copies supplied by the user on 2026-09-15, all explicitly in administrator preview. No direct browser observation, authenticated learner interaction or database read is inferred. Identifiers, exact learner submissions and private links are omitted.
+
+| Case | Contribution visible in supplied text | Boundary |
+| --- | --- | --- |
+| Pilot I | One documented session produces a contextualized professional objective, focused language priorities and a structured recording task | Initial personalization and actionable baseline; one session cannot establish cross-session accumulation. The requested recording is not evidence of a submitted attempt |
+| Pilot D | Multi-session context, vocabulary and teacher feedback are displayed, while validated objective, current priority and next action are absent | Partial projection and explicit authority gaps; not a complete state-to-action chain |
+| Pilot G | Four-report history, reduced-support priority and post-test follow-up appear in supplied dashboard text, matching previously inspected artifacts | Corroborates presentation of the documented cumulative state; does not prove follow-up completion or a new authority cycle |
+
+### Pilot D — reconciliation item, not manufactured completion
+
+The supplied text includes growth guidance in teacher feedback while the designated priority/action sections say no validated priority or action is available. This is a concrete inconsistency of completeness across surfaces to inspect against canonical authority. Do not silently promote feedback to an authorized action. Also, the supplied copy does not expose a full longitudinal-report section despite generic full-history wording; a copy may be incomplete, so this is not proof that reports are missing from storage.
+
+### What changes in the combined conclusion
+
+These cases show different evidence maturity within a shared presentation system: initial personalization (I), partial context with explicit gaps (D), documented cumulative personalization with supplied interface corroboration (G), longitudinal action-memory presentation (R), and technical Preview capture (V). A shared projection version identifies a format, not identical verification or completion across learners.
+
+The dashboard text supports multiple individualized presentations. It does not independently establish universal operation, learner authorship, causal learning gains or the complete Engine loop.
+
 ## 8. Safe professional wording
 
 ### Português
