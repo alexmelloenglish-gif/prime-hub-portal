@@ -13,19 +13,8 @@ export const isDatabaseConfigured = Boolean(
 )
 
 function writeAuthDebug(level: 'DEBUG' | 'WARN' | 'ERROR', code: string, metadata?: unknown) {
-  if (process.env.NODE_ENV !== 'development') {
-    return
-  }
-
-  const line = [
-    new Date().toISOString(),
-    level,
-    code,
-    metadata ? JSON.stringify(metadata, null, 2) : '',
-  ]
-    .filter(Boolean)
-    .join(' | ')
-
+  if (process.env.NODE_ENV !== 'development') return
+  const line = [new Date().toISOString(), level, code, metadata ? JSON.stringify(metadata, null, 2) : ''].filter(Boolean).join(' | ')
   appendFileSync('nextauth-debug.log', `${line}\n`, 'utf8')
 }
 
@@ -33,19 +22,11 @@ export const authOptions: NextAuthOptions = {
   adapter: isDatabaseConfigured ? PrismaAdapter(getPrismaClient()) : undefined,
   debug: process.env.NODE_ENV === 'development',
   logger: {
-    error(code, metadata) {
-      writeAuthDebug('ERROR', code, metadata)
-    },
-    warn(code) {
-      writeAuthDebug('WARN', code)
-    },
-    debug(code, metadata) {
-      writeAuthDebug('DEBUG', code, metadata)
-    },
+    error(code, metadata) { writeAuthDebug('ERROR', code, metadata) },
+    warn(code) { writeAuthDebug('WARN', code) },
+    debug(code, metadata) { writeAuthDebug('DEBUG', code, metadata) },
   },
-  session: {
-    strategy: 'jwt',
-  },
+  session: { strategy: 'jwt' },
   providers: isGoogleAuthConfigured
     ? [
         GoogleProvider({
@@ -60,39 +41,22 @@ export const authOptions: NextAuthOptions = {
                 'https://www.googleapis.com/auth/meetings.space.readonly',
               ].join(' '),
               access_type: 'offline',
-              prompt: 'consent',
             },
           },
         }),
       ]
     : [],
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
+  pages: { signIn: '/login', error: '/login' },
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        token.id =
-          ('id' in user && typeof user.id === 'string' && user.id) ||
-          account?.providerAccountId ||
-          token.sub ||
-          ''
+        token.id = ('id' in user && typeof user.id === 'string' && user.id) || account?.providerAccountId || token.sub || ''
         token.role = (user as { role?: string }).role ?? 'student'
       }
-
       if (isDatabaseConfigured && token.email) {
-        const dbUser = await getPrismaClient().user.findUnique({
-          where: { email: token.email },
-          select: { id: true, role: true },
-        })
-
-        if (dbUser) {
-          token.id = dbUser.id
-          token.role = dbUser.role
-        }
+        const dbUser = await getPrismaClient().user.findUnique({ where: { email: token.email }, select: { id: true, role: true } })
+        if (dbUser) { token.id = dbUser.id; token.role = dbUser.role }
       }
-
       return token
     },
     async session({ session, token }) {
@@ -100,31 +64,20 @@ export const authOptions: NextAuthOptions = {
         session.user.id = typeof token.id === 'string' ? token.id : token.sub ?? ''
         session.user.role = typeof token.role === 'string' ? token.role : 'student'
       }
-
       return session
     },
     async signIn({ account, profile }) {
-      if (account?.provider !== 'google') {
-        return false
-      }
-
+      if (account?.provider !== 'google') return false
       return Boolean(profile?.email)
     },
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
-      }
-
+      if (url.startsWith('/')) return `${baseUrl}${url}`
       try {
         const targetUrl = new URL(url)
-
-        if (targetUrl.origin === baseUrl) {
-          return url
-        }
+        if (targetUrl.origin === baseUrl) return url
       } catch {
         return `${baseUrl}/dashboard`
       }
-
       return `${baseUrl}/dashboard`
     },
   },
