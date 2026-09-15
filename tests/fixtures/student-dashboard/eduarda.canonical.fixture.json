@@ -38,5 +38,10 @@
     { "id": "fixture-eduarda-report-5" },
     { "id": "fixture-eduarda-report-6" },
     { "id": "fixture-eduarda-report-7" }
-  ]
+  ],
+  "sourceProvenance": {
+    "nonProjectedRecords": [
+      { "date": "2026-07-03", "sourceType": "agenda_record", "classification": "source-only" }
+    ]
+  }
 }
