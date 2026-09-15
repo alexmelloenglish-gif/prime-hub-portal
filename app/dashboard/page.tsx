@@ -55,6 +55,15 @@ function dedupeByDateAndTitle<T extends { date: string; title: string; id: strin
   })
 }
 
+function transferPointSegments(value: string) {
+  if (!value.startsWith('Transfer points —')) return []
+  const body = value.slice('Transfer points —'.length).trim()
+  return body
+    .split(/(?=(?:Evidence|Boundary|Interpretation|Next verification):)/)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+}
+
 type DashboardPageProps = {
   searchParams?: Promise<{ studentEmail?: string }>
 }
@@ -89,6 +98,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const attendedLessons = [...reconciledAttendance]
     .filter((entry) => entry.status === 'present')
     .sort((a, b) => (dateTimestamp(a.date) ?? 0) - (dateTimestamp(b.date) ?? 0))
+  const pendingAttendance = [...reconciledAttendance]
+    .filter((entry) => entry.status === 'pending')
+    .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
 
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
   const recentAttendance = reconciledAttendance.filter(
@@ -143,6 +155,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A focused view of your authorized learning record: current state, recent evidence, useful memory and the next action.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
+              {pendingAttendance.length ? <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-950">{pendingAttendance.length} pending evidence record{pendingAttendance.length === 1 ? '' : 's'}</span> : null}
               <span className="rounded-full border border-violet-300 bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-950">Full class-report history available below</span>
             </div>
           </div>
@@ -189,13 +202,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <section id="attendance-overview" className="space-y-3">
               {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{lesson.title}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
             </section>
+            {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">EVIDENCE BOUNDARY</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Pending / Evidence Incomplete</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records remain in the learning history without being converted into a class report or learning claim.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div></section> : null}
             {recentReports.length ? <section className="space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Recent Report Highlights</h4></div><div className="grid gap-3 lg:grid-cols-2">{recentReports.map((report) => <article key={`recent-${report.id}`} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p></article>)}</div></section> : null}
           </div>
           <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} /></div>
         </div>
       </section>
 
-      {allReports.length ? <section id="class-reports" className="rounded-[28px] border border-violet-200 bg-violet-50/55 p-4 shadow-sm md:p-5"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">LONGITUDINAL</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Published Class Reports — Full History</h3><p className="mt-1 text-sm text-slate-700">Every published class report remains available here. New lessons never push older reports out of view.</p></div><div className="mt-4 grid gap-4 lg:grid-cols-2">{allReports.map((report) => <article key={report.id} className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-900">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-600">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{report.teacherInsight ? <p className="mt-3 border-t border-violet-100 pt-3 text-sm leading-6 text-[#3d5578]">{report.teacherInsight}</p> : null}</article>)}</div></section> : null}
+      {allReports.length ? <section id="class-reports" className="rounded-[28px] border border-violet-200 bg-violet-50/55 p-4 shadow-sm md:p-5"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">LONGITUDINAL</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Published Class Reports — Full History</h3><p className="mt-1 text-sm text-slate-700">Every published class report remains available here. New lessons never push older reports out of view.</p></div><div className="mt-4 grid gap-4 lg:grid-cols-2">{allReports.map((report) => { const transferPoints = transferPointSegments(report.teacherInsight); return <article key={report.id} className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-900">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-600">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{transferPoints.length ? <div className="mt-4 border-t border-violet-100 pt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">Transfer Points</p><ul className="mt-2 space-y-2">{transferPoints.map((point) => <li key={point} className="text-sm leading-6 text-[#3d5578]">• {point}</li>)}</ul></div> : report.teacherInsight ? <p className="mt-3 border-t border-violet-100 pt-3 text-sm leading-6 text-[#3d5578]">{report.teacherInsight}</p> : null}</article>})}</div></section> : null}
 
       <section className="rounded-[28px] border border-slate-300 bg-slate-100/70 p-4 shadow-sm md:p-5">
         <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Useful memory stays visible in small doses, while complete class-report history remains preserved above and in the portfolio.</p></div>
