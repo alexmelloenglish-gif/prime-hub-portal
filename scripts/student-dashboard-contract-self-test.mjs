@@ -2,15 +2,9 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
 const root = new URL('../', import.meta.url)
-const italo = JSON.parse(
-  await readFile(new URL('data/students/italo-pires-gmail-com.firestore.json', root), 'utf8')
-)
-const diego = JSON.parse(
-  await readFile(new URL('data/students/diegodasiro-gmail-com.firestore.json', root), 'utf8')
-)
-const eduarda = JSON.parse(
-  await readFile(new URL('data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json', root), 'utf8')
-)
+const italo = JSON.parse(await readFile(new URL('data/students/italo-pires-gmail-com.firestore.json', root), 'utf8'))
+const diego = JSON.parse(await readFile(new URL('data/students/diegodasiro-gmail-com.firestore.json', root), 'utf8'))
+const eduarda = JSON.parse(await readFile(new URL('data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json', root), 'utf8'))
 const dashboardSource = await readFile(new URL('app/dashboard/page.tsx', root), 'utf8')
 const primitiveSource = await readFile(new URL('components/dashboard/student-dashboard-primitives.tsx', root), 'utf8')
 const progressStateSource = await readFile(new URL('lib/progress-states.ts', root), 'utf8')
@@ -37,9 +31,6 @@ assert.equal(italo.classReports.length, 1)
 assert.equal(italo.classReports[0].contentStatus, 'published')
 assert.ok(italo.classReports[0].vocabulary.length > italo.vocabularyBank.length)
 
-// Longitudinal proof witnesses: two distinct real-learner repository snapshots
-// must carry history, current interpretation, evidence-bounded priorities and
-// a distinct next action through the same student-dashboard-v1.0 contract.
 assert.equal(diego.studentName, 'Diego da Silva Rodrigues')
 assert.equal(diego.dashboardSourcePolicy, 'authorized_repository_snapshot')
 assert.equal(diego.profileCompleteness, 'canonical_longitudinal_profile')
@@ -84,13 +75,8 @@ assert.equal(eduardaUnknownEncounter.summary.includes('not reconstructed'), true
 assert.equal(eduarda.classReports.some((report) => report.lessonId === 'eduarda-2026-07-03'), false)
 assert.ok(eduarda.canonicalProjection.nextAction.evidence.includes('canonical portfolio'))
 
-// The two learners are intentionally different; the next action is not a
-// universal hard-coded output.
 assert.notEqual(diego.canonicalProjection.nextAction.id, eduarda.canonicalProjection.nextAction.id)
-assert.notEqual(
-  diego.canonicalProjection.currentState.objective.value,
-  eduarda.canonicalProjection.currentState.objective.value,
-)
+assert.notEqual(diego.canonicalProjection.currentState.objective.value, eduarda.canonicalProjection.currentState.objective.value)
 
 const manageIds = new Set(italo.manageSpace.map((item) => item.id))
 assert.deepEqual([...manageIds].sort(), ['portfolio', 'support'])
@@ -121,13 +107,9 @@ assert.ok(!primitiveSource.includes('Rafael'))
 assert.ok(!primitiveSource.includes('Gustavo'))
 assert.ok(!primitiveSource.includes('Ítalo'))
 
-// PRIME Progress Tracker is frozen to exactly four learner-facing states.
 for (const state of ['Strong', 'Improving', 'Needs Focus', 'Not Assessed']) {
   assert.ok(progressStateSource.includes(`'${state}'`), `Missing canonical progress state: ${state}`)
-  assert.ok(
-    progressBadgeSource.includes(`${state}:`) || progressBadgeSource.includes(`'${state}':`),
-    `Missing shared visual treatment for: ${state}`
-  )
+  assert.ok(progressBadgeSource.includes(`${state}:`) || progressBadgeSource.includes(`'${state}':`), `Missing shared visual treatment for: ${state}`)
 }
 for (const legacy of ['very strong', 'secure', 'established', 'active growth', 'developing', 'progressing', 'needs attention', 'priority']) {
   assert.ok(progressStateSource.includes(`${legacy}:`) || progressStateSource.includes(`'${legacy}':`), `Missing legacy normalization: ${legacy}`)
