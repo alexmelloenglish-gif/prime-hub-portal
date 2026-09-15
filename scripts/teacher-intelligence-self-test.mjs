@@ -9,6 +9,11 @@ const files = {
   signals: 'app/dashboard/admin/intelligence/signals/page.tsx',
   insights: 'app/dashboard/admin/intelligence/insights/page.tsx',
   learningState: 'app/dashboard/admin/intelligence/learning-state/page.tsx',
+  validation: 'app/dashboard/admin/intelligence/validation/page.tsx',
+  learners: 'app/dashboard/admin/intelligence/students/page.tsx',
+  learnerDecision: 'app/dashboard/admin/intelligence/students/[studentId]/page.tsx',
+  decisionPackages: 'lib/teacher-decision-packages.ts',
+  gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
@@ -19,6 +24,7 @@ const entries = await Promise.all(
 )
 const source = Object.fromEntries(entries)
 const allTeacherSource = Object.values(source).join('\n')
+const gustavoPackage = JSON.parse(source.gustavoPackage)
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
@@ -37,7 +43,20 @@ assert.match(source.reviewPage, /RETURN FOR REVISION/, 'Evidence review must exp
 assert.match(source.reviewPage, /BLOCK/, 'Evidence review must expose BLOCK')
 assert.match(source.signals, /LearningSignalProposal ≠ canonical Learning Signal/, 'Signal proposal and canonical Signal must remain distinct')
 assert.match(source.insights, /TeacherInsightProposal ≠ published Teacher Insight/, 'Insight proposal and published Insight must remain distinct')
-assert.match(source.learningState, /No verified state transition/, 'Learning State UI must not manufacture a state transition')
+assert.match(source.learningState, /Teacher-authorized bounded state packages/, 'Learning State must surface only recorded teacher-authorized packages')
+assert.match(source.validation, /Exception-based authority/, 'Validation must be framed as exception-based authority')
+assert.match(source.validation, /Teacher-authorized packages/, 'Validation must show resolved teacher authority packages')
+assert.match(source.learners, /Teacher-authorized V2/, 'Learner directory must expose available teacher-authorized V2 packages')
+assert.match(source.learnerDecision, /Evidence → Signal → Interpretation → Boundary → Verification/, 'Learner decision view must preserve the evidence chain')
+assert.match(source.decisionPackages, /gustavo-drummond-v2\.json/, 'Teacher decision package registry must include Gustavo V2')
+assert.equal(gustavoPackage.status, 'teacher_authorized')
+assert.equal(gustavoPackage.teacherDecision.currentStatePriorityPackage, 'accepted_v2_proposed_update')
+assert.equal(gustavoPackage.teacherDecision.nextAction, 'accepted_v2_proposed_next_action')
+assert.equal(gustavoPackage.teacherDecision.levelAssessment, 'no_change')
+assert.equal(gustavoPackage.teacherDecision.canonicalProjection, 'authorized')
+assert.equal(gustavoPackage.sourceLessons.length, 4)
+assert.equal(gustavoPackage.classReportsV2.length, 4)
+assert.equal(gustavoPackage.governance.legacyPolicy, 'additive_versioned_no_deletion')
 assert.match(source.lessonsPage, /studentEmail/, 'Lesson Intelligence must consume the studentEmail route parameter')
 assert.match(source.lessonsPage, /listTeacherLessons\(100, requestedStudent \|\| undefined\)/, 'Lesson Intelligence must pass the optional student filter to the query')
 assert.match(source.intelligence, /studentEmail\?: string/, 'Teacher lesson listing must expose an optional studentEmail filter')

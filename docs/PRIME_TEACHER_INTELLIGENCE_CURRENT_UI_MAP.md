@@ -1,9 +1,7 @@
 # PRIME Teacher Intelligence — Current UI Map
 
-**Date:** 2026-08-28  
-**Implementation branch:** `feat/teacher-intelligence-dashboard`  
-**Discovery baseline:** `7dc9dfe333b841bfa38d07aad3b5700e72fd8a13`  
-**Canonical brief:** Teacher Intelligence Dashboard — Canonical Execution Brief
+**Updated:** 2026-09-15  
+**Canonical principle:** Intelligence prepares. Teacher decides.
 
 ## 1. Existing surfaces preserved
 
@@ -35,7 +33,7 @@ Existing routes/components reused rather than rebuilt:
 
 ### Existing runtime/domain persistence reused
 
-No parallel runtime database was introduced. Teacher Intelligence reads the existing Prisma models:
+Teacher Intelligence reads the existing Prisma models:
 
 - `PipelineRun`
 - `Transcript`
@@ -47,112 +45,108 @@ No parallel runtime database was introduced. Teacher Intelligence reads the exis
 - `CoachingGuidance`
 - `ReviewTask`
 - `PipelineEvent`
+- `ValidationTask`
 
-Existing pipeline implementation is preserved:
+Existing Drive ingestion, transcript persistence, Prompt 1–4 paths, quality gate, Class Report projection and Portfolio projection remain preserved.
 
-- Drive reconciliation/ingestion
-- transcript persistence
-- Prompt 1–4 paths
-- quality gate
-- Class Report projection
-- Portfolio projection
+## 2. Teacher Intelligence surfaces
 
-## 2. New Teacher Intelligence surfaces
-
-The first implementation slice adds an internal teacher shell under:
+Internal shell:
 
 `/dashboard/admin/intelligence`
 
 Navigation:
 
-- Home
-- Students
+- Cockpit
+- Learners
 - Lessons
-- Review Queue
+- Review
+- Validation
 - Signals
 - Insights
-- Actions
+- Teaching Actions
 - Learning State
-- System / Audit
+- Audit
 
-### Implemented read surfaces
+Implemented read surfaces include persisted runtime counts, learner directory, lesson trace, transcript viewer, proposal views, validation, learning-state boundary and pipeline audit.
 
-- Teacher command center backed by persisted runtime counts.
-- Authorized student directory backed by the existing admin directory.
-- Lesson list backed by `PipelineRun` and related persisted state.
-- Lesson trace page showing source, runtime IDs, AI provenance, Evidence Candidates, proposals, reports, projections and events.
-- Dedicated transcript viewer so large transcripts are not loaded on the lesson list/detail read path.
-- Signal Proposal view explicitly separated from canonical Learning Signal.
-- Teacher Insight Proposal view explicitly separated from published Teacher Insight.
-- Coaching view explicitly separated from TeacherDecision/EducationalAction.
-- Learning State view that displays `NOT PROVEN` rather than synthesizing state.
-- Pipeline audit/event view.
+## 3. Exception-based human authority
 
-### Implemented human review behavior
+Teacher review is **not** intended to become a click-per-evidence bottleneck.
 
-Evidence Candidate review supports:
+The governing rule is:
+
+> Human authority is required for pedagogical authority transitions, not for every extraction step.
+
+Source-grounded facts may be extracted, persisted, compared longitudinally and retained as candidate memory without an individual teacher checkbox. Human review is required when a bounded package would materially change learner-facing state, priorities, next action, level/assessment status, or when source conflict/ambiguity requires professional judgment.
+
+A teacher decision package therefore contains:
+
+1. what materially changed;
+2. source-grounded evidence supporting the change;
+3. explicit boundary / what remains unproved;
+4. proposed bounded state or priority update;
+5. proposed next action when needed;
+6. one teacher authority decision for the bounded package.
+
+Legacy Portfolio and Class Report records are additive/versioned and are never deleted as part of V2 rebuilding.
+
+## 4. Gustavo V2 teacher-authorized package
+
+On 2026-09-15, Alexandre Mello explicitly authorized the Gustavo V2 bounded package produced from four reprocessed transcript-bearing sources:
+
+- 2026-08-18
+- 2026-08-25
+- 2026-09-01
+- 2026-09-08
+
+Recorded decision:
+
+- V2 current state / priority package: **accepted**;
+- V2 proposed next action: **accepted**;
+- CEFR: **no change**;
+- bounded canonical projection: **authorized**.
+
+Teacher Intelligence exposes this package under the learner record and Validation resolved-history surface. The package includes four V2 source-grounded Class Reports and accepted longitudinal signals, while preserving explicit evidence boundaries.
+
+This authorization does **not** claim a separate canonical `LearningState` entity exists in the runtime. It is a teacher-authorized bounded projection package with traceable source lineage.
+
+## 5. Evidence Candidate review boundary
+
+Evidence Candidate review continues to support:
 
 - ACCEPT
 - REJECT
 - RETURN FOR REVISION
 - BLOCK
 
-The action:
+When used, the action persists reviewer provenance and explicitly records `canonicalEvidenceCreated=false`. Acceptance of an Evidence Candidate therefore does not silently create canonical Evidence.
 
-1. requires an authenticated admin/teacher-authorized user through the existing authorization boundary;
-2. updates the existing `EvidenceCandidate` review state;
-3. persists an `EvidenceCandidateReviewDecision` `PipelineEvent` with reviewer, role, timestamp, previous/new state, reason, run/transcript IDs and target candidate ID;
-4. explicitly records `canonicalEvidenceCreated=false`.
+Evidence review should be used for actual exceptions/ambiguities, not as a mandatory gate for every direct source-grounded extraction.
 
-Therefore an accepted Evidence Candidate is **not** silently converted into canonical validated Evidence.
+## 6. Deliberately not invented
 
-## 3. Deliberately not implemented
-
-The following are not invented by this UI because the current runtime does not prove the corresponding canonical domain entity/lifecycle:
+The UI must not fabricate domain entities/lifecycles merely to appear complete. The following remain distinct from the teacher-authorized bounded package unless separately implemented and proven:
 
 - canonical `Evidence` entity distinct from `EvidenceCandidate`;
 - canonical `LearningSignal` state machine transitions;
-- published human `TeacherInsight` transition;
+- published human `TeacherInsight` domain transition;
 - canonical `PedagogicalDecision` entity;
 - canonical `EducationalAction` entity;
-- canonical `LearningState` transition store;
+- standalone canonical `LearningState` transition store;
 - longitudinal Outcome verification loop.
 
-The UI exposes the proposals/gaps as `NOT PROVEN` instead.
+## 7. Verification boundary
 
-## 4. Runtime truth preserved
-
-This implementation does not change:
-
-- GL-001 Rafael;
-- GL-002 Gustavo;
-- historical Golden Trace artifacts;
-- `4b1df7c` quality-gate semantics;
-- current Gemini provider path;
-- Drive ingestion architecture;
-- Firestore/Postgres source-of-truth boundaries.
-
-## 5. Verification boundary
-
-This UI can prove that a persisted runtime object/event exists when it reads it from the canonical store. It does not turn object presence into cognitive verification.
-
-The lesson trace intentionally distinguishes:
+Teacher Intelligence distinguishes:
 
 - source file;
-- pipeline run;
 - transcript;
-- Gemini provenance;
-- Prompt 1 artifact;
-- Evidence Candidates;
-- Quality Gate rejection/pass evidence;
-- Class Report;
-- Portfolio projection;
-- dashboard consistency.
+- source-grounded evidence;
+- candidate longitudinal pattern;
+- AI proposal;
+- teacher authority decision;
+- authorized bounded projection;
+- learner-facing display.
 
-Where no explicit proof exists, the UI shows `NOT PROVEN`.
-
-## 6. Next implementation boundary
-
-Do not add canonical Signal/Insight/Decision/Action/LearningState entities merely to make the Teacher Dashboard look complete.
-
-The next domain/runtime implementation must be separately authorized by evidence from GL-003 or another explicit canonical decision.
+One layer must never be used to prove another merely because both exist in the application.

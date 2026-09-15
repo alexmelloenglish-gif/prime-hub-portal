@@ -1,8 +1,9 @@
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { Users } from 'lucide-react'
+import { ShieldCheck, Users } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
 import { listStudentsForAdmin } from '@/lib/admin-dashboard'
+import { hasTeacherDecisionPackage } from '@/lib/teacher-decision-packages'
 
 function pipelineLabel(status?: string | null) {
   if (!status) return 'No recent processing'
@@ -22,12 +23,20 @@ export default async function TeacherStudentsPage() {
       <p className="mt-2 max-w-3xl text-sm leading-6 text-prime-cream/60">
         Every authorized learner is represented by the canonical learning record. Runtime pipeline status is shown separately so a failed or absent processing attempt never erases an existing learner record.
       </p>
-      {students.length ? <div className="mt-5 grid gap-3 lg:grid-cols-2">{students.map((student) => (
+      {students.length ? <div className="mt-5 grid gap-3 lg:grid-cols-2">{students.map((student) => {
+        const hasDecisionPackage = hasTeacherDecisionPackage(student.studentEmail)
+        return (
         <article key={student.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div><h3 className="font-semibold text-white">{student.studentName}</h3><p className="mt-1 text-sm text-prime-cream/55">{student.studentEmail}</p></div>
             <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-prime-cream/60">{student.dataSource || 'unknown source'}</span>
           </div>
+          {hasDecisionPackage ? (
+            <div className="mt-4 rounded-xl border border-emerald-300/25 bg-emerald-300/10 p-3">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/80"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-authorized V2</div>
+              <p className="mt-1 text-xs leading-5 text-prime-cream/60">A source-grounded, exception-based teacher decision package is available for this learner.</p>
+            </div>
+          ) : null}
           <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/70">Learning record</p>
             <p className="mt-1 text-sm font-semibold text-white">{student.learningRecordLabel || 'Learning record available'}</p>
@@ -44,9 +53,13 @@ export default async function TeacherStudentsPage() {
             <p className="mt-1 text-xs text-prime-cream/65">{pipelineLabel(student.latestPipelineStatus)}</p>
             <p className="mt-1 text-[11px] leading-5 text-prime-cream/40">This technical state does not replace the learner's canonical portfolio, level, attendance record or learning history.</p>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2"><Link href={`/dashboard?studentEmail=${encodeURIComponent(student.studentEmail)}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Student projection</Link><Link href="/dashboard/admin/intelligence/lessons" className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Runtime lessons</Link></div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {hasDecisionPackage ? <Link href={`/dashboard/admin/intelligence/students/${encodeURIComponent(student.studentEmail)}`} className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-300/20">Teacher-authorized V2</Link> : null}
+            <Link href={`/dashboard?studentEmail=${encodeURIComponent(student.studentEmail)}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Student projection</Link>
+            <Link href={`/dashboard/admin/intelligence/lessons?studentEmail=${encodeURIComponent(student.studentEmail)}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Runtime lessons</Link>
+          </div>
         </article>
-      ))}</div> : <div className="mt-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-prime-cream/60"><Users className="h-5 w-5" aria-hidden="true" /> No authorized students found.</div>}
+      )})}</div> : <div className="mt-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-prime-cream/60"><Users className="h-5 w-5" aria-hidden="true" /> No authorized students found.</div>}
     </section>
   )
 }

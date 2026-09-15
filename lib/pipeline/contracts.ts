@@ -58,7 +58,7 @@ export type EvidenceCandidateOutput = {
     source_reference: string
   }
   candidate_status: 'proposed'
-  requires_human_review: true
+  requires_human_review: boolean
   pedagogical_relevance_candidate: boolean
 }
 
@@ -82,7 +82,7 @@ export type LearningSignalProposalOutput = {
     authorized: false
   }
   is_official: false
-  requires_human_review: true
+  requires_human_review: boolean
   confidence?: number
 }
 
@@ -94,7 +94,7 @@ export type TeacherInsightProposalOutput = {
   basis: string
   evidence_reference_ids: string[]
   is_official: false
-  requires_human_review: true
+  requires_human_review: boolean
   author_type: 'ai'
 }
 
