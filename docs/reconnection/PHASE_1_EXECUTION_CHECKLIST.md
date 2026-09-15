@@ -58,15 +58,13 @@ The Baseline Candidate is **not yet the Release Candidate**. Release Candidate s
 - Direct Preview fetch: HTTP `200 OK`
 - Rendered FAQ contains the approved level-diagnosis copy from the Baseline Candidate.
 
-### G2 — Independent QA — IN PROGRESS
+### G2 — Independent QA — PASS CONDITIONED
 
 The QA agent is read-only for this gate. It does **not** edit code, redesign the page, rewrite copy or propose taste-based improvements.
 
-Current checkpoint from independent QA:
+**G2 result:** PASS conditioned — no P0/P1 observed. One P2 target-size finding is recorded in [`G2_INDEPENDENT_QA_REPORT.md`](./G2_INDEPENDENT_QA_REPORT.md); it is non-blocking for G3. Portal authentication and deployment-level LCP/INP remain limited by the Preview authentication boundary.
 
-- Desktop visual review: PASS.
-- Basic functional QA: PASS.
-- Still pending: authenticated visual review at 320 px / 390 px, keyboard/focus verification and technical metrics where measurable.
+Current checkpoint from independent QA: desktop visual review and basic functional QA passed; authenticated Portal validation and deployment-level LCP/INP remain limited by the Preview authentication boundary.
 
 Required coverage:
 
