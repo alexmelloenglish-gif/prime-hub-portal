@@ -60,7 +60,7 @@ export default async function TeacherValidationPage() {
           <div className="mt-2 text-3xl font-bold text-slate-950">{pending.length}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><AlertTriangle className="h-4 w-4" aria-hidden="true" /> Manual exceptions</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><AlertTriangle className="h-4 w-4" aria-hidden="true" /> Other manual exceptions</div>
           <div className="mt-2 text-3xl font-bold text-slate-950">{pending.filter((task) => task.type !== 'attendance_reconciliation').length}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -134,7 +134,7 @@ export default async function TeacherValidationPage() {
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 px-5 py-4">
           <h2 className="font-bold text-slate-950">Pending operational validation</h2>
-          <p className="mt-1 text-sm text-slate-500">No pedagogical state is created by this queue.</p>
+          <p className="mt-1 text-sm text-slate-500">No pedagogical state is created by this queue. Attendance reaches this queue only when automatic Google Meet participant reconciliation cannot establish one authoritative learner match; normal matched attendance requires no teacher click.</p>
         </div>
         {pending.length === 0 ? (
           <div className="px-5 py-10 text-center text-sm text-slate-500">No operational exceptions are currently waiting for validation.</div>
