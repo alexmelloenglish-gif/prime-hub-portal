@@ -1,0 +1,176 @@
+{
+  "packageId": "teacher-decision-gustavo-v2-2026-09-15",
+  "packageVersion": "teacher-decision-v2",
+  "studentId": "stu_4c4da6c04ac4",
+  "studentEmail": "carolvdrummond@gmail.com",
+  "studentName": "Gustavo Drummond de Andrade Salgado",
+  "status": "teacher_authorized",
+  "canonicalizationStatus": "authorized_for_projection",
+  "decisionDate": "2026-09-15",
+  "teacher": {
+    "name": "Alexandre Mello",
+    "role": "teacher"
+  },
+  "governance": {
+    "mode": "exception_based_human_authority",
+    "rule": "Human authority is required for pedagogical authority transitions, not for every extraction step.",
+    "legacyPolicy": "additive_versioned_no_deletion",
+    "sourceFactsAutoProcessed": true,
+    "individualEvidenceCheckboxesRequired": false
+  },
+  "teacherDecision": {
+    "currentStatePriorityPackage": "accepted_v2_proposed_update",
+    "nextAction": "accepted_v2_proposed_next_action",
+    "levelAssessment": "no_change",
+    "canonicalProjection": "authorized"
+  },
+  "sourceLessons": [
+    {
+      "date": "2026-08-18",
+      "sourceDocumentId": "1BFFOcZ68_QZu2FZy2v1mxmvO1MnLvm9NcEKv_n1R1ZU",
+      "status": "source_grounded"
+    },
+    {
+      "date": "2026-08-25",
+      "sourceDocumentId": "1glruhOpTZS74T4z-N32dfTk5fbO796aUwFj3Yw0xHAs",
+      "status": "source_grounded"
+    },
+    {
+      "date": "2026-09-01",
+      "sourceDocumentId": "1rRWDHpxFzbNvGHNyO61RzyB46lIpoFDmqp2WPvmzsXY",
+      "status": "source_grounded"
+    },
+    {
+      "date": "2026-09-08",
+      "sourceDocumentId": "1AgYhw2rlsjtpv0wmfay1nGgGhU6Pky7hni81_kMXJec",
+      "status": "source_grounded"
+    }
+  ],
+  "classReportsV2": [
+    {
+      "date": "2026-08-18",
+      "title": "Travel narrative, supported Past Simple and immediate uptake",
+      "evidence": [
+        "Gustavo generated personal travel content about France and Portugal.",
+        "The form 'I didn't go' appears after explicit teacher scaffold/recast.",
+        "buy/bought appears through immediate supported uptake."
+      ],
+      "signal": "Past-time forms are available with support; immediate uptake is visible, but independence is not established.",
+      "interpretation": "Use Gustavo's own travel narrative as a low-support test of delayed past-time retrieval.",
+      "boundary": "Heavy prompting is present. Immediate repetition does not prove retention or independent mastery.",
+      "nextVerification": "Retell a real trip/weekend with first-attempt output preserved before correction."
+    },
+    {
+      "date": "2026-08-25",
+      "title": "School subjects, personal past-time production and question formation",
+      "evidence": [
+        "School-subject vocabulary is retrieved with varying support.",
+        "Personal past-time production emerges with prompting.",
+        "Past-negative production becomes accurate in controlled practice after a model.",
+        "Irregular retrieval is uneven.",
+        "did + base-form question formation remains unstable."
+      ],
+      "signal": "Controlled past negatives are more available than irregular retrieval and did-question formation.",
+      "interpretation": "Separate spontaneous past statements, negative past and question formation in a lower-support task.",
+      "boundary": "Much of the lesson is teacher-led; reading supplied text is not spontaneous grammar evidence.",
+      "nextVerification": "Elicit unsupported affirmative, negative and interrogative past forms in the same meaningful context."
+    },
+    {
+      "date": "2026-09-01",
+      "title": "Past review, health language and supported form correction",
+      "evidence": [
+        "'I go' shifts to 'I went' after correction: corrected uptake, not independent retrieval.",
+        "'didn't swim' and 'didn't eat' are preserved through teacher-read chat output.",
+        "'Did you rode?' is corrected to 'Did you ride?', confirming instability in did + base form.",
+        "'The boy has a stomach ache' is independently produced; other health items show mixed support.",
+        "should/shouldn't and superlatives are largely scaffold/model-dependent."
+      ],
+      "signal": "Immediate corrective uptake recurs, while first-attempt control of past questions remains unstable.",
+      "interpretation": "Preserve first-attempt output before teacher correction in future checks.",
+      "boundary": "Teacher-led test review creates substantial scaffolding; the original chat artifact is not separately preserved.",
+      "nextVerification": "Capture first attempt, self-correction and teacher-supported final answer as separate evidence states."
+    },
+    {
+      "date": "2026-09-08",
+      "title": "Science review through English: supported retrieval and connected explanation",
+      "evidence": [
+        "Science-review interaction is source-grounded.",
+        "Nutrient categories and functions are retrieved with mixed support.",
+        "The digestive sequence is rehearsed with strong scaffolding.",
+        "Gustavo attempts a connected explanation of stomach and small-intestine functions.",
+        "The large-intestine/water relation is retrieved during closing questioning; small-intestine/nutrient absorption remains more cue-dependent."
+      ],
+      "signal": "Gustavo can reach short connected Science explanations after rehearsal, while independent transfer remains unverified.",
+      "interpretation": "Use a closed-book, no-model oral Science check rather than another guided review.",
+      "boundary": "Major audio/connectivity problems affect part of the transcript; Science knowledge and English-language independence must remain separate.",
+      "nextVerification": "Short closed-book explanation of nutrient functions and the digestive route with first-attempt evidence preserved."
+    }
+  ],
+  "acceptedLongitudinalSignals": [
+    {
+      "id": "past-negative-controlled-availability",
+      "signal": "Past-negative forms recur under controlled/scaffolded conditions across 18 Aug, 25 Aug and 01 Sep.",
+      "boundary": "This does not establish independent mastery."
+    },
+    {
+      "id": "did-base-form-instability",
+      "signal": "Past-question formation with did + base form remains unstable across more than one lesson.",
+      "boundary": "The evidence supports a recurring priority, not a quantified proficiency score."
+    },
+    {
+      "id": "irregular-past-support-dependent",
+      "signal": "Irregular-past retrieval is uneven and support-dependent.",
+      "boundary": "Modeled or immediately corrected forms are not treated as independent retrieval."
+    },
+    {
+      "id": "corrective-uptake-recurs",
+      "signal": "Immediate uptake after teacher correction/recast recurs across lessons.",
+      "boundary": "Delayed independent retention is not yet established."
+    },
+    {
+      "id": "meaningful-context-elicitation",
+      "signal": "Personally meaningful contexts reliably provide usable elicitation and personalization material.",
+      "boundary": "Engagement with those contexts is not proficiency evidence by itself."
+    },
+    {
+      "id": "science-supported-connected-output",
+      "signal": "In Science, Gustavo can reach short connected explanations after rehearsal.",
+      "boundary": "Independent retention and transfer still require verification."
+    }
+  ],
+  "authorizedCurrentState": {
+    "level": "CEFR A1 — progressing toward A2",
+    "targetLevel": "CEFR A2",
+    "levelDecision": "no_change",
+    "learningFocus": "Build lower-support retrieval and distinguish first-attempt performance from corrected or modeled output.",
+    "priorities": [
+      "Stabilize did + base-form questions in meaningful Past Simple tasks.",
+      "Strengthen independent retrieval of irregular past forms.",
+      "Test delayed retrieval after corrective scaffolding instead of counting immediate repetition as mastery.",
+      "Use meaningful personal and school contexts to elicit language while keeping engagement separate from proficiency evidence.",
+      "Separate Science content knowledge from independent English control through low-support explanation tasks."
+    ]
+  },
+  "authorizedNextAction": {
+    "title": "Low-support retrieval check",
+    "steps": [
+      "No-model personal retell with five past statements from a real weekend or trip.",
+      "Two negatives using didn't without sentence stems.",
+      "Two did-questions using the base form.",
+      "Delayed irregular-verb retrieval from prior lessons.",
+      "Short closed-book Science explanation covering nutrient functions and the digestive route.",
+      "Capture first attempt, self-correction and teacher-supported final answer as separate evidence states."
+    ],
+    "status": "teacher_authorized"
+  },
+  "nonAutoPromotableClaims": [
+    "CEFR progression or level change without teacher authority.",
+    "Independent mastery inferred only from corrected or repeated output.",
+    "Attendance inferred only from transcript existence.",
+    "Homework or presentation completion without separate evidence.",
+    "Causal claims that PRIME or a specific intervention caused improvement.",
+    "School-test results not supplied by the appropriate source.",
+    "Any learner-facing state built from unresolved source conflict."
+  ],
+  "auditNote": "Teacher authorization was explicitly supplied by Alexandre Mello on 15 September 2026 for the bounded V2 current-state/priority package, proposed next action, no CEFR change, and canonical projection. This package does not erase or rewrite legacy Portfolio/Class Report records."
+}
