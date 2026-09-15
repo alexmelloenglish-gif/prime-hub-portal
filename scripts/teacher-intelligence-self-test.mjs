@@ -10,10 +10,13 @@ const files = {
   insights: 'app/dashboard/admin/intelligence/insights/page.tsx',
   learningState: 'app/dashboard/admin/intelligence/learning-state/page.tsx',
   validation: 'app/dashboard/admin/intelligence/validation/page.tsx',
+  candidateValidation: 'app/dashboard/admin/intelligence/validation/candidates/[studentId]/page.tsx',
   learners: 'app/dashboard/admin/intelligence/students/page.tsx',
   learnerDecision: 'app/dashboard/admin/intelligence/students/[studentId]/page.tsx',
   decisionPackages: 'lib/teacher-decision-packages.ts',
+  candidatePackages: 'lib/teacher-intelligence-candidates.ts',
   gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
+  eduardaCandidate: 'data/teacher-intelligence/eduarda-coelho-gabriel-v2-candidate.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
@@ -25,6 +28,7 @@ const entries = await Promise.all(
 const source = Object.fromEntries(entries)
 const allTeacherSource = Object.values(source).join('\n')
 const gustavoPackage = JSON.parse(source.gustavoPackage)
+const eduardaCandidate = JSON.parse(source.eduardaCandidate)
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
@@ -45,10 +49,14 @@ assert.match(source.signals, /LearningSignalProposal ≠ canonical Learning Sign
 assert.match(source.insights, /TeacherInsightProposal ≠ published Teacher Insight/, 'Insight proposal and published Insight must remain distinct')
 assert.match(source.learningState, /Teacher-authorized bounded state packages/, 'Learning State must surface only recorded teacher-authorized packages')
 assert.match(source.validation, /Exception-based authority/, 'Validation must be framed as exception-based authority')
-assert.match(source.validation, /Teacher-authorized packages/, 'Validation must show resolved teacher authority packages')
+assert.match(source.validation, /Pending pedagogical authority transitions/, 'Validation must expose bounded pending pedagogical decisions separately from operational exceptions')
+assert.match(source.validation, /Teacher-authorized packages|Teacher-authorized/, 'Validation must show resolved teacher authority packages')
+assert.match(source.candidateValidation, /Evidence → Signal → Interpretation → Boundary → Verification/, 'Candidate validation must preserve the evidence chain')
+assert.match(source.candidateValidation, /canonical projection remains blocked|canonical projection, or be described as teacher-authorized/i, 'Candidate review must preserve the publication firewall')
 assert.match(source.learners, /Teacher-authorized V2/, 'Learner directory must expose available teacher-authorized V2 packages')
 assert.match(source.learnerDecision, /Evidence → Signal → Interpretation → Boundary → Verification/, 'Learner decision view must preserve the evidence chain')
 assert.match(source.decisionPackages, /gustavo-drummond-v2\.json/, 'Teacher decision package registry must include Gustavo V2')
+assert.match(source.candidatePackages, /eduarda-coelho-gabriel-v2-candidate\.json/, 'Teacher candidate registry must include Eduarda V2 candidate')
 assert.equal(gustavoPackage.status, 'teacher_authorized')
 assert.equal(gustavoPackage.teacherDecision.currentStatePriorityPackage, 'accepted_v2_proposed_update')
 assert.equal(gustavoPackage.teacherDecision.nextAction, 'accepted_v2_proposed_next_action')
@@ -57,6 +65,16 @@ assert.equal(gustavoPackage.teacherDecision.canonicalProjection, 'authorized')
 assert.equal(gustavoPackage.sourceLessons.length, 4)
 assert.equal(gustavoPackage.classReportsV2.length, 4)
 assert.equal(gustavoPackage.governance.legacyPolicy, 'additive_versioned_no_deletion')
+assert.equal(eduardaCandidate.status, 'awaiting_teacher_decision')
+assert.equal(eduardaCandidate.canonicalizationStatus, 'not_authorized')
+assert.equal(eduardaCandidate.teacher.decisionStatus, 'pending')
+assert.equal(eduardaCandidate.teacherDecision.canonicalProjection, 'not_authorized')
+assert.equal(eduardaCandidate.sourceLessons.length, 7)
+assert.equal(eduardaCandidate.classReportsV2.length, 7)
+assert.equal(eduardaCandidate.legacyLineage.historicalEncounters, 8)
+assert.equal(eduardaCandidate.legacyLineage.sourceOnlyEncounterDate, '2026-07-03')
+assert.equal(eduardaCandidate.technicalPartials.length, 2)
+assert.equal(eduardaCandidate.governance.legacyPolicy, 'additive_versioned_no_deletion')
 assert.match(source.lessonsPage, /studentEmail/, 'Lesson Intelligence must consume the studentEmail route parameter')
 assert.match(source.lessonsPage, /listTeacherLessons\(100, requestedStudent \|\| undefined\)/, 'Lesson Intelligence must pass the optional student filter to the query')
 assert.match(source.intelligence, /studentEmail\?: string/, 'Teacher lesson listing must expose an optional studentEmail filter')
