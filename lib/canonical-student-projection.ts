@@ -111,7 +111,7 @@ function buildLearningIntelligence(
       const teacherInsight = stringValue(report.teacherInsight)
       const transfer = parseTransferPoints(teacherInsight)
       const reportFocus = Array.isArray(report.focus)
-        ? report.focus.filter((item): item is string => typeof item === 'string' && item.trim()).join(', ')
+        ? report.focus.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).join(', ')
         : ''
       const matchingPriority = priorities.find((priority) => {
         const evidence = stringValue(priority.evidence).toLowerCase()
