@@ -71,8 +71,8 @@ function objectValue(value: unknown): Record<string, unknown> | null {
     : null
 }
 
-function stringValue(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
+function stringValue(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value.trim() : fallback
 }
 
 function uniqueById<T extends { lessonId: string }>(items: T[]): T[] {
@@ -104,7 +104,7 @@ function buildLearningIntelligence(
   priorities: Array<Record<string, unknown>>,
 ): LearningIntelligenceThread[] {
   return reports
-    .map((report) => {
+    .map((report): LearningIntelligenceThread => {
       const lessonId = stringValue(report.lessonId) || stringValue(report.id)
       const date = stringValue(report.date)
       const title = stringValue(report.title, 'Class report')
