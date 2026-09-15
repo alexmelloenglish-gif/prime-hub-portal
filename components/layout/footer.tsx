@@ -22,9 +22,9 @@ export function Footer({ portalHref }: FooterProps) {
             <p className="mt-1">© 2026 Prime Digital Hub. Todos os direitos reservados.</p>
           </div>
 
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold text-[#123263] md:justify-end">
-            <Link href={portalHref} className="hover:text-prime-red">Portal do aluno</Link>
-            <a href={whatsappHref} target="_blank" rel="noreferrer" className="hover:text-prime-red">Falar com a Prime</a>
+          <div className="flex flex-wrap gap-x-2 gap-y-1 text-sm font-semibold text-[#123263] md:justify-end">
+            <Link href={portalHref} className="inline-flex min-h-11 items-center rounded-lg px-2 py-2 hover:bg-slate-50 hover:text-prime-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-prime-red">Portal do aluno</Link>
+            <a href={whatsappHref} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-lg px-2 py-2 hover:bg-slate-50 hover:text-prime-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-prime-red">Falar com a Prime</a>
           </div>
         </div>
       </div>

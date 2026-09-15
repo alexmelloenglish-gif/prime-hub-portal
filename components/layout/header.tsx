@@ -29,9 +29,9 @@ export function Header({ portalHref }: HeaderProps) {
           />
         </Link>
 
-        <div className="hidden items-center gap-5 text-sm font-semibold text-[#123263] xl:flex">
+        <div className="hidden items-center gap-3 text-sm font-semibold text-[#123263] xl:flex">
           {navigationLinks.map(({ href, label }) => (
-            <a key={href} href={href} className="whitespace-nowrap transition hover:text-prime-red">{label}</a>
+            <a key={href} href={href} className="inline-flex min-h-11 items-center rounded-lg px-2 py-2 whitespace-nowrap transition hover:bg-slate-50 hover:text-prime-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-prime-red">{label}</a>
           ))}
         </div>
 
