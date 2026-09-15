@@ -39,10 +39,12 @@ if (eduarda.canonicalProjection.currentState.level.status !== 'teacher-validated
 if (eduarda.canonicalProjection.currentState.targetLevel.status !== 'teacher-validated') fail('Eduarda target must remain teacher-validated')
 if (eduarda.canonicalProjection.priorities.length !== 3) fail('Eduarda must retain three priorities')
 if (eduarda.canonicalProjection.nextAction.title !== 'Six-question independence check') fail('Eduarda next action changed')
-if (eduarda.lessonRecords.some((item) => item.lessonId.includes('2026-07-03'))) fail('Eduarda 3 July agenda-only encounter must not be projected as a lesson')
-if (eduarda.classReports.some((item) => String(item.id).includes('2026-07-03'))) fail('Eduarda 3 July agenda-only encounter must not generate a class report')
-if (JSON.stringify(eduarda).toLowerCase().includes('pending')) fail('Eduarda learner projection must not contain pending state')
+if (eduarda.lessonRecords.some((item) => item.lessonId.includes('2026-07-03'))) fail('Eduarda 3 July source-only encounter must not be projected as a lesson')
+if (eduarda.classReports.some((item) => String(item.id).includes('2026-07-03'))) fail('Eduarda 3 July source-only encounter must not generate a class report')
 if (eduarda.canonicalProjection.currentState.level.value === eduarda.canonicalProjection.currentState.targetLevel.value) fail('Eduarda current level cannot be silently promoted to target')
+if (eduarda.sourceProvenance?.nonProjectedRecords?.length !== 1) fail('Eduarda source-only provenance must remain preserved')
+if (eduarda.sourceProvenance.nonProjectedRecords[0].date !== '2026-07-03') fail('Eduarda 3 July source provenance changed')
+if (eduarda.sourceProvenance.nonProjectedRecords[0].classification !== 'source-only') fail('Eduarda 3 July record must remain source-only')
 
 function crossLearnerChecks(diegoFixture, eduardaFixture) {
   if (diegoFixture.canonicalProjection.nextAction.title === eduardaFixture.canonicalProjection.nextAction.title) {
@@ -56,9 +58,10 @@ function semanticChecks(fixture, label) {
   if (label === 'Eduarda') {
     if (fixture.canonicalProjection.currentState.level?.value !== 'CEFR A1') fail('Eduarda current level cannot change without a new teacher-authorized source correction')
     if (fixture.canonicalProjection.currentState.targetLevel?.value !== 'CEFR A2') fail('Eduarda target cannot change without a new teacher-authorized source correction')
-    if (fixture.lessonRecords.some((item) => String(item.lessonId).includes('2026-07-03'))) fail('Eduarda agenda-only 3 July encounter cannot enter the learner projection')
-    if (fixture.classReports.some((item) => String(item.id).includes('2026-07-03'))) fail('Eduarda agenda-only 3 July encounter cannot generate a class report')
-    if (JSON.stringify(fixture).toLowerCase().includes('pending')) fail('Eduarda learner projection cannot reintroduce pending state')
+    if (fixture.lessonRecords.some((item) => String(item.lessonId).includes('2026-07-03'))) fail('Eduarda source-only 3 July encounter cannot enter the learner projection')
+    if (fixture.classReports.some((item) => String(item.id).includes('2026-07-03'))) fail('Eduarda source-only 3 July encounter cannot generate a class report')
+    if (fixture.sourceProvenance?.nonProjectedRecords?.[0]?.date !== '2026-07-03') fail('Eduarda source provenance cannot be silently removed')
+    if (fixture.sourceProvenance?.nonProjectedRecords?.[0]?.classification !== 'source-only') fail('Eduarda source provenance cannot be promoted into learning evidence')
   }
   if (fixture.canonicalProjection.nextAction?.status === 'completed') fail(`${label} cannot encode an unexecuted next action as completed`)
 }
@@ -91,7 +94,8 @@ expectSemanticFailure('Eduarda silent promotion to A2', () => { const x = struct
 expectSemanticFailure('Eduarda target mutation', () => { const x = structuredClone(eduarda); x.canonicalProjection.currentState.targetLevel.value = 'CEFR B1'; return x }, 'Eduarda')
 expectSemanticFailure('completed unexecuted action', () => { const x = structuredClone(diego); x.canonicalProjection.nextAction.status = 'completed'; return x }, 'Diego')
 expectSemanticFailure('synthetic 3 July lesson projection', () => { const x = structuredClone(eduarda); x.lessonRecords.push({ lessonId: 'fixture-eduarda-2026-07-03' }); return x }, 'Eduarda')
-expectSemanticFailure('synthetic pending state', () => { const x = structuredClone(eduarda); x.canonicalProjection.nextAction.note = 'pending'; return x }, 'Eduarda')
+expectSemanticFailure('source provenance removal', () => { const x = structuredClone(eduarda); x.sourceProvenance.nonProjectedRecords = []; return x }, 'Eduarda')
+expectSemanticFailure('source provenance promotion', () => { const x = structuredClone(eduarda); x.sourceProvenance.nonProjectedRecords[0].classification = 'learning-evidence'; return x }, 'Eduarda')
 expectCrossLearnerFailure('cross-learner action swap', () => { const x = structuredClone(eduarda); x.canonicalProjection.nextAction.title = diego.canonicalProjection.nextAction.title; return x })
 
-console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + teacher-corrected Eduarda A1→A2 state + seven documented lessons only + negative semantic mutations.')
+console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + source-provenance separation + teacher-corrected Eduarda A1→A2 state + negative semantic mutations.')
