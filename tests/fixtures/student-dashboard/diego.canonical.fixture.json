@@ -1,0 +1,36 @@
+{
+  "studentId": "fixture-diego",
+  "studentName": "Fixture Diego",
+  "dashboardSourcePolicy": "authorized_repository_snapshot",
+  "profileCompleteness": "canonical_longitudinal_profile",
+  "profileSource": { "sourceAuthority": "canonical_portfolio" },
+  "canonicalProjection": {
+    "version": "student-dashboard-v1.0",
+    "currentState": {
+      "level": { "value": "CEFR A2", "status": "portfolio-confirmed" },
+      "targetLevel": { "value": "CEFR B1", "status": "portfolio-confirmed" }
+    },
+    "priorities": [
+      { "id": "priority-executive-clarity", "title": "Executive clarity in professional answers" },
+      { "id": "priority-high-frequency-accuracy", "title": "High-frequency grammar accuracy" },
+      { "id": "priority-business-reuse", "title": "Active business-language reuse" }
+    ],
+    "nextAction": {
+      "authorizationStatus": "portfolio-confirmed",
+      "title": "60–90 Second Executive Response",
+      "status": "portfolio-confirmed"
+    }
+  },
+  "lessonRecords": [
+    { "lessonId": "fixture-diego-1" },
+    { "lessonId": "fixture-diego-2" },
+    { "lessonId": "fixture-diego-3" },
+    { "lessonId": "fixture-diego-4" }
+  ],
+  "classReports": [
+    { "id": "fixture-diego-report-1" },
+    { "id": "fixture-diego-report-2" },
+    { "id": "fixture-diego-report-3" },
+    { "id": "fixture-diego-report-4" }
+  ]
+}
