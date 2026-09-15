@@ -60,11 +60,12 @@ A known implementation/runtime artifact that must not be counted as pedagogical 
 | Runtime does not manufacture canonical Learning State, Signal or Insight | Cockpit explicitly says it does not fabricate these when runtime cannot prove them | Demonstrates containment/governance, not successful end-to-end completion | **PROVADO** |
 | Source is not automatically Evidence | Laura failed trace has a persisted source but zero Evidence Candidates | Specific observed trace | **PROVADO** |
 | Evidence Candidate is not validated Evidence or Assessment | Review/trace explicitly distinguishes `Candidate ≠ validated evidence ≠ assessment` | Demonstrates semantic boundary | **PROVADO** |
-| Transcript existence is not Attendance | Laura trace shows Attendance `NOT PROVEN` despite Google Meet transcript/source | Specific observed trace | **PROVADO** |
-| Processing completion/failure is technical, not pedagogical | Laura trace explicitly says processing state is technical only | Does not prove successful processing | **PROVADO** |
-| Assessment requires canonical Assessment authority | Laura trace has `Assessment = NOT PROVEN` and no canonical Assessment record | Specific failed trace | **PROVADO** |
-| Review absence is not teacher approval | Laura trace has no ReviewTask and explicitly says this does not imply approval | Specific failed trace | **PROVADO** |
-| Report state is independent | Laura trace has no ClassReportProjection and keeps report independent from assessment/evidence | Specific failed trace | **PROVADO** |
+| Transcript existence is not Attendance | Laura and Rafael traces show that transcript/source existence is not treated as canonical attendance | Specific observed traces | **PROVADO** |
+| Processing completion/failure is technical, not pedagogical | Laura and Rafael traces explicitly say processing state is technical only | Does not prove successful processing is pedagogically valid | **PROVADO** |
+| Assessment requires canonical Assessment authority | Rafael trace has `Assessment = NOT PROVEN` and no canonical Assessment record despite completed processing | Specific observed successful-processing trace | **PROVADO** |
+| Review absence is not teacher approval | Rafael trace has no ReviewTask and explicitly says this does not imply approval | Specific observed successful-processing trace | **PROVADO** |
+| Report publication can be a non-pedagogical projection state | Rafael trace shows `documentStatus: published`, `authorityStatus: non_authoritative`, `teacherInsight: null`, `sourceEvidenceIds: []`, while explicitly stating report presence does not prove validated evidence or assessment | Demonstrates safe publication of a non-authoritative projection, not teacher-approved pedagogy | **PROVADO** |
+| Portfolio projection can be applied without creating learner judgment | Rafael trace shows `portfolio apply: applied` while `Assessment`, Evidence Candidates and ReviewTask remain unproven/absent and the applied operation is a class-report projection | Demonstrates projection/application separation; does not prove a pedagogical state was updated | **PROVADO** |
 | Failed AI generation is auditable | Laura trace persists `GeminiGenerationFailed` with timestamp, model, provider, requestId, artifactId, stage, HTTP 403 and prompt version | Demonstrates provenance of failure | **PROVADO** |
 | Failed processing is not applied to Portfolio | Laura trace says `portfolio apply: not applied` and no PortfolioProjection sourced from the run | Specific failed trace | **PROVADO** |
 | Technical failure is not converted into learner judgment | Failed Laura attempt produces no assessment, evidence, review approval, report authority or portfolio projection | Specific trace; does not prove all successful paths | **PROVADO** |
@@ -188,7 +189,84 @@ This is a core PRIME epistemic/governance rule and should remain preserved in fu
 
 ---
 
-# 7. Authorized Student Directory — identity boundary
+# 7. Rafael — successful processing with non-authoritative projection
+
+The Rafael trace adds an important complementary case to the Laura failure trace. It demonstrates that a technically completed run can produce a published projection while still refusing to convert that processing result into pedagogical authority.
+
+Observed trace:
+
+- learner: `rafael.copolillo@gmail.com`
+- lesson: `lesson_442b50078da7a21d`
+- processing attempt: `cmtc7yq7m0000o4qwvlfwye6w`
+- identity authority: `non_authoritative`
+- source type: `google_meet`
+- sourceFileId: `1_yQ0gyOncDsDj49YbS6_D9y8L1Rw811bJSl409jKjvA`
+- transcriptId: `cmtc7yq8c0002o4qwk4b51nbc`
+- effectiveAt: **NOT PROVEN**
+- recordedAt: 27/08/2026 13:24:56
+- processing status: `completed`
+- processing error: none persisted
+- portfolio apply: **applied**
+- Evidence Candidates: **0**
+- Assessment: **NOT PROVEN**
+- ReviewTask: **none**
+- Signal proposals: **0**
+- TeacherInsightProposal: **none**
+- AI generation provenance: `{}`
+
+The trace contains a published Class Report projection, but the report itself is explicitly non-authoritative:
+
+- `contentStatus: draft`
+- `documentStatus: published`
+- `teacherInsight: null`
+- `teacherInsightStatus: omitted`
+- `authorityStatus: non_authoritative`
+- `sourceEvidenceIds: []`
+- `evidenceHighlights: []`
+- `implementationStatus: not_proven`
+
+The report text itself states that it is pending authorized source records and that no validated Evidence was supplied for the projection.
+
+The persisted audit events show:
+
+1. `Prompt1ArtifactCreated` with `candidateCount: 0` and `authorityStatus: non_authoritative`;
+2. `ClassReportProjectionDrafted` with `autoPublish: true`, `documentStatus: draft`, `requiresHumanReview: false`;
+3. `PortfolioProjectionPatchProposed` with `applyStatus: pending_auto_publish` and an operation key tied to the class-report projection;
+4. `AIRecommendationGenerated` with `requiresHumanReview: false`, `recommendationStatus: ai_proposed`, `isPedagogicalDecision: false`;
+5. `ClassReportProjectionPublished` with reason `auto-publish: trusted source, non-pedagogical-decision`, reviewer `system`, `autoPublished: true`;
+6. `PortfolioProjectionUpdated` with `applyStatus: applied`, reviewer `system`, and the same operation key.
+
+### What this proves
+
+This is significant evidence of a distinction that should remain explicit in the architecture:
+
+**technical processing → non-authoritative projection** can occur without becoming:
+
+**validated evidence → assessment → teacher decision → educational action**.
+
+It also demonstrates that `published` does not mean `pedagogically validated`. A system-generated document can be published as a non-pedagogical projection while its authority remains explicitly `non_authoritative` and its evidence/assessment fields remain unproven.
+
+The PortfolioProjection application in this trace is likewise an application of the class-report projection operation, not proof that Rafael's learner state, assessment or progress was updated.
+
+### What this does not prove
+
+This trace does **not** prove:
+
+- attendance;
+- validated Evidence;
+- canonical Assessment;
+- teacher Review or approval;
+- PedagogicalDecision;
+- EducationalAction;
+- a valid learner-state update;
+- causal learning progress;
+- a closed Learning Intelligence Engine cycle.
+
+Status: **PROVADO** for the specific runtime/governance claims above.
+
+---
+
+# 8. Authorized Student Directory — identity boundary
 
 The current Students page is explicitly titled:
 
@@ -231,7 +309,7 @@ This page alone does not establish the pedagogical provenance or teacher validat
 
 ---
 
-# 8. Louise — longitudinal projection evidence
+# 9. Louise — longitudinal projection evidence
 
 The Louise pilot provides a stronger projection example than a simple runtime listing.
 
@@ -270,7 +348,7 @@ Status: **PROVADO NO PREVIEW**.
 
 ---
 
-# 9. Gustavo — cumulative personalization evidence boundary
+# 10. Gustavo — cumulative personalization evidence boundary
 
 The Gustavo case has been reported as demonstrating use of prior lesson information to inform subsequent pedagogical priorities/actions.
 
@@ -284,7 +362,7 @@ This does not weaken the hypothesis. It prevents the hypothesis from being promo
 
 ---
 
-# 10. Valéria — pipeline evidence boundary
+# 11. Valéria — pipeline evidence boundary
 
 The Valéria assisted Preview test demonstrated:
 
@@ -310,7 +388,7 @@ The missing proof is about later transitions, not specifically about automation.
 
 ---
 
-# 11. `order08-persistence-20260826@invalid.test` — technical artifact
+# 12. `order08-persistence-20260826@invalid.test` — technical artifact
 
 This record is a known legacy implementation artifact from the early automation implementation.
 
@@ -340,7 +418,7 @@ The remediation target is lifecycle cleanup/reconciliation, not counter suppress
 
 ---
 
-# 12. Canonical semantic boundaries
+# 13. Canonical semantic boundaries
 
 These distinctions are now part of the PRIME evidence discipline:
 
@@ -365,7 +443,7 @@ These are not merely wording preferences. They are the semantic boundaries that 
 
 ---
 
-# 13. What is currently demonstrated about the Learning Intelligence architecture
+# 14. What is currently demonstrated about the Learning Intelligence architecture
 
 The following architectural behavior is strongly supported:
 
@@ -391,7 +469,7 @@ The strongest current claim is therefore:
 
 ---
 
-# 14. What we must NOT claim from the current evidence
+# 15. What we must NOT claim from the current evidence
 
 Do not claim that:
 
@@ -412,7 +490,7 @@ Do not claim that:
 
 ---
 
-# 15. Professional narrative supported by the evidence
+# 16. Professional narrative supported by the evidence
 
 The evidence supports the professional story already established in the canonical narrative:
 
@@ -434,7 +512,7 @@ The evidence currently supports this as the product thesis and supports several 
 
 ---
 
-# 16. Current evidence maturity
+# 17. Current evidence maturity
 
 ### Strongly demonstrated
 
@@ -450,6 +528,8 @@ The evidence currently supports this as the product thesis and supports several 
 - Candidate ≠ validated Evidence ≠ Assessment;
 - transcript ≠ Attendance;
 - processing status ≠ pedagogical judgment;
+- non-authoritative report publication can occur without assessment authority;
+- Portfolio projection application can be operational without becoming learner assessment;
 - failed processing does not automatically reach Portfolio;
 - runtime refusal to fabricate unproven Learning State, Signal or Insight;
 - audit trail for AI generation failure.
@@ -476,7 +556,7 @@ The evidence currently supports this as the product thesis and supports several 
 
 ---
 
-# 17. Audit rule for future evidence
+# 18. Audit rule for future evidence
 
 Any new claim should be entered using this structure:
 
@@ -499,7 +579,7 @@ No claim should be promoted solely because the architecture permits it.
 
 ---
 
-# 18. Preservation note
+# 19. Preservation note
 
 This file is intended to be the durable reference point for the accumulated proof discussed during the September 2026 audit work.
 
