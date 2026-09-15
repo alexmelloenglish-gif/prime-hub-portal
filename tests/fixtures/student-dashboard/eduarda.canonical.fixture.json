@@ -7,13 +7,13 @@
   "canonicalProjection": {
     "version": "student-dashboard-v1.0",
     "currentState": {
-      "assessment": { "value": "Assessment pending", "status": "pending" },
-      "target": { "value": "School-task performance target pending", "status": "pending" }
+      "level": { "value": "CEFR A1", "status": "teacher-validated" },
+      "targetLevel": { "value": "CEFR A2", "status": "teacher-validated" }
     },
     "priorities": [
-      { "id": "priority-independence", "title": "Build independent task performance" },
-      { "id": "priority-school-context", "title": "Connect English to current school demands" },
-      { "id": "priority-confidence", "title": "Increase independent production" }
+      { "id": "priority-complete-responses", "title": "Build complete responses with less support" },
+      { "id": "priority-modals", "title": "Use modals with meaning" },
+      { "id": "priority-geography", "title": "Explain Geography concepts in English" }
     ],
     "nextAction": {
       "authorizationStatus": "qualified",
