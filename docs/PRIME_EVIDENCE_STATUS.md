@@ -69,12 +69,35 @@ A projeção sintetiza múltiplas aulas em estado atual, prioridades e uma próx
 
 A projeção preserva onze presenças e dez relatórios detalhados, explicitando a lacuna quando uma presença não tem report detalhado. A prioridade de reciclagem lexical vira uma atividade concreta, e a interface exibe entradas sob `Your locked sentences`. Isso fortalece a cadeia **histórico → prioridade → ação → memória exibida**, mas Admin Preview não prova autoria autenticada, timestamp, persistência durável, novo Candidate ou revisão posterior.
 
+## Teacher Intelligence — auditoria semântica do runtime
+
+A auditoria do cockpit e do diretório autorizado encontrou uma distinção importante entre verdade operacional e verdade pedagógica.
+
+### O que está correto
+
+- Teacher Intelligence preserva `NOT_PROVEN`/`FAILED` em vez de fabricar Learning State, Signal ou Insight canônico.
+- O diretório de alunos passa os perfis pelo boundary `isAuthorizedLearner(...)`, que exige `operatingEligibility = learner` e `activationAuthority` não nulo.
+- O conjunto fornecido mostra nove learners autorizados; o prospect sem autoridade de ativação permanece fora do diretório.
+
+### O que precisa de correção semântica
+
+- `Recent lessons` é atualmente o tamanho de `listTeacherLessons(12)`, isto é, os 12 `PipelineRun` mais recentes, não 12 aulas únicas. No estado fornecido, eram 12 attempts do mesmo lesson identity, todos failed.
+- `Items needing attention` soma review tasks, evidence, signals, insights e draft reports, mas não runtime failures. Assim pode mostrar `0` enquanto múltiplos `FAILED` aparecem abaixo.
+- `Pipeline` significa apenas o status do latest historical `PipelineRun`.
+- `Published reports` significa apenas o número de `ClassReportProjection` rows com `documentStatus = published`, não todo o histórico longitudinal do learner.
+- O botão `Runtime lessons` em cada card atualmente aponta para a lista genérica de lessons, não para um histórico filtrado por learner.
+
+Correção recomendada: usar `Unique recent lessons` ou `Processing attempts`; renomear `Items needing attention` para `Teacher review items`; acrescentar `Runtime exceptions`; e tornar explícito que `Pipeline`/`Published reports` são metadados de runtime.
+
+Auditoria completa: [TEACHER_INTELLIGENCE_RUNTIME_SEMANTICS_AUDIT_2026-09-15.md](audits/TEACHER_INTELLIGENCE_RUNTIME_SEMANTICS_AUDIT_2026-09-15.md).
+
 ## Claims defensáveis agora
 
 - **Piloto G:** “O PRIME demonstra personalização cumulativa documentada em um caso controlado, mediado pelo professor.”
 - **Conjunto dos pilotos:** “O PRIME já demonstra representações longitudinais que preservam evidências selecionadas, conectam histórico a prioridades atuais e produzem próximas ações contextualizadas com limites explícitos de autoridade e evidência.”
 - **Piloto V:** “Um teste assistido em Preview demonstrou captura de fonte real e persistência de Candidate sob review gating.”
 - **Piloto R:** “Uma projeção apresentada conecta evidência longitudinal a uma atividade concreta e a entradas de memória exibidas; autoria e downstream review ainda não foram verificados.”
+- **Teacher Intelligence:** “O cockpit preserva falha e incerteza de runtime sem promovê-las automaticamente a verdade pedagógica, embora suas agregações e labels operacionais ainda precisem de correção semântica.”
 
 Esses resultados **não comprovam** capacidade universal, execução completa do Engine, automação full-loop ou impacto causal em motivação, retenção, proficiência ou resultados institucionais.
 
@@ -90,6 +113,7 @@ Cada transição precisa de registros vinculados. Trabalho manual ou assistido �
 
 - [Auditoria detalhada e fontes públicas](audits/PRIME_CLAIM_EVIDENCE_STATUS_2026-09-15.md)
 - [Matriz consolidada dos sete pilotos](audits/PILOT_EVIDENCE_MATRIX_CONSOLIDATED_2026-09-15.md)
+- [Teacher Intelligence — runtime & UI semantics audit](audits/TEACHER_INTELLIGENCE_RUNTIME_SEMANTICS_AUDIT_2026-09-15.md)
 - [Tese de produto](product/PRIME-LEARNING-OS-PRODUCT-THESIS.md)
 - [Checkpoint de autoridade](PRIME_CANONICAL_MIGRATION_ARCHITECTURE_CHECKPOINT_2026-09-11.md)
 - [PR de documentação #20](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/20)
