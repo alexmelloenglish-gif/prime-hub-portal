@@ -1,9 +1,9 @@
 # Implementation Gate G2 — Atomic Canonicalization + Idempotency
 
 **Date:** 2026-09-18  
-**Status:** IMPLEMENTED / RUNTIME PROOF PENDING  
+**Status:** CLOSED / PASS  
 **Gate:** G2 — Atomic canonicalization + idempotency  
-**Next gate:** G3 — Canonical read-back verification (**BLOCKED until G2 runtime proof is complete**)
+**Next gate:** G3 — Canonical read-back verification (**NEXT / NOT STARTED**)
 
 ## Evidence baseline
 
@@ -290,9 +290,9 @@ G2 does **not** implement:
 
 No new learner-facing canonical claim has been created by this implementation alone.
 
-## Runtime proof still required before G2 can close
+## Runtime proof — COMPLETED
 
-The implementation is in Production, but G2 is not yet declared `CLOSED / PASS`.
+The required Production runtime proof was executed against the approved Gustavo canonical-authority ValidationTask and passed all G2 acceptance criteria.
 
 Required runtime proof:
 
@@ -324,12 +324,35 @@ forced/controlled failure during atomic creation
 NO partial canonical record without provenance
 ```
 
-This proof must be performed against Neon before the status changes to:
+Runtime result:
 
 ```text
-G2
-CLOSED / PASS
+Decision
+approved
+
+Canonical record
+cmu6jv29k0001bf8kt45pl9ht
+
+Canonical version
+1
+
+Canonical hash
+9d34e5adc6d91974e01f0c3012203bc62749f5a5681a7498b1317c0e5e22d83e
+
+Canonicalization provenance
+cmu6jv2a40003bf8kxt9rlrxb
+
+Counts
+1 canonical / 1 provenance
+
+Replay
+PASS — same record/version/hash
+
+Controlled rollback
+PASS — no partial state
 ```
+
+The runtime experiment explicitly stopped at G2. It did not execute G3 read-back verification or any downstream projection.
 
 ## Current gate verdict
 
@@ -355,13 +378,22 @@ IDEMPOTENT REPLAY LOGIC
 IMPLEMENTED
 
 REAL RUNTIME CANONICALIZATION PROOF
-PENDING
+PASS
+
+IDEMPOTENT REPLAY
+PASS
+
+DATABASE COUNTS
+1 canonical / 1 provenance
+
+CONTROLLED ROLLBACK
+PASS — no partial state
 
 G2 FINAL STATUS
-IMPLEMENTED / RUNTIME PROOF PENDING
+CLOSED / PASS
 
 G3
-BLOCKED
+NEXT / NOT STARTED
 ```
 
 No later gate may infer G2 PASS until the runtime proof above is recorded.
@@ -762,4 +794,69 @@ primedigitalhub.com.br
 ```
 
 This resolves the access prerequisite only. G2 remains open until a legitimate human authority witness is created and the runtime canonicalization experiment passes.
+
+## G2 closure record
+
+G2 is formally closed on the basis of the Production witness above.
+
+Acceptance criteria satisfied:
+
+```text
+VALID HUMAN AUTHORITY
+PASS
+
+EXACT PAYLOAD BINDING
+PASS
+
+ATOMIC CANONICAL RECORD + PROVENANCE
+PASS
+
+SAME DECISION + SAME SCOPE
+SAME IDEMPOTENCY KEY
+
+REPLAY
+SAME RECORD ID
+SAME VERSION
+SAME HASH
+
+DUPLICATE VERSION
+NOT CREATED
+
+COUNTS
+1 CANONICAL
+1 PROVENANCE
+
+CONTROLLED FAILURE
+ROLLBACK PASS
+
+PARTIAL STATE
+NONE OBSERVED
+```
+
+The resulting canonical record is the first proven materialized Canonical Learning Record under the new G1/G2 contract for this witness.
+
+This closure does **not** establish:
+
+- G3 canonical read-back verification;
+- Class Report projection from the canonical record;
+- Learning Intelligence direct projection;
+- learner/dashboard projection;
+- portfolio projection;
+- historical backfill;
+- projection independence proof.
+
+Those remain downstream work.
+
+Official transition:
+
+```text
+G1 CANONICAL RECORD CONTRACT
+CLOSED / PASS
+        ↓
+G2 ATOMIC CANONICALIZATION + IDEMPOTENCY
+CLOSED / PASS
+        ↓
+G3 CANONICAL READ-BACK VERIFICATION
+NEXT / NOT STARTED
+```
 
