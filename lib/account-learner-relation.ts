@@ -32,6 +32,9 @@ export type RevokeAccountLearnerRelationInput = {
   actorUserId: string
   relationId: string
   reason: string
+  sourceType: string
+  sourceReference: string
+  authorizationHash?: string | null
   revokedAt?: Date
 }
 
@@ -168,7 +171,7 @@ export async function authorizeAccountLearnerRelation(
       )
     }
 
-    return tx.accountLearnerRelation.create({
+    const relation = await tx.accountLearnerRelation.create({
       data: {
         userId,
         studentId,
@@ -183,6 +186,20 @@ export async function authorizeAccountLearnerRelation(
         validUntil: input.validUntil ?? null,
       },
     })
+
+    await tx.accountLearnerRelationEvent.create({
+      data: {
+        relationId: relation.id,
+        eventType: 'AUTHORIZED',
+        actorUserId: actor.id,
+        sourceType,
+        sourceReference,
+        authorizationHash: input.authorizationHash ?? null,
+        occurredAt: authorizedAt,
+      },
+    })
+
+    return relation
   })
 }
 
@@ -192,6 +209,8 @@ export async function revokeAccountLearnerRelation(
   const prisma = getPrismaClient()
   const relationId = requireText(input.relationId, 'relationId')
   const reason = requireText(input.reason, 'reason')
+  const sourceType = requireText(input.sourceType, 'sourceType')
+  const sourceReference = requireText(input.sourceReference, 'sourceReference')
   const revokedAt = input.revokedAt ?? new Date()
 
   return prisma.$transaction(async (tx) => {
@@ -215,7 +234,7 @@ export async function revokeAccountLearnerRelation(
       })
     }
 
-    return tx.accountLearnerRelation.update({
+    const updated = await tx.accountLearnerRelation.update({
       where: { id: relationId },
       data: {
         status: ACCOUNT_LEARNER_RELATION_STATUS.REVOKED,
@@ -224,5 +243,20 @@ export async function revokeAccountLearnerRelation(
         revocationReason: reason,
       },
     })
+
+    await tx.accountLearnerRelationEvent.create({
+      data: {
+        relationId,
+        eventType: 'REVOKED',
+        actorUserId: actor.id,
+        sourceType,
+        sourceReference,
+        authorizationHash: input.authorizationHash ?? null,
+        reason,
+        occurredAt: revokedAt,
+      },
+    })
+
+    return updated
   })
 }
