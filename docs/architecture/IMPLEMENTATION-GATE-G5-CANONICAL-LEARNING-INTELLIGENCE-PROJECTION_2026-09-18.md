@@ -1,7 +1,7 @@
 # Implementation Gate G5 — Canonical Learning Intelligence Projection
 
 **Date:** 2026-09-18  
-**Status:** IMPLEMENTATION STARTED / RUNTIME PROOF PENDING  
+**Status:** CLOSED / PASS  
 **Gate:** G5 — direct Canonical Learning Intelligence projection  
 **Predecessors:** G1–G4 CLOSED / PASS  
 **Witness:** Gustavo only — CLR `cmu6jv29k0001bf8kt45pl9ht`
@@ -73,8 +73,24 @@ A single authenticated G5 proof operation must demonstrate all frozen criteria:
 15. no legacy mutation;
 16. proof limited to Gustavo.
 
-Until Production runtime proof succeeds:
+## Production runtime witness
 
-**G5 = IMPLEMENTATION STARTED / RUNTIME PROOF PENDING**
+Authenticated Production proof completed successfully on 2026-09-18.
 
-G6 remains BLOCKED.
+- G3 verification: `cmu6l5886000041lpoa5pmug7` — PASS
+- Canonical record: `cmu6jv29k0001bf8kt45pl9ht`
+- Canonical version: `1`
+- Canonical hash: `9d34e5adc6d91974e01f0c3012203bc62749f5a5681a7498b1317c0e5e22d83e`
+- G5 projection: `cmu6mo4v30001n2uxa4llmij6`
+- Projection key: `4a980326bfad91d975263bf9fa0a68b24d11886b0ec8fb2ee7a3306e7108d9fa`
+- Projection hash: `159981ceba3885532b9bae92bd12598ef863ebee5efc2b7947da1b55422d1ebf`
+- Projection status: `VERIFIED`
+- Exact replay: PASS — same projection ID/key/hash
+- Composite count for `canonicalRecordId + targetType + projectionVersion`: `1`
+- Mismatches: none
+
+The Production witness demonstrates the frozen G5 vertical slice for Gustavo only. It does not demonstrate dashboard consumption, migration of historical Learning Intelligence, or replacement/removal of legacy rendering paths.
+
+**G5 = CLOSED / PASS**
+
+G6 is now eligible to start, but remains not started until explicitly opened.
