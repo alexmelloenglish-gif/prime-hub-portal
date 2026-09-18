@@ -12,6 +12,11 @@ export const isDatabaseConfigured = Boolean(
   process.env.AUTH_USE_DATABASE === 'true' && process.env.DATABASE_URL
 )
 
+// Role resolution is deliberately independent from PrismaAdapter enablement.
+// Production may use JWT sessions without the NextAuth database adapter while
+// still requiring the persisted PRIME user directory as the authorization source.
+export const isRoleDatabaseConfigured = Boolean(process.env.DATABASE_URL)
+
 function writeAuthDebug(level: 'DEBUG' | 'WARN' | 'ERROR', code: string, metadata?: unknown) {
   if (process.env.NODE_ENV !== 'development') return
   const line = [new Date().toISOString(), level, code, metadata ? JSON.stringify(metadata, null, 2) : ''].filter(Boolean).join(' | ')
@@ -53,7 +58,7 @@ export const authOptions: NextAuthOptions = {
         token.id = ('id' in user && typeof user.id === 'string' && user.id) || account?.providerAccountId || token.sub || ''
         token.role = (user as { role?: string }).role ?? 'student'
       }
-      if (isDatabaseConfigured && token.email) {
+      if (isRoleDatabaseConfigured && token.email) {
         const dbUser = await getPrismaClient().user.findUnique({ where: { email: token.email }, select: { id: true, role: true } })
         if (dbUser) { token.id = dbUser.id; token.role = dbUser.role }
       }
