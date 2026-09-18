@@ -1,7 +1,7 @@
 # Implementation Gate G6 — Dashboard Consumer Projection
 
 **Date:** 2026-09-18  
-**Status:** CONTRACT FROZEN / IMPLEMENTATION NOT STARTED  
+**Status:** DISCOVERY COMPLETE / ACCEPTANCE CONTRACT FROZEN / IMPLEMENTATION NOT STARTED  
 **Gate:** G6 — consumer/dashboard projection from verified canonical projections  
 **Predecessors:** G1–G5 CLOSED / PASS  
 **Initial witness:** Gustavo Drummond de Andrade Salgado — learnerId `stu_4c4da6c04ac4`
@@ -34,7 +34,7 @@ canonicalRecordId         = canonical learning-record identity
 learnerEmail              = learner's own email only when explicitly authorized
 guardianName              = guardian identity only when explicitly authorized
 guardianEmail             = guardian email only when explicitly authorized
-accountContactEmail       = email used for account/contact/access when that is all the source proves
+accountContactEmail       = derived account/contact field only when an authorized, explicitly observable account relation resolves the account to the learner
 ```
 
 The existing field `studentEmail` is semantically ambiguous and MUST NOT be interpreted as proof that the address personally belongs to the learner.
@@ -47,13 +47,13 @@ learnerId: stu_4c4da6c04ac4
 studentEmail: carolvdrummond@gmail.com
 ```
 
-G6 must treat that existing email as an account/contact identifier unless an authorized source explicitly establishes a more specific relationship. It must not manufacture `learnerEmail`, `guardianName`, or `guardianEmail`.
+G6 must not promote that existing email into a new canonical fact merely because it appears in a projection. `accountContactEmail` may be derived only when an explicitly observable/authorized account relation resolves the authenticated account to this learner. It must not manufacture `learnerEmail`, `guardianName`, or `guardianEmail`.
 
 No retroactive CLR or G5 mutation is authorized by this contract.
 
-## 3. Required discovery before implementation
+## 3. Completed discovery boundary
 
-Before any G6 write, map every current use of `studentEmail` and equivalent email keys that affects:
+Read-only discovery is complete. It established that the current system is email-first and that email participates in multiple distinct boundaries. The implementation must not perpetuate that coupling as canonical identity. The mapped uses include:
 
 - authentication/session identity;
 - learner selection;
@@ -76,6 +76,19 @@ LEGACY_AMBIGUOUS
 ```
 
 Unknown semantics remain `LEGACY_AMBIGUOUS`; they must not be upgraded by inference.
+
+Frozen interpretation:
+
+```
+studentId                    = operational learner identity
+canonicalRecordId            = canonical state identity
+User.email / session.user.email = account/authentication identity
+studentEmail                 = legacy/ambiguous compatibility field
+accountContactEmail          = derived only from authorized account relation
+guardianEmail                = NOT OBSERVABLE unless guardian relation is explicitly authorized
+```
+
+`NOT OBSERVABLE` is a valid explicit state. Absence of a resolved relation must not trigger inference.
 
 ## 4. Canonical source boundary
 
@@ -139,10 +152,12 @@ Rules:
 
 1. `learnerEmail` requires explicit evidence that the email belongs to the learner.
 2. `guardianName` and `guardianEmail` require explicit evidence of the guardian relationship.
-3. `accountContactEmail` may preserve an existing account/access/contact email without asserting ownership by the learner.
+3. `accountContactEmail` is not a new canonical fact merely because an email exists in a legacy projection. It may be populated only from an explicitly observable/authorized account relation that resolves account identity to the learner.
 4. A single legacy email may not populate multiple semantic roles by inference.
 5. Missing relationship data remains missing.
 6. Authentication convenience does not create canonical learner or guardian identity.
+7. `NOT OBSERVABLE` is valid for unresolved learner-email, guardian, or account-contact semantics.
+8. G6 resolution must follow `authenticated account → authorized learner relation → studentId → canonicalRecordId → verified upstream projection → consumer projection`.
 
 ## 7. Runtime acceptance
 
@@ -156,10 +171,10 @@ G6 may close only when the Gustavo Production witness demonstrates:
 6. consumer hash binds lineage + presented payload;
 7. read-back/render verification succeeds;
 8. exact replay is idempotent when persistence is used;
-9. learner selection is anchored to learnerId/canonical lineage, not inferred email ownership;
+9. learner selection is anchored to learnerId/canonical lineage through an explicitly authorized account→learner relation, not inferred email ownership;
 10. `studentEmail` is not rendered or promoted as learner-owned email without evidence;
 11. guardian fields are not manufactured;
-12. account/contact semantics are explicit where the existing email is required operationally;
+12. `accountContactEmail`, when present, is demonstrably derived from an authorized account relation rather than promoted from legacy `studentEmail`;
 13. no ClassReport → teacherInsight → parseTransferPoints authority path is used;
 14. no Portfolio/snapshot/legacy Learning Intelligence becomes authority;
 15. G1–G5 records remain unchanged;
@@ -192,13 +207,15 @@ G3 — CLOSED / PASS
 G4 — CLOSED / PASS
 G5 — CLOSED / PASS
 
-G6 — CONTRACT FROZEN
+G6 — ELIGIBLE TO START
+     discovery — COMPLETE
+     acceptance contract — FROZEN
      identity/account/contact boundary — FROZEN
-     discovery — NOT STARTED
+     implementation design — NOT STARTED
      implementation — NOT STARTED
      runtime proof — NOT STARTED
 
 G7 — BLOCKED
 ```
 
-The next authorized action is G6 read-only discovery only. No G6 production write is authorized until that mapping is complete.
+The next authorized action is G6 implementation design only: define the consumer projection contract and the exact authorized account→learner relation that resolves an authenticated account to `studentId`, preserving `NOT OBSERVABLE` when that relation is absent. No G6 production write is authorized by this contract update.
