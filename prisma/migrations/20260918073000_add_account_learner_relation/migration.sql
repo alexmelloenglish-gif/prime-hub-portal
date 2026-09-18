@@ -61,3 +61,35 @@ FOREIGN KEY ("userId")
 REFERENCES "users"("id")
 ON DELETE RESTRICT
 ON UPDATE CASCADE;
+
+
+CREATE TABLE "account_learner_relation_events" (
+    "id" TEXT NOT NULL,
+    "relationId" TEXT NOT NULL,
+    "eventType" TEXT NOT NULL,
+    "actorUserId" TEXT NOT NULL,
+    "sourceType" TEXT NOT NULL,
+    "sourceReference" TEXT NOT NULL,
+    "authorizationHash" TEXT,
+    "reason" TEXT,
+    "occurredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "metadata" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "account_learner_relation_events_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "account_learner_relation_events_type_check"
+      CHECK ("eventType" IN ('AUTHORIZED', 'REVOKED'))
+);
+
+CREATE INDEX "account_learner_relation_events_relationId_occurredAt_idx"
+ON "account_learner_relation_events"("relationId", "occurredAt");
+
+CREATE INDEX "account_learner_relation_events_eventType_occurredAt_idx"
+ON "account_learner_relation_events"("eventType", "occurredAt");
+
+ALTER TABLE "account_learner_relation_events"
+ADD CONSTRAINT "account_learner_relation_events_relationId_fkey"
+FOREIGN KEY ("relationId")
+REFERENCES "account_learner_relations"("id")
+ON DELETE RESTRICT
+ON UPDATE CASCADE;
