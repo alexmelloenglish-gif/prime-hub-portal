@@ -1,10 +1,10 @@
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { BrainCircuit, ClipboardCheck, Eye, PauseCircle, Plus, Shield } from 'lucide-react'
+import { BrainCircuit, ClipboardCheck, Eye, ShieldCheck, Users } from 'lucide-react'
 import { SectionShell } from '@/components/dashboard/section-shell'
 import { authOptions } from '@/lib/auth'
-import { listRecentPipelineActivity, listStudentsForAdmin } from '@/lib/admin-dashboard'
+import { listStudentsForAdmin } from '@/lib/admin-dashboard'
 import { isAdminUser } from '@/lib/student-data'
 
 export default async function DashboardAdminPage() {
@@ -18,186 +18,109 @@ export default async function DashboardAdminPage() {
     redirect('/pending-access')
   }
 
-  const [students, pipelineActivity] = await Promise.all([
-    listStudentsForAdmin(session.user),
-    listRecentPipelineActivity(),
-  ])
+  const students = await listStudentsForAdmin(session.user)
 
   return (
     <SectionShell
-      title="Admin Panel"
-      description="Preview authorized student dashboards, review learner-facing state and inspect preserved pipeline history."
+      title="Admin"
+      description="Manage authorized learners, preview student dashboards and open teacher review tools."
     >
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
+      <section className="grid gap-4 lg:grid-cols-2">
         <article className="rounded-[28px] border border-slate-200 bg-white p-6 text-[#0a235c] shadow-[0_18px_42px_rgba(15,48,93,0.08)]">
-          <div className="mb-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-[0_12px_28px_rgba(120,83,20,0.08)]">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-amber-800">
-                  <PauseCircle aria-hidden="true" className="h-5 w-5" />
-                  <p className="text-[0.72rem] font-bold uppercase tracking-[0.2em]">Legacy automation frozen</p>
-                </div>
-                <p className="max-w-2xl text-sm font-medium leading-6 text-[#1f3b68]">
-                  New transcript ingest, Drive reconciliation and pipeline retry are disabled while the canonical student state is being repaired. Historical runs remain preserved for audit.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/dashboard/admin/review"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-prime-red px-4 py-3 text-sm font-bold text-white shadow-[0_12px_26px_rgba(168,34,23,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8f1b13]"
-                >
-                  <ClipboardCheck aria-hidden="true" className="h-4 w-4" />
+          <div className="flex items-start gap-3">
+            <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
+              <Users aria-hidden="true" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7184a1]">Student access</p>
+              <h2 className="mt-1 text-xl font-semibold">{students.length} authorized learners</h2>
+              <p className="mt-2 text-sm leading-6 text-[#49617f]">
+                Preview each learner&apos;s current dashboard and confirm that the learning record shown to the student is the intended one.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article className="rounded-[28px] border border-indigo-100 bg-white p-6 text-[#0a235c] shadow-[0_18px_42px_rgba(37,55,120,0.08)]">
+          <div className="flex items-start gap-3">
+            <div className="rounded-2xl bg-indigo-50 p-3 text-indigo-700">
+              <ShieldCheck aria-hidden="true" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Teacher control</p>
+              <h2 className="mt-1 text-xl font-semibold">Learning judgments stay teacher-controlled</h2>
+              <p className="mt-2 text-sm leading-6 text-[#49617f]">
+                Use the review tools when a learner-facing interpretation, priority or next step needs a human decision.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link href="/dashboard/admin/review" className="inline-flex items-center gap-2 rounded-xl bg-prime-red px-3 py-2 text-sm font-bold text-white hover:bg-[#8f1b13]">
+                  <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                   Review queue
                 </Link>
-                <Link
-                  href="/dashboard/admin/intelligence"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-bold text-[#263c86] transition hover:-translate-y-0.5 hover:bg-indigo-100"
-                >
-                  <BrainCircuit aria-hidden="true" className="h-4 w-4" />
+                <Link href="/dashboard/admin/intelligence" className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-sm font-bold text-[#263c86] hover:bg-indigo-100">
+                  <BrainCircuit className="h-4 w-4" aria-hidden="true" />
                   Teacher Intelligence
                 </Link>
               </div>
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-[#a82217]/10 p-3 text-[#a82217]">
-              <Shield aria-hidden="true" className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-[#0a235c]">Admin access</h3>
-              <p className="text-sm text-[#49617f]">{session.user.email}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-4">
-            <div className="rounded-3xl border border-blue-100 bg-[#f4f9ff] p-5">
-              <p className="text-[0.72rem] font-bold uppercase tracking-[0.2em] text-blue-700">
-                Active architecture
-              </p>
-              <h3 className="mt-2 text-lg font-semibold text-[#0a235c]">Canonical repository + Neon/Prisma</h3>
-              <p className="mt-2 text-sm leading-6 text-[#49617f]">
-                Authorized repository snapshots provide the approved learner profile shown by the dashboard. Canonical Google Docs portfolios remain the human-readable longitudinal pedagogical reference. Neon/Prisma preserves operational pipeline and published class-report state.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-[#f8fbff] p-5">
-              <p className="text-[0.72rem] font-bold uppercase tracking-[0.2em] text-[#526783]">
-                Publication boundary
-              </p>
-              <p className="mt-3 text-sm leading-6 text-[#304d7d]">
-                Teacher review authorizes learner-facing changes. A model, transcript trigger or retry cannot publish a new learner judgment by itself.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-[#f8fbff] p-5">
-              <p className="text-[0.72rem] font-bold uppercase tracking-[0.2em] text-[#526783]">
-                Student onboarding rule
-              </p>
-              <ol className="mt-3 space-y-2 text-sm leading-6 text-[#304d7d]">
-                <li>1. Preserve the stable student ID and canonical Google email.</li>
-                <li>2. Add or update the authorized repository profile without replacing validated history.</li>
-                <li>3. Point learner-facing links only to the current canonical resources.</li>
-                <li>4. Review the student projection before exposing newly synchronized state.</li>
-              </ol>
-            </div>
-          </div>
         </article>
+      </section>
 
-        <div className="space-y-4">
+      <section className="space-y-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7184a1]">Learners</p>
+          <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">Authorized student dashboards</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#60718d]">
+            This list is for day-to-day administration. Technical processing history is kept out of the main workspace and remains available in the dedicated audit area.
+          </p>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
           {students.map((student) => {
             const previewHref = `/dashboard?studentEmail=${encodeURIComponent(student.studentEmail)}`
             const lessonIntelligenceHref = `/dashboard/admin/intelligence/lessons?studentEmail=${encodeURIComponent(student.studentEmail)}`
 
             return (
-              <article key={student.id} className="rounded-[28px] border border-slate-200 bg-white p-6 text-[#0a235c] shadow-[0_18px_42px_rgba(15,48,93,0.08)]">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-[#49617f]">
-                        {student.currentLevel}
-                      </span>
-                      <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
-                        Target {student.targetLevel}
-                      </span>
-                      <span className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
-                        Attendance {student.attendanceRate}
-                      </span>
-                      <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
-                        Reports {student.publishedReportCount ?? 0}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold text-[#0a235c]">{student.studentName}</h3>
-                      <p className="text-sm text-[#49617f]">{student.studentEmail}</p>
-                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#7184a1]">
-                        Historical pipeline: {student.latestPipelineStatus ?? 'no run'}
-                      </p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#7184a1]">
-                        Profile source: {student.dataSource ?? 'unknown'}
-                      </p>
-                    </div>
+              <article key={student.id} className="rounded-[26px] border border-slate-200 bg-white p-5 text-[#0a235c] shadow-[0_14px_34px_rgba(15,48,93,0.07)]">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold">{student.studentName}</h3>
+                    <p className="mt-1 text-sm text-[#60718d]">{student.studentEmail}</p>
                   </div>
+                  <span className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                    {student.attendanceRate}
+                  </span>
+                </div>
 
-                  <div className="flex flex-wrap gap-3">
-                    <Link
-                      href={previewHref}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-prime-red px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_22px_rgba(168,34,23,0.22)] transition-colors hover:bg-[#8f1b13]"
-                    >
-                      <Eye aria-hidden="true" className="h-4 w-4" />
-                      Preview student dashboard
-                    </Link>
-                    <Link
-                      href={lessonIntelligenceHref}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-[#0a235c] shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50"
-                    >
-                      <Plus aria-hidden="true" className="h-4 w-4" />
-                      Open lesson intelligence
-                    </Link>
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Current level</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.currentLevel}</p>
                   </div>
+                  <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Target</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.targetLevel}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Class reports</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.canonicalReportCount ?? 0}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link href={previewHref} className="inline-flex items-center gap-2 rounded-xl bg-prime-red px-3 py-2 text-sm font-bold text-white hover:bg-[#8f1b13]">
+                    <Eye aria-hidden="true" className="h-4 w-4" />
+                    Preview student dashboard
+                  </Link>
+                  <Link href={lessonIntelligenceHref} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-[#0a235c] hover:border-indigo-200 hover:bg-indigo-50">
+                    Lesson history
+                  </Link>
                 </div>
               </article>
             )
           })}
         </div>
-      </div>
-
-      <section className="rounded-[28px] border border-slate-200 bg-white p-6 text-[#0a235c] shadow-[0_18px_42px_rgba(15,48,93,0.08)]">
-        <div>
-          <p className="text-[0.72rem] font-bold uppercase tracking-[0.2em] text-[#526783]">Historical processing evidence</p>
-          <h3 className="mt-2 text-xl font-semibold text-[#0a235c]">Preserved pipeline activity</h3>
-          <p className="mt-2 text-sm leading-6 text-[#49617f]">
-            These records are retained for audit. The frozen legacy pipeline is not allowed to create new ingest or retry runs during the canonical repair.
-          </p>
-        </div>
-        {pipelineActivity.length ? (
-          <div className="mt-4 space-y-3">
-            {pipelineActivity.map((activity) => (
-              <article key={activity.id} className="rounded-2xl border border-slate-200 bg-[#f8fbff] p-4">
-                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-[#0a235c]">{activity.studentEmail}</p>
-                    <p className="mt-1 text-xs text-[#49617f]">Lesson: {activity.lessonId} · Source: {activity.source}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.14em]">
-                    <span className="rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-blue-700">{activity.status}</span>
-                    <span className={`rounded-full border px-2.5 py-1 ${activity.publishedReport ? 'border-emerald-100 bg-emerald-50 text-emerald-700' : 'border-amber-100 bg-amber-50 text-amber-700'}`}>
-                      {activity.publishedReport ? 'report published' : 'report not published'}
-                    </span>
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-[#49617f]">
-                  Started: {new Date(activity.createdAt).toLocaleString('en-GB')} · Portfolio: {activity.portfolioApplyStatus || 'not applied'}
-                </p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
-            No persisted pipeline activity is available in the current operational store.
-          </p>
-        )}
       </section>
     </SectionShell>
   )
