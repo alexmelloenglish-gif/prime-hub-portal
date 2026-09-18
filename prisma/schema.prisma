@@ -81,7 +81,29 @@ model AccountLearnerRelation {
   @@index([userId, status])
   @@index([studentId, status])
   @@index([status, validUntil])
+  events AccountLearnerRelationEvent[]
+
   @@map("account_learner_relations")
+}
+
+model AccountLearnerRelationEvent {
+  id                 String   @id @default(cuid())
+  relationId         String
+  eventType          String
+  actorUserId        String
+  sourceType         String
+  sourceReference    String
+  authorizationHash  String?
+  reason             String?
+  occurredAt         DateTime @default(now())
+  metadata           Json?
+  createdAt          DateTime @default(now())
+
+  relation AccountLearnerRelation @relation(fields: [relationId], references: [id], onDelete: Restrict)
+
+  @@index([relationId, occurredAt])
+  @@index([eventType, occurredAt])
+  @@map("account_learner_relation_events")
 }
 
 model Course {
