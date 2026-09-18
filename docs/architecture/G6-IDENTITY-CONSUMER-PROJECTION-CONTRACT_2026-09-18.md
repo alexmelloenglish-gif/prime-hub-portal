@@ -147,17 +147,15 @@ authorityReference
 authorizedAt or equivalent durable authority evidence
 ```
 
-Optional descriptive relationship type may be present only when explicitly supported:
+Optional access relationship type may be present only when explicitly supported:
 
 ```
-SELF
-GUARDIAN
-RESPONSIBLE_PARTY
-AUTHORIZED_CONTACT
+LEARNER_SELF
+AUTHORIZED_ACCESS
 OTHER_AUTHORIZED
 ```
 
-Absence of an authorized relationship type does not prevent an account→learner authorization when the access relation itself is explicitly authorized; it does prevent G6 from inventing guardian/contact semantics.
+`GUARDIAN`, `RESPONSIBLE_PARTY` and `AUTHORIZED_CONTACT` are not AccountLearnerRelation types. Guardian/contact semantics belong to separate relationship domains and cannot be inferred from access authorization.
 
 The resolver output is:
 
