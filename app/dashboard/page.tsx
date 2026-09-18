@@ -110,8 +110,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     title?: string
     summary?: string
     evidence?: string
+    changeType?: 'learner-model' | 'learner-progress' | 'learning-priority' | 'both'
     status?: ProjectionEvidenceStatus
   } | null
+  const showWhatChanged = Boolean(
+    whatChanged?.title &&
+      (whatChanged.changeType === 'learner-progress' ||
+        whatChanged.changeType === 'learning-priority' ||
+        whatChanged.changeType === 'both')
+  )
 
   const reconciledAttendance = reconcileAttendanceForProjection(student)
   const attendedLessons = [...reconciledAttendance]
@@ -131,9 +138,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .filter((report) => report.status === 'published' || report.contentStatus === 'published')
     .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
 
-  const latestLessonTimestamp = projection.recentLessons.length
-    ? Math.max(...projection.recentLessons.map((lesson) => dateTimestamp(lesson.lessonDate) ?? 0))
-    : null
   const visiblePriorities = projection.priorities.slice(0, DASHBOARD_DISPLAY_BUDGET.priorities)
   const visibleProgress = student.progressTracker.slice(0, DASHBOARD_DISPLAY_BUDGET.progressItems)
   const activeVocabulary = selectActiveVocabulary(student.vocabularyBank, student.classReports)
@@ -186,20 +190,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="grid gap-5 xl:grid-cols-2">
-        <article className="rounded-[24px] border border-blue-300 bg-blue-50 p-5 shadow-sm ring-1 ring-blue-100">
-          <div className="flex items-start justify-between gap-3"><Sparkles className="h-5 w-5 text-blue-700" />{whatChanged?.status ? <EvidenceStatus status={whatChanged.status} /> : null}</div>
-          <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">What changed</p>
-          {whatChanged?.title ? <h3 className="mt-1 text-xl font-bold leading-7 text-[#0a235c]">{whatChanged.title}</h3> : null}
-          {whatChanged?.summary ? <p className="mt-3 text-sm leading-7 text-slate-700">{whatChanged.summary}</p> : <p className="mt-3 text-sm text-slate-600">No validated change is available yet.</p>}
-          {whatChanged?.evidence ? <p className="mt-4 border-t border-blue-200 pt-3 text-xs leading-5 text-slate-600">Why this changed: {whatChanged.evidence}</p> : null}
-        </article>
+        {showWhatChanged ? (
+          <article className="rounded-[24px] border border-blue-300 bg-blue-50 p-5 shadow-sm ring-1 ring-blue-100">
+            <div className="flex items-start justify-between gap-3"><Sparkles className="h-5 w-5 text-blue-700" />{whatChanged?.status ? <EvidenceStatus status={whatChanged.status} /> : null}</div>
+            <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">What changed</p>
+            <h3 className="mt-1 text-xl font-bold leading-7 text-[#0a235c]">{whatChanged?.title}</h3>
+            {whatChanged?.summary ? <p className="mt-3 text-sm leading-7 text-slate-700">{whatChanged.summary}</p> : null}
+            {whatChanged?.evidence ? <p className="mt-4 border-t border-blue-200 pt-3 text-xs leading-5 text-slate-600">Why this changed: {whatChanged.evidence}</p> : null}
+          </article>
+        ) : null}
 
         <article className="rounded-[24px] border border-amber-200 bg-amber-50/70 p-5 shadow-sm ring-1 ring-amber-100">
           <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">What Matters Now</h3></div></div>
           <div className="mt-5 space-y-3">
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
-              return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{item.title}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{item.why}</p>{item.evidence ? <p className="mt-2 text-xs leading-5 text-slate-600">{item.evidence}</p> : null}</div></div></div>
+              return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{item.title}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{item.why}</p></div></div></div>
             }) : <p className="text-sm text-slate-600">No validated current priority is available yet.</p>}
           </div>
         </article>
@@ -208,7 +214,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <NextActionCard title={nextAction?.title} description={nextAction?.description} evidence={nextAction?.evidence} destination={nextAction?.destination ?? undefined} />
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
-        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons and recent report highlights.</p></div>
+        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-4">
             <section id="attendance-overview" className="space-y-3">
@@ -227,7 +233,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-700">Choose a word and use it in a sentence of your own.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
         {visibleGrammar.length ? <section id="grammar-overview" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-700">{student.grammarOverview.summary}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => <li key={point} className="rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm leading-6 text-[#334b6d] shadow-sm">{point}</li>)}</ul></section> : null}
         {visibleFeedback.length ? <section id="teacher-feedback" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Teacher Feedback</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">{feedback.title}</h4><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">Teacher perspective</p></div></div><p className="mt-4 text-sm leading-7 text-slate-700">{feedback.body}</p></article>)}</div></section> : null}
-        {learningLinks.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your portfolio, book a lesson or contact Prime Support.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{learningLinks.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.description}</p></a>)}</div></section> : null}
+        {learningLinks.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your portfolio, book a lesson or contact Prime Support.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{learningLinks.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.id === 'portfolio' ? 'Open your learning portfolio.' : link.id === 'calendar' ? 'Book your next lesson.' : link.id === 'support' ? 'Get help with access, links or class logistics.' : 'Open this learning resource.'}</p></a>)}</div></section> : null}
       </section>
     </div>
   )
