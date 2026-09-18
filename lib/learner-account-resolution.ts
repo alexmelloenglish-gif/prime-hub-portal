@@ -71,10 +71,23 @@ export function accountIdentityFromSession(
   }
 }
 
+type AbsentReason = 'NO_ACTIVE_RELATION' | 'REQUESTED_LEARNER_NOT_AUTHORIZED'
+type NotObservableReason = 'ACCOUNT_ID_MISSING' | 'SOURCE_UNAVAILABLE' | 'AMBIGUOUS_RELATION'
+
+function unresolvedLearnerAccountResolution(
+  account: AuthenticatedAccountIdentity,
+  status: 'ABSENT',
+  reason: AbsentReason
+): LearnerAccountResolution
+function unresolvedLearnerAccountResolution(
+  account: AuthenticatedAccountIdentity,
+  status: 'NOT_OBSERVABLE',
+  reason: NotObservableReason
+): LearnerAccountResolution
 function unresolvedLearnerAccountResolution(
   account: AuthenticatedAccountIdentity,
   status: 'ABSENT' | 'NOT_OBSERVABLE',
-  reason: LearnerAccountResolution['reason'] extends infer _ ? string : never
+  reason: AbsentReason | NotObservableReason
 ): LearnerAccountResolution {
   if (status === 'ABSENT') {
     return {
@@ -82,7 +95,7 @@ function unresolvedLearnerAccountResolution(
       account,
       studentId: null,
       relation: null,
-      reason: reason as 'NO_ACTIVE_RELATION' | 'REQUESTED_LEARNER_NOT_AUTHORIZED',
+      reason: reason as AbsentReason,
     }
   }
 
@@ -91,7 +104,7 @@ function unresolvedLearnerAccountResolution(
     account,
     studentId: null,
     relation: null,
-    reason: reason as 'ACCOUNT_ID_MISSING' | 'SOURCE_UNAVAILABLE' | 'AMBIGUOUS_RELATION',
+    reason: reason as NotObservableReason,
   }
 }
 
