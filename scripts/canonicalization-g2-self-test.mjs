@@ -70,3 +70,7 @@ assert(!runtimeProof.includes("ClassReportProjection"), 'runtime proof must not 
 assert(validationPage.includes("Run G2 runtime proof"), 'approved canonical authority task must expose the G2 runtime proof action')
 assert(validationPage.includes("task.status === 'approved'"), 'G2 runtime proof action must require an approved ValidationTask')
 assert(validationPage.includes("This proves G2 only"), 'G2 proof UI must preserve the boundary before G3')
+
+assert(validationPage.includes("existingCanonicalization"), 'closed G2 witness must be detected from persisted canonicalization provenance')
+assert(validationPage.includes("!existingCanonicalization"), 'G2 runtime proof button must be hidden after canonicalization exists')
+assert(validationPage.includes("Canonicalization already materialized"), 'closed G2 page must render durable canonicalization state')
