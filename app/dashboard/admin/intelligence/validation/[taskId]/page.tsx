@@ -294,6 +294,7 @@ export default async function ValidationTaskPage({
               </button>
             </form>
           ) : null}
+          ) : null}
         </>
       )}
     </main>
