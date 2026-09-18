@@ -1,9 +1,10 @@
 # Implementation Gate G4 — First Independent Projection
 
 **Date:** 2026-09-18  
-**Status:** IMPLEMENTATION HARDENED / RUNTIME PROOF PENDING  
+**Status:** CLOSED / PASS  
 **Gate:** G4 — First independent projection  
-**Predecessor:** G3 — CLOSED / PASS
+**Predecessor:** G3 — CLOSED / PASS  
+**Closure witness:** Production runtime proof on ValidationTask `cmu6je8gg0000101s7os3semk`
 
 ## Selection
 
@@ -11,7 +12,7 @@ The first independent projection is an additive **Canonical Portfolio Projection
 
 This target was selected because the current real G3 witness is longitudinal (scopeType=longitudinal). A portfolio-style projection can consume that canonical record without inventing a lesson-scoped Class Report identity.
 
-This gate therefore proves the projection infrastructure and authority boundary without modifying legacy PortfolioProjection, Class Report, Learning Intelligence, dashboard snapshots, Firestore, or repository snapshots.
+This gate proves the projection infrastructure and authority boundary without modifying legacy PortfolioProjection, Class Report, Learning Intelligence, dashboard snapshots, Firestore, or repository snapshots.
 
 ## Authority boundary
 
@@ -61,8 +62,6 @@ WRITTEN
 VERIFIED
 FAILED
 
-G4 starts at WRITTEN because the runtime proof requests and persists the projection in one explicit operation, then immediately reads it back.
-
 VERIFIED means the persisted projection matches the expected canonical source identity and projected content.
 
 FAILED is persisted when read-back comparison detects a mismatch.
@@ -81,41 +80,77 @@ No existing Class Report or Learning Intelligence output is replaced.
 
 ## Runtime proof
 
-The proof requires:
+The Production proof required and demonstrated:
 1. approved canonical authority ValidationTask;
 2. existing G2 canonicalization provenance;
 3. persisted G3 PASS for the same canonical record;
 4. direct read of the canonical record from Neon;
 5. first projection materialization;
 6. exact replay of the same projection command in the same runtime proof;
-7. assertion that projectionId, projectionKey, projectionHash and canonical identity are unchanged;
-8. assertion that exactly one projection row exists for the same CLR / target / projection version;
+7. unchanged projectionId, projectionKey, projectionHash and canonical identity;
+8. exactly one projection row for the same CLR / target / projection version;
 9. read-back comparison of canonical identity, projection version/hash, source references and projected payload;
-10. persisted final state VERIFIED or FAILED.
+10. persisted final state VERIFIED.
 
-Expected successful runtime witness:
+## Production closure witness
 
-ValidationTask: cmu6je8gg0000101s7os3semk
-Canonical record: cmu6jv29k0001bf8kt45pl9ht
-G3 verification: cmu6l5886000041lpoa5pmug7
+ValidationTask:
+`cmu6je8gg0000101s7os3semk`
 
-G4 has no authority to create another canonical record.
+Canonical record:
+`cmu6jv29k0001bf8kt45pl9ht`
 
-## Acceptance
+Canonical version:
+`1`
 
-G4 becomes CLOSED / PASS only when Production runtime proof records:
+Canonical hash:
+`9d34e5adc6d91974e01f0c3012203bc62749f5a5681a7498b1317c0e5e22d83e`
+
+G3 verification:
+`cmu6l5886000041lpoa5pmug7`
+
+G4 projection:
+`cmu6lzoty0001okkfhyynha9q`
+
+Projection key:
+`bce006b4add162dd05672a4ee250d4ab65bab6ab56bc57b08283eaea0e9f7411`
+
+Projection hash:
+`4ef3242a75e1337c0ec79888e589d9942e234b2eba00a548207f781fe30f36bd`
+
+Runtime result:
 
 canonicalRecordId      exact match
 canonicalVersion       exact match
 canonicalHash          exact match
 projectionId           persisted
 projectionHash         exact match
-sourceReferences       exact canonical provenance
+sourceReferences       canonical provenance preserved
 projection payload     exact read-back
 projectionStatus       VERIFIED
-idempotent replay      same projection / no duplicate
-legacy surfaces        untouched
+idempotent replay      PASS — same projection ID/key/hash
+projection count       1
+mismatches              none
+legacy surfaces         untouched
 
-Until then:
+## Closure
 
-G4 = IMPLEMENTATION HARDENED / RUNTIME PROOF PENDING
+G4 = CLOSED / PASS
+
+The demonstrated chain is now:
+
+TEACHER AUTHORITY
+        ↓
+CANONICALIZATION
+        ↓
+G3 VERIFIED CANONICAL RECORD
+        ↓
+DIRECT CANONICAL PORTFOLIO PROJECTION
+        ↓
+READ-BACK VERIFIED
+        ↓
+EXACT IDEMPOTENT REPLAY
+        ↓
+ONE PERSISTED PROJECTION
+
+G5 is now eligible to start, but is **not started by this closure**.
