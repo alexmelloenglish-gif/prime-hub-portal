@@ -14,6 +14,11 @@ export type CanonicalizationCommand = AuthorizedCanonicalizationInput & {
   authoritySourceType: CanonicalizationAuthoritySourceType
 }
 
+export type CanonicalAuthorityDraft = Omit<
+  CanonicalizationCommand,
+  'authoritySourceType' | 'teacherDecisionId' | 'reviewerId' | 'reviewerRole' | 'decisionTimestamp'
+>
+
 export type CanonicalizationResult = {
   canonicalRecordId: string
   canonicalVersion: number
@@ -78,6 +83,54 @@ function stableJson(value: unknown) {
 
 function asJson(value: unknown): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue
+}
+
+export function canonicalAuthorityDraftFromCommand(
+  input: CanonicalizationCommand,
+): CanonicalAuthorityDraft {
+  return {
+    studentId: input.studentId,
+    studentEmail: input.studentEmail?.trim().toLowerCase() || null,
+    scopeType: input.scopeType,
+    scopeKey: input.scopeKey,
+    lessonId: input.lessonId ?? null,
+    sourceReferences: input.sourceReferences,
+    transcriptId: input.transcriptId ?? null,
+    pipelineRunId: input.pipelineRunId ?? null,
+    proposalReferences: input.proposalReferences ?? null,
+    decisionType: input.decisionType,
+    authorityScope: input.authorityScope,
+    pedagogicalPayload: input.pedagogicalPayload,
+  }
+}
+
+export function canonicalAuthorityDraftHash(
+  draft: CanonicalAuthorityDraft,
+) {
+  return createHash('sha256').update(stableJson(draft)).digest('hex')
+}
+
+function assertValidationTaskAuthorizesExactPayload(
+  suggestedValue: Prisma.JsonValue | null,
+  input: CanonicalizationCommand,
+) {
+  if (!suggestedValue || typeof suggestedValue !== 'object' || Array.isArray(suggestedValue)) {
+    throw new CanonicalizationError(
+      'AUTHORITY_MISMATCH',
+      'ValidationTask does not preserve the canonical authority payload that was reviewed',
+    )
+  }
+
+  const expectedDraft = canonicalAuthorityDraftFromCommand(input)
+  const actualHash = createHash('sha256').update(stableJson(suggestedValue)).digest('hex')
+  const expectedHash = canonicalAuthorityDraftHash(expectedDraft)
+
+  if (actualHash !== expectedHash) {
+    throw new CanonicalizationError(
+      'AUTHORITY_MISMATCH',
+      'Canonicalization payload differs from the payload approved by the ValidationTask',
+    )
+  }
 }
 
 export function createCanonicalizationIdempotencyKey(
@@ -290,6 +343,7 @@ async function assertTeacherDecision(
     )
   }
   await assertSameReviewerIdentity(tx, task.reviewerId, reviewer)
+  assertValidationTaskAuthorizesExactPayload(task.suggestedValue, input)
   if (task.reviewedAt.getTime() !== expectedDecisionTime.getTime()) {
     throw new CanonicalizationError('AUTHORITY_MISMATCH', 'ValidationTask decision timestamp does not match canonicalization input')
   }
