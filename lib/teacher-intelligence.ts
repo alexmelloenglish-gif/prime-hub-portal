@@ -387,6 +387,30 @@ export async function listInsightProposals(limit = 100) {
   }))
 }
 
+type TeachingActionReviewState =
+  | 'pending_source_grounded_proposal'
+  | 'covered_by_teacher_decision'
+  | 'not_reviewable_unproven_basis'
+
+function coachingReferenceTypes(value: unknown) {
+  if (!Array.isArray(value)) return new Set<string>()
+  return new Set(
+    value
+      .map((item) => asString(asRecord(item).source_type))
+      .filter((item): item is string => Boolean(item)),
+  )
+}
+
+function canonicalAuthoritySourceDocumentIds(value: unknown) {
+  const evidence = asRecord(value)
+  const lessons = Array.isArray(evidence.sourceLessons) ? evidence.sourceLessons : []
+  return new Set(
+    lessons
+      .map((item) => asString(asRecord(item).sourceDocumentId))
+      .filter((item): item is string => Boolean(item)),
+  )
+}
+
 export async function listCoachingProposals(limit = 100) {
   const prisma = getPrismaClient()
   const rows = await prisma.coachingGuidance.findMany({
@@ -394,19 +418,101 @@ export async function listCoachingProposals(limit = 100) {
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 200),
   })
-  return rows.map((row) => ({
-    id: row.id,
-    pipelineRunId: row.pipelineRunId,
-    studentEmail: row.studentEmail,
-    recommendationStatus: row.recommendationStatus,
-    isPedagogicalDecision: row.isPedagogicalDecision,
-    requiresHumanReview: row.requiresHumanReview,
-    documentStatus: row.documentStatus,
-    implementationStatus: row.implementationStatus,
-    sourceReferences: safeJson(row.sourceReferences),
-    content: safeJson(row.content),
-    createdAt: row.createdAt.toISOString(),
-  }))
+  if (!rows.length) return []
+
+  const runIds = rows.map((row) => row.pipelineRunId)
+  const studentEmails = [...new Set(rows.map((row) => row.studentEmail.toLowerCase()))]
+
+  const [runs, authorityTasks] = await Promise.all([
+    prisma.pipelineRun.findMany({
+      where: { id: { in: runIds } },
+      select: {
+        id: true,
+        promptOneArtifact: true,
+        transcript: {
+          select: {
+            sourceFileId: true,
+          },
+        },
+        evidenceCandidates: {
+          select: { id: true },
+        },
+      },
+    }),
+    prisma.validationTask.findMany({
+      where: {
+        type: 'canonical_learning_record_authority',
+        status: 'approved',
+        decision: 'approved',
+        studentEmail: { in: studentEmails },
+      },
+      select: {
+        id: true,
+        studentEmail: true,
+        reviewedAt: true,
+        evidence: true,
+      },
+      orderBy: { reviewedAt: 'desc' },
+    }),
+  ])
+
+  const runById = new Map(runs.map((run) => [run.id, run]))
+  const authoritySourcesByStudent = new Map<string, Set<string>>()
+
+  for (const task of authorityTasks) {
+    const email = task.studentEmail?.toLowerCase()
+    if (!email) continue
+    const target = authoritySourcesByStudent.get(email) || new Set<string>()
+    for (const sourceId of canonicalAuthoritySourceDocumentIds(task.evidence)) {
+      target.add(sourceId)
+    }
+    authoritySourcesByStudent.set(email, target)
+  }
+
+  return rows.map((row) => {
+    const run = runById.get(row.pipelineRunId)
+    const referenceTypes = coachingReferenceTypes(row.sourceReferences)
+    const hasStructuredBasis =
+      referenceTypes.has('Evidence') ||
+      referenceTypes.has('LearningSignal') ||
+      referenceTypes.has('TeacherInsight')
+    const hasValidAiProvenance = Boolean(run && hasValidGeminiProvenance(run.promptOneArtifact))
+    const hasPersistedEvidence = Boolean(run?.evidenceCandidates.length)
+    const sourceFileId = run?.transcript?.sourceFileId || null
+    const coveredSourceIds = authoritySourcesByStudent.get(row.studentEmail.toLowerCase())
+    const coveredByTeacherDecision = Boolean(
+      sourceFileId && coveredSourceIds?.has(sourceFileId),
+    )
+
+    let reviewState: TeachingActionReviewState
+    if (coveredByTeacherDecision) {
+      reviewState = 'covered_by_teacher_decision'
+    } else if (hasStructuredBasis && hasValidAiProvenance && hasPersistedEvidence) {
+      reviewState = 'pending_source_grounded_proposal'
+    } else {
+      reviewState = 'not_reviewable_unproven_basis'
+    }
+
+    return {
+      id: row.id,
+      pipelineRunId: row.pipelineRunId,
+      studentEmail: row.studentEmail,
+      recommendationStatus: row.recommendationStatus,
+      isPedagogicalDecision: row.isPedagogicalDecision,
+      requiresHumanReview: row.requiresHumanReview,
+      documentStatus: row.documentStatus,
+      implementationStatus: row.implementationStatus,
+      sourceReferences: safeJson(row.sourceReferences),
+      content: safeJson(row.content),
+      createdAt: row.createdAt.toISOString(),
+      sourceFileId,
+      hasStructuredBasis,
+      hasValidAiProvenance,
+      hasPersistedEvidence,
+      coveredByTeacherDecision,
+      reviewState,
+    }
+  })
 }
 
 export async function listPipelineAuditEvents(limit = 150) {
