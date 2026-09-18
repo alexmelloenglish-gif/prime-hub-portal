@@ -40,16 +40,22 @@ for (const forbidden of [
 assert(page.includes('getG6CanonicalDashboardState'))
 assert(page.includes('isG6CanonicalConsumerEnabled'))
 assert(page.includes('G6CanonicalDashboardOverview'))
+const pageCanonicalCall = page.indexOf('const canonicalState = await getG6CanonicalDashboardState')
+const pageLegacyCall = page.indexOf('const studentState = await getStudentDashboardState')
+assert(pageCanonicalCall >= 0 && pageLegacyCall >= 0)
 assert(
-  page.indexOf('getG6CanonicalDashboardState') < page.indexOf('getStudentDashboardState'),
-  'Canonical consumer branch must be declared before legacy dashboard resolution'
+  pageCanonicalCall < pageLegacyCall,
+  'Canonical consumer execution must occur before legacy dashboard resolution'
 )
 
 assert(layout.includes('getG6CanonicalDashboardState'))
 assert(layout.includes('isG6CanonicalConsumerEnabled'))
+const layoutCanonicalCall = layout.indexOf('const canonicalState = await getG6CanonicalDashboardState')
+const layoutLegacyCall = layout.indexOf('const studentState = await getStudentDashboardState')
+assert(layoutCanonicalCall >= 0 && layoutLegacyCall >= 0)
 assert(
-  layout.indexOf('getG6CanonicalDashboardState') < layout.indexOf('getStudentDashboardState'),
-  'Layout must resolve canonical authority before legacy dashboard state'
+  layoutCanonicalCall < layoutLegacyCall,
+  'Layout must execute canonical authority resolution before legacy dashboard state'
 )
 
 console.log('G6 Consumer Authority Remediation structural self-test: PASS')
