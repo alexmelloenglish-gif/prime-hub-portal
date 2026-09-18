@@ -26,7 +26,7 @@ export default async function TeacherIntelligenceLayout({ children }: { children
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#6073a2]">Pedagogical command center</p>
               <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-[#0a235c] md:text-4xl">Teacher Intelligence</h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[#49617f] md:text-base">
-                A teacher-first workspace for reading lesson evidence, spotting learning patterns and deciding what deserves pedagogical action next.
+                A teacher-first workspace for reviewing learners, lesson evidence and the next teaching priorities.
               </p>
             </div>
           </div>
@@ -34,18 +34,18 @@ export default async function TeacherIntelligenceLayout({ children }: { children
           <div className="flex max-w-xl flex-wrap items-center gap-2 lg:justify-end">
             <span className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white px-3 py-2 text-xs font-semibold text-[#40558b] shadow-sm">
               <Sparkles className="h-4 w-4 text-indigo-600" aria-hidden="true" />
-              AI proposes
+              AI suggests
             </span>
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm">
               <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-              Teacher validates
+              Teacher decides
             </span>
             <Link
               href="/dashboard/admin"
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[#0a235c] shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50"
             >
               <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-              System Admin
+              Admin
             </Link>
           </div>
         </div>
