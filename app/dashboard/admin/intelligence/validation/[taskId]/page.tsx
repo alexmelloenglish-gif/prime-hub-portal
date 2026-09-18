@@ -275,6 +275,8 @@ export default async function ValidationTaskPage({
                 Run G2 runtime proof
               </button>
             </form>
+          ) : null}
+
           {task.type === 'canonical_learning_record_authority' &&
           task.status === 'approved' &&
           existingCanonicalization &&
