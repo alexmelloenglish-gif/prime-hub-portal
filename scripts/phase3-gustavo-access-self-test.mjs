@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs'
 const manifest = JSON.parse(
   readFileSync('data/access/gustavo-account-learner-authorizations.json', 'utf8')
 )
-const studentData = readFileSync('lib/student-data.ts', 'utf8')
 const provision = readFileSync('scripts/provision-gustavo-dual-account-access.mjs', 'utf8')
 
 assert.equal(manifest.learner.studentId, 'stu_4c4da6c04ac4')
@@ -19,11 +18,11 @@ for (const entry of manifest.accounts) {
   assert.ok(entry.name?.trim(), `Expected explicit name for ${entry.email}`)
 }
 
-assert(studentData.includes('gustavo-account-learner-authorizations.json'))
-assert(studentData.includes('resolveAuthorizedLearnerRelation'))
-assert(studentData.includes('accountIdentityFromSession'))
-assert(studentData.includes('isPhase3RelationPilotAccount'))
-assert(studentData.includes('buildRepositoryStudentByStudentId'))
+// PR #35 is provisioning-only. Consumer routing belongs to the separate
+// G6 Consumer Authority remediation and must not be coupled here.
+assert(!provision.includes('student-data'))
+assert(!provision.includes('getStudentDashboardState'))
+assert(!provision.includes('getFirebaseFirestore'))
 
 // Provisioning must be one all-or-nothing transaction for the whole pilot.
 assert.equal(
