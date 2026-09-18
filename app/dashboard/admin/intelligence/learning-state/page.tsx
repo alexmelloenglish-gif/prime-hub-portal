@@ -31,7 +31,7 @@ export default function TeacherLearningStatePage() {
                 <p><strong className="text-white">Target:</strong> {pkg.authorizedCurrentState.targetLevel}</p>
                 <p className="mt-2"><strong className="text-white">Focus:</strong> {pkg.authorizedCurrentState.learningFocus}</p>
               </div>
-              <Link href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentEmail)}`} className="mt-4 inline-flex rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-300/20">Open source-grounded package</Link>
+              <Link href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentId)}`} className="mt-4 inline-flex rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-300/20">Open source-grounded package</Link>
             </article>
           ))}
         </div>
