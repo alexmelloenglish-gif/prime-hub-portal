@@ -461,3 +461,35 @@ model CanonicalLearningRecordVerification {
   @@index([verificationStatus])
   @@map("canonical_learning_record_verifications")
 }
+
+ 
+// G4 — First independent projection
+// Additive projection record. It never replaces a legacy PortfolioProjection,
+// ClassReportProjection, dashboard snapshot, or Learning Intelligence record.
+model CanonicalLearningRecordProjection {
+  projectionId       String   @id @default(cuid())
+  projectionKey      String   @unique
+  targetType         String
+  projectionVersion  String
+  canonicalRecordId  String
+  canonicalVersion   Int
+  canonicalHash      String
+  studentId          String
+  studentEmail       String?
+  lessonId           String?
+  sourceReferences   Json
+  projection         Json
+  projectionHash     String
+  projectionStatus   String   @default("NOT_REQUESTED")
+  mismatchFields     Json     @default("[]")
+  verifiedAt         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@index([canonicalRecordId])
+  @@index([targetType, studentId])
+  @@index([projectionStatus])
+  @@map("canonical_learning_record_projections")
+}
