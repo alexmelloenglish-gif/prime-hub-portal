@@ -22,6 +22,15 @@ function safeJson(value: unknown): unknown {
   return JSON.parse(JSON.stringify(value)) as unknown
 }
 
+async function listSyntheticPipelineRunIds() {
+  const prisma = getPrismaClient()
+  const rows = await prisma.pipelineRun.findMany({
+    where: { studentEmail: { endsWith: '@invalid.test' } },
+    select: { id: true },
+  })
+  return rows.map((row) => row.id)
+}
+
 function getPromptOneProvenance(promptOneArtifact: unknown) {
   const artifact = asRecord(promptOneArtifact)
   return asRecord(artifact.generationProvenance)
@@ -92,7 +101,10 @@ export async function listTeacherLessons(limit = 50, studentEmail?: string): Pro
   const prisma = getPrismaClient()
   const normalizedStudentEmail = studentEmail?.trim() || undefined
   const runs = await prisma.pipelineRun.findMany({
-    where: normalizedStudentEmail ? { studentEmail: normalizedStudentEmail } : undefined,
+    where: {
+      ...(normalizedStudentEmail ? { studentEmail: normalizedStudentEmail } : {}),
+      NOT: { studentEmail: { endsWith: '@invalid.test' } },
+    },
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 100),
     include: {
@@ -175,14 +187,36 @@ export async function listTeacherLessons(limit = 50, studentEmail?: string): Pro
 
 export async function getTeacherCommandCenter(): Promise<TeacherCommandCenter> {
   const prisma = getPrismaClient()
-  const [recentLessons, reviewTasks, evidenceCandidates, signalProposals, insightProposals, reportsAwaitingPublication] = await Promise.all([
-    listTeacherLessons(12),
-    prisma.reviewTask.count({ where: { decision: null } }),
-    prisma.evidenceCandidate.count({ where: { requiresReview: true } }),
-    prisma.learningSignalProposal.count({ where: { requiresReview: true } }),
-    prisma.teacherInsightProposal.count({ where: { requiresReview: true, isOfficial: false } }),
-    prisma.classReportProjection.count({ where: { documentStatus: 'draft' } }),
+  const syntheticRunIds = await listSyntheticPipelineRunIds()
+  const [recentRuns, reviewTasks, evidenceCandidates, signalProposals, insightProposals, reportsAwaitingPublication] = await Promise.all([
+    listTeacherLessons(60),
+    prisma.reviewTask.count({
+      where: {
+        decision: null,
+        NOT: { studentEmail: { endsWith: '@invalid.test' } },
+      },
+    }),
+    prisma.evidenceCandidate.count({
+      where: { requiresReview: true, pipelineRunId: { notIn: syntheticRunIds } },
+    }),
+    prisma.learningSignalProposal.count({
+      where: { requiresReview: true, pipelineRunId: { notIn: syntheticRunIds } },
+    }),
+    prisma.teacherInsightProposal.count({
+      where: { requiresReview: true, isOfficial: false, pipelineRunId: { notIn: syntheticRunIds } },
+    }),
+    prisma.classReportProjection.count({
+      where: { documentStatus: 'draft', pipelineRunId: { notIn: syntheticRunIds } },
+    }),
   ])
+
+  const seenLessons = new Set<string>()
+  const recentLessons = recentRuns.filter((lesson) => {
+    const key = `${lesson.studentEmail.toLowerCase()}::${lesson.lessonId}`
+    if (seenLessons.has(key)) return false
+    seenLessons.add(key)
+    return true
+  }).slice(0, 12)
 
   return {
     needsReview: {
@@ -198,8 +232,9 @@ export async function getTeacherCommandCenter(): Promise<TeacherCommandCenter> {
 
 export async function listEvidenceReviewQueue(limit = 100) {
   const prisma = getPrismaClient()
+  const syntheticRunIds = await listSyntheticPipelineRunIds()
   const candidates = await prisma.evidenceCandidate.findMany({
-    where: { requiresReview: true },
+    where: { requiresReview: true, pipelineRunId: { notIn: syntheticRunIds } },
     orderBy: { createdAt: 'asc' },
     take: Math.min(Math.max(limit, 1), 200),
     include: {
@@ -311,7 +346,9 @@ export async function recordEvidenceReviewDecision(input: {
 
 export async function listSignalProposals(limit = 100) {
   const prisma = getPrismaClient()
+  const syntheticRunIds = await listSyntheticPipelineRunIds()
   const signals = await prisma.learningSignalProposal.findMany({
+    where: { pipelineRunId: { notIn: syntheticRunIds } },
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 200),
   })
@@ -330,7 +367,9 @@ export async function listSignalProposals(limit = 100) {
 
 export async function listInsightProposals(limit = 100) {
   const prisma = getPrismaClient()
+  const syntheticRunIds = await listSyntheticPipelineRunIds()
   const insights = await prisma.teacherInsightProposal.findMany({
+    where: { pipelineRunId: { notIn: syntheticRunIds } },
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 200),
   })
@@ -351,6 +390,7 @@ export async function listInsightProposals(limit = 100) {
 export async function listCoachingProposals(limit = 100) {
   const prisma = getPrismaClient()
   const rows = await prisma.coachingGuidance.findMany({
+    where: { NOT: { studentEmail: { endsWith: '@invalid.test' } } },
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 200),
   })
