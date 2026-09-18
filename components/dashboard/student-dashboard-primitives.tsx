@@ -50,7 +50,6 @@ export function CurrentStateCard({ label, field }: { label: string; field: Proje
           <p className="mt-2">{value}</p>
         </details>
       ) : null}
-      {field.qualifier ? <p className="mt-auto border-t border-slate-200 pt-3 text-xs leading-5 text-slate-600">{field.qualifier}</p> : null}
     </article>
   )
 }
@@ -78,7 +77,7 @@ export function DevelopmentTrajectory({ current, target }: { current?: Projectio
           <p className="mt-1 font-bold text-[#0a235c]">{targetValue}</p>
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-slate-600">Progress is shown through your learning record rather than a percentage.</p>
+      <p className="mt-3 text-xs leading-5 text-slate-600">Your progress is reviewed through what you can do in lessons.</p>
     </section>
   )
 }
