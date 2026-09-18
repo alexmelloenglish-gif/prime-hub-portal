@@ -4,7 +4,7 @@ import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-da
 
 const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
   'teacher-validated': 'Teacher confirmed',
-  'portfolio-confirmed': 'From your learning record',
+  'portfolio-confirmed': 'Teacher confirmed',
   qualified: 'Teacher note',
   'not-available': 'Not available',
 }
