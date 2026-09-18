@@ -3,6 +3,8 @@ import fs from 'node:fs'
 const service = fs.readFileSync('lib/canonicalization.ts', 'utf8')
 const schema = fs.readFileSync('prisma/schema.prisma', 'utf8')
 const migration = fs.readFileSync('prisma/migrations/20260918051500_add_canonical_learning_record/migration.sql', 'utf8')
+const authorityReview = fs.readFileSync('lib/canonical-authority-review.ts', 'utf8')
+const validationPage = fs.readFileSync('app/dashboard/admin/intelligence/validation/[taskId]/page.tsx', 'utf8')
 
 function assert(condition, message) {
   if (!condition) throw new Error(`G2 self-test failed: ${message}`)
@@ -19,6 +21,10 @@ assert(service.includes("resolveReviewerIdentity"), 'reviewer identity must reso
 assert(service.includes("normalized.includes('@')"), 'reviewer identity must support persisted email references')
 assert(service.includes("persistedReviewer.id !== expectedReviewer.id"), 'reviewer references must be compared by resolved user identity')
 assert(service.includes("canonical_learning_record_authority"), 'ValidationTask authority must be scoped to canonical learning authority')
+assert(service.includes("assertValidationTaskAuthorizesExactPayload"), 'ValidationTask authority must be bound to the exact approved payload')
+assert(service.includes("canonicalAuthorityDraftHash"), 'approved canonical payload must have deterministic authority hashing')
+assert(service.includes("task.suggestedValue"), 'ValidationTask suggestedValue must be verified during canonicalization')
+assert(service.includes("Canonicalization payload differs from the payload approved by the ValidationTask"), 'payload divergence must fail closed')
 assert(service.includes("'IDEMPOTENCY_CONFLICT'"), 'same identity with different content must fail closed')
 assert(service.includes("P2034"), 'serializable transaction conflicts must be retryable')
 assert(service.includes("P2002"), 'unique-constraint races must be handled')
@@ -41,3 +47,10 @@ assert(migration.includes('"canonicalization_provenance_studentId_teacherDecisio
 assert(migration.includes('FOREIGN KEY ("canonicalRecordId")'), 'provenance must reference canonical record')
 
 console.log('G2 Atomic Canonicalization + Idempotency structural self-test: PASS')
+
+assert(authorityReview.includes("type: 'canonical_learning_record_authority'"), 'authority-review preparation must create the dedicated ValidationTask type')
+assert(authorityReview.includes('suggestedValue: draft'), 'authority-review task must persist the exact canonical draft')
+assert(authorityReview.includes('authorityPayloadHash'), 'authority-review task must expose an exact-payload hash')
+assert(!authorityReview.includes('canonicalizeLearningRecord('), 'authority review preparation must remain non-canonicalizing')
+assert(validationPage.includes('Exact authority payload'), 'human reviewer must see the exact canonical payload before approval')
+assert(validationPage.includes('Approve canonical authority'), 'canonical authority approval must be explicit in the UI')
