@@ -23,7 +23,8 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "students:normalize": "node scripts/normalize-student-identities.mjs",
-    "canonical-record-contract:self-test": "node scripts/canonical-learning-record-contract-self-test.mjs"
+    "canonical-record-contract:self-test": "node scripts/canonical-learning-record-contract-self-test.mjs",
+    "canonicalization:g2:self-test": "node scripts/canonicalization-g2-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
