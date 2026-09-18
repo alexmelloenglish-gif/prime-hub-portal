@@ -33,13 +33,14 @@ Do not use as substitutes:
 The relation should preserve:
 
 - relation status;
-- optional explicitly supported relation type;
+- optional access relationship type;
 - source type/reference;
 - authorizing actor/reference;
 - authorization timestamp;
 - validity/revocation state;
-- explicitly authorized contact relation;
-- guardian/responsible-party relation only when separately supported.
+- explicit revocation provenance.
+
+Contact and guardian relationships are separate domains and are not fields whose semantics are supplied by AccountLearnerRelation.
 
 ## 2. Resolver states
 
@@ -96,16 +97,17 @@ relationId
 userId
 studentId
 status
-relationType?
+relationType
 sourceType
 sourceReference
-authorizedBy?
+authorizationHash?
+authorizedBy
 authorizedAt
 validFrom?
 validUntil?
+revokedBy?
 revokedAt?
-contactRelationStatus
-guardianRelationStatus
+revocationReason?
 createdAt
 updatedAt
 ```
