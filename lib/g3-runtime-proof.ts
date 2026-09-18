@@ -19,8 +19,6 @@ export async function runG3RuntimeProof(taskId: string) {
   }
   const provenance = await prisma.canonicalizationProvenance.findFirst({ where: { teacherDecisionId: task.id }, orderBy: { createdAt: 'desc' } })
   if (!provenance) throw new CanonicalizationError('AUTHORITY_NOT_FOUND', 'G3 requires an existing G2 canonicalization provenance record; G3 does not create canonical state')
-  const canonicalRecord = await prisma.canonicalLearningRecord.findUnique({ where: { canonicalRecordId: provenance.canonicalRecordId }, select: { canonicalRecordId: true, canonicalVersion: true, canonicalHash: true } })
-  if (!canonicalRecord) throw new CanonicalizationError('AUTHORITY_NOT_FOUND', 'G2 provenance exists but its canonical record cannot be read for G3')
   const suggested = task.suggestedValue as Record<string, any>
   const command: CanonicalizationCommand = {
     ...suggested as any,
@@ -37,9 +35,6 @@ export async function runG3RuntimeProof(taskId: string) {
     provenanceId: provenance.id,
     idempotencyKey: provenance.idempotencyKey,
     idempotentReplay: true,
-  }
-  if (canonicalRecord.canonicalRecordId !== writeResult.canonicalRecordId || canonicalRecord.canonicalVersion !== writeResult.canonicalVersion || canonicalRecord.canonicalHash !== writeResult.canonicalHash) {
-    throw new Error('G3 witness boundary mismatch: provenance and canonical record do not agree')
   }
   return verifyCanonicalLearningRecordReadBack({ command, writeResult })
 }

@@ -124,6 +124,14 @@ export default async function ValidationTaskPage({
         })
       : null
 
+  const existingG3Verification =
+    existingCanonicalization
+      ? await prisma.canonicalLearningRecordVerification.findFirst({
+          where: { expectedCanonicalRecordId: existingCanonicalization.canonicalRecordId },
+          orderBy: { verifiedAt: 'desc' },
+        })
+      : null
+
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <Link href="/dashboard/admin/intelligence/validation" className="text-sm font-semibold text-indigo-700 hover:underline">
@@ -153,6 +161,22 @@ export default async function ValidationTaskPage({
           <pre className="mt-4 max-h-[32rem] overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
             {JSON.stringify(task.suggestedValue, null, 2)}
           </pre>
+        </section>
+      ) : null}
+
+      {existingG3Verification && existingG3Verification.verificationStatus === 'PASS' && !proofParams.g3Proof ? (
+        <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700">G3 closed witness</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">Canonical read-back already verified</h2>
+          <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div><dt className="font-semibold">Verification</dt><dd className="break-all">{existingG3Verification.id}</dd></div>
+            <div><dt className="font-semibold">Status</dt><dd>{existingG3Verification.verificationStatus}</dd></div>
+            <div><dt className="font-semibold">Canonical record</dt><dd className="break-all">{existingG3Verification.expectedCanonicalRecordId}</dd></div>
+            <div><dt className="font-semibold">Version</dt><dd>{existingG3Verification.expectedCanonicalVersion}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            The durable G3 PASS witness already exists. The proof is not rerun automatically; G3 remains isolated from downstream projections.
+          </p>
         </section>
       ) : null}
 
@@ -254,6 +278,7 @@ export default async function ValidationTaskPage({
           {task.type === 'canonical_learning_record_authority' &&
           task.status === 'approved' &&
           existingCanonicalization &&
+          existingG3Verification?.verificationStatus !== 'PASS' &&
           proofParams.g3Proof !== 'pass' ? (
             <form action={executeG3RuntimeProof} className="rounded-2xl border border-indigo-300 bg-indigo-50 p-6 shadow-sm">
               <input type="hidden" name="taskId" value={task.id} />
