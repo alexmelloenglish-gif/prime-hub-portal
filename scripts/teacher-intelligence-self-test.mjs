@@ -16,6 +16,7 @@ const files = {
   gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
+  actions: 'app/dashboard/admin/intelligence/actions/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
 }
 
@@ -44,6 +45,13 @@ assert.match(source.reviewPage, /BLOCK/, 'Evidence review must expose BLOCK')
 assert.match(source.signals, /working suggestions for the teacher/, 'Signal proposals must remain visibly separate from reviewed learner state')
 assert.match(source.insights, /working notes/, 'AI-supported insights must remain visibly separate from teacher-reviewed interpretation')
 assert.match(source.learningState, /Teacher-reviewed learning state/, 'Learning State must surface only recorded teacher-reviewed packages')
+assert.match(source.intelligence, /pending_source_grounded_proposal/, 'Teaching Actions must distinguish source-grounded proposals from legacy artifacts')
+assert.match(source.intelligence, /covered_by_teacher_decision/, 'Teaching Actions must detect proposal sources covered by a later teacher decision')
+assert.match(source.intelligence, /not_reviewable_unproven_basis/, 'Teaching Actions must quarantine proposals without a proven structured basis')
+assert.match(source.intelligence, /canonical_learning_record_authority/, 'Teaching Actions resolution must use the bounded canonical-authority ValidationTask evidence')
+assert.match(source.actions, /Only source-grounded AI proposals that are still unresolved appear as pending/, 'Teaching Actions must not present every CoachingGuidance row as pending teacher review')
+assert.match(source.actions, /Historical proposal containment/, 'Teaching Actions must keep excluded historical proposals visible as contained history rather than deleting them')
+assert.doesNotMatch(source.actions, /label="Teacher review"/, 'Teaching Actions must not falsely label legacy CoachingGuidance rows as pending teacher review')
 assert.match(source.validation, /Teacher decisions and exceptions/, 'Validation must remain a bounded human-decision workspace')
 assert.match(source.validation, /Teacher-reviewed learners/, 'Validation must show resolved teacher-reviewed packages')
 assert.match(source.learners, /Teacher reviewed/, 'Learner directory must expose available teacher-reviewed packages')
