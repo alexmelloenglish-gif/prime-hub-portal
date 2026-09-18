@@ -1,0 +1,50 @@
+{
+  "contractId": "prime-class-report-presentation",
+  "version": "1.0.0",
+  "status": "FROZEN",
+  "effectiveDate": "2026-09-18",
+  "scope": "persisted_attended_lesson_class_report",
+  "requiredSections": [
+    "class_identity",
+    "what_we_worked_on",
+    "learning_evidence",
+    "priority_corrections",
+    "vocabulary_bank_this_lesson",
+    "grammar_review_this_lesson",
+    "support_independence_level",
+    "teacher_feedback_current_priority",
+    "recommended_next_steps",
+    "evidence_boundaries"
+  ],
+  "fixedOrder": true,
+  "mandatoryEmptyStates": {
+    "priority_corrections": "No priority correction persisted from this lesson.",
+    "vocabulary_bank_this_lesson": "No new vocabulary promoted to long-term memory from this lesson.",
+    "grammar_review_this_lesson": "No new grammar claim persisted from this lesson."
+  },
+  "priorityCorrectionsColumns": [
+    "Original / Emerging Form",
+    "Corrected / More Natural English",
+    "Key Point"
+  ],
+  "supportScale": [
+    "Independent",
+    "One clue",
+    "Model"
+  ],
+  "invariants": {
+    "allRequiredSectionsMustRender": true,
+    "noSilentSectionOmission": true,
+    "preserveHistoricalReports": true,
+    "noASRArtifactAsLearnerError": true,
+    "noAutomaticCEFRMovement": true,
+    "distinguishSupportedFromIndependent": true,
+    "noUnverifiedOperationalFactsAsLearningClaims": true,
+    "cumulativeMemoryIsAdditiveAndEvidenceBound": true
+  },
+  "projectionGate": {
+    "onMissingRequiredSection": "BLOCK",
+    "onUnsupportedClaim": "BLOCK",
+    "onMissingEvidenceBoundaries": "BLOCK"
+  }
+}
