@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Protected learning portal with Google auth and PostgreSQL-ready dashboard data",
   "private": true,
-  "engines": { "node": "22.x" },
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
@@ -20,7 +22,8 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "students:normalize": "node scripts/normalize-student-identities.mjs"
+    "students:normalize": "node scripts/normalize-student-identities.mjs",
+    "canonical-record-contract:self-test": "node scripts/canonical-learning-record-contract-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
