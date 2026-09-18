@@ -1,7 +1,7 @@
 # G6 Identity / Consumer Projection Contract
 
 **Date:** 2026-09-18  
-**Status:** FROZEN — IMPLEMENTATION DESIGN BASELINE  
+**Status:** FROZEN — ADR-002 AUTHORITY MODEL ACCEPTED / IMPLEMENTATION NOT STARTED  
 **Gate:** G6  
 **Predecessors:** G1–G5 CLOSED / PASS  
 **Technical discovery:** COMPLETE  
@@ -132,6 +132,9 @@ NO AUTHORIZED ACCOUNT → LEARNER RELATION
 `NOT_OBSERVABLE` is a valid explicit result. The resolver must fail closed rather than infer a relationship.
 
 ## 4. Account → Learner authorization contract
+
+Authority-model decision: `ADR-002-ACCOUNT-LEARNER-AUTHORIZED-RELATION_2026-09-18.md` — ACCEPTED.
+
 
 A relation may resolve an authenticated account to a learner only when all required elements are available:
 
@@ -316,6 +319,8 @@ G6 — ELIGIBLE TO START
      identity model — DOCUMENTED
      acceptance contract — FROZEN
      implementation design baseline — FROZEN
+     ADR-002 authority model — ACCEPTED
+     migration / relation implementation — NOT AUTHORIZED
      implementation — NOT STARTED
      production writes — NONE
      runtime proof — NOT STARTED
@@ -323,4 +328,4 @@ G6 — ELIGIBLE TO START
 G7 — BLOCKED
 ```
 
-The next step is implementation design refinement against the existing schema/auth model. This artifact does not authorize a migration, production write, CLR change, G5 change or dashboard cutover.
+The identity-authority design is now governed by ADR-002. The next artifact is the concrete migration + service contract for `AccountLearnerRelation`, but migration and production writes remain NOT AUTHORIZED until explicitly opened. This artifact does not authorize a CLR change, G5 change or dashboard cutover.

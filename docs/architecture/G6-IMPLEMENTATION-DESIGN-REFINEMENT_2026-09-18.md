@@ -1,7 +1,7 @@
 # G6 Implementation Design Refinement
 
 **Date:** 2026-09-18  
-**Status:** COMPLETE / FROZEN — READ-ONLY DESIGN  
+**Status:** COMPLETE / FROZEN — ADR-002 ACCEPTED / IMPLEMENTATION NOT STARTED  
 **Gate:** G6  
 **Predecessors:** G1–G5 CLOSED / PASS  
 **Migration authorized:** NO  
@@ -9,7 +9,7 @@
 
 ## 1. Architectural recommendation
 
-Future implementation should introduce a dedicated domain entity:
+ADR-002 has accepted the architectural decision that future implementation SHALL introduce a dedicated domain entity:
 
 ```
 AccountLearnerRelation
@@ -110,7 +110,7 @@ createdAt
 updatedAt
 ```
 
-Exact persistence schema, indexes and migration remain implementation decisions and are NOT authorized by this read-only refinement.
+ADR-002 freezes the semantic authority model, including many-to-many account/learner cardinality, pair uniqueness, ACTIVE/REVOKED lifecycle, privileged create/revoke authority, fail-closed ambiguity handling and separate guardian semantics. Exact Prisma schema, indexes and migration remain implementation decisions and are NOT authorized.
 
 Required semantic rules:
 
@@ -220,6 +220,8 @@ G6 — ELIGIBLE TO START
      identity model — DOCUMENTED
      acceptance contract — FROZEN
      implementation design refinement — COMPLETE
+     ADR-002 authority-model decision — ACCEPTED
+     relation implementation — NOT STARTED
      implementation — NOT STARTED
      migration — NOT AUTHORIZED
      production writes — NONE
@@ -228,4 +230,4 @@ G6 — ELIGIBLE TO START
 G7 — BLOCKED
 ```
 
-No further discovery is required before implementation planning. This refinement does not itself authorize schema migration, production writes, CLR/G5 mutation or dashboard cutover.
+No further discovery is required. ADR-002 resolves the architectural authority-model blocker. The next artifact is the concrete `AccountLearnerRelation` migration + service contract and first authorized creation procedure; migration and production writes remain closed until explicitly authorized.
