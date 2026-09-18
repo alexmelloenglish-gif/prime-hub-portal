@@ -365,3 +365,142 @@ BLOCKED
 ```
 
 No later gate may infer G2 PASS until the runtime proof above is recorded.
+
+## Preflight authority-compatibility finding
+
+A read-only Neon preflight identified one preserved approved ReviewTask witness:
+
+```text
+ReviewTask
+cmta4fzlw0006o2xzfimobdds
+
+student
+order08-persistence-20260826@invalid.test
+
+lesson
+order08-validation-20260826
+
+decision
+approved
+
+reviewedAt
+2026-08-26T14:31:54.045Z
+```
+
+At preflight time:
+
+```text
+canonical_learning_records = 0
+canonicalization_provenance = 0
+```
+
+The witness does not satisfy the current G2 pedagogical-authority contract.
+
+### Authority-event distinction
+
+The preserved event is:
+
+```text
+HumanReviewApproved
+```
+
+The repository code establishes that this event belongs to the identity / continuation review path.
+
+G2 therefore does **not** treat it as equivalent to:
+
+```text
+PublicationReviewApproved
+```
+
+which is emitted only for the explicit publication-review branch.
+
+This is intentional and preserves the distinction:
+
+```text
+IDENTITY / CONTINUATION APPROVAL
+≠
+PEDAGOGICAL PUBLICATION AUTHORITY
+```
+
+The G2 service continues to require `PublicationReviewApproved` when a `ReviewTask` is used as the authority source.
+
+### Reviewer identity compatibility
+
+The preflight also exposed a persistence-format mismatch:
+
+```text
+ReviewTask.reviewerId
+alexandre@primedigitalhub.com.br
+```
+
+while newer review surfaces may persist the internal `users.id`.
+
+The application itself historically passes an email reference to `reviewPipelineRun()`, so reviewer references in preserved records are not uniformly internal user IDs.
+
+G2 was corrected to resolve reviewer authority by:
+
+```text
+users.id
+OR
+users.email
+```
+
+and then compare reviewers by the resolved internal user identity.
+
+Compatibility fix commit:
+
+```text
+091e32e860265366c8b94cbce0074ba3fca62e0b
+fix(g2): resolve reviewer authority by user id or email
+```
+
+Protection test commit:
+
+```text
+b966ae4aec78903ac881e648be2224666054a8d3
+test(g2): protect authority-event and reviewer compatibility
+```
+
+The test explicitly protects both invariants:
+
+- email-based reviewer references may resolve to a persisted teacher/admin;
+- `HumanReviewApproved` must not become accepted as the G2 pedagogical authority event.
+
+### Preflight verdict
+
+```text
+G2 IMPLEMENTATION
+PASS
+
+REVIEWER IDENTITY COMPATIBILITY
+CORRECTED
+
+HUMANREVIEWAPPROVED AS PUBLICATION AUTHORITY
+REJECTED BY DESIGN
+
+PRESERVED REVIEWTASK WITNESS
+NOT ELIGIBLE FOR G2 RUNTIME PROOF
+
+DATABASE COUNTS BEFORE RUNTIME PROOF
+canonical records = 0
+provenance = 0
+
+G2 RUNTIME PROOF
+BLOCKED PENDING A VALID AUTHORITY WITNESS
+
+G2 FINAL STATUS
+IMPLEMENTED / RUNTIME PROOF PENDING
+
+G3
+BLOCKED
+```
+
+No canonical record or provenance row was created by this preflight.
+
+The next runtime proof must use either:
+
+1. a real `ReviewTask` with persisted `PublicationReviewApproved` authority and a resolvable teacher/admin reviewer; or
+2. a real approved `ValidationTask` with `type = canonical_learning_record_authority`.
+
+A synthetic historical witness must not be upgraded or rewritten merely to satisfy the test.
+
