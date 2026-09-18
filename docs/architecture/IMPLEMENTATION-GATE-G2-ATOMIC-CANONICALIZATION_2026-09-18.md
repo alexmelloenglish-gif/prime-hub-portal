@@ -504,3 +504,191 @@ The next runtime proof must use either:
 
 A synthetic historical witness must not be upgraded or rewritten merely to satisfy the test.
 
+## Legitimate witness preparation path
+
+The G2 witness-preparation flow is now implemented without creating canonical data automatically.
+
+### Exact-payload authority binding
+
+A human approval is not sufficient unless it is bound to the exact canonical payload under review.
+
+For `ValidationTask` authority:
+
+```text
+ValidationTask.suggestedValue
+        ↓
+deterministic authority-payload hash
+        ↓
+human APPROVED decision
+        ↓
+canonicalization input must match exactly
+```
+
+Any mismatch fails closed as:
+
+```text
+AUTHORITY_MISMATCH
+```
+
+Implementation:
+
+```text
+0a96134e9ae53441d70934f6125db918103f98a6
+fix(g2): bind validation authority to exact canonical payload
+```
+
+### ReviewTask hardening
+
+`PublicationReviewApproved` remains distinct from `HumanReviewApproved`.
+
+Additionally, a `ReviewTask` may not become a canonical authority source merely because publication approval exists. Its persisted `PublicationReviewApproved` event must bind:
+
+```text
+canonicalAuthorityPayloadHash
+```
+
+to the exact canonical draft being requested.
+
+Without that binding:
+
+```text
+AUTHORITY_NOT_APPROVED
+```
+
+Implementation:
+
+```text
+5ffc0ce1d43cba29a41f8b58187a2551dc25ee2b
+fix(g2): require exact payload binding for review-task authority
+
+8dd9e3c69bc21454a7f9dff1617dbb7983ca9eaa
+test(g2): require payload-bound review-task authority
+```
+
+This prevents publication approval over one downstream artifact from becoming blanket authority over arbitrary canonical learning content.
+
+### Current witness route
+
+The supported current witness path is a new human-reviewed `ValidationTask`.
+
+A real teacher-reviewed package may be prepared as:
+
+```text
+existing teacher-reviewed package
+        ↓
+build exact CanonicalAuthorityDraft
+        ↓
+persist pending ValidationTask
+type = canonical_learning_record_authority
+        ↓
+show exact suggestedValue to teacher/admin
+        ↓
+human Approve / Reject
+```
+
+Preparation implementation:
+
+```text
+04ac27142156559c468732c8b164635c8ec12d55
+feat(g2): expose teacher decision package lookup
+
+60c8ee8c842a1bd0a4bf3577a61ae080cb32c063
+feat(g2): prepare exact-payload canonical authority review
+
+5a22bef158a229078f8d544eb70147f6066540a2
+fix(g2): serialize canonical authority draft for Prisma JSON
+
+9734ac7f770c147c5b4e594a67c28fd915fdce56
+feat(g2): expose canonical authority review preparation
+
+c38c19937dd2c4514aca3d300a45de40975f6a24
+feat(g2): show exact canonical payload before approval
+
+ca7d63d4a111b5990989002c8a2fca2688ac79c3
+test(g2): bind human authority to exact reviewed payload
+
+9e3fdf676b751c2ccd0899399296dcc13918b28e
+test(g2): align exact-payload assertion with Prisma JSON
+```
+
+The preparation action is available from the Teacher Intelligence Validation workspace for teacher-reviewed packages.
+
+Preparation is idempotent by the existing ValidationTask uniqueness boundary:
+
+```text
+type
++ entityType
++ entityId
+```
+
+An existing task is opened rather than silently replaced.
+
+### Production verification
+
+Final hardening deployment:
+
+```text
+dpl_9JY1GafZXZi7yQYTtjWi4SxdwccG
+READY
+```
+
+Verified:
+
+- no pending Prisma migrations;
+- Prisma Client generation PASS;
+- Next.js compile PASS;
+- type validation PASS;
+- existing Teacher Intelligence tests PASS;
+- existing Student Dashboard tests PASS;
+- canonical consistency: 0 errors.
+
+### Human boundary
+
+No `canonical_learning_record_authority` ValidationTask is created by deployment.
+
+No teacher/admin approval is simulated.
+
+No Canonical Learning Record is created by witness preparation.
+
+The next legitimate action is:
+
+```text
+teacher/admin opens Validation
+        ↓
+Prepare canonical authority review
+        ↓
+inspect exact payload
+        ↓
+Approve canonical authority
+```
+
+Only after that current human decision exists may the G2 runtime experiment execute canonicalization and replay.
+
+### Current status after witness-path implementation
+
+```text
+G2 IMPLEMENTATION
+PASS
+
+AUTHORITY PAYLOAD BINDING
+PASS
+
+REVIEWER RESOLUTION
+PASS
+
+WITNESS PREPARATION FLOW
+READY
+
+HUMAN WITNESS
+NOT YET CREATED / APPROVED
+
+RUNTIME CANONICALIZATION PROOF
+PENDING
+
+G2 FINAL STATUS
+IMPLEMENTED / RUNTIME PROOF PENDING
+
+G3
+BLOCKED
+```
+
