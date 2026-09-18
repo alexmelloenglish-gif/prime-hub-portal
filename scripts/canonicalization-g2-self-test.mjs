@@ -16,6 +16,8 @@ assert(service.includes("tx.canonicalizationProvenance.create"), 'canonicalizati
 assert(service.includes("createCanonicalizationIdempotencyKey"), 'deterministic idempotency-key builder must exist')
 assert(service.includes("teacherDecisionId"), 'idempotency and provenance must reference teacher decision')
 assert(service.includes("PublicationReviewApproved"), 'ReviewTask authority must require persisted publication-approval evidence')
+assert(service.includes("canonicalAuthorityPayloadHash"), 'ReviewTask authority must bind a canonical payload hash')
+assert(service.includes("PublicationReviewApproved does not bind this exact canonical authority payload"), 'ReviewTask authority must fail closed when exact payload binding is absent')
 assert(!service.includes("eventType: 'HumanReviewApproved'"), 'HumanReviewApproved must not be accepted as the G2 pedagogical authority event')
 assert(service.includes("resolveReviewerIdentity"), 'reviewer identity must resolve through the persisted user directory')
 assert(service.includes("normalized.includes('@')"), 'reviewer identity must support persisted email references')
