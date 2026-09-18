@@ -11,8 +11,10 @@ import diegoProfile from '@/data/students/diegodasiro-gmail-com.firestore.json'
 import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
 import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
+import gustavoAccessManifest from '@/data/access/gustavo-account-learner-authorizations.json'
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
+import { accountIdentityFromSession, resolveAuthorizedLearnerRelation } from '@/lib/learner-account-resolution'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 
 type AuthenticatedUser = Session['user'] | null | undefined
@@ -211,6 +213,41 @@ const verifiedRepositoryProfiles: Record<string, DocumentData> = {
   'claudio.bit@gmail.com': claudioProfile as unknown as DocumentData,
   'vcrlima89@gmail.com': valeriaProfile as unknown as DocumentData,
   'carolvdrummond@gmail.com': gustavoProfile as unknown as DocumentData,
+}
+
+const phase3RelationPilotEmails = new Set(
+  gustavoAccessManifest.accounts.map((entry) => normalizeEmail(entry.email))
+)
+
+export function isPhase3RelationPilotAccount(email?: string | null) {
+  return phase3RelationPilotEmails.has(normalizeEmail(email))
+}
+
+function repositoryProfileByStudentId(studentId: string): DocumentData | null {
+  const normalizedStudentId = studentId.trim()
+  const uniqueProfiles = [...new Set(Object.values(verifiedRepositoryProfiles))]
+
+  for (const profile of uniqueProfiles) {
+    const profileStudentId = typeof profile.studentId === 'string' ? profile.studentId.trim() : ''
+    if (profileStudentId === normalizedStudentId) return profile
+  }
+
+  return null
+}
+
+function buildRepositoryStudentByStudentId(
+  studentId: string,
+  name?: string | null
+): StudentDashboardData | null {
+  const profile = repositoryProfileByStudentId(studentId)
+  if (!profile) return null
+
+  const profileEmail = normalizeEmail(
+    typeof profile.studentEmail === 'string' ? profile.studentEmail : ''
+  )
+  if (!profileEmail) return null
+
+  return parseStudentDocument(profile, profileEmail, name)
 }
 
 function getAdminPreviewEmails() {
@@ -1060,6 +1097,71 @@ export async function getStudentDashboardState(
   }
 
   const viewerEmail = normalizeEmail(user.email)
+
+  // Phase 3 pilot: Gustavo and Carol must resolve through the explicit G6
+  // AccountLearnerRelation authority boundary. Email selects the pilot only;
+  // it never selects the learner. The learner is selected exclusively by the
+  // persisted relation's studentId.
+  if (!isAdminUser(user) && isPhase3RelationPilotAccount(viewerEmail)) {
+    const account = accountIdentityFromSession(user)
+
+    if (!account) {
+      return {
+        hasAccess: false,
+        source: 'preview',
+        student: null,
+        isPreviewingAnotherStudent: false,
+        viewerEmail,
+      }
+    }
+
+    const resolution = await resolveAuthorizedLearnerRelation({ account })
+
+    if (resolution.status !== 'AUTHORIZED') {
+      return {
+        hasAccess: false,
+        source: 'preview',
+        student: null,
+        isPreviewingAnotherStudent: false,
+        viewerEmail,
+      }
+    }
+
+    const repositoryStudent = buildRepositoryStudentByStudentId(
+      resolution.studentId,
+      user.name
+    )
+
+    if (!repositoryStudent) {
+      return {
+        hasAccess: false,
+        source: 'preview',
+        student: null,
+        isPreviewingAnotherStudent: false,
+        viewerEmail,
+      }
+    }
+
+    const canonicalProfileEmail = normalizeEmail(repositoryStudent.studentEmail)
+    const state = await getStudentDashboardStateCached(canonicalProfileEmail, user.name)
+
+    if (!state.student || state.student.studentId !== resolution.studentId) {
+      return {
+        hasAccess: false,
+        source: 'preview',
+        student: null,
+        isPreviewingAnotherStudent: false,
+        viewerEmail,
+      }
+    }
+
+    return {
+      ...state,
+      isPreviewingAnotherStudent: false,
+      viewerEmail,
+    }
+  }
+
   const targetEmail = canPreviewAnotherStudent(user, requestedStudentEmail)
     ? normalizeEmail(requestedStudentEmail)
     : viewerEmail
