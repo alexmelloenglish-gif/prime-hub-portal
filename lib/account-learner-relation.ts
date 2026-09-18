@@ -13,7 +13,6 @@ export const ACCOUNT_LEARNER_RELATION_TYPES = {
   OTHER_AUTHORIZED: 'OTHER_AUTHORIZED',
 } as const
 
-type RelationStatus = typeof ACCOUNT_LEARNER_RELATION_STATUS[keyof typeof ACCOUNT_LEARNER_RELATION_STATUS]
 type RelationType = typeof ACCOUNT_LEARNER_RELATION_TYPES[keyof typeof ACCOUNT_LEARNER_RELATION_TYPES]
 
 export type AuthorizeAccountLearnerRelationInput = {
