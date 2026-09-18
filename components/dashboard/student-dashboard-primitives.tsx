@@ -3,9 +3,9 @@ import { ArrowRight, Route } from 'lucide-react'
 import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-data'
 
 const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': 'Teacher validated',
-  'portfolio-confirmed': 'Portfolio confirmed',
-  qualified: 'Qualified insight',
+  'teacher-validated': 'Teacher confirmed',
+  'portfolio-confirmed': 'From your learning record',
+  qualified: 'Teacher note',
   'not-available': 'Not available',
 }
 
@@ -23,25 +23,6 @@ function isExternalLink(href: string) {
 function compactText(value: string, max = 150) {
   if (value.length <= max) return { visible: value, overflow: false }
   return { visible: `${value.slice(0, max).trimEnd()}…`, overflow: true }
-}
-
-function parseLearningChain(value: string) {
-  const labels = ['Evidence', 'Signal', 'Insight', 'Boundary', 'Next verification'] as const
-  const result: Partial<Record<(typeof labels)[number], string>> = {}
-  for (const label of labels) {
-    const marker = `${label}:`
-    const start = value.indexOf(marker)
-    if (start < 0) continue
-    const contentStart = start + marker.length
-    const nextPositions = labels
-      .filter((candidate) => candidate !== label)
-      .map((candidate) => value.indexOf(`${candidate}:`, contentStart))
-      .filter((position) => position >= 0)
-    const end = nextPositions.length ? Math.min(...nextPositions) : value.length
-    const content = value.slice(contentStart, end).trim()
-    if (content) result[label] = content
-  }
-  return result
 }
 
 export function EvidenceStatus({ status }: { status: ProjectionEvidenceStatus }) {
@@ -89,7 +70,7 @@ export function DevelopmentTrajectory({ current, target }: { current?: Projectio
         <span className="hidden text-xl font-bold text-indigo-400 md:block">→</span>
         <div className="rounded-xl border border-indigo-300 bg-indigo-100 px-4 py-3 text-center">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-700">Development</p>
-          <p className="mt-1 font-bold text-indigo-950">Evidence-led progression</p>
+          <p className="mt-1 font-bold text-indigo-950">Learning in progress</p>
         </div>
         <span className="hidden text-xl font-bold text-indigo-400 md:block">→</span>
         <div className="rounded-xl border border-indigo-200 bg-white px-4 py-3">
@@ -97,7 +78,7 @@ export function DevelopmentTrajectory({ current, target }: { current?: Projectio
           <p className="mt-1 font-bold text-[#0a235c]">{targetValue}</p>
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-slate-600">Qualitative development only. No artificial percentage or gamified score is inferred.</p>
+      <p className="mt-3 text-xs leading-5 text-slate-600">Progress is shown through your learning record rather than a percentage.</p>
     </section>
   )
 }
@@ -114,11 +95,10 @@ export function NextActionCard({
   destination?: string | null
 }) {
   const href = destination ?? '#next-action'
-  const learningChain = evidence ? parseLearningChain(evidence) : {}
-  const hasChain = Boolean(learningChain.Evidence || learningChain.Signal || learningChain.Insight)
+  const actionLabel = destination?.includes('calendar.app.google') ? 'Book next support lesson' : 'Open next step'
   const cta = (
     <span className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#0a235c] shadow-sm transition hover:bg-blue-50 sm:w-auto">
-      <ArrowRight className="h-4 w-4" /> Open action
+      <ArrowRight className="h-4 w-4" /> {actionLabel}
     </span>
   )
 
@@ -126,18 +106,21 @@ export function NextActionCard({
     <section id="next-action" className="rounded-[26px] border border-[#0a235c] bg-[#0a235c] p-5 text-white shadow-xl md:p-6">
       <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
-          <div className="flex items-center gap-3"><Route className="h-5 w-5 text-blue-300" /><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">Next action</p></div>
-          {title ? <><h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>{description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}
-            {hasChain ? (
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
-                {learningChain.Evidence ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Evidence</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Evidence}</p></div> : null}
-                {learningChain.Signal ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Learning signal</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Signal}</p></div> : null}
-                {learningChain.Insight ? <div className="rounded-xl border border-white/15 bg-white/10 p-4"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Insight</p><p className="mt-2 text-sm leading-6 text-white">{learningChain.Insight}</p></div> : null}
-              </div>
-            ) : evidence ? <p className="mt-4 border-t border-white/15 pt-3 text-xs leading-5 text-blue-200">Evidence: {evidence}</p> : null}
-            {learningChain.Boundary ? <p className="mt-4 border-t border-white/15 pt-3 text-xs leading-5 text-blue-200">Boundary: {learningChain.Boundary}</p> : null}
-            {learningChain['Next verification'] ? <p className="mt-2 text-xs leading-5 text-blue-200">Next verification: {learningChain['Next verification']}</p> : null}
-          </> : <h3 className="mt-3 text-xl font-semibold">No validated next action is available yet.</h3>}
+          <div className="flex items-center gap-3"><Route className="h-5 w-5 text-blue-300" /><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">Next step</p></div>
+          {title ? (
+            <>
+              <h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>
+              {description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}
+              {evidence ? (
+                <div className="mt-4 rounded-xl border border-white/15 bg-white/10 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Why this matters</p>
+                  <p className="mt-2 text-sm leading-6 text-white">{evidence}</p>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <h3 className="mt-3 text-xl font-semibold">Your next step will appear here when it is ready.</h3>
+          )}
         </div>
         {title ? isExternalLink(href) ? <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{cta}</a> : <Link href={href}>{cta}</Link> : null}
       </div>
