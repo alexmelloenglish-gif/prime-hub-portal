@@ -1,0 +1,35 @@
+import fs from 'node:fs'
+
+const service = fs.readFileSync('lib/canonical-portfolio-projection.ts', 'utf8')
+const runtimeProof = fs.readFileSync('lib/g4-runtime-proof.ts', 'utf8')
+const schema = fs.readFileSync('prisma/schema.prisma', 'utf8')
+const migration = fs.readFileSync('prisma/migrations/20260918090000_add_first_independent_canonical_projection/migration.sql', 'utf8')
+const validationPage = fs.readFileSync('app/dashboard/admin/intelligence/validation/[taskId]/page.tsx', 'utf8')
+
+function assert(condition, message) {
+  if (!condition) throw new Error('G4 self-test failed: ' + message)
+}
+
+assert(service.includes('CanonicalLearningRecord'), 'G4 projection must read directly from the Canonical Learning Record')
+assert(service.includes('canonicalRecordId'), 'G4 projection must carry canonicalRecordId')
+assert(service.includes('canonicalVersion'), 'G4 projection must carry canonicalVersion')
+assert(service.includes('canonicalHash'), 'G4 projection must carry canonicalHash')
+assert(service.includes('projectionHash'), 'G4 projection must compute a deterministic projection hash')
+assert(service.includes('projectionStatus'), 'G4 projection must persist projection state')
+assert(service.includes('canonicalLearningRecordProjection.create'), 'G4 projection must persist an additive projection')
+assert(service.includes('canonicalLearningRecordProjection.findUnique'), 'G4 projection must read back the persisted projection')
+assert(service.includes('projectionStatus: comparison.status'), 'G4 must persist VERIFIED or FAILED after read-back')
+assert(service.includes('idempotentReplay'), 'G4 must be idempotent')
+assert(!service.includes('classReportProjection'), 'G4 must not write the legacy Class Report projection')
+assert(!service.includes('portfolioProjection.upsert'), 'G4 must not overwrite the legacy PortfolioProjection surface')
+assert(runtimeProof.includes('projectCanonicalPortfolio'), 'G4 runtime proof must execute the independent projection')
+assert(runtimeProof.includes("verificationStatus: 'PASS'"), 'G4 runtime proof must require persisted G3 PASS')
+assert(!runtimeProof.includes('runG3RuntimeProof'), 'G4 runtime proof must not replay G3')
+assert(!runtimeProof.includes('canonicalizeLearningRecord'), 'G4 runtime proof must not replay canonicalization')
+assert(schema.includes('model CanonicalLearningRecordProjection'), 'Prisma schema must contain the G4 projection model')
+assert(migration.includes('CREATE TABLE "canonical_learning_record_projections"'), 'migration must create the G4 projection table')
+assert(migration.includes('projectionKey'), 'migration must persist a deterministic projection identity')
+assert(validationPage.includes('runG4RuntimeProof'), 'validation page must expose G4 proof')
+assert(validationPage.includes('Run G4 independent portfolio projection'), 'validation page must expose the explicit G4 action')
+assert(validationPage.includes('G4 uses the Canonical Learning Record directly'), 'validation page must state the G4 authority boundary')
+console.log('G4 First Independent Projection structural self-test: PASS')
