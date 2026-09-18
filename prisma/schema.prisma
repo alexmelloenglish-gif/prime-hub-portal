@@ -362,3 +362,46 @@ model VocabularyReuseSentence {
   @@index([studentEmail, vocabularyKey, createdAt])
   @@map("vocabulary_reuse_sentences")
 }
+
+// G1 — Canonical Learning Record Contract
+//
+// This model defines the durable post-authority domain record only.
+// G2 owns atomic canonicalization, idempotency, and database migration/application.
+// G3 owns persisted read-back verification.
+model CanonicalLearningRecord {
+  canonicalRecordId   String   @id @default(cuid())
+  schemaVersion       String   @default("canonical-learning-record-v1")
+  studentId           String
+  studentEmail        String?
+  lessonId            String?
+  scopeType           String
+  scopeKey            String
+  canonicalVersion    Int
+  canonicalHash       String
+  hashAlgorithm       String   @default("sha256")
+
+  sourceReferences    Json
+  sourceHash          String?
+  transcriptId        String?
+  pipelineRunId       String?
+  proposalReferences  Json?
+
+  teacherDecisionId   String
+  reviewerId          String
+  reviewerRole        String
+  decisionType        String
+  authorityScope      String
+  decisionTimestamp   DateTime
+  canonicalizedAt     DateTime
+
+  pedagogicalPayload  Json
+  supersedesRecordId  String?
+  createdAt           DateTime @default(now())
+
+  @@unique([studentId, scopeKey, canonicalVersion])
+  @@index([studentId, lessonId])
+  @@index([teacherDecisionId])
+  @@index([pipelineRunId])
+  @@index([canonicalHash])
+  @@map("canonical_learning_records")
+}
