@@ -24,21 +24,21 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
   const [message, setMessage] = useState<string | null>(null)
 
   function stageLabel(stage: string) {
-    if (stage === 'publication_review_required') return 'Publication review required'
-    if (stage === 'processing_approved') return 'Processing retry required'
-    return 'Identity review required'
+    if (stage === 'publication_review_required') return 'Publication check'
+    if (stage === 'processing_approved') return 'Processing check'
+    return 'Identity check'
   }
 
   function approvalLabel(stage: string) {
-    if (stage === 'publication_review_required') return 'Approve publication workflow'
+    if (stage === 'publication_review_required') return 'Approve publication'
     if (stage === 'processing_approved') return 'Retry processing'
-    return 'Approve and continue'
+    return 'Approve'
   }
 
   async function decide(task: ReviewTaskItem, decision: 'approved' | 'rejected') {
     const reason = reasons[task.id]?.trim() || undefined
     if (decision === 'rejected' && !reason) {
-      setMessage('A rejection reason is required so the audit trail explains the decision.')
+      setMessage('Please add a reason before rejecting this item.')
       return
     }
 
@@ -55,11 +55,11 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
       setTasks((current) => current.filter((item) => item.id !== task.id))
       setMessage(decision === 'approved'
         ? task.stage === 'publication_review_required'
-          ? 'Publication workflow approved. Inspect the lesson trace to verify the persisted report, portfolio and final pipeline state.'
+          ? 'Publication approved. You can open the lesson details to confirm the result.'
           : task.stage === 'processing_approved'
-            ? 'Processing retry authorized. Inspect the lesson trace to verify the new persisted runtime result.'
-            : 'Identity review approved. Processing continued under the current quality gates; inspect the lesson trace for the resulting downstream state.'
-        : 'Rejected safely. The decision was sent to the existing review workflow; inspect the run trace for the persisted final state.')
+            ? 'Processing retry authorized. You can open the lesson details to confirm the result.'
+            : 'Identity approved. Processing can continue under the existing safeguards.'
+        : 'Item rejected and recorded.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'The review decision could not be saved.')
     } finally {
@@ -70,8 +70,8 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
   if (!tasks.length) {
     return (
       <div className="glass-card p-8 text-center">
-        <p className="text-lg font-medium text-white">No pending pipeline reviews.</p>
-        <p className="mt-2 text-sm leading-6 text-prime-cream/65">No identity, publication or retry ReviewTask is currently waiting for a human decision.</p>
+        <p className="text-lg font-medium text-white">No pending system reviews.</p>
+        <p className="mt-2 text-sm leading-6 text-prime-cream/65">Nothing is waiting for a manual identity, publication or processing decision.</p>
         {message ? <p className="mt-4 text-sm text-emerald-200">{message}</p> : null}
       </div>
     )
@@ -98,7 +98,7 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
                   <p><span className="text-prime-cream/45">Transcript:</span> {task.transcriptId || 'not supplied'}</p>
                   <p><span className="text-prime-cream/45">Received:</span> {new Date(task.createdAt).toLocaleString('en-GB')}</p>
                   <p><span className="text-prime-cream/45">Effective at:</span> {task.effectiveAt ? new Date(task.effectiveAt).toLocaleString('en-GB') : 'not supplied'}</p>
-                  <p><span className="text-prime-cream/45">Authority:</span> {task.authorityStatus}</p>
+                  <p><span className="text-prime-cream/45">Status:</span> {task.authorityStatus}</p>
                 </div>
               </div>
               <div className="w-full max-w-md space-y-3">
@@ -107,7 +107,7 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
                   id={`reason-${task.id}`}
                   value={reasons[task.id] || ''}
                   onChange={(event) => setReasons((current) => ({ ...current, [task.id]: event.target.value }))}
-                  placeholder="Confirm identity, lesson date, and any correction needed. Required for rejection."
+                  placeholder="Add any context or correction needed. Required for rejection."
                   className="min-h-24 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition focus:border-prime-red/60"
                   disabled={busy}
                 />
@@ -118,7 +118,7 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
                   </button>
                   <button type="button" onClick={() => decide(task, 'rejected')} disabled={busy} className="inline-flex items-center gap-2 rounded-2xl border border-rose-300/25 bg-rose-300/10 px-4 py-2.5 text-sm font-medium text-rose-100 transition hover:bg-rose-300/20 disabled:cursor-wait disabled:opacity-60">
                     <X className="h-4 w-4" />
-                    Reject safely
+                    Reject
                   </button>
                 </div>
               </div>
