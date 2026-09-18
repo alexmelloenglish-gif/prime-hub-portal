@@ -11,8 +11,14 @@ const migration = fs.readFileSync(
 )
 const service = fs.readFileSync('lib/account-learner-relation.ts', 'utf8')
 const resolver = fs.readFileSync('lib/learner-account-resolution.ts', 'utf8')
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+const vercelConfig = JSON.parse(fs.readFileSync('vercel.json', 'utf8'))
 const adr = fs.readFileSync(
   'docs/architecture/ADR-002-ACCOUNT-LEARNER-AUTHORIZED-RELATION_2026-09-18.md',
+  'utf8'
+)
+const adr3 = fs.readFileSync(
+  'docs/architecture/ADR-003-DATABASE-MIGRATION-DEPLOYMENT-POLICY_2026-09-18.md',
   'utf8'
 )
 
@@ -41,7 +47,15 @@ assert(!resolver.includes('studentEmail'), 'G6 resolver must not resolve by stud
 assert(!resolver.includes('guardianEmail'), 'G6 resolver must not infer guardian semantics')
 assert(resolver.includes('requestedStudentId'), 'G6 resolver must support explicit learner selection')
 assert(resolver.includes('AMBIGUOUS_RELATION'), 'G6 resolver must fail closed on multiple active learners without explicit selection')
+
+assert(packageJson.scripts?.['db:migrate:deploy'] === 'prisma migrate deploy', 'G6 must expose the protected canonical migration command')
+assert(vercelConfig.buildCommand === 'npm run build', 'Vercel build must not execute database migrations')
+assert(!vercelConfig.buildCommand.includes('prisma migrate deploy'), 'Vercel buildCommand must never include prisma migrate deploy')
+
 assert(adr.includes('Status:** ACCEPTED'), 'ADR-002 must remain accepted')
 assert(adr.includes('Email equality, legacy routing, historical account behavior'), 'ADR-002 must prohibit email-based authority')
+assert(adr3.includes('**Status:** ACCEPTED'), 'ADR-003 must remain accepted')
+assert(adr3.includes('Vercel build'), 'ADR-003 must define the protected Vercel build boundary')
+assert(adr3.includes('npm run db:migrate:deploy'), 'ADR-003 must define the canonical protected migration command')
 
 console.log('G6 AccountLearnerRelation implementation contract structural self-test: PASS')
