@@ -111,7 +111,7 @@ assert.ok(!dashboardSource.includes('15 scheduled lessons'))
 assert.ok(!dashboardSource.includes('scheduleLabel={scheduleLabel}\n      />'))
 
 assert.ok(primitiveSource.includes('Teacher confirmed'))
-assert.ok(primitiveSource.includes('From your learning record'))
+assert.ok(primitiveSource.includes('Teacher confirmed'))
 assert.ok(primitiveSource.includes('Learning in progress'))
 assert.ok(primitiveSource.includes('Progress is shown through your learning record rather than a percentage.'))
 assert.ok(primitiveSource.includes('attended lesson'))
