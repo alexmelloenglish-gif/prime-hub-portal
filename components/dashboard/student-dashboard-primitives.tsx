@@ -85,7 +85,7 @@ export function DevelopmentTrajectory({ current, target }: { current?: Projectio
 export function NextActionCard({
   title,
   description,
-  evidence,
+  evidence: _evidence,
   destination,
 }: {
   title?: string | null
@@ -110,12 +110,6 @@ export function NextActionCard({
             <>
               <h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>
               {description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}
-              {evidence ? (
-                <div className="mt-4 rounded-xl border border-white/15 bg-white/10 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-200">Why this matters</p>
-                  <p className="mt-2 text-sm leading-6 text-white">{evidence}</p>
-                </div>
-              ) : null}
             </>
           ) : (
             <h3 className="mt-3 text-xl font-semibold">Your next step will appear here when it is ready.</h3>
