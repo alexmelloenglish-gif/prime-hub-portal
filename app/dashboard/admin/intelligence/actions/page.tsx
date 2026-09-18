@@ -93,7 +93,7 @@ export default async function TeacherActionsPage() {
             <div>
               <h3 className="font-semibold text-white">Historical proposal containment</h3>
               <p className="mt-1 text-sm leading-6 text-prime-cream/60">
-                {covered.length} proposal{covered.length === 1 ? '' : 's'} are covered by a later teacher decision and {unproven.length} proposal{unproven.length === 1 ? '' : 's'} are excluded because their preserved runtime basis is not sufficient for teacher-action review. They remain in the database as historical artifacts; they are not deleted or promoted.
+                {covered.length} proposal{covered.length === 1 ? ' is' : 's are'} covered by a later teacher decision and {unproven.length} proposal{unproven.length === 1 ? ' is' : 's are'} excluded because their preserved runtime basis is not sufficient for teacher-action review. They remain in the database as historical artifacts; they are not deleted or promoted.
               </p>
             </div>
           </div>
