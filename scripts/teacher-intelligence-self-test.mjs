@@ -47,7 +47,7 @@ assert.match(source.learningState, /Teacher-reviewed learning state/, 'Learning 
 assert.match(source.validation, /Teacher decisions and exceptions/, 'Validation must remain a bounded human-decision workspace')
 assert.match(source.validation, /Teacher-reviewed learners/, 'Validation must show resolved teacher-reviewed packages')
 assert.match(source.learners, /Teacher reviewed/, 'Learner directory must expose available teacher-reviewed packages')
-assert.match(source.learnerDecision, /Evidence → Signal → Interpretation → Boundary → Verification/, 'Learner decision view must preserve the evidence chain')
+assert.match(source.learnerDecision, /Evidence → Pattern → Teacher interpretation → Next check/, 'Learner decision view must preserve the evidence-to-teacher-decision chain')
 assert.match(source.decisionPackages, /gustavo-drummond-v2\.json/, 'Teacher decision package registry must include Gustavo V2')
 assert.equal(gustavoPackage.status, 'teacher_authorized')
 assert.equal(gustavoPackage.teacherDecision.currentStatePriorityPackage, 'accepted_v2_proposed_update')
