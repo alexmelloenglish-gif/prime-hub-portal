@@ -265,14 +265,14 @@ The absence of a matching authenticated User row is not repaired by email equali
 
 ```
 prisma/schema.prisma
-prisma/migrations/20260918073000_add_account_learner_relation/migration.sql
+prisma/migrations/20260918100000_add_account_learner_relation/migration.sql
 lib/account-learner-relation.ts
 lib/learner-account-resolution.ts
 scripts/g6-account-learner-relation-self-test.mjs
 package.json
 ```
 
-The migration is present only as a branch artifact. It has not been applied by this PR.
+The migration is present only as a branch artifact. It has not been applied by this PR. Its timestamp is ordered after the latest migration already present on `main`, avoiding a newly introduced out-of-order migration name.
 
 Vercel build execution is read-only with respect to Prisma migrations: `vercel-build` runs the application build and G6 structural verification but does not run `prisma migrate deploy`. Migration deployment is exposed only as the explicit `db:migrate:deploy` command and remains outside normal Preview/Production build execution.
 

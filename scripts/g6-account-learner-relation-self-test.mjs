@@ -6,7 +6,7 @@ function assert(condition, message) {
 
 const schema = fs.readFileSync('prisma/schema.prisma', 'utf8')
 const migration = fs.readFileSync(
-  'prisma/migrations/20260918073000_add_account_learner_relation/migration.sql',
+  'prisma/migrations/20260918100000_add_account_learner_relation/migration.sql',
   'utf8'
 )
 const service = fs.readFileSync('lib/account-learner-relation.ts', 'utf8')
@@ -29,7 +29,13 @@ assert(service.includes("Only an administrator may create or revoke AccountLearn
 assert(service.includes("Email equality cannot be used as AccountLearnerRelation authority"), 'G6 service must reject email-equality authority')
 assert(service.includes('accountLearnerRelationEvent.create'), 'G6 mutations must preserve lifecycle provenance')
 assert(service.includes("status: ACCOUNT_LEARNER_RELATION_STATUS.REVOKED"), 'G6 revoke must be explicit')
-assert(resolver.includes("status: 'AUTHORIZED' | 'ABSENT' | 'NOT_OBSERVABLE'"), 'G6 resolver must be fail-closed')
+assert(
+  resolver.includes('export type LearnerResolutionStatus') &&
+  resolver.includes("| 'AUTHORIZED'") &&
+  resolver.includes("| 'ABSENT'") &&
+  resolver.includes("| 'NOT_OBSERVABLE'"),
+  'G6 resolver must expose AUTHORIZED / ABSENT / NOT_OBSERVABLE'
+)
 assert(!resolver.includes('canonicalEmail'), 'G6 resolver must not resolve by canonicalEmail')
 assert(!resolver.includes('studentEmail'), 'G6 resolver must not resolve by studentEmail')
 assert(!resolver.includes('guardianEmail'), 'G6 resolver must not infer guardian semantics')
