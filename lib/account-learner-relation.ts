@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client'
+import registry from '@/data/students/student-core-registry.json'
 import { getPrismaClient } from '@/lib/prisma'
 
 export const ACCOUNT_LEARNER_RELATION_STATUS = {
@@ -94,6 +95,21 @@ async function requireIdentityAuthority(
   return actor
 }
 
+function assertKnownLearner(studentId: string) {
+  const student = (registry.students as Array<{
+    studentId?: string
+    profileStatus?: string
+    operatingEligibility?: string
+  }>).find((entry) => entry.studentId === studentId)
+
+  if (!student || student.profileStatus !== 'active' || student.operatingEligibility !== 'learner') {
+    throw new AccountLearnerRelationAuthorizationError(
+      'INVALID_INPUT',
+      'studentId must identify an active operational learner'
+    )
+  }
+}
+
 function validateRelationDates(validFrom?: Date | null, validUntil?: Date | null) {
   if (validFrom && validUntil && validFrom > validUntil) {
     throw new AccountLearnerRelationAuthorizationError(
@@ -114,6 +130,7 @@ export async function authorizeAccountLearnerRelation(
   const relationType = input.relationType
   const authorizedAt = input.authorizedAt ?? new Date()
 
+  assertKnownLearner(studentId)
   validateRelationDates(input.validFrom, input.validUntil)
 
   if (
