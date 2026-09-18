@@ -85,7 +85,6 @@ export function DevelopmentTrajectory({ current, target }: { current?: Projectio
 export function NextActionCard({
   title,
   description,
-  evidence: _evidence,
   destination,
 }: {
   title?: string | null
