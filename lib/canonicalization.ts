@@ -310,13 +310,36 @@ async function assertTeacherDecision(
         eventType: 'PublicationReviewApproved',
         aggregateId: task.id,
       },
-      select: { id: true },
+      select: { id: true, payload: true },
     })
 
     if (!publicationApproval) {
       throw new CanonicalizationError(
         'AUTHORITY_NOT_APPROVED',
         'ReviewTask does not have a persisted PublicationReviewApproved authority event',
+      )
+    }
+
+    const approvalPayload =
+      publicationApproval.payload &&
+      typeof publicationApproval.payload === 'object' &&
+      !Array.isArray(publicationApproval.payload)
+        ? publicationApproval.payload as Record<string, Prisma.JsonValue>
+        : {}
+
+    const approvedPayloadHash =
+      typeof approvalPayload.canonicalAuthorityPayloadHash === 'string'
+        ? approvalPayload.canonicalAuthorityPayloadHash
+        : null
+
+    const expectedPayloadHash = canonicalAuthorityDraftHash(
+      canonicalAuthorityDraftFromCommand(input),
+    )
+
+    if (!approvedPayloadHash || approvedPayloadHash !== expectedPayloadHash) {
+      throw new CanonicalizationError(
+        'AUTHORITY_NOT_APPROVED',
+        'PublicationReviewApproved does not bind this exact canonical authority payload',
       )
     }
 
