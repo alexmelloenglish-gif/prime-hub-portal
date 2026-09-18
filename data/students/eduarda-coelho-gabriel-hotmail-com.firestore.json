@@ -21,38 +21,110 @@
   "focus": "Improve school performance in English and English-medium Geography through complete responses and progressively less teacher support.",
   "objective": "Support current school demands in English and Geography taught in English while increasing complete, increasingly independent responses.",
   "attendanceRate": "7 documented lessons",
-  "attendanceLabel": "Seven lessons have pedagogical content documented in the canonical portfolio and are projected in the learner dashboard.",
+  "attendanceLabel": "Seven attended lessons are included in Eduarda's learning history.",
   "manageSpace": [
-    {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit","description":"Open Eduarda's canonical longitudinal learning portfolio.","icon":"folder-open"},
-    {"id":"calendar","title":"Book My Next Support Lesson","href":"https://calendar.app.google/p85dYVaZomqCuPyj6","description":"Open the official PRIME booking link for Eduarda's on-demand school-support lessons.","icon":"calendar"},
-    {"id":"support","title":"Prime Support","href":"https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+o+atendimento%2C+pode+me+ajudar%3F&type=phone_number&app_absent=0","description":"Get help with links, platform questions or class logistics.","icon":"headphones"}
+    {
+      "id": "portfolio",
+      "title": "My Portfolio",
+      "href": "https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit",
+      "description": "Open Eduarda's learning portfolio.",
+      "icon": "folder-open"
+    },
+    {
+      "id": "calendar",
+      "title": "Book My Next Support Lesson",
+      "href": "https://calendar.app.google/p85dYVaZomqCuPyj6",
+      "description": "Book Eduarda's next school-support lesson.",
+      "icon": "calendar"
+    },
+    {
+      "id": "support",
+      "title": "Prime Support",
+      "href": "https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+o+atendimento%2C+pode+me+ajudar%3F&type=phone_number&app_absent=0",
+      "description": "Get help with access, links or class logistics.",
+      "icon": "headphones"
+    }
   ],
   "portfolioNavigation": [
-    {"id":"nav-attendance","title":"Attendance Overview","href":"#attendance-overview"},
-    {"id":"nav-progress","title":"Progress Tracker","href":"#progress-tracker"},
-    {"id":"nav-vocabulary","title":"Vocabulary Bank","href":"#vocabulary-bank"},
-    {"id":"nav-grammar","title":"Grammar Overview","href":"#grammar-overview"},
-    {"id":"nav-feedback","title":"Teacher Feedback","href":"#teacher-feedback"}
+    {
+      "id": "nav-attendance",
+      "title": "Attendance Overview",
+      "href": "#attendance-overview"
+    },
+    {
+      "id": "nav-progress",
+      "title": "Progress Tracker",
+      "href": "#progress-tracker"
+    },
+    {
+      "id": "nav-vocabulary",
+      "title": "Vocabulary Bank",
+      "href": "#vocabulary-bank"
+    },
+    {
+      "id": "nav-grammar",
+      "title": "Grammar Overview",
+      "href": "#grammar-overview"
+    },
+    {
+      "id": "nav-feedback",
+      "title": "Teacher Feedback",
+      "href": "#teacher-feedback"
+    }
   ],
   "canonicalProjection": {
     "version": "student-dashboard-v1.0",
     "currentState": {
-      "level": {"value":"CEFR A1","qualifier":"Teacher-corrected in Eduarda's canonical portfolio. The dashboard must not infer advancement from lesson count alone.","status":"teacher-validated"},
-      "targetLevel": {"value":"CEFR A2","qualifier":"Teacher-corrected target in Eduarda's canonical portfolio; this is a target, not a result.","status":"teacher-validated"},
-      "objective": {"value":"Improve school performance in English and English-medium Geography while building more complete and increasingly independent responses.","qualifier":"Grounded in Eduarda's corrected portfolio and the July–August school-support evidence set.","status":"teacher-validated"},
-      "focus": {"value":"Complete English responses about school content with progressively less dependence on models and teacher prompts.","qualifier":"Grounded in written-response difficulty, Geography work and guided modal/reading practice across the documented lessons.","status":"portfolio-confirmed"}
+      "level": {
+        "value": "CEFR A1",
+        "qualifier": "Your teacher has confirmed this as your current working level.",
+        "status": "teacher-validated"
+      },
+      "targetLevel": {
+        "value": "CEFR A2",
+        "qualifier": "This is the level you are working toward.",
+        "status": "teacher-validated"
+      },
+      "objective": {
+        "value": "Improve school performance in English and English-medium Geography while building more complete and increasingly independent responses.",
+        "qualifier": "This reflects your current school-support goals.",
+        "status": "teacher-validated"
+      },
+      "focus": {
+        "value": "Complete English responses about school content with progressively less dependence on models and teacher prompts.",
+        "qualifier": "Recent lessons show that complete responses with less support are the main priority.",
+        "status": "portfolio-confirmed"
+      }
     },
     "whatChanged": {
-      "title": "Teacher correction and longitudinal evidence are now reconciled",
-      "summary": "Eduarda's projection now preserves the teacher-corrected CEFR A1 current level, CEFR A2 target and seven lessons with documented pedagogical content.",
-      "changeType": "learner-model",
-      "evidence": "Teacher-corrected canonical portfolio plus seven documented lessons from 2 July through 20 August 2026.",
+      "title": "Complete written responses became a clearer priority",
+      "summary": "Since the Geography lesson on 17 August, producing complete answers in English has become a clearer focus, especially when explaining school content in Eduarda's own words.",
+      "changeType": "learning-priority",
+      "evidence": "The 17 August lesson identified written Geography responses as a difficulty, and the 19–20 August lessons continued to require guided production.",
       "status": "teacher-validated"
     },
     "priorities": [
-      {"id":"priority-complete-responses","title":"Build complete English responses with less support","why":"Eduarda's main documented need is moving from guided or modelled answers toward her own complete responses.","evidence":"Written-response difficulty reported on 17 August and guided production across the 19–20 August English lessons.","status":"portfolio-confirmed"},
-      {"id":"priority-modals","title":"Use can/can't and should/shouldn't with meaning","why":"The forms have been practiced, but independent selection and construction still need to be checked.","evidence":"Guided modal practice on 19 and 20 August with continued prompting and reformulation.","status":"portfolio-confirmed"},
-      {"id":"priority-geography","title":"Explain Geography concepts in English","why":"Recognizing vocabulary is not enough; the next step is explaining economic sectors and water-cycle concepts in complete sentences.","evidence":"July economic-sector work plus the 17–18 August Geography lessons.","status":"portfolio-confirmed"}
+      {
+        "id": "priority-complete-responses",
+        "title": "Build complete English responses with less support",
+        "why": "Eduarda's main documented need is moving from guided or modelled answers toward her own complete responses.",
+        "evidence": "Written-response difficulty reported on 17 August and guided production across the 19–20 August English lessons.",
+        "status": "portfolio-confirmed"
+      },
+      {
+        "id": "priority-modals",
+        "title": "Use can/can't and should/shouldn't with meaning",
+        "why": "The forms have been practiced, but independent selection and construction still need to be checked.",
+        "evidence": "Guided modal practice on 19 and 20 August with continued prompting and reformulation.",
+        "status": "portfolio-confirmed"
+      },
+      {
+        "id": "priority-geography",
+        "title": "Explain Geography concepts in English",
+        "why": "Recognizing vocabulary is not enough; the next step is explaining economic sectors and water-cycle concepts in complete sentences.",
+        "evidence": "July economic-sector work plus the 17–18 August Geography lessons.",
+        "status": "portfolio-confirmed"
+      }
     ],
     "nextAction": {
       "id": "next-six-question-independence-check",
@@ -60,69 +132,419 @@
       "destination": "https://calendar.app.google/p85dYVaZomqCuPyj6",
       "outcome": "Observe what Eduarda can answer independently before adding models or prompts.",
       "title": "Six-question independence check",
-      "description": "At the next confirmed support lesson, begin with six short questions: two about abilities, two about advice and two about Geography. Start without a model, add support only when necessary, and compare the versions to track autonomy.",
-      "evidence": "This follow-up is explicitly recommended by the longitudinal July–August evidence set and remains unexecuted until a new lesson provides evidence.",
+      "description": "In your next support lesson, you’ll answer six short questions: two about abilities, two about advice and two about Geography. Try them on your own first; your teacher will add support only when needed.",
+      "evidence": "Recent lessons show that complete responses, modal choice and Geography explanations still need to be checked with less support.",
       "status": "qualified"
     },
-    "schedule": {"status":"not-scheduled","label":"School support is episodic and on demand. No future lesson is currently confirmed; use the official PRIME booking link when support is needed."}
+    "schedule": {
+      "status": "not-scheduled",
+      "label": "Support lessons are booked when needed. No future lesson is currently confirmed."
+    }
   },
   "progressTracker": [
-    {"id":"complete-responses","title":"Complete Responses","status":"Needs Focus","insight":"Return to student-authored production; August tasks frequently required teacher support or models.","accent":"yellow"},
-    {"id":"modals","title":"Modals in Context","status":"Needs Focus","insight":"Can and should were practiced with models; independent choice and construction still need verification.","accent":"yellow"},
-    {"id":"geography","title":"Geography in English","status":"Needs Focus","insight":"Continue explaining concepts in complete sentences, not only recognizing key terms.","accent":"yellow"},
-    {"id":"independent-listening","title":"Independent Listening","status":"Not Assessed","insight":"Not enough evidence is available to assess independent listening.","accent":"blue"},
-    {"id":"independent-task-performance","title":"Independent Task Performance","status":"Not Assessed","insight":"Not enough evidence is available to assess independent school-task performance.","accent":"blue"}
+    {
+      "id": "complete-responses",
+      "title": "Complete Responses",
+      "status": "Needs Focus",
+      "insight": "Return to student-authored production; August tasks frequently required teacher support or models.",
+      "accent": "yellow"
+    },
+    {
+      "id": "modals",
+      "title": "Modals in Context",
+      "status": "Needs Focus",
+      "insight": "Can and should were practiced with models; independent choice and construction still need verification.",
+      "accent": "yellow"
+    },
+    {
+      "id": "geography",
+      "title": "Geography in English",
+      "status": "Needs Focus",
+      "insight": "Continue explaining concepts in complete sentences, not only recognizing key terms.",
+      "accent": "yellow"
+    },
+    {
+      "id": "independent-listening",
+      "title": "Independent Listening",
+      "status": "Not Assessed",
+      "insight": "Not enough evidence is available to assess independent listening.",
+      "accent": "blue"
+    },
+    {
+      "id": "independent-task-performance",
+      "title": "Independent Task Performance",
+      "status": "Not Assessed",
+      "insight": "Not enough evidence is available to assess independent school-task performance.",
+      "accent": "blue"
+    }
   ],
   "attendanceOverview": [
-    {"id":"class-2026-07-02","lessonId":"eduarda-2026-07-02","date":"July 2, 2026","status":"present","title":"English: routines and advice","summary":"Present Simple, do/does, frequency and should/shouldn't were practiced; independent mastery was not measured."},
-    {"id":"class-2026-07-06","lessonId":"eduarda-2026-07-06","date":"July 6, 2026","status":"present","title":"Geography: economic activities","summary":"Economic sectors and production-chain concepts were worked on; retention was not independently assessed."},
-    {"id":"class-2026-07-08","lessonId":"eduarda-2026-07-08","date":"July 8, 2026","status":"present","title":"Geography: sectors and environment","summary":"Economic-sector content was revisited in English; continuity of content is not presented as measured progress."},
-    {"id":"class-2026-08-17","lessonId":"eduarda-2026-08-17","date":"August 17, 2026","status":"present","title":"Geography and written responses","summary":"Eduarda reported difficulty with written Geography responses; complete answers became a priority. No school grade is inferred."},
-    {"id":"class-2026-08-18","lessonId":"eduarda-2026-08-18","date":"August 18, 2026","status":"present","title":"Geography: water cycle","summary":"Guided review of water-cycle terms and concepts; independent conceptual mastery was not established."},
-    {"id":"class-2026-08-19","lessonId":"eduarda-2026-08-19","date":"August 19, 2026","status":"present","title":"English: modals and frequency","summary":"Short production with can/can't, should/shouldn't and adverbs of frequency in guided practice; independence still needs verification."},
-    {"id":"class-2026-08-20","lessonId":"eduarda-2026-08-20","date":"August 20, 2026","status":"present","title":"English: exam review and reading","summary":"Reading and exam review with continued teacher support; no independent-mastery claim is made."}
+    {
+      "id": "class-2026-07-02",
+      "lessonId": "eduarda-2026-07-02",
+      "date": "July 2, 2026",
+      "status": "present",
+      "title": "English: routines and advice",
+      "summary": "Present Simple, do/does, frequency and should/shouldn't were practiced; independent mastery was not measured."
+    },
+    {
+      "id": "class-2026-07-06",
+      "lessonId": "eduarda-2026-07-06",
+      "date": "July 6, 2026",
+      "status": "present",
+      "title": "Geography: economic activities",
+      "summary": "Economic sectors and production-chain concepts were worked on; retention was not independently assessed."
+    },
+    {
+      "id": "class-2026-07-08",
+      "lessonId": "eduarda-2026-07-08",
+      "date": "July 8, 2026",
+      "status": "present",
+      "title": "Geography: sectors and environment",
+      "summary": "Economic-sector content was revisited in English; continuity of content is not presented as measured progress."
+    },
+    {
+      "id": "class-2026-08-17",
+      "lessonId": "eduarda-2026-08-17",
+      "date": "August 17, 2026",
+      "status": "present",
+      "title": "Geography and written responses",
+      "summary": "Eduarda reported difficulty with written Geography responses; complete answers became a priority. No school grade is inferred."
+    },
+    {
+      "id": "class-2026-08-18",
+      "lessonId": "eduarda-2026-08-18",
+      "date": "August 18, 2026",
+      "status": "present",
+      "title": "Geography: water cycle",
+      "summary": "Guided review of water-cycle terms and concepts; independent conceptual mastery was not established."
+    },
+    {
+      "id": "class-2026-08-19",
+      "lessonId": "eduarda-2026-08-19",
+      "date": "August 19, 2026",
+      "status": "present",
+      "title": "English: modals and frequency",
+      "summary": "Short production with can/can't, should/shouldn't and adverbs of frequency in guided practice; independence still needs verification."
+    },
+    {
+      "id": "class-2026-08-20",
+      "lessonId": "eduarda-2026-08-20",
+      "date": "August 20, 2026",
+      "status": "present",
+      "title": "English: exam review and reading",
+      "summary": "Reading and exam review with continued teacher support; no independent-mastery claim is made."
+    }
   ],
   "classReports": [
-    {"id":"class-report-2026-07-02","lessonId":"eduarda-2026-07-02","date":"2 July 2026","title":"Class Report — 02 Jul 2026","summary":"Practice of Present Simple, do/does, frequency and should/shouldn't focused on routines, questions and advice.","focus":["Present Simple","Do/does questions","Frequency","Advice with should"],"vocabulary":["present simple","do / does","should"],"teacherInsight":"Transfer points — Evidence: guided practice of routines, questions, frequency and advice. Boundary: independent mastery was not measured. Next verification: produce complete routine and advice responses before a model is provided.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-07-06","lessonId":"eduarda-2026-07-06","date":"6 July 2026","title":"Class Report — 06 Jul 2026","summary":"Geography work covered rural areas, primary, secondary and tertiary sectors, tourism and production chains in English.","focus":["Economic sectors","Production chain","Geography in English"],"vocabulary":["primary sector","secondary sector","tertiary sector"],"teacherInsight":"Transfer points — Evidence: economic sectors and production-chain concepts were connected to English vocabulary. Boundary: retention was not independently assessed. Next verification: classify and explain a sector or activity in Eduarda's own English sentence.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-07-08","lessonId":"eduarda-2026-07-08","date":"8 July 2026","title":"Class Report — 08 Jul 2026","summary":"Economic activities and environmental themes were revisited, reinforcing links between school content and English vocabulary.","focus":["Economic activities","Environment","Geography vocabulary"],"vocabulary":["economic activities","environment"],"teacherInsight":"Transfer points — Evidence: prior Geography content was revisited in English. Boundary: continuity of content is not measured progress. Next verification: explain one economic-activity or environment relationship in her own words.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-08-17","lessonId":"eduarda-2026-08-17","date":"17 August 2026","title":"Class Report — 17 Aug 2026","summary":"Eduarda reported that Geography was harder when written responses were required. The lesson reviewed economic sectors and made complete written answers a clearer priority.","focus":["Geography","Written responses","Economic sectors"],"vocabulary":["primary sector","industry","fish"],"teacherInsight":"Transfer points — Evidence: reported difficulty with written answers now informs the complete-response priority. Interpretation: Geography must be checked in two layers — concept and English formulation. Next verification: explain primary sector, industry and fish in her own sentences; no school grade is reconstructed.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-08-18","lessonId":"eduarda-2026-08-18","date":"18 August 2026","title":"Class Report — 18 Aug 2026","summary":"A guided Geography review focused on the water cycle and related urban-environment concepts, with reading, repetition and supported retrieval.","focus":["Water cycle","Geography in English","Guided vocabulary retrieval"],"vocabulary":["evaporation","precipitation","runoff","transpiration","percolation","sublimation"],"teacherInsight":"Transfer points — Evidence: water-cycle vocabulary was retrieved with support. Boundary: term recognition does not establish independent conceptual explanation. Next verification: explain evaporation, precipitation and runoff in simple sentences with reduced support.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-08-19","lessonId":"eduarda-2026-08-19","date":"19 August 2026","title":"Class Report — 19 Aug 2026","summary":"Review of can/can't for ability and permission, should/shouldn't for advice and adverbs of frequency included short guided oral production.","focus":["Can / can't","Should / shouldn't","Adverbs of frequency","Complete short responses"],"vocabulary":["can","can't","should","shouldn't","always","usually","never","often"],"teacherInsight":"Transfer points — Evidence: Eduarda produced a relevant sentence in guided practice and answered with modals. Boundary: frequent prompts and models mean independent selection is not yet established. Next verification: distinguish ability or permission from advice in complete student-authored sentences.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-08-20","lessonId":"eduarda-2026-08-20","date":"20 August 2026","title":"Class Report — 20 Aug 2026","summary":"Final English exam review combined can/can't, should/shouldn't, adverbs of frequency, sentence organization and reading comprehension with teacher support.","focus":["Exam review","Reading comprehension","Modals","Sentence organization"],"vocabulary":["can / can't","should / shouldn't","always","usually","never","reading comprehension"],"teacherInsight":"Transfer points — Evidence: the lesson shows continuity from 19 August across reading, modals and sentence work. Boundary: supported recovery of can or should and reading comprehension do not prove independent production. Next verification: answer short questions first without a model, then compare with a supported version.","status":"published","contentStatus":"published"}
+    {
+      "id": "class-report-2026-07-02",
+      "lessonId": "eduarda-2026-07-02",
+      "date": "2 July 2026",
+      "title": "Class Report — 02 Jul 2026",
+      "summary": "Practice of Present Simple, do/does, frequency and should/shouldn't focused on routines, questions and advice.",
+      "focus": [
+        "Present Simple",
+        "Do/does questions",
+        "Frequency",
+        "Advice with should"
+      ],
+      "vocabulary": [
+        "present simple",
+        "do / does",
+        "should"
+      ],
+      "teacherInsight": "Transfer points — Evidence: guided practice of routines, questions, frequency and advice. Boundary: independent mastery was not measured. Next verification: produce complete routine and advice responses before a model is provided.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-07-06",
+      "lessonId": "eduarda-2026-07-06",
+      "date": "6 July 2026",
+      "title": "Class Report — 06 Jul 2026",
+      "summary": "Geography work covered rural areas, primary, secondary and tertiary sectors, tourism and production chains in English.",
+      "focus": [
+        "Economic sectors",
+        "Production chain",
+        "Geography in English"
+      ],
+      "vocabulary": [
+        "primary sector",
+        "secondary sector",
+        "tertiary sector"
+      ],
+      "teacherInsight": "Transfer points — Evidence: economic sectors and production-chain concepts were connected to English vocabulary. Boundary: retention was not independently assessed. Next verification: classify and explain a sector or activity in Eduarda's own English sentence.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-07-08",
+      "lessonId": "eduarda-2026-07-08",
+      "date": "8 July 2026",
+      "title": "Class Report — 08 Jul 2026",
+      "summary": "Economic activities and environmental themes were revisited, reinforcing links between school content and English vocabulary.",
+      "focus": [
+        "Economic activities",
+        "Environment",
+        "Geography vocabulary"
+      ],
+      "vocabulary": [
+        "economic activities",
+        "environment"
+      ],
+      "teacherInsight": "Transfer points — Evidence: prior Geography content was revisited in English. Boundary: continuity of content is not measured progress. Next verification: explain one economic-activity or environment relationship in her own words.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-08-17",
+      "lessonId": "eduarda-2026-08-17",
+      "date": "17 August 2026",
+      "title": "Class Report — 17 Aug 2026",
+      "summary": "Eduarda reported that Geography was harder when written responses were required. The lesson reviewed economic sectors and made complete written answers a clearer priority.",
+      "focus": [
+        "Geography",
+        "Written responses",
+        "Economic sectors"
+      ],
+      "vocabulary": [
+        "primary sector",
+        "industry",
+        "fish"
+      ],
+      "teacherInsight": "Transfer points — Evidence: reported difficulty with written answers now informs the complete-response priority. Interpretation: Geography must be checked in two layers — concept and English formulation. Next verification: explain primary sector, industry and fish in her own sentences; no school grade is reconstructed.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-08-18",
+      "lessonId": "eduarda-2026-08-18",
+      "date": "18 August 2026",
+      "title": "Class Report — 18 Aug 2026",
+      "summary": "A guided Geography review focused on the water cycle and related urban-environment concepts, with reading, repetition and supported retrieval.",
+      "focus": [
+        "Water cycle",
+        "Geography in English",
+        "Guided vocabulary retrieval"
+      ],
+      "vocabulary": [
+        "evaporation",
+        "precipitation",
+        "runoff",
+        "transpiration",
+        "percolation",
+        "sublimation"
+      ],
+      "teacherInsight": "Transfer points — Evidence: water-cycle vocabulary was retrieved with support. Boundary: term recognition does not establish independent conceptual explanation. Next verification: explain evaporation, precipitation and runoff in simple sentences with reduced support.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-08-19",
+      "lessonId": "eduarda-2026-08-19",
+      "date": "19 August 2026",
+      "title": "Class Report — 19 Aug 2026",
+      "summary": "Review of can/can't for ability and permission, should/shouldn't for advice and adverbs of frequency included short guided oral production.",
+      "focus": [
+        "Can / can't",
+        "Should / shouldn't",
+        "Adverbs of frequency",
+        "Complete short responses"
+      ],
+      "vocabulary": [
+        "can",
+        "can't",
+        "should",
+        "shouldn't",
+        "always",
+        "usually",
+        "never",
+        "often"
+      ],
+      "teacherInsight": "Transfer points — Evidence: Eduarda produced a relevant sentence in guided practice and answered with modals. Boundary: frequent prompts and models mean independent selection is not yet established. Next verification: distinguish ability or permission from advice in complete student-authored sentences.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-08-20",
+      "lessonId": "eduarda-2026-08-20",
+      "date": "20 August 2026",
+      "title": "Class Report — 20 Aug 2026",
+      "summary": "Final English exam review combined can/can't, should/shouldn't, adverbs of frequency, sentence organization and reading comprehension with teacher support.",
+      "focus": [
+        "Exam review",
+        "Reading comprehension",
+        "Modals",
+        "Sentence organization"
+      ],
+      "vocabulary": [
+        "can / can't",
+        "should / shouldn't",
+        "always",
+        "usually",
+        "never",
+        "reading comprehension"
+      ],
+      "teacherInsight": "Transfer points — Evidence: the lesson shows continuity from 19 August across reading, modals and sentence work. Boundary: supported recovery of can or should and reading comprehension do not prove independent production. Next verification: answer short questions first without a model, then compare with a supported version.",
+      "status": "published",
+      "contentStatus": "published"
+    }
   ],
   "goals": [
-    {"id":"goal-clarity","title":"Respond Clearly","description":"Produce complete English sentences about current school content with progressively less support.","status":"on-track"},
-    {"id":"goal-modals","title":"Use Modals with Meaning","description":"Distinguish can for ability or permission and should for advice, then observe choice and construction without a model.","status":"on-track"},
-    {"id":"goal-geography","title":"Explain Geography","description":"Revisit economic sectors and the water cycle while checking conceptual understanding and English production separately.","status":"on-track"}
+    {
+      "id": "goal-clarity",
+      "title": "Respond Clearly",
+      "description": "Produce complete English sentences about current school content with progressively less support.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-modals",
+      "title": "Use Modals with Meaning",
+      "description": "Distinguish can for ability or permission and should for advice, then observe choice and construction without a model.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-geography",
+      "title": "Explain Geography",
+      "description": "Revisit economic sectors and the water cycle while checking conceptual understanding and English production separately.",
+      "status": "on-track"
+    }
   ],
   "vocabularyBank": [
-    {"id":"v1","term":"primary sector","meaning":"setor primário","example":"Fishing is a primary-sector activity."},
-    {"id":"v2","term":"evaporation","meaning":"evaporação","example":"Water changes into water vapour."},
-    {"id":"v3","term":"should","meaning":"modal used for advice","example":"You should drink water."},
-    {"id":"v4","term":"often / never","meaning":"frequency adverbs","example":"I often study after school."}
+    {
+      "id": "v1",
+      "term": "primary sector",
+      "meaning": "setor primário",
+      "example": "Fishing is a primary-sector activity."
+    },
+    {
+      "id": "v2",
+      "term": "evaporation",
+      "meaning": "evaporação",
+      "example": "Water changes into water vapour."
+    },
+    {
+      "id": "v3",
+      "term": "should",
+      "meaning": "modal used for advice",
+      "example": "You should drink water."
+    },
+    {
+      "id": "v4",
+      "term": "often / never",
+      "meaning": "frequency adverbs",
+      "example": "I often study after school."
+    }
   ],
-  "grammarOverview": {"title":"Grammar & Accuracy Overview","summary":"The portfolio keeps grammar tied to school tasks and separates supported practice from independent performance.","focusPoints":["Present Simple: practiced in July for statements, negatives, questions and frequency; current independent control still needs checking.","Can / can't: practiced in August for ability and permission; verify student-authored sentences with the base verb.","Should / shouldn't: practiced in July and August for advice; verify modal choice and base-verb construction without a model."]},
-  "teacherFeedback": [
-    {"id":"feedback-general","title":"General Feedback","body":"Eduarda participates in school-support tasks and produces responses in guided practice. The follow-up considers not only the final answer but also the amount of support needed to reach it."},
-    {"id":"feedback-priority","title":"Growth Priority","body":"Increase complete student-authored responses and gradually reduce the need for teacher support."}
-  ],
-  "cumulativeImpact": {"title":"Longitudinal School-Support Record","summary":"Seven documented lessons preserve Eduarda's July–August school-support history across English and English-medium Geography. The teacher-corrected portfolio records CEFR A1 as current level and CEFR A2 as target; the lesson history does not by itself establish advancement to A2 or independent mastery.","evidence":["7 lessons with pedagogical content documented in the canonical portfolio.","Teacher-corrected current/target levels are CEFR A1 → CEFR A2.","Current priorities and next action are tied to complete responses, modals and Geography with reduced support."]},
-  "lessonRecords": [
-    {"lessonId":"eduarda-2026-07-02","studentId":"stu_e8661006824a","lessonDate":"2026-07-02","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-07-06","studentId":"stu_e8661006824a","lessonDate":"2026-07-06","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-07-08","studentId":"stu_e8661006824a","lessonDate":"2026-07-08","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-08-17","studentId":"stu_e8661006824a","lessonDate":"2026-08-17","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-08-18","studentId":"stu_e8661006824a","lessonDate":"2026-08-18","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-08-19","studentId":"stu_e8661006824a","lessonDate":"2026-08-19","temporalLayer":"MEMORY","status":"confirmed","sourceType":"canonical_portfolio"},
-    {"lessonId":"eduarda-2026-08-20","studentId":"stu_e8661006824a","lessonDate":"2026-08-20","temporalLayer":"RECENT","status":"confirmed","sourceType":"canonical_portfolio"}
-  ],
-  "identityAliases": ["Eduarda Dias Costa Coelho da Cunha Gabriel","Eduarda Dias"],
-  "studentContext": {"grade":"6th grade","school":"Colégio Notre Dame, Rio de Janeiro","schoolSupportMode":"episodic on-demand support","subjectContext":"English as a foreign language plus Geography taught in English","portfolioCoverage":"July and August 2026"},
-  "sourceProvenance": {
-    "nonProjectedRecords": [
-      {"date":"2026-07-03","sourceType":"agenda_record","classification":"source-only","reason":"An agenda encounter exists in the portfolio source, but no pedagogical content is authorized for learner projection. It is not a lesson, attendance item, class report or learning claim."}
+  "grammarOverview": {
+    "title": "Grammar & Accuracy Overview",
+    "summary": "Keep grammar connected to the school tasks you are working on, with increasing independence.",
+    "focusPoints": [
+      "Present Simple: practiced in July for statements, negatives, questions and frequency; current independent control still needs checking.",
+      "Can / can't: practiced in August for ability and permission; verify student-authored sentences with the base verb.",
+      "Should / shouldn't: practiced in July and August for advice; verify modal choice and base-verb construction without a model."
     ]
   },
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected canonical portfolio. CEFR A1 is the current teacher-validated level and CEFR A2 is the target; neither is inferred from lesson count. The learner-facing projection contains only the seven lessons with documented pedagogical evidence. Source-only provenance is retained separately and is not rendered as learner-facing learning state. Class reports use one consistent evidence → boundary → next-verification transfer-point pattern."
+  "teacherFeedback": [
+    {
+      "id": "feedback-general",
+      "title": "General Feedback",
+      "body": "Eduarda participates in school-support tasks and produces responses in guided practice. The follow-up considers not only the final answer but also the amount of support needed to reach it."
+    },
+    {
+      "id": "feedback-priority",
+      "title": "Growth Priority",
+      "body": "Increase complete student-authored responses and gradually reduce the need for teacher support."
+    }
+  ],
+  "cumulativeImpact": {
+    "title": "Longitudinal School-Support Record",
+    "summary": "Seven documented lessons preserve Eduarda's July–August school-support history across English and English-medium Geography. The teacher-corrected portfolio records CEFR A1 as current level and CEFR A2 as target; the lesson history does not by itself establish advancement to A2 or independent mastery.",
+    "evidence": [
+      "7 lessons with pedagogical content documented in the canonical portfolio.",
+      "Teacher-corrected current/target levels are CEFR A1 → CEFR A2.",
+      "Current priorities and next action are tied to complete responses, modals and Geography with reduced support."
+    ]
+  },
+  "lessonRecords": [
+    {
+      "lessonId": "eduarda-2026-07-02",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-07-02",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-07-06",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-07-06",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-07-08",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-07-08",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-08-17",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-08-17",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-08-18",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-08-18",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-08-19",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-08-19",
+      "temporalLayer": "MEMORY",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    },
+    {
+      "lessonId": "eduarda-2026-08-20",
+      "studentId": "stu_e8661006824a",
+      "lessonDate": "2026-08-20",
+      "temporalLayer": "RECENT",
+      "status": "confirmed",
+      "sourceType": "canonical_portfolio"
+    }
+  ],
+  "identityAliases": [
+    "Eduarda Dias Costa Coelho da Cunha Gabriel",
+    "Eduarda Dias"
+  ],
+  "studentContext": {
+    "grade": "6th grade",
+    "school": "Colégio Notre Dame, Rio de Janeiro",
+    "schoolSupportMode": "episodic on-demand support",
+    "subjectContext": "English as a foreign language plus Geography taught in English",
+    "portfolioCoverage": "July and August 2026"
+  },
+  "sourceProvenance": {
+    "nonProjectedRecords": [
+      {
+        "date": "2026-07-03",
+        "sourceType": "agenda_record",
+        "classification": "source-only",
+        "reason": "An agenda encounter exists in the portfolio source, but no pedagogical content is authorized for learner projection. It is not a lesson, attendance item, class report or learning claim."
+      }
+    ]
+  },
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate."
 }
