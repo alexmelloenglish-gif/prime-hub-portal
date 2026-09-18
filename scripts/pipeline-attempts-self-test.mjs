@@ -26,6 +26,8 @@ assert.match(retryRoute, /isAdminUser\(session\.user\)/, 'The targeted retry API
 assert.match(retryControl, /\/api\/admin\/pipeline\/retry/, 'The targeted retry must be visible from Teacher Intelligence')
 assert.match(roleMigration, /WHERE "email" = 'alexmello\.english@gmail\.com'/, 'The role migration must target only the authorized human account')
 assert.doesNotMatch(roleMigration, /INSERT INTO "users"/, 'The role migration must not create a hidden account')
-assert.match(auth, /if \(isDatabaseConfigured && token\.email\)/, 'Existing sessions must refresh their authorization from the database')
+assert.match(auth, /export const isRoleDatabaseConfigured = Boolean\(process\.env\.DATABASE_URL\)/, 'Role resolution must depend on the persisted user directory, not PrismaAdapter enablement')
+assert.match(auth, /if \(isRoleDatabaseConfigured && token\.email\)/, 'Existing JWT sessions must refresh their authorization from the database')
+assert.match(auth, /adapter: isDatabaseConfigured \? PrismaAdapter\(getPrismaClient\(\)\) : undefined/, 'PrismaAdapter enablement must remain separately controlled')
 
 console.log('Pipeline attempt model self-test passed.')
