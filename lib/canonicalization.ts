@@ -153,19 +153,43 @@ function validateCommand(input: CanonicalizationCommand) {
   }
 }
 
+type ResolvedReviewerIdentity = {
+  id: string
+  email: string | null
+  role: string
+}
+
+async function resolveReviewerIdentity(
+  tx: Prisma.TransactionClient,
+  reviewerRef: string,
+): Promise<ResolvedReviewerIdentity | null> {
+  const normalized = requireText(reviewerRef, 'reviewerId')
+  const byId = await tx.user.findUnique({
+    where: { id: normalized },
+    select: { id: true, email: true, role: true },
+  })
+  if (byId) return byId
+
+  if (normalized.includes('@')) {
+    return tx.user.findUnique({
+      where: { email: normalizeEmail(normalized) },
+      select: { id: true, email: true, role: true },
+    })
+  }
+
+  return null
+}
+
 async function assertAuthorizedReviewer(
   tx: Prisma.TransactionClient,
   input: CanonicalizationCommand,
-) {
-  const reviewer = await tx.user.findUnique({
-    where: { id: input.reviewerId },
-    select: { role: true },
-  })
+): Promise<ResolvedReviewerIdentity> {
+  const reviewer = await resolveReviewerIdentity(tx, input.reviewerId)
 
   if (!reviewer || !['admin', 'teacher'].includes(reviewer.role)) {
     throw new CanonicalizationError(
       'AUTHORITY_MISMATCH',
-      'Canonicalization reviewer must resolve to a persisted teacher or administrator',
+      'Canonicalization reviewer must resolve by persisted user id or email to a teacher or administrator',
     )
   }
 
@@ -175,13 +199,29 @@ async function assertAuthorizedReviewer(
       'reviewerRole does not match the persisted reviewer role',
     )
   }
+
+  return reviewer
+}
+
+async function assertSameReviewerIdentity(
+  tx: Prisma.TransactionClient,
+  persistedReviewerRef: string,
+  expectedReviewer: ResolvedReviewerIdentity,
+) {
+  const persistedReviewer = await resolveReviewerIdentity(tx, persistedReviewerRef)
+  if (!persistedReviewer || persistedReviewer.id !== expectedReviewer.id) {
+    throw new CanonicalizationError(
+      'AUTHORITY_MISMATCH',
+      'Persisted teacher decision reviewer does not match canonicalization reviewer identity',
+    )
+  }
 }
 
 async function assertTeacherDecision(
   tx: Prisma.TransactionClient,
   input: CanonicalizationCommand,
 ) {
-  await assertAuthorizedReviewer(tx, input)
+  const reviewer = await assertAuthorizedReviewer(tx, input)
   const expectedDecisionTime = parseDecisionTimestamp(input.decisionTimestamp)
 
   if (input.authoritySourceType === 'review_task') {
@@ -195,9 +235,7 @@ async function assertTeacherDecision(
     if (task.decision !== 'approved' || !task.reviewerId || !task.reviewedAt) {
       throw new CanonicalizationError('AUTHORITY_NOT_APPROVED', 'ReviewTask is not an approved human decision')
     }
-    if (task.reviewerId !== input.reviewerId) {
-      throw new CanonicalizationError('AUTHORITY_MISMATCH', 'ReviewTask reviewer does not match canonicalization input')
-    }
+    await assertSameReviewerIdentity(tx, task.reviewerId, reviewer)
     if (task.reviewedAt.getTime() !== expectedDecisionTime.getTime()) {
       throw new CanonicalizationError('AUTHORITY_MISMATCH', 'ReviewTask decision timestamp does not match canonicalization input')
     }
@@ -251,9 +289,7 @@ async function assertTeacherDecision(
       'ValidationTask is not an approved canonical-learning authority decision',
     )
   }
-  if (task.reviewerId !== input.reviewerId) {
-    throw new CanonicalizationError('AUTHORITY_MISMATCH', 'ValidationTask reviewer does not match canonicalization input')
-  }
+  await assertSameReviewerIdentity(tx, task.reviewerId, reviewer)
   if (task.reviewedAt.getTime() !== expectedDecisionTime.getTime()) {
     throw new CanonicalizationError('AUTHORITY_MISMATCH', 'ValidationTask decision timestamp does not match canonicalization input')
   }
