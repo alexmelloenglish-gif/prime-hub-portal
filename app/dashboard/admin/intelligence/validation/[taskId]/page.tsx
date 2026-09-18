@@ -3,8 +3,35 @@ import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
+import { runG2RuntimeProof } from '@/lib/g2-runtime-proof'
 
 export const dynamic = 'force-dynamic'
+
+async function executeG2RuntimeProof(formData: FormData) {
+  'use server'
+
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+  if (!session?.user || (role !== 'admin' && role !== 'teacher')) return
+
+  const taskId = String(formData.get('taskId') || '').trim()
+  if (!taskId) return
+
+  const result = await runG2RuntimeProof(taskId)
+  const params = new URLSearchParams({
+    g2Proof: 'pass',
+    recordId: result.canonicalRecordId,
+    version: String(result.canonicalVersion),
+    hash: result.canonicalHash,
+    provenanceId: result.provenanceId,
+    canonicalCount: String(result.counts.canonicalRecords),
+    provenanceCount: String(result.counts.provenanceRows),
+    replay: result.replay.idempotentReplay ? 'pass' : 'fail',
+    rollback: result.atomicity.noPartialState ? 'pass' : 'fail',
+  })
+
+  redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
+}
 
 async function decideValidation(formData: FormData) {
   'use server'
@@ -46,7 +73,13 @@ async function decideValidation(formData: FormData) {
   redirect('/dashboard/admin/intelligence/validation')
 }
 
-export default async function ValidationTaskPage({ params }: { params: Promise<{ taskId: string }> }) {
+export default async function ValidationTaskPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ taskId: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const session = await getServerSession(authOptions)
   const role = session?.user?.role
   if (!session?.user || (role !== 'admin' && role !== 'teacher')) {
@@ -54,6 +87,7 @@ export default async function ValidationTaskPage({ params }: { params: Promise<{
   }
 
   const { taskId } = await params
+  const proofParams = await searchParams
   const prisma = getPrismaClient()
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) notFound()
@@ -90,6 +124,25 @@ export default async function ValidationTaskPage({ params }: { params: Promise<{
         </section>
       ) : null}
 
+      {proofParams.g2Proof === 'pass' ? (
+        <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700">G2 runtime proof</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">PASS — atomic canonicalization + idempotency</h2>
+          <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div><dt className="font-semibold">Canonical record</dt><dd className="break-all">{String(proofParams.recordId || '')}</dd></div>
+            <div><dt className="font-semibold">Version</dt><dd>{String(proofParams.version || '')}</dd></div>
+            <div><dt className="font-semibold">Canonical hash</dt><dd className="break-all">{String(proofParams.hash || '')}</dd></div>
+            <div><dt className="font-semibold">Provenance</dt><dd className="break-all">{String(proofParams.provenanceId || '')}</dd></div>
+            <div><dt className="font-semibold">Counts</dt><dd>{String(proofParams.canonicalCount || '')} canonical / {String(proofParams.provenanceCount || '')} provenance</dd></div>
+            <div><dt className="font-semibold">Replay</dt><dd>{proofParams.replay === 'pass' ? 'PASS — same record/version/hash' : 'FAIL'}</dd></div>
+            <div><dt className="font-semibold">Controlled rollback</dt><dd>{proofParams.rollback === 'pass' ? 'PASS — no partial state' : 'FAIL'}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            This proves G2 only. No learner projection, Learning Intelligence projection, dashboard publication, or G3 canonical read-back verification was executed.
+          </p>
+        </section>
+      ) : null}
+
       {task.status === 'pending' ? (
         <form action={decideValidation} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <input type="hidden" name="taskId" value={task.id} />
@@ -107,10 +160,31 @@ export default async function ValidationTaskPage({ params }: { params: Promise<{
           </div>
         </form>
       ) : (
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="font-semibold text-slate-950">Decision: {task.status}</p>
-          {task.reason ? <p className="mt-2 text-sm text-slate-600">{task.reason}</p> : null}
-        </section>
+        <>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="font-semibold text-slate-950">Decision: {task.status}</p>
+            {task.reason ? <p className="mt-2 text-sm text-slate-600">{task.reason}</p> : null}
+          </section>
+
+          {task.type === 'canonical_learning_record_authority' &&
+          task.status === 'approved' &&
+          proofParams.g2Proof !== 'pass' ? (
+            <form action={executeG2RuntimeProof} className="rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
+              <input type="hidden" name="taskId" value={task.id} />
+              <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">G2 controlled experiment</div>
+              <h2 className="mt-1 text-xl font-bold text-slate-950">Atomic canonicalization + idempotency proof</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                This will create the single authorized canonical record for this approved payload, replay the same command to prove idempotency, verify counts remain 1/1, and force a rollback inside a separate transaction to prove no partial canonical state survives. It will not run G3 or any downstream projection.
+              </p>
+              <button
+                type="submit"
+                className="mt-4 rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-700"
+              >
+                Run G2 runtime proof
+              </button>
+            </form>
+          ) : null}
+        </>
       )}
     </main>
   )
