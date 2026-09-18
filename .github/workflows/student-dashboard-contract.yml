@@ -32,3 +32,6 @@ jobs:
 
       - name: Validate canonical data
         run: npm run canonical:validate:strict
+
+      - name: Run G6 authority infrastructure contract
+        run: npm run g6:account-learner:self-test
