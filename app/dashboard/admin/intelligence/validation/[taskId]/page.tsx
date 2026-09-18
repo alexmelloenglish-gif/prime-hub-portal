@@ -92,6 +92,14 @@ export default async function ValidationTaskPage({
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) notFound()
 
+  const existingCanonicalization =
+    task.type === 'canonical_learning_record_authority'
+      ? await prisma.canonicalizationProvenance.findFirst({
+          where: { teacherDecisionId: task.id },
+          include: { canonicalRecord: true },
+        })
+      : null
+
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <Link href="/dashboard/admin/intelligence/validation" className="text-sm font-semibold text-indigo-700 hover:underline">
@@ -143,6 +151,22 @@ export default async function ValidationTaskPage({
         </section>
       ) : null}
 
+      {existingCanonicalization && proofParams.g2Proof !== 'pass' ? (
+        <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700">G2 closed</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">Canonicalization already materialized</h2>
+          <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div><dt className="font-semibold">Canonical record</dt><dd className="break-all">{existingCanonicalization.canonicalRecordId}</dd></div>
+            <div><dt className="font-semibold">Version</dt><dd>{existingCanonicalization.canonicalVersion}</dd></div>
+            <div><dt className="font-semibold">Canonical hash</dt><dd className="break-all">{existingCanonicalization.canonicalHash}</dd></div>
+            <div><dt className="font-semibold">Provenance</dt><dd className="break-all">{existingCanonicalization.id}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            This authority decision has already produced its canonical record. The G2 experiment must not be rerun from this page. G3 remains a separate gate.
+          </p>
+        </section>
+      ) : null}
+
       {task.status === 'pending' ? (
         <form action={decideValidation} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <input type="hidden" name="taskId" value={task.id} />
@@ -168,6 +192,7 @@ export default async function ValidationTaskPage({
 
           {task.type === 'canonical_learning_record_authority' &&
           task.status === 'approved' &&
+          !existingCanonicalization &&
           proofParams.g2Proof !== 'pass' ? (
             <form action={executeG2RuntimeProof} className="rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
               <input type="hidden" name="taskId" value={task.id} />
