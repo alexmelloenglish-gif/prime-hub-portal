@@ -692,3 +692,74 @@ G3
 BLOCKED
 ```
 
+## Validation access prerequisite resolved
+
+A separate authorization-access issue prevented the documented PRIME administrator from entering the Validation workspace even though Google authentication succeeded.
+
+Root cause:
+
+```text
+JWT role refresh
+was coupled to
+AUTH_USE_DATABASE / PrismaAdapter enablement
+```
+
+and the persisted authorization directory did not yet guarantee the documented administrator identity.
+
+The fix preserves separate responsibilities:
+
+```text
+PrismaAdapter enablement
+controlled by AUTH_USE_DATABASE
+
+Authorization role refresh
+controlled by DATABASE_URL / persisted users directory
+```
+
+The persisted PRIME administrator is now guaranteed as:
+
+```text
+alexandre@primedigitalhub.com.br
+role = admin
+```
+
+Commits:
+
+```text
+eda928858921d71b97965aa2b0eb2d382f8cd151
+fix(auth): resolve roles independently from database adapter
+
+f0bde9fa9ef05d0d18b55b7aa57310b91c0c95a4
+test(auth): decouple role refresh from Prisma adapter
+
+b155109961485db51fa1630b1c430b0e2e9e9d58
+fix(auth): ensure persisted PRIME admin identity
+
+6135c3735d865aa8e41af2eca50c6d377145c182
+test(auth): protect persisted PRIME admin identity
+```
+
+The admin-identity migration touched only the `users` authorization table and explicitly did not modify:
+
+- `canonical_learning_records`;
+- `canonicalization_provenance`;
+- any ValidationTask witness;
+- any learner projection;
+- any pedagogical record.
+
+Production deployment:
+
+```text
+dpl_DMeYZQhBs5WXhucMgd8TxmPxb4Vz
+READY
+```
+
+Official aliases include:
+
+```text
+www.primedigitalhub.com.br
+primedigitalhub.com.br
+```
+
+This resolves the access prerequisite only. G2 remains open until a legitimate human authority witness is created and the runtime canonicalization experiment passes.
+
