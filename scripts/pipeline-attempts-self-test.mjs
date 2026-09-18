@@ -9,6 +9,7 @@ const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
 const retryControl = readFileSync('app/dashboard/admin/intelligence/lessons/[runId]/retry-failed-run-button.tsx', 'utf8')
 const roleMigration = readFileSync('prisma/migrations/20260828130000_promote_alex_admin/migration.sql', 'utf8')
 const auth = readFileSync('lib/auth.ts', 'utf8')
+const adminIdentityMigration = readFileSync('prisma/migrations/20260918055000_ensure_alexandre_admin_user/migration.sql', 'utf8')
 
 assert.match(schema, /pipelineRuns\s+PipelineRun\[\]/, 'Transcript must own multiple processing attempts')
 assert.match(schema, /@@unique\(\[transcriptId, attemptNumber\]\)/, 'Attempt numbers must be unique per transcript')
@@ -29,5 +30,8 @@ assert.doesNotMatch(roleMigration, /INSERT INTO "users"/, 'The role migration mu
 assert.match(auth, /export const isRoleDatabaseConfigured = Boolean\(process\.env\.DATABASE_URL\)/, 'Role resolution must depend on the persisted user directory, not PrismaAdapter enablement')
 assert.match(auth, /if \(isRoleDatabaseConfigured && token\.email\)/, 'Existing JWT sessions must refresh their authorization from the database')
 assert.match(auth, /adapter: isDatabaseConfigured \? PrismaAdapter\(getPrismaClient\(\)\) : undefined/, 'PrismaAdapter enablement must remain separately controlled')
+assert.match(adminIdentityMigration, /alexandre@primedigitalhub\.com\.br/, 'Persisted authorization directory must include the documented PRIME admin email')
+assert.match(adminIdentityMigration, /'admin'/, 'Persisted PRIME administrator must resolve with admin role')
+assert.doesNotMatch(adminIdentityMigration, /canonical_learning_records|canonicalization_provenance/, 'Admin identity migration must not touch G2 canonical data')
 
 console.log('Pipeline attempt model self-test passed.')
