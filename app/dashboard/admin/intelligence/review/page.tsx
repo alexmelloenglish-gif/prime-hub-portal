@@ -26,9 +26,9 @@ export default async function TeacherEvidenceReviewPage() {
       <div className="glass-card p-5 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/45">Review queue</p>
-            <h2 className="mt-1 text-xl font-semibold text-white">Human review across the existing runtime</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-prime-cream/60">Pipeline review tasks and Evidence Candidate review are shown together. Existing publication/identity workflow is reused; Evidence Candidate acceptance remains a review-state decision and does not silently create canonical validated Evidence.</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/45">Teacher review</p>
+            <h2 className="mt-1 text-xl font-semibold text-white">Items waiting for a human decision</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-prime-cream/60">Review access, publication and lesson evidence only when a teacher or administrator decision is actually needed.</p>
           </div>
           <IntelligenceStatusBadge label={`${totalPending} pending`} state={totalPending ? 'NEEDS_REVIEW' : 'PRESENT'} />
         </div>
@@ -37,8 +37,8 @@ export default async function TeacherEvidenceReviewPage() {
       <section aria-labelledby="pipeline-review-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Existing runtime workflow</p>
-            <h3 id="pipeline-review-heading" className="mt-1 text-lg font-semibold text-white">Pipeline review tasks</h3>
+            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">System checks</p>
+            <h3 id="pipeline-review-heading" className="mt-1 text-lg font-semibold text-white">Access and publication checks</h3>
           </div>
           <span className="text-xs text-prime-cream/45">{pipelineTasks.length} pending</span>
         </div>
@@ -48,8 +48,8 @@ export default async function TeacherEvidenceReviewPage() {
       <section aria-labelledby="evidence-review-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">AI proposals</p>
-            <h3 id="evidence-review-heading" className="mt-1 text-lg font-semibold text-white">Evidence Candidate review</h3>
+            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Lesson evidence</p>
+            <h3 id="evidence-review-heading" className="mt-1 text-lg font-semibold text-white">Evidence for teacher review</h3>
           </div>
           <span className="text-xs text-prime-cream/45">{items.length} pending</span>
         </div>
@@ -62,22 +62,22 @@ export default async function TeacherEvidenceReviewPage() {
                   <div>
                     <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">{item.category}</p>
                     <h4 className="mt-1 text-lg font-semibold text-white">{item.studentEmail}</h4>
-                    <p className="mt-1 break-all text-[11px] text-prime-cream/35">Evidence {item.id}</p>
+                    
                   </div>
-                  <IntelligenceStatusBadge label="AI proposed" state="NEEDS_REVIEW" />
+                  <IntelligenceStatusBadge label="Needs review" state="NEEDS_REVIEW" />
                 </div>
 
                 <p className="mt-4 text-sm leading-6 text-prime-cream/85">{item.observation}</p>
                 <dl className="mt-4 grid gap-3 text-xs sm:grid-cols-2">
                   <div><dt className="text-prime-cream/40">Lesson</dt><dd className="mt-1 break-all text-prime-cream/70">{item.lessonId}</dd></div>
-                  <div><dt className="text-prime-cream/40">Transcript</dt><dd className="mt-1 break-all text-prime-cream/70">{item.transcriptId}</dd></div>
+                  
                   <div><dt className="text-prime-cream/40">Source span</dt><dd className="mt-1 text-prime-cream/70">{item.sourceSpan || 'NOT PROVEN'}</dd></div>
                   <div><dt className="text-prime-cream/40">Confidence</dt><dd className="mt-1 text-prime-cream/70">{item.confidence ?? 'NOT PROVEN'}</dd></div>
-                  <div className="sm:col-span-2"><dt className="text-prime-cream/40">Evidence provenance</dt><dd className="mt-1 break-all text-prime-cream/70">{provenanceSummary(item.provenance)}</dd></div>
+                  <div className="sm:col-span-2"><dt className="text-prime-cream/40">Source</dt><dd className="mt-1 break-all text-prime-cream/70">{provenanceSummary(item.provenance)}</dd></div>
                 </dl>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Link href={`/dashboard/admin/intelligence/lessons/${item.pipelineRunId}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Open lesson trace</Link>
+                  <Link href={`/dashboard/admin/intelligence/lessons/${item.pipelineRunId}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Open lesson</Link>
                   <Link href={`/dashboard/admin/intelligence/lessons/${item.pipelineRunId}/transcript?evidence=${encodeURIComponent(item.id)}`} className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10"><ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> Source</Link>
                 </div>
 
@@ -96,7 +96,7 @@ export default async function TeacherEvidenceReviewPage() {
             ))}
           </div>
         ) : (
-          <div className="glass-card flex items-center gap-3 p-5 text-sm text-prime-cream/60"><ClipboardCheck className="h-5 w-5" aria-hidden="true" /> No Evidence Candidates currently require review.</div>
+          <div className="glass-card flex items-center gap-3 p-5 text-sm text-prime-cream/60"><ClipboardCheck className="h-5 w-5" aria-hidden="true" /> No evidence items currently require review.</div>
         )}
       </section>
     </section>
