@@ -431,3 +431,33 @@ model CanonicalizationProvenance {
   @@index([teacherDecisionId])
   @@map("canonicalization_provenance")
 }
+
+
+// G3 — Durable canonical read-back verification result.
+// A verification row is independent so FAIL can also be recorded when the
+// expected canonical record cannot be read back.
+model CanonicalLearningRecordVerification {
+  id                         String   @id @default(cuid())
+  verificationKey            String   @unique
+  expectedCanonicalRecordId  String
+  observedCanonicalRecordId  String?
+  expectedCanonicalVersion   Int
+  observedCanonicalVersion   Int?
+  expectedCanonicalHash      String
+  observedCanonicalHash      String?
+  expectedTeacherDecisionId  String
+  observedTeacherDecisionId  String?
+  expectedSourceReferences   Json
+  observedSourceReferences   Json?
+  expectedPedagogicalPayload Json
+  observedPedagogicalPayload Json?
+  fieldResults               Json
+  mismatchFields             Json
+  verificationStatus         String
+  verifiedAt                 DateTime @default(now())
+  createdAt                  DateTime @default(now())
+
+  @@index([expectedCanonicalRecordId])
+  @@index([verificationStatus])
+  @@map("canonical_learning_record_verifications")
+}

@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
 import { runG2RuntimeProof } from '@/lib/g2-runtime-proof'
+import { runG3RuntimeProof } from '@/lib/g3-runtime-proof'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,6 +29,29 @@ async function executeG2RuntimeProof(formData: FormData) {
     provenanceCount: String(result.counts.provenanceRows),
     replay: result.replay.idempotentReplay ? 'pass' : 'fail',
     rollback: result.atomicity.noPartialState ? 'pass' : 'fail',
+  })
+
+  redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
+}
+
+async function executeG3RuntimeProof(formData: FormData) {
+  'use server'
+
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+  if (!session?.user || (role !== 'admin' && role !== 'teacher')) return
+
+  const taskId = String(formData.get('taskId') || '').trim()
+  if (!taskId) return
+
+  const result = await runG3RuntimeProof(taskId)
+  const params = new URLSearchParams({
+    g3Proof: result.status === 'PASS' ? 'pass' : 'fail',
+    g3VerificationId: result.verificationId,
+    g3RecordId: result.canonicalRecordId,
+    g3Version: String(result.canonicalVersion),
+    g3Hash: result.canonicalHash,
+    g3Mismatches: result.mismatchFields.join(','),
   })
 
   redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
@@ -132,6 +156,25 @@ export default async function ValidationTaskPage({
         </section>
       ) : null}
 
+      {proofParams.g3Proof ? (
+        <section className={proofParams.g3Proof === 'pass' ? 'rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm' : 'rounded-2xl border border-rose-300 bg-rose-50 p-6 shadow-sm'}>
+          <div className="text-xs font-semibold uppercase tracking-wide">G3 runtime proof</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">
+            {proofParams.g3Proof === 'pass' ? 'PASS — canonical read-back verified' : 'FAIL — canonical read-back mismatch'}
+          </h2>
+          <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div><dt className="font-semibold">Canonical record</dt><dd className="break-all">{String(proofParams.g3RecordId || '')}</dd></div>
+            <div><dt className="font-semibold">Version</dt><dd>{String(proofParams.g3Version || '')}</dd></div>
+            <div><dt className="font-semibold">Canonical hash</dt><dd className="break-all">{String(proofParams.g3Hash || '')}</dd></div>
+            <div><dt className="font-semibold">Verification</dt><dd className="break-all">{String(proofParams.g3VerificationId || '')}</dd></div>
+            <div><dt className="font-semibold">Mismatches</dt><dd>{String(proofParams.g3Mismatches || 'none')}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            G3 proves read-back only. No canonicalization replay and no Class Report, Learning Intelligence, Dashboard, or Portfolio projection is executed by this proof.
+          </p>
+        </section>
+      ) : null}
+
       {proofParams.g2Proof === 'pass' ? (
         <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
           <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700">G2 runtime proof</div>
@@ -162,7 +205,7 @@ export default async function ValidationTaskPage({
             <div><dt className="font-semibold">Provenance</dt><dd className="break-all">{existingCanonicalization.id}</dd></div>
           </dl>
           <p className="mt-4 text-sm leading-6 text-slate-600">
-            This authority decision has already produced its canonical record. The G2 experiment must not be rerun from this page. G3 remains a separate gate.
+            This authority decision has already produced its canonical record. The G2 experiment must not be rerun from this page. G3 is now a separate read-back verification gate.
           </p>
         </section>
       ) : null}
@@ -208,6 +251,22 @@ export default async function ValidationTaskPage({
                 Run G2 runtime proof
               </button>
             </form>
+          {task.type === 'canonical_learning_record_authority' &&
+          task.status === 'approved' &&
+          existingCanonicalization &&
+          proofParams.g3Proof !== 'pass' ? (
+            <form action={executeG3RuntimeProof} className="rounded-2xl border border-indigo-300 bg-indigo-50 p-6 shadow-sm">
+              <input type="hidden" name="taskId" value={task.id} />
+              <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">G3 read-back verification</div>
+              <h2 className="mt-1 text-xl font-bold text-slate-950">Canonical persistence identity proof</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                This proof reads the existing Canonical Learning Record from Neon, compares its record ID, version, hash, teacher decision, source references and pedagogical payload against the preserved G2 write result and authority payload, and persists PASS or FAIL. It does not canonicalize, replay G2, or invoke any downstream projection.
+              </p>
+              <button type="submit" className="mt-4 rounded-xl bg-[#263c86] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1e2f6b]">
+                Run G3 read-back verification
+              </button>
+            </form>
+          ) : null}
           ) : null}
         </>
       )}
