@@ -1,11 +1,27 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { AlertTriangle, CheckCircle2, Clock3, ShieldCheck } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
+import { prepareCanonicalAuthorityValidationTask } from '@/lib/canonical-authority-review'
 import { listTeacherDecisionPackages } from '@/lib/teacher-decision-packages'
 
 export const dynamic = 'force-dynamic'
+
+async function prepareCanonicalAuthorityReview(formData: FormData) {
+  'use server'
+
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+  if (!session?.user || (role !== 'admin' && role !== 'teacher')) return
+
+  const packageId = String(formData.get('packageId') || '').trim()
+  if (!packageId) return
+
+  const task = await prepareCanonicalAuthorityValidationTask(packageId)
+  redirect(`/dashboard/admin/intelligence/validation/${task.id}`)
+}
 
 export default async function TeacherValidationPage() {
   const session = await getServerSession(authOptions)
@@ -22,7 +38,7 @@ export default async function TeacherValidationPage() {
 
   const prisma = getPrismaClient()
   const teacherPackages = listTeacherDecisionPackages()
-  const [pendingRaw, recentResolvedRaw] = await Promise.all([
+  const [pendingRaw, recentResolvedRaw, canonicalAuthorityTasks] = await Promise.all([
     prisma.validationTask.findMany({
       where: { status: 'pending' },
       orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
@@ -33,9 +49,19 @@ export default async function TeacherValidationPage() {
       orderBy: { updatedAt: 'desc' },
       take: 25,
     }),
+    prisma.validationTask.findMany({
+      where: {
+        type: 'canonical_learning_record_authority',
+        entityType: 'TeacherDecisionPackage',
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
   ])
   const pending = pendingRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
   const recentResolved = recentResolvedRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
+  const canonicalTaskByPackageId = new Map(
+    canonicalAuthorityTasks.map((task) => [task.entityId, task]),
+  )
 
   return (
     <main className="mx-auto max-w-6xl space-y-8 p-6">
@@ -85,12 +111,32 @@ export default async function TeacherValidationPage() {
                     <p className="mt-1 text-sm text-slate-600">Current learning focus and next action reviewed; CEFR level unchanged.</p>
                     <div className="mt-2 text-xs text-slate-500">{pkg.teacher.name} · {pkg.decisionDate} · {pkg.sourceLessons.length} reviewed lessons</div>
                   </div>
-                  <Link
-                    href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentId)}`}
-                    className="inline-flex shrink-0 items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
-                  >
-                    Open learning package
-                  </Link>
+                  <div className="flex shrink-0 flex-wrap gap-2">
+                    <Link
+                      href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentId)}`}
+                      className="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+                    >
+                      Open learning package
+                    </Link>
+                    {canonicalTaskByPackageId.get(pkg.packageId) ? (
+                      <Link
+                        href={`/dashboard/admin/intelligence/validation/${canonicalTaskByPackageId.get(pkg.packageId)!.id}`}
+                        className="inline-flex items-center justify-center rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800 hover:bg-indigo-100"
+                      >
+                        Open canonical review
+                      </Link>
+                    ) : (
+                      <form action={prepareCanonicalAuthorityReview}>
+                        <input type="hidden" name="packageId" value={pkg.packageId} />
+                        <button
+                          type="submit"
+                          className="inline-flex items-center justify-center rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800 hover:bg-indigo-100"
+                        >
+                          Prepare canonical authority review
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
