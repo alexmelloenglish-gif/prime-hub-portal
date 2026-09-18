@@ -170,7 +170,7 @@ export function VocabularyReuseGrid({
               {locked.length ? (
                 <div className="mt-4 space-y-2">
                   <p className={`text-[10px] font-semibold uppercase tracking-[0.16em] ${isDark ? 'text-emerald-200/70' : 'text-emerald-700'}`}>
-                    Your locked sentences
+                    Your saved sentences
                   </p>
                   {locked.map((entry) => (
                     <div key={entry.id} className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 text-sm leading-6 ${lockedClass}`}>
@@ -198,7 +198,7 @@ export function VocabularyReuseGrid({
                 />
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <p className={`text-[11px] ${isDark ? 'text-prime-cream/45' : 'text-slate-400'}`}>
-                    Once locked, it becomes part of your learning memory.
+                    Save it when you are happy with your sentence.
                   </p>
                   <button
                     type="button"
@@ -207,7 +207,7 @@ export function VocabularyReuseGrid({
                     className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-45 ${isDark ? 'bg-white text-[#0a235c] hover:bg-prime-cream' : 'bg-[#0a235c] text-white hover:bg-[#123a78]'}`}
                   >
                     {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LockKeyhole className="h-3.5 w-3.5" />}
-                    Lock my sentence
+                    Save my sentence
                   </button>
                 </div>
                 {errors[key] ? <p className="mt-2 text-xs font-medium text-red-500">{errors[key]}</p> : null}
