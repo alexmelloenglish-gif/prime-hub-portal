@@ -78,7 +78,8 @@ async function executeG4RuntimeProof(formData: FormData) {
     g4Version: String(result.canonicalVersion),
     g4Hash: result.canonicalHash,
     g4Status: result.projectionStatus,
-    g4Replay: result.idempotentReplay ? 'pass' : 'first-write',
+    g4Replay: result.idempotentReplay ? 'pass' : 'fail',
+    g4ProjectionCount: String(result.proofProjectionCount),
     g4Mismatches: result.mismatchFields.join(','),
   })
 
@@ -248,7 +249,8 @@ export default async function ValidationTaskPage({
             <div><dt className="font-semibold">Canonical version</dt><dd>{String(proofParams.g4Version || '')}</dd></div>
             <div><dt className="font-semibold">Canonical hash</dt><dd className="break-all">{String(proofParams.g4Hash || '')}</dd></div>
             <div><dt className="font-semibold">Projection status</dt><dd>{String(proofParams.g4Status || '')}</dd></div>
-            <div><dt className="font-semibold">Replay</dt><dd>{String(proofParams.g4Replay || '')}</dd></div>
+            <div><dt className="font-semibold">Replay</dt><dd>{proofParams.g4Replay === 'pass' ? 'PASS — same projection ID/key/hash' : 'FAIL'}</dd></div>
+            <div><dt className="font-semibold">Projection count</dt><dd>{String(proofParams.g4ProjectionCount || '')}</dd></div>
             <div><dt className="font-semibold">Mismatches</dt><dd>{String(proofParams.g4Mismatches || 'none')}</dd></div>
           </dl>
           <p className="mt-4 text-sm leading-6 text-slate-600">
@@ -379,7 +381,7 @@ export default async function ValidationTaskPage({
               <div className="text-xs font-semibold uppercase tracking-wide text-emerald-700">G4 first independent projection</div>
               <h2 className="mt-1 text-xl font-bold text-slate-950">Direct Canonical Learning Record → Portfolio projection</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                This proof reads the already-verified Canonical Learning Record, creates one additive Canonical Portfolio Projection, reads that projection back, and persists VERIFIED or FAILED. It does not write the legacy PortfolioProjection, ClassReportProjection, Learning Intelligence, dashboard snapshots, Firestore, or repository snapshots.
+                This proof reads the already-verified Canonical Learning Record, creates one additive Canonical Portfolio Projection, replays the exact same command to prove idempotency and a persisted count of one, reads the projection back, and persists VERIFIED or FAILED. It does not write the legacy PortfolioProjection, ClassReportProjection, Learning Intelligence, dashboard snapshots, Firestore, or repository snapshots.
               </p>
               <button type="submit" className="mt-4 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800">
                 Run G4 independent portfolio projection

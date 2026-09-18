@@ -22,6 +22,9 @@ type PersistedCanonicalRecord = {
   lessonId: string | null
   scopeType: string
   scopeKey: string
+  sourceReferences: Prisma.JsonValue
+  teacherDecisionId: string
+  authorityScope: string
   pedagogicalPayload: Prisma.JsonValue
 }
 
@@ -78,6 +81,11 @@ function buildProjectionKey(record: PersistedCanonicalRecord) {
     projectionVersion: CANONICAL_PORTFOLIO_PROJECTION_VERSION,
     targetType: CANONICAL_PORTFOLIO_PROJECTION_TARGET,
   })
+}
+
+function teacherDecisionPackageIdFromScopeKey(scopeKey: string) {
+  const prefix = 'teacher-decision-package:'
+  return scopeKey.startsWith(prefix) ? scopeKey.slice(prefix.length) : null
 }
 
 function buildPayload(record: PersistedCanonicalRecord): CanonicalPortfolioProjectionPayload {
@@ -184,6 +192,9 @@ export async function projectCanonicalPortfolio(input: {
       lessonId: true,
       scopeType: true,
       scopeKey: true,
+      sourceReferences: true,
+      teacherDecisionId: true,
+      authorityScope: true,
       pedagogicalPayload: true,
     },
   })
@@ -193,12 +204,28 @@ export async function projectCanonicalPortfolio(input: {
   }
 
   const projection = buildPayload(record)
+  const authorityTask = await prisma.validationTask.findUnique({
+    where: { id: record.teacherDecisionId },
+    select: { id: true, entityType: true, entityId: true },
+  })
+  const teacherDecisionPackageId =
+    authorityTask?.entityType === 'TeacherDecisionPackage'
+      ? authorityTask.entityId
+      : teacherDecisionPackageIdFromScopeKey(record.scopeKey)
   const sourceReferences = [
     {
       sourceType: 'CanonicalLearningRecord',
       sourceRef: record.canonicalRecordId,
       canonicalVersion: record.canonicalVersion,
       canonicalHash: record.canonicalHash,
+      originalSourceReferences: record.sourceReferences,
+      teacherDecisionId: record.teacherDecisionId,
+      validationTaskId: authorityTask?.id ?? null,
+      teacherDecisionPackageId,
+      authorityScope: record.authorityScope,
+      g3VerificationId: g3.id,
+      legacySourceId: null,
+      unresolvedBoundary: ['legacy_identity_not_inferred_from_canonical_projection'],
     },
   ]
   const projectionHash = hashProjectionEnvelope({
@@ -207,6 +234,7 @@ export async function projectCanonicalPortfolio(input: {
     canonicalHash: record.canonicalHash,
     projectionVersion: CANONICAL_PORTFOLIO_PROJECTION_VERSION,
     targetType: CANONICAL_PORTFOLIO_PROJECTION_TARGET,
+    sourceReferences,
     projection,
   })
   const projectionKey = buildProjectionKey(record)

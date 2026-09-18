@@ -1,5 +1,9 @@
 import { CanonicalizationError } from '@/lib/canonicalization'
-import { projectCanonicalPortfolio } from '@/lib/canonical-portfolio-projection'
+import {
+  CANONICAL_PORTFOLIO_PROJECTION_TARGET,
+  CANONICAL_PORTFOLIO_PROJECTION_VERSION,
+  projectCanonicalPortfolio,
+} from '@/lib/canonical-portfolio-projection'
 import { getPrismaClient } from '@/lib/prisma'
 
 export async function runG4RuntimeProof(taskId: string) {
@@ -49,8 +53,41 @@ export async function runG4RuntimeProof(taskId: string) {
     )
   }
 
-  return projectCanonicalPortfolio({
+  const input = {
     canonicalRecordId: provenance.canonicalRecordId,
     requiredG3VerificationId: g3.id,
+  }
+
+  const first = await projectCanonicalPortfolio(input)
+  const replay = await projectCanonicalPortfolio(input)
+
+  const projectionCount = await prisma.canonicalLearningRecordProjection.count({
+    where: {
+      canonicalRecordId: provenance.canonicalRecordId,
+      targetType: CANONICAL_PORTFOLIO_PROJECTION_TARGET,
+      projectionVersion: CANONICAL_PORTFOLIO_PROJECTION_VERSION,
+    },
   })
+
+  const proofMismatches: string[] = []
+  if (first.projectionStatus !== 'VERIFIED') proofMismatches.push('first_projection_not_verified')
+  if (replay.projectionStatus !== 'VERIFIED') proofMismatches.push('replay_projection_not_verified')
+  if (!replay.idempotentReplay) proofMismatches.push('replay_not_idempotent')
+  if (first.projectionId !== replay.projectionId) proofMismatches.push('projectionId')
+  if (first.projectionKey !== replay.projectionKey) proofMismatches.push('projectionKey')
+  if (first.projectionHash !== replay.projectionHash) proofMismatches.push('projectionHash')
+  if (first.canonicalRecordId !== replay.canonicalRecordId) proofMismatches.push('canonicalRecordId')
+  if (first.canonicalVersion !== replay.canonicalVersion) proofMismatches.push('canonicalVersion')
+  if (first.canonicalHash !== replay.canonicalHash) proofMismatches.push('canonicalHash')
+  if (projectionCount !== 1) proofMismatches.push('projectionCount')
+
+  if (proofMismatches.length > 0) {
+    throw new Error(`G4 runtime proof failed: ${proofMismatches.join(', ')}`)
+  }
+
+  return {
+    ...replay,
+    proofProjectionCount: projectionCount,
+    firstWriteProjectionId: first.projectionId,
+  }
 }

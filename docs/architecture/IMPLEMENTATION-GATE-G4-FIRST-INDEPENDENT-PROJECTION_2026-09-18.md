@@ -1,7 +1,7 @@
 # Implementation Gate G4 — First Independent Projection
 
 **Date:** 2026-09-18  
-**Status:** IMPLEMENTATION STARTED / RUNTIME PROOF PENDING  
+**Status:** IMPLEMENTATION HARDENED / RUNTIME PROOF PENDING  
 **Gate:** G4 — First independent projection  
 **Predecessor:** G3 — CLOSED / PASS
 
@@ -36,13 +36,20 @@ It does not:
 
 ## Provenance
 
-Every projected row stores:
+Every projected row stores canonicalRecordId, canonicalVersion and canonicalHash.
 
-- canonicalRecordId
-- canonicalVersion
-- canonicalHash
+The projection sourceReferences also preserve, when resolvable from canonical authority:
 
-These are also present in sourceReferences.
+- the original CanonicalLearningRecord sourceReferences;
+- teacherDecisionId;
+- validationTaskId;
+- teacherDecisionPackageId;
+- authorityScope;
+- G3 verification id;
+- an explicit null legacySourceId;
+- unresolvedBoundary markers instead of inferred legacy identity.
+
+The projectionHash binds both the projected payload and this canonical lineage envelope.
 
 A deterministic projectionKey and projectionHash make repeated execution idempotent and make stale-source reuse detectable.
 
@@ -79,9 +86,12 @@ The proof requires:
 2. existing G2 canonicalization provenance;
 3. persisted G3 PASS for the same canonical record;
 4. direct read of the canonical record from Neon;
-5. idempotent projection materialization;
-6. read-back comparison of canonical identity, projection version/hash, source references and projected payload;
-7. persisted final state VERIFIED or FAILED.
+5. first projection materialization;
+6. exact replay of the same projection command in the same runtime proof;
+7. assertion that projectionId, projectionKey, projectionHash and canonical identity are unchanged;
+8. assertion that exactly one projection row exists for the same CLR / target / projection version;
+9. read-back comparison of canonical identity, projection version/hash, source references and projected payload;
+10. persisted final state VERIFIED or FAILED.
 
 Expected successful runtime witness:
 
@@ -108,4 +118,4 @@ legacy surfaces        untouched
 
 Until then:
 
-G4 = IMPLEMENTATION STARTED / RUNTIME PROOF PENDING
+G4 = IMPLEMENTATION HARDENED / RUNTIME PROOF PENDING
