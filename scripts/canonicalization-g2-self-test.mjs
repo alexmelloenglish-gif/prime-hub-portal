@@ -49,7 +49,7 @@ assert(migration.includes('FOREIGN KEY ("canonicalRecordId")'), 'provenance must
 console.log('G2 Atomic Canonicalization + Idempotency structural self-test: PASS')
 
 assert(authorityReview.includes("type: 'canonical_learning_record_authority'"), 'authority-review preparation must create the dedicated ValidationTask type')
-assert(authorityReview.includes('suggestedValue: draft'), 'authority-review task must persist the exact canonical draft')
+assert(authorityReview.includes('suggestedValue: asJson(draft)'), 'authority-review task must persist the exact canonical draft')
 assert(authorityReview.includes('authorityPayloadHash'), 'authority-review task must expose an exact-payload hash')
 assert(!authorityReview.includes('canonicalizeLearningRecord('), 'authority review preparation must remain non-canonicalizing')
 assert(validationPage.includes('Exact authority payload'), 'human reviewer must see the exact canonical payload before approval')
