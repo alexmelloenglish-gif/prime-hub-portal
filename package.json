@@ -29,7 +29,7 @@
     "canonical-independent-projection:g4:self-test": "node scripts/canonical-independent-projection-g4-self-test.mjs",
     "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs",
     "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs",
-    "g6:consumer-authority:self-test": "node scripts/g6-consumer-authority-self-test.mjs",
+    "g6:consumer-authority:self-test": "node scripts/g6-consumer-authority-self-test.mjs && node scripts/phase7-g6-runtime-preflight-self-test.mjs",
     "db:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
