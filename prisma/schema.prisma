@@ -397,6 +397,7 @@ model CanonicalLearningRecord {
   pedagogicalPayload  Json
   supersedesRecordId  String?
   createdAt           DateTime @default(now())
+  canonicalizationProvenance CanonicalizationProvenance?
 
   @@unique([studentId, scopeKey, canonicalVersion])
   @@index([studentId, lessonId])
@@ -404,4 +405,29 @@ model CanonicalLearningRecord {
   @@index([pipelineRunId])
   @@index([canonicalHash])
   @@map("canonical_learning_records")
+}
+
+
+model CanonicalizationProvenance {
+  id                  String   @id @default(cuid())
+  idempotencyKey      String   @unique
+  canonicalRecordId   String   @unique
+  studentId           String
+  scopeType           String
+  scopeKey            String
+  teacherDecisionId   String
+  authoritySourceType String
+  reviewerId          String
+  decisionTimestamp   DateTime
+  canonicalVersion    Int
+  canonicalHash       String
+  transactionStatus   String   @default("committed")
+  createdAt           DateTime @default(now())
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@unique([studentId, teacherDecisionId, scopeType, scopeKey])
+  @@index([studentId, scopeType, scopeKey])
+  @@index([teacherDecisionId])
+  @@map("canonicalization_provenance")
 }
