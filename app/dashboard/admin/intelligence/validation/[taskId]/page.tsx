@@ -6,6 +6,11 @@ import { getPrismaClient } from '@/lib/prisma'
 import { runG2RuntimeProof } from '@/lib/g2-runtime-proof'
 import { runG3RuntimeProof } from '@/lib/g3-runtime-proof'
 import { runG4RuntimeProof } from '@/lib/g4-runtime-proof'
+import { runG5RuntimeProof } from '@/lib/g5-runtime-proof'
+import {
+  CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_TARGET,
+  CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_VERSION,
+} from '@/lib/canonical-learning-intelligence-projection'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,6 +86,34 @@ async function executeG4RuntimeProof(formData: FormData) {
     g4Replay: result.idempotentReplay ? 'pass' : 'fail',
     g4ProjectionCount: String(result.proofProjectionCount),
     g4Mismatches: result.mismatchFields.join(','),
+  })
+
+  redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
+}
+
+async function executeG5RuntimeProof(formData: FormData) {
+  'use server'
+
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+  if (!session?.user || (role !== 'admin' && role !== 'teacher')) return
+
+  const taskId = String(formData.get('taskId') || '').trim()
+  if (!taskId) return
+
+  const result = await runG5RuntimeProof(taskId)
+  const params = new URLSearchParams({
+    g5Proof: result.projectionStatus === 'VERIFIED' ? 'pass' : 'fail',
+    g5ProjectionId: result.projectionId,
+    g5ProjectionKey: result.projectionKey,
+    g5ProjectionHash: result.projectionHash,
+    g5RecordId: result.canonicalRecordId,
+    g5Version: String(result.canonicalVersion),
+    g5Hash: result.canonicalHash,
+    g5Status: result.projectionStatus,
+    g5Replay: result.idempotentReplay ? 'pass' : 'fail',
+    g5CompositeCount: String(result.proofCompositeCount),
+    g5Mismatches: result.mismatchFields.join(','),
   })
 
   redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
@@ -166,6 +199,17 @@ export default async function ValidationTaskPage({
       ? await prisma.canonicalLearningRecordProjection.findFirst({
           where: { canonicalRecordId: existingG3Verification.expectedCanonicalRecordId },
           orderBy: { createdAt: 'desc' },
+        })
+      : null
+
+  const existingG5Projection =
+    existingG3Verification?.verificationStatus === 'PASS'
+      ? await prisma.canonicalLearningIntelligenceProjection.findFirst({
+          where: {
+            canonicalRecordId: existingG3Verification.expectedCanonicalRecordId,
+            targetType: CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_TARGET,
+            projectionVersion: CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_VERSION,
+          },
         })
       : null
 
@@ -259,6 +303,33 @@ export default async function ValidationTaskPage({
         </section>
       ) : null}
 
+      {proofParams.g5Proof ? (
+        <section className={proofParams.g5Proof === 'pass' ? 'rounded-2xl border border-cyan-300 bg-cyan-50 p-6 shadow-sm' : 'rounded-2xl border border-rose-300 bg-rose-50 p-6 shadow-sm'}>
+          <div className="text-xs font-semibold uppercase tracking-wide">G5 runtime proof</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">{proofParams.g5Proof === 'pass' ? 'PASS — canonical Learning Intelligence projection verified' : 'FAIL — G5 projection mismatch'}</h2>
+          <dl className="mt-4 grid gap-3 text-sm text-slate-700 sm:grid-cols-2">
+            <div><dt className="font-semibold">Projection</dt><dd className="break-all">{String(proofParams.g5ProjectionId || '')}</dd></div>
+            <div><dt className="font-semibold">Projection key</dt><dd className="break-all">{String(proofParams.g5ProjectionKey || '')}</dd></div>
+            <div><dt className="font-semibold">Projection hash</dt><dd className="break-all">{String(proofParams.g5ProjectionHash || '')}</dd></div>
+            <div><dt className="font-semibold">Canonical record</dt><dd className="break-all">{String(proofParams.g5RecordId || '')}</dd></div>
+            <div><dt className="font-semibold">Canonical version</dt><dd>{String(proofParams.g5Version || '')}</dd></div>
+            <div><dt className="font-semibold">Canonical hash</dt><dd className="break-all">{String(proofParams.g5Hash || '')}</dd></div>
+            <div><dt className="font-semibold">Status</dt><dd>{String(proofParams.g5Status || '')}</dd></div>
+            <div><dt className="font-semibold">Replay</dt><dd>{proofParams.g5Replay === 'pass' ? 'PASS — same projection ID/key/hash' : 'FAIL'}</dd></div>
+            <div><dt className="font-semibold">Composite count</dt><dd>{String(proofParams.g5CompositeCount || '')}</dd></div>
+            <div><dt className="font-semibold">Mismatches</dt><dd>{String(proofParams.g5Mismatches || 'none')}</dd></div>
+          </dl>
+          <p className="mt-4 text-sm leading-6 text-slate-600">G5 proves only the independent CLR → Learning Intelligence projection. It does not make the dashboard consume this projection; that remains G6.</p>
+        </section>
+      ) : null}
+
+      {existingG5Projection?.projectionStatus === 'VERIFIED' && !proofParams.g5Proof ? (
+        <section className="rounded-2xl border border-cyan-300 bg-cyan-50 p-6 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-cyan-700">G5 durable witness</div>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">Canonical Learning Intelligence projection already verified</h2>
+          <p className="mt-3 text-sm text-slate-700">Projection <span className="font-mono">{existingG5Projection.projectionId}</span> is VERIFIED for this CLR/version/target identity.</p>
+        </section>
+      ) : null}
 
       {existingG4Projection && existingG4Projection.projectionStatus === 'VERIFIED' && !proofParams.g4Proof ? (
         <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
@@ -385,6 +456,25 @@ export default async function ValidationTaskPage({
               </p>
               <button type="submit" className="mt-4 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800">
                 Run G4 independent portfolio projection
+              </button>
+            </form>
+          ) : null}
+
+          {task.type === 'canonical_learning_record_authority' &&
+          task.status === 'approved' &&
+          existingG3Verification?.verificationStatus === 'PASS' &&
+          existingG4Projection?.projectionStatus === 'VERIFIED' &&
+          existingG5Projection?.projectionStatus !== 'VERIFIED' &&
+          proofParams.g5Proof !== 'pass' ? (
+            <form action={executeG5RuntimeProof} className="rounded-2xl border border-cyan-300 bg-cyan-50 p-6 shadow-sm">
+              <input type="hidden" name="taskId" value={task.id} />
+              <div className="text-xs font-semibold uppercase tracking-wide text-cyan-700">G5 canonical Learning Intelligence projection</div>
+              <h2 className="mt-1 text-xl font-bold text-slate-950">Direct Canonical Learning Record → Learning Intelligence</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                One click materializes the independent G5 projection, reads it back, exact-replays it, and requires composite cardinality 1 for canonicalRecordId + targetType + projectionVersion. No dashboard consumption or legacy mutation is performed.
+              </p>
+              <button type="submit" className="mt-4 rounded-xl bg-cyan-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-cyan-800">
+                Run G5 Learning Intelligence proof
               </button>
             </form>
           ) : null}

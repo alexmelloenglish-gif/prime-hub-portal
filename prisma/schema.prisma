@@ -399,6 +399,7 @@ model CanonicalLearningRecord {
   createdAt           DateTime @default(now())
   canonicalizationProvenance CanonicalizationProvenance?
   projections CanonicalLearningRecordProjection[]
+  learningIntelligenceProjections CanonicalLearningIntelligenceProjection[]
 
   @@unique([studentId, scopeKey, canonicalVersion])
   @@index([studentId, lessonId])
@@ -493,4 +494,48 @@ model CanonicalLearningRecordProjection {
   @@index([targetType, studentId])
   @@index([projectionStatus])
   @@map("canonical_learning_record_projections")
+}
+
+
+// G5 — Canonical Learning Intelligence Projection
+// Independent additive read model derived directly from CanonicalLearningRecord.
+// It is not the legacy Learning Intelligence consumer and is not a dashboard source in G5.
+model CanonicalLearningIntelligenceProjection {
+  projectionId             String   @id @default(cuid())
+  projectionKey            String   @unique
+  targetType               String
+  projectionVersion        String
+  projectionHash           String
+
+  canonicalRecordId        String
+  canonicalVersion         Int
+  canonicalHash            String
+
+  studentId                String
+  studentEmail             String?
+  scopeType                String
+  scopeKey                 String
+  lessonId                 String?
+
+  teacherDecisionId        String
+  validationTaskId         String?
+  teacherDecisionPackageId String?
+  authorityScope           String
+  sourceReferences         Json
+  g3VerificationId         String
+
+  projection               Json
+  projectionStatus         String   @default("NOT_REQUESTED")
+  mismatchFields           Json     @default("[]")
+
+  createdAt                DateTime @default(now())
+  verifiedAt               DateTime?
+  updatedAt                DateTime @updatedAt
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@unique([canonicalRecordId, targetType, projectionVersion])
+  @@index([studentId, targetType])
+  @@index([projectionStatus])
+  @@map("canonical_learning_intelligence_projections")
 }

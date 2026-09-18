@@ -15,7 +15,7 @@
     "eligibility:self-test": "node scripts/eligibility-boundary-self-test.mjs",
     "canonical:validate": "node scripts/canonical-consistency-validator.mjs",
     "canonical:validate:strict": "node scripts/canonical-consistency-validator.mjs --strict",
-    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && prisma generate && next build",
+    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && npm run canonical-learning-intelligence:g5:self-test && prisma generate && next build",
     "vercel-build": "prisma migrate deploy && npm run build",
     "start": "next start",
     "lint": "next lint",
@@ -26,7 +26,8 @@
     "canonical-record-contract:self-test": "node scripts/canonical-learning-record-contract-self-test.mjs",
     "canonicalization:g2:self-test": "node scripts/canonicalization-g2-self-test.mjs",
     "canonical-readback:g3:self-test": "node scripts/canonical-readback-g3-self-test.mjs",
-    "canonical-independent-projection:g4:self-test": "node scripts/canonical-independent-projection-g4-self-test.mjs"
+    "canonical-independent-projection:g4:self-test": "node scripts/canonical-independent-projection-g4-self-test.mjs",
+    "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
