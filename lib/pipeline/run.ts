@@ -852,7 +852,11 @@ export async function retryFailedPipelineRun(input: {
 export async function listPendingReviewTasks() {
   const prisma = getPrismaClient()
   const tasks = await prisma.reviewTask.findMany({
-    where: { stage: { in: ['identity_review_required', 'publication_review_required', 'processing_approved'] } },
+    where: {
+      stage: { in: ['identity_review_required', 'publication_review_required', 'processing_approved'] },
+      // Synthetic integration/validation identities must never surface as real human work in Production.
+      NOT: { studentEmail: { endsWith: '@invalid.test' } },
+    },
     orderBy: { createdAt: 'asc' },
     include: { pipelineRun: { select: { status: true, createdAt: true, authorityStatus: true, transcript: { select: { externalId: true, source: true, effectiveAt: true, recordedAt: true, metadata: true } } } } },
   })
