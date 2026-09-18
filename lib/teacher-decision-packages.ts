@@ -8,6 +8,11 @@ export function listTeacherDecisionPackages() {
   return packages
 }
 
+export function getTeacherDecisionPackageById(packageId: string) {
+  const key = packageId.trim().toLowerCase()
+  return packages.find((item) => item.packageId.toLowerCase() === key) ?? null
+}
+
 export function getTeacherDecisionPackageByStudent(input: string) {
   const key = input.trim().toLowerCase()
   return packages.find((item) =>
