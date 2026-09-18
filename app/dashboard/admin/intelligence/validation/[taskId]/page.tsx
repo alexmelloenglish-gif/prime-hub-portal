@@ -77,6 +77,19 @@ export default async function ValidationTaskPage({ params }: { params: Promise<{
         </pre>
       </section>
 
+      {task.type === 'canonical_learning_record_authority' ? (
+        <section className="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-6 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Exact authority payload</div>
+          <h2 className="mt-1 font-bold text-slate-950">This is the content this decision will authorize</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Approval applies only to this preserved suggestedValue. It does not create a Canonical Learning Record, publish a projection, or change the learner dashboard by itself.
+          </p>
+          <pre className="mt-4 max-h-[32rem] overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
+            {JSON.stringify(task.suggestedValue, null, 2)}
+          </pre>
+        </section>
+      ) : null}
+
       {task.status === 'pending' ? (
         <form action={decideValidation} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <input type="hidden" name="taskId" value={task.id} />
@@ -86,7 +99,7 @@ export default async function ValidationTaskPage({ params }: { params: Promise<{
           </label>
           <div className="flex flex-wrap gap-3">
             <button name="decision" value="approved" className="rounded-xl bg-[#263c86] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1e2f6b]">
-              Approve as proven
+              {task.type === 'canonical_learning_record_authority' ? 'Approve canonical authority' : 'Approve as proven'}
             </button>
             <button name="decision" value="rejected" className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Reject
