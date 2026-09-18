@@ -22,7 +22,7 @@ export default async function TeacherValidationPage() {
 
   const prisma = getPrismaClient()
   const teacherPackages = listTeacherDecisionPackages()
-  const [pending, recentResolved] = await Promise.all([
+  const [pendingRaw, recentResolvedRaw] = await Promise.all([
     prisma.validationTask.findMany({
       where: { status: 'pending' },
       orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
@@ -34,17 +34,19 @@ export default async function TeacherValidationPage() {
       take: 25,
     }),
   ])
+  const pending = pendingRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
+  const recentResolved = recentResolvedRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
 
   return (
     <main className="mx-auto max-w-6xl space-y-8 p-6">
       <header>
         <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
           <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          Teacher Intelligence · Validation
+          Teacher Intelligence · Review
         </div>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Exception-based authority</h1>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Teacher decisions and exceptions</h1>
         <p className="mt-2 max-w-3xl text-slate-600">
-          Source-grounded facts should be processed automatically. This workspace exists for unresolved operational exceptions and bounded pedagogical authority transitions — not for approving every extracted sentence.
+          Use this workspace when a learner record needs a teacher or administrator decision. Routine lesson evidence stays automatic; meaningful learning-state changes remain under teacher control.
         </p>
       </header>
 
@@ -54,15 +56,15 @@ export default async function TeacherValidationPage() {
           <div className="mt-2 text-3xl font-bold text-slate-950">{pending.length}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><AlertTriangle className="h-4 w-4" aria-hidden="true" /> Manual exceptions</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><AlertTriangle className="h-4 w-4" aria-hidden="true" /> Exceptions</div>
           <div className="mt-2 text-3xl font-bold text-slate-950">{pending.filter((task) => task.type !== 'attendance_reconciliation').length}</div>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><CheckCircle2 className="h-4 w-4" aria-hidden="true" /> Operational resolved</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><CheckCircle2 className="h-4 w-4" aria-hidden="true" /> Recently resolved</div>
           <div className="mt-2 text-3xl font-bold text-slate-950">{recentResolved.length}</div>
         </div>
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-authorized packages</div>
+          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-reviewed learners</div>
           <div className="mt-2 text-3xl font-bold text-emerald-950">{teacherPackages.length}</div>
         </div>
       </section>
@@ -70,24 +72,24 @@ export default async function TeacherValidationPage() {
       {teacherPackages.length ? (
         <section className="rounded-2xl border border-emerald-200 bg-white shadow-sm">
           <div className="border-b border-emerald-100 px-5 py-4">
-            <h2 className="font-bold text-slate-950">Resolved pedagogical authority transitions</h2>
-            <p className="mt-1 text-sm text-slate-500">One bounded teacher decision can authorize the complete source-grounded package without individual evidence checkboxes.</p>
+            <h2 className="font-bold text-slate-950">Reviewed learning updates</h2>
+            <p className="mt-1 text-sm text-slate-500">Learning-state and next-step updates that have already been reviewed by the teacher.</p>
           </div>
           <div className="divide-y divide-slate-100">
             {teacherPackages.map((pkg) => (
               <article key={pkg.packageId} className="px-5 py-5">
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher authorized</div>
-                    <h3 className="mt-1 font-semibold text-slate-950">{pkg.studentName} — V2 source-grounded package</h3>
-                    <p className="mt-1 text-sm text-slate-600">State/priority update accepted · next action accepted · CEFR unchanged · canonical projection authorized.</p>
-                    <div className="mt-2 text-xs text-slate-500">{pkg.teacher.name} · {pkg.decisionDate} · {pkg.sourceLessons.length} source-grounded lessons</div>
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher reviewed</div>
+                    <h3 className="mt-1 font-semibold text-slate-950">{pkg.studentName}</h3>
+                    <p className="mt-1 text-sm text-slate-600">Current learning focus and next action reviewed; CEFR level unchanged.</p>
+                    <div className="mt-2 text-xs text-slate-500">{pkg.teacher.name} · {pkg.decisionDate} · {pkg.sourceLessons.length} reviewed lessons</div>
                   </div>
                   <Link
-                    href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentEmail)}`}
+                    href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentId)}`}
                     className="inline-flex shrink-0 items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
                   >
-                    Open authorized package
+                    Open learning package
                   </Link>
                 </div>
               </article>
@@ -98,11 +100,11 @@ export default async function TeacherValidationPage() {
 
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 px-5 py-4">
-          <h2 className="font-bold text-slate-950">Pending operational validation</h2>
-          <p className="mt-1 text-sm text-slate-500">No pedagogical state is created by this queue.</p>
+          <h2 className="font-bold text-slate-950">Waiting for validation</h2>
+          <p className="mt-1 text-sm text-slate-500">Only items that need a human decision should appear here.</p>
         </div>
         {pending.length === 0 ? (
-          <div className="px-5 py-10 text-center text-sm text-slate-500">No operational exceptions are currently waiting for validation.</div>
+          <div className="px-5 py-10 text-center text-sm text-slate-500">Nothing is currently waiting for validation.</div>
         ) : (
           <div className="divide-y divide-slate-100">
             {pending.map((task) => (
@@ -120,7 +122,7 @@ export default async function TeacherValidationPage() {
                     href={`/dashboard/admin/intelligence/validation/${task.id}`}
                     className="inline-flex shrink-0 items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                   >
-                    Open validation
+                    Review item
                   </Link>
                 </div>
               </article>
