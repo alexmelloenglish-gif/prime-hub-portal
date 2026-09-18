@@ -4,7 +4,8 @@
 **Status:** PREPARED FOR REVIEW — ADR-002 ACCEPTED / MIGRATION NOT APPLIED  
 **Gate:** G6  
 **Predecessors:** G1–G5 CLOSED / PASS  
-**Production writes:** NONE
+**Production writes:** NONE  
+**Vercel build migration behavior:** DISABLED — migration requires separate explicit authorization
 
 ## 1. Purpose
 
@@ -271,7 +272,9 @@ scripts/g6-account-learner-relation-self-test.mjs
 package.json
 ```
 
-The migration is present only as a branch artifact. It has not been applied to Neon.
+The migration is present only as a branch artifact. It has not been applied by this PR.
+
+Vercel build execution is read-only with respect to Prisma migrations: `vercel-build` runs the application build and G6 structural verification but does not run `prisma migrate deploy`. Migration deployment is exposed only as the explicit `db:migrate:deploy` command and remains outside normal Preview/Production build execution.
 
 No relation row has been inserted.
 
@@ -287,6 +290,10 @@ Prisma schema validation / generate
 G6 structural self-test
 
 TypeScript / Next build
+
+G6 self-test executed by both CI contract and application build
+
+Vercel Preview build with NO migration execution
 
 migration dry-run or isolated branch verification
 
@@ -307,7 +314,7 @@ NO CLR mutation
 NO G5 mutation
 ```
 
-Only after these checks may the migration be considered for execution.
+Only after these checks may the migration be considered for a separately authorized execution. Merge or Vercel deployment alone must not apply the migration.
 
 ## 11. Gate state
 

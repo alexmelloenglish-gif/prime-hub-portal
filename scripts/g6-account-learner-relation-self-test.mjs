@@ -12,7 +12,7 @@ const migration = fs.readFileSync(
 const service = fs.readFileSync('lib/account-learner-relation.ts', 'utf8')
 const resolver = fs.readFileSync('lib/learner-account-resolution.ts', 'utf8')
 const adr = fs.readFileSync(
-  'docs/architecture/ADR-002-G6-ACCOUNT-LEARNER-AUTHORIZED-RELATION_2026-09-18.md',
+  'docs/architecture/ADR-002-ACCOUNT-LEARNER-AUTHORIZED-RELATION_2026-09-18.md',
   'utf8'
 )
 
