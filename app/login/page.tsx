@@ -27,25 +27,17 @@ const allowedCallbackUrls = new Set([
   '/dashboard/admin',
 ])
 
+const primeSupportUrl =
+  'https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F'
+
 function normalizeCallbackUrl(callbackUrl?: string) {
-  if (!callbackUrl || !callbackUrl.startsWith('/')) {
-    return '/dashboard'
-  }
-
+  if (!callbackUrl || !callbackUrl.startsWith('/')) return '/dashboard'
   const sanitizedUrl = callbackUrl.split('?')[0]
-
-  if (allowedCallbackUrls.has(sanitizedUrl)) {
-    return callbackUrl
-  }
-
-  return '/dashboard'
+  return allowedCallbackUrls.has(sanitizedUrl) ? callbackUrl : '/dashboard'
 }
 
 type LoginPageProps = {
-  searchParams?: Promise<{
-    callbackUrl?: string
-    error?: string
-  }>
+  searchParams?: Promise<{ callbackUrl?: string; error?: string }>
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
@@ -57,54 +49,58 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       ? authErrorMessages[resolvedSearchParams.error] ?? authErrorMessages.default
       : ''
 
-  if (session?.user) {
-    redirect(callbackUrl)
-  }
+  if (session?.user) redirect(callbackUrl)
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-prime-gradient p-4">
-      <div className="w-full max-w-md">
-        <Link href="/" className="mb-8 inline-flex items-center gap-2 text-prime-cream/60 transition-colors hover:text-white">
-          <span>&larr;</span>
+    <main className="min-h-screen bg-[#f7faff] text-[#0b2c5c]">
+      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8">
+        <Link href="/" className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#45617f] transition-colors hover:text-[#0b2c5c]">
+          <span aria-hidden="true">&larr;</span>
           <span>Voltar ao inicio</span>
         </Link>
 
-        <div className="glass-card space-y-6 p-8">
-          <div className="mb-6 flex justify-center">
-            <BrandLogo variant="full" className="h-24 w-72 shadow-lg shadow-prime-red/30" priority />
-          </div>
-
-          <div className="space-y-2 text-center">
-            <h1 className="font-display text-2xl font-bold text-white">Acesse sua conta</h1>
-            <p className="text-prime-cream/70">
-              Entre no Prime Digital Hub usando apenas sua conta Google autorizada.
-            </p>
-          </div>
-
-          {!isGoogleAuthConfigured ? (
-            <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-              Configure GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET no .env.local para habilitar o login.
+        <div className="flex flex-1 items-center justify-center py-10">
+          <section className="w-full max-w-md rounded-[2rem] border border-[#dfe8f3] bg-white p-7 shadow-[0_24px_70px_rgba(15,48,93,0.10)] sm:p-9">
+            <div className="mb-7 flex justify-center">
+              <BrandLogo variant="full" className="h-20 w-64" priority />
             </div>
-          ) : null}
 
-          {authError ? (
-            <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-              {authError}
+            <div className="space-y-3 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d50000]">Prime Digital Hub</p>
+              <h1 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c]">Acesse sua conta</h1>
+              <p className="text-sm leading-6 text-[#5b708b]">
+                Entre com a conta Google autorizada para acessar seu ambiente de aprendizagem.
+              </p>
             </div>
-          ) : null}
 
-          <GoogleSignInButton callbackUrl={callbackUrl} disabled={!isGoogleAuthConfigured} />
+            <div className="mt-7 space-y-4">
+              {!isGoogleAuthConfigured ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  Configure GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET no .env.local para habilitar o login.
+                </div>
+              ) : null}
 
-          <div className="text-center text-sm text-prime-cream/60">
-            Ao continuar, voce concorda com nossos termos de uso e politica de privacidade.
-          </div>
+              {authError ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {authError}
+                </div>
+              ) : null}
 
-          <div className="text-center text-sm text-prime-cream/60">
-            Ainda nao e aluno?{' '}
-            <a href="mailto:support@primedigitalhub.com" className="font-semibold text-prime-red hover:underline">
-              Fale conosco
-            </a>
-          </div>
+              <GoogleSignInButton callbackUrl={callbackUrl} disabled={!isGoogleAuthConfigured} />
+            </div>
+
+            <div className="mt-7 border-t border-[#e7eef6] pt-5 text-center">
+              <p className="text-xs leading-5 text-[#72849a]">
+                Ao continuar, voce concorda com nossos termos de uso e politica de privacidade.
+              </p>
+              <p className="mt-3 text-sm text-[#5b708b]">
+                Precisa de ajuda?{' '}
+                <a href={primeSupportUrl} target="_blank" rel="noreferrer" className="font-bold text-[#169b62] hover:underline">
+                  Fale com a Prime no WhatsApp
+                </a>
+              </p>
+            </div>
+          </section>
         </div>
       </div>
     </main>
