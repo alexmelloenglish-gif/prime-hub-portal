@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import {
   canonicalAuthorityDraftHash,
@@ -7,6 +8,10 @@ import {
   getTeacherDecisionPackageById,
   type TeacherDecisionPackage,
 } from '@/lib/teacher-decision-packages'
+
+function asJson(value: unknown): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue
+}
 
 function sourceRefByDate(pkg: TeacherDecisionPackage) {
   return new Map(pkg.sourceLessons.map((lesson) => [lesson.date, lesson.sourceDocumentId]))
@@ -131,7 +136,7 @@ export async function prepareCanonicalAuthorityValidationTask(
         historicalBoundary:
           'This is a new current ValidationTask referencing an existing teacher-reviewed package. It does not rewrite the package, Audit v1, or historical learner projections.',
       },
-      suggestedValue: draft,
+      suggestedValue: asJson(draft),
     },
   })
 }
