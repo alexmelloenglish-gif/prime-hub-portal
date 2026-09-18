@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import {
-  AlertTriangle,
   ArrowRight,
   BookOpen,
   ClipboardCheck,
@@ -11,7 +10,6 @@ import {
   Users,
   Waypoints,
 } from 'lucide-react'
-import { IntelligenceStatusBadge } from '@/components/teacher/intelligence-status-badge'
 import { getTeacherCommandCenter } from '@/lib/teacher-intelligence'
 
 function formatLessonDate(value: string | null) {
@@ -22,10 +20,6 @@ function formatLessonDate(value: string | null) {
     month: 'short',
     year: 'numeric',
   }).format(new Date(value))
-}
-
-function humanizeStatus(value: string) {
-  return value.replace(/_/g, ' ').replace(/\//g, ' · ')
 }
 
 export default async function TeacherIntelligenceHomePage() {
@@ -40,33 +34,33 @@ export default async function TeacherIntelligenceHomePage() {
 
   const attentionCards = [
     {
-      label: 'Teacher review queue',
+      label: 'Review queue',
       value: data.needsReview.reviewTasks,
-      description: 'Human review tasks waiting for a decision.',
+      description: 'Items waiting for a teacher or administrator decision.',
       href: '/dashboard/admin/intelligence/review',
       icon: ClipboardCheck,
       accent: 'border-amber-100 bg-amber-50/70 text-amber-800',
     },
     {
-      label: 'Evidence to inspect',
+      label: 'Evidence review',
       value: data.needsReview.evidenceCandidates,
-      description: 'Source-grounded evidence candidates requiring review.',
+      description: 'Lesson evidence that needs a closer look.',
       href: '/dashboard/admin/intelligence/review',
       icon: Sparkles,
       accent: 'border-sky-100 bg-sky-50/70 text-sky-800',
     },
     {
-      label: 'Signal proposals',
+      label: 'Learning patterns',
       value: data.needsReview.signalProposals,
-      description: 'Patterns proposed from lessons, not yet canonical learning signals.',
+      description: 'Patterns suggested from lesson evidence.',
       href: '/dashboard/admin/intelligence/signals',
       icon: Waypoints,
       accent: 'border-indigo-100 bg-indigo-50/70 text-indigo-800',
     },
     {
-      label: 'Insight proposals',
+      label: 'Teaching insights',
       value: data.needsReview.insightProposals,
-      description: 'Teacher-facing interpretations waiting for human validation.',
+      description: 'Interpretations waiting for teacher review.',
       href: '/dashboard/admin/intelligence/insights',
       icon: Lightbulb,
       accent: 'border-violet-100 bg-violet-50/70 text-violet-800',
@@ -74,7 +68,7 @@ export default async function TeacherIntelligenceHomePage() {
     {
       label: 'Draft reports',
       value: data.needsReview.reportsAwaitingPublication,
-      description: 'Class reports still waiting at the publication boundary.',
+      description: 'Class reports that are not yet finalized.',
       href: '/dashboard/admin/intelligence/lessons',
       icon: FileText,
       accent: 'border-rose-100 bg-rose-50/70 text-rose-800',
@@ -89,10 +83,10 @@ export default async function TeacherIntelligenceHomePage() {
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-indigo-600">Teaching cockpit</p>
             <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-[-0.035em] text-[#0a235c] md:text-4xl">
-              Start with the learner. Use the pipeline as evidence.
+              Start with the learner. Use evidence to decide what comes next.
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-[#49617f] md:text-base">
-              Teacher Intelligence brings lesson evidence, review needs, learning proposals and recent activity into one pedagogical workspace so the teacher can decide what matters next.
+              Review learners, lesson evidence, emerging patterns and next teaching priorities in one place.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
@@ -107,7 +101,7 @@ export default async function TeacherIntelligenceHomePage() {
                 className="inline-flex items-center gap-2 rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm font-bold text-[#263c86] transition hover:border-indigo-200 hover:bg-indigo-100"
               >
                 <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-                Review evidence
+                Review items
               </Link>
             </div>
           </div>
@@ -122,7 +116,7 @@ export default async function TeacherIntelligenceHomePage() {
               <p className="mt-2 text-3xl font-bold text-[#0a235c]">{data.recentLessons.length}</p>
             </div>
             <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Items needing attention</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Needs attention</p>
               <p className="mt-2 text-3xl font-bold text-amber-900">{attentionTotal}</p>
             </div>
           </div>
@@ -135,7 +129,7 @@ export default async function TeacherIntelligenceHomePage() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7184a1]">Teacher attention</p>
             <h2 id="attention-heading" className="mt-1 text-2xl font-bold text-[#0a235c]">What deserves review now?</h2>
           </div>
-          <p className="text-sm text-[#60718d]">AI-supported states remain proposals until the teacher validates them.</p>
+          <p className="text-sm text-[#60718d]">Suggestions remain separate from the learner&apos;s current state until a teacher reviews them.</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -167,8 +161,8 @@ export default async function TeacherIntelligenceHomePage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7184a1]">Recent learning activity</p>
-              <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">Lessons through a teacher lens</h2>
-              <p className="mt-1 text-sm text-[#60718d]">Student, evidence, proposals and report state — without making infrastructure the main story.</p>
+              <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">Recent lessons</h2>
+              <p className="mt-1 text-sm text-[#60718d]">Each lesson appears once. Technical retries are kept out of this summary.</p>
             </div>
             <Link
               href="/dashboard/admin/intelligence/lessons"
@@ -183,7 +177,7 @@ export default async function TeacherIntelligenceHomePage() {
             <div className="mt-5 space-y-3">
               {data.recentLessons.map((lesson) => (
                 <Link
-                  key={lesson.pipelineRunId}
+                  key={`${lesson.studentEmail}:${lesson.lessonId}`}
                   href={`/dashboard/admin/intelligence/lessons/${lesson.pipelineRunId}`}
                   className="group block rounded-2xl border border-slate-200 bg-[#fbfdff] p-4 transition hover:border-indigo-200 hover:bg-indigo-50/40"
                 >
@@ -199,42 +193,41 @@ export default async function TeacherIntelligenceHomePage() {
 
                     <div className="flex flex-wrap items-center gap-2 text-xs">
                       <span className="rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 font-semibold text-sky-700">
-                        {lesson.evidenceCount} evidence
+                        {lesson.evidenceCount} evidence item{lesson.evidenceCount === 1 ? '' : 's'}
                       </span>
-                      <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 font-semibold text-indigo-700">
-                        {lesson.signalProposalCount} signals
+                      {lesson.signalProposalCount ? (
+                        <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 font-semibold text-indigo-700">
+                          {lesson.signalProposalCount} pattern{lesson.signalProposalCount === 1 ? '' : 's'}
+                        </span>
+                      ) : null}
+                      {lesson.insightProposalCount ? (
+                        <span className="rounded-full border border-violet-100 bg-violet-50 px-2.5 py-1 font-semibold text-violet-700">
+                          {lesson.insightProposalCount} insight{lesson.insightProposalCount === 1 ? '' : 's'}
+                        </span>
+                      ) : null}
+                      <span className="inline-flex items-center gap-1 font-bold text-indigo-600">
+                        Open lesson <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
                       </span>
-                      <span className="rounded-full border border-violet-100 bg-violet-50 px-2.5 py-1 font-semibold text-violet-700">
-                        {lesson.insightProposalCount} insights
-                      </span>
-                      <IntelligenceStatusBadge label={lesson.aiStatus.replace('_', ' ')} state={lesson.aiStatus} />
                     </div>
-                  </div>
-
-                  <div className="mt-3 flex flex-col gap-2 border-t border-slate-100 pt-3 text-xs text-[#60718d] sm:flex-row sm:items-center sm:justify-between">
-                    <span>Report: <strong className="font-semibold text-[#304d7d]">{humanizeStatus(lesson.reportStatus)}</strong></span>
-                    <span className="inline-flex items-center gap-1 font-bold text-indigo-600">
-                      Open lesson trace <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" aria-hidden="true" />
-                    </span>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <p className="mt-5 rounded-2xl border border-slate-200 bg-[#f8fbff] p-4 text-sm text-[#60718d]">No runtime lesson activity is available yet.</p>
+            <p className="mt-5 rounded-2xl border border-slate-200 bg-[#f8fbff] p-4 text-sm text-[#60718d]">No recent lesson activity is available yet.</p>
           )}
         </article>
 
         <aside className="space-y-4">
           <article className="rounded-[28px] border border-indigo-100 bg-[linear-gradient(145deg,#eef2ff,#ffffff)] p-5 shadow-[0_16px_42px_rgba(37,55,120,0.08)] md:p-6">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600">Human-in-the-loop workflow</p>
-            <h2 className="mt-2 text-2xl font-bold text-[#0a235c]">From evidence to teaching action</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600">Teacher workflow</p>
+            <h2 className="mt-2 text-2xl font-bold text-[#0a235c]">From evidence to the next lesson</h2>
             <div className="mt-5 space-y-4">
               {[
-                ['01', 'Review evidence', 'Check source evidence before trusting an AI-supported interpretation.'],
-                ['02', 'Inspect signals', 'Look for patterns across lesson evidence without treating proposals as canonical truth.'],
-                ['03', 'Validate insights', 'The teacher decides which interpretation is pedagogically meaningful.'],
-                ['04', 'Shape the next lesson', 'Use validated information to guide feedback, practice and future teaching choices.'],
+                ['01', 'Review evidence', 'Check what the learner actually demonstrated in the lesson.'],
+                ['02', 'Notice patterns', 'Look for recurring strengths, difficulties and changes over time.'],
+                ['03', 'Interpret', 'Decide what the evidence means pedagogically.'],
+                ['04', 'Plan next', 'Use the reviewed information to guide feedback and the next lesson.'],
               ].map(([number, title, body]) => (
                 <div key={number} className="flex gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#263c86] text-xs font-bold text-white">{number}</span>
@@ -247,16 +240,11 @@ export default async function TeacherIntelligenceHomePage() {
             </div>
           </article>
 
-          <article className="rounded-[28px] border border-amber-100 bg-amber-50 p-5">
-            <div className="flex gap-3">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden="true" />
-              <div>
-                <p className="text-sm font-bold text-amber-900">Runtime truth stays visible</p>
-                <p className="mt-2 text-xs leading-5 text-amber-800">
-                  Teacher Intelligence does not fabricate a canonical Learning State, Signal or Insight. Where the runtime cannot prove a state, the interface continues to show it as not proven or as a proposal.
-                </p>
-              </div>
-            </div>
+          <article className="rounded-[28px] border border-emerald-100 bg-emerald-50 p-5">
+            <p className="text-sm font-bold text-emerald-900">Teacher authority</p>
+            <p className="mt-2 text-xs leading-5 text-emerald-800">
+              Only teacher-reviewed learning judgments are treated as part of the learner&apos;s current learning state.
+            </p>
           </article>
         </aside>
       </section>
