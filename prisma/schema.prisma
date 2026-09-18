@@ -20,6 +20,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   progress      Progress[]
+  accountLearnerRelations AccountLearnerRelation[]
 
   @@map("users")
 }
@@ -51,6 +52,36 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+// G6 — Explicit Account → Learner authorization relation.
+// This is an identity/access relation, not a pedagogical record and not a guardian/contact relation.
+model AccountLearnerRelation {
+  id                 String   @id @default(cuid())
+  userId             String
+  studentId          String
+  status             String   @default("ACTIVE")
+  relationType       String
+  sourceType         String
+  sourceReference    String
+  authorizationHash  String?
+  authorizedBy       String
+  authorizedAt       DateTime
+  validFrom          DateTime?
+  validUntil         DateTime?
+  revokedBy          String?
+  revokedAt          DateTime?
+  revocationReason   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, studentId])
+  @@index([userId, status])
+  @@index([studentId, status])
+  @@index([status, validUntil])
+  @@map("account_learner_relations")
 }
 
 model Course {
