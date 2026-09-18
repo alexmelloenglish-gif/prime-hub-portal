@@ -59,7 +59,7 @@ export default async function DashboardLayout({
       topbarUser = {
         name: activeUser.name,
         email: activeUser.email,
-        image: activeUser.image,
+        image: activeUser.image ?? null,
       }
     }
   } else {
