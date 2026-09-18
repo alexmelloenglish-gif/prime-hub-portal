@@ -398,6 +398,7 @@ model CanonicalLearningRecord {
   supersedesRecordId  String?
   createdAt           DateTime @default(now())
   canonicalizationProvenance CanonicalizationProvenance?
+  projections CanonicalLearningRecordProjection[]
 
   @@unique([studentId, scopeKey, canonicalVersion])
   @@index([studentId, lessonId])
