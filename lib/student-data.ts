@@ -75,7 +75,7 @@ export type StudentDashboardProjection = {
   whatChanged: {
     title: string
     summary: string
-    changeType: 'learner-model' | 'learner-progress' | 'both'
+    changeType: 'learner-model' | 'learner-progress' | 'learning-priority' | 'both'
     evidence: string
     status: ProjectionEvidenceStatus
   } | null
@@ -452,9 +452,11 @@ function parseCanonicalProjection(root: Record<string, unknown>): StudentDashboa
             changeType:
               asString(changed.changeType) === 'learner-progress'
                 ? 'learner-progress'
-                : asString(changed.changeType) === 'both'
-                  ? 'both'
-                  : 'learner-model',
+                : asString(changed.changeType) === 'learning-priority'
+                  ? 'learning-priority'
+                  : asString(changed.changeType) === 'both'
+                    ? 'both'
+                    : 'learner-model',
             evidence: asString(changed.evidence),
             status: parseProjectionStatus(changed.status, 'qualified'),
           }
