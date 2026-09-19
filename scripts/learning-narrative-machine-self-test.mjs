@@ -36,6 +36,7 @@ const input = prepareNarrativeInput({
       statement: 'The learner used past forms while talking about a personal experience, with teacher support documented in the lesson.',
       sourceRefs: ['src-01'],
       authorization: 'teacher_validated',
+      producer: 'teacher',
       domain: 'language',
       support: 'teacher support documented',
     },
@@ -47,6 +48,7 @@ const input = prepareNarrativeInput({
       statement: 'In a past-tense short-answer exchange, the learner first used the present negative and then changed the response to the past form after noticing the mismatch.',
       sourceRefs: ['src-05'],
       authorization: 'teacher_validated',
+      producer: 'student',
       domain: 'language',
       support: 'opportunity to reconsider documented',
       relatedLessonIds: ['lesson-01'],
@@ -59,6 +61,7 @@ const input = prepareNarrativeInput({
       statement: 'The learner participated in a Science review in English using words, images and explanations about nutrients and digestion.',
       sourceRefs: ['src-03'],
       authorization: 'teacher_validated',
+      producer: 'teacher',
       domain: 'content',
     },
     {
@@ -112,3 +115,5 @@ assert.equal(failed.passed, false)
 assert.ok(failed.errors.some((error) => error.includes('unknown evidence')))
 
 console.log('Learning Narrative Machine v1 self-test passed: longitudinal evidence, adjustment, content-participation boundary and authorized continuation are evidence-linked.')
+
+assert.equal(input.evidence.find((item) => item.evidenceId === 'ev-02')?.producer, 'student')
