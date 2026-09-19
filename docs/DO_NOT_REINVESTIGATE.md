@@ -38,12 +38,13 @@ NO NEW EVIDENCE → CONTINUE FROM SNAPSHOT
 
 Before making any change or running any diagnostic, read:
 
-1. **THIS FILE** — `docs/DO_NOT_REINVESTIGATE.md`
-2. **IDENTITY REGISTRY** — `docs/PRIME_CANONICAL_PROJECT_REGISTRY.md`
-3. `docs/PRIME_CANONICAL_CURRENT_STATE.md`
-4. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md`
-5. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md`
-6. Only then inspect source, runtime or external systems as required by the current blocker.
+1. **SYSTEM GOVERNANCE CONTROL CENTER** — `docs/governance/PRIME_GOVERNANCE_CONTROL_CENTER_v1.md`
+2. **THIS FILE** — `docs/DO_NOT_REINVESTIGATE.md`
+3. **IDENTITY REGISTRY** — `docs/PRIME_CANONICAL_PROJECT_REGISTRY.md`
+4. `docs/PRIME_CANONICAL_CURRENT_STATE.md`
+5. `docs/PRIME_FORENSIC_SNAPSHOT_2026-08-31.md`
+6. `docs/snapshot-apps-script-prompt1-gemini-2026-08-31.md`
+7. Only then inspect source, runtime or external systems as required by the current blocker.
 
 These documents are the project's forensic return points. The **Canonical Project Registry** is the authoritative map for which repository, Vercel project, Google project, Apps Script, database, endpoint and account identity is actually canonical.
 
