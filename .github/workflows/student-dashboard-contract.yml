@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Typecheck application
+        run: npx tsc --noEmit
+
       - name: Run dashboard contract
         run: npm run student-dashboard:self-test
 
