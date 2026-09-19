@@ -3,6 +3,33 @@ import type { GenerationProvenance } from '@/lib/pipeline/contracts'
 
 export const NARRATIVE_PROMPT_VERSION = 'narrative-1.v1'
 
+
+export const NARRATIVE_OUTPUT_CONTRACT = \`
+OUTPUT JSON SCHEMA
+{
+  "schemaVersion": "learning-narrative.v1",
+  "studentId": "...",
+  "currentLessonId": "...",
+  "narrativeStatus": "draft",
+  "authorityStatus": "non_authoritative",
+  "segments": [
+    {
+      "segmentId": "n-001",
+      "role": "opening|event|connection|adjustment|revisit|boundary|continuation",
+      "text": "...",
+      "evidenceIds": ["..."]
+    }
+  ],
+  "narrativeText": "...",
+  "nextStepText": "... or null",
+  "sourceEvidenceIds": ["..."],
+  "boundaryNotes": ["..."],
+  "requiresTeacherReview": true
+}
+
+Every segment must cite existing evidenceIds. Do not output a validation result; the application will validate the draft after generation.
+\`
+
 export const NARRATIVE_SYSTEM_PROMPT = \`
 PRIME LEARNING NARRATIVE — \${NARRATIVE_PROMPT_VERSION}
 
