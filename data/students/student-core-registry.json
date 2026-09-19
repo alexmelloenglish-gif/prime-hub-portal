@@ -91,8 +91,7 @@
       "studentName": "Gustavo Drummond De Andrade Salgado",
       "canonicalEmail": "carolvdrummond@gmail.com",
       "emailAliases": [
-        "carolvdrummond@gmail.com",
-        "gustavo@leadster.com.br"
+        "carolvdrummond@gmail.com"
       ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
@@ -109,7 +108,7 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Canonical longitudinal portfolio updated through five attended lessons (18 Aug–15 Sep 2026). gustavo@leadster.com.br is teacher-authorized as an additional dashboard access email for the same learner; no new learner or studentId is created."
+      "notes": "Canonical longitudinal portfolio updated through five attended lessons (18 Aug–15 Sep 2026)."
     },
     {
       "studentId": "stu_fb5b64e3437e",
