@@ -8,6 +8,12 @@ Most of that information is fragmented across lessons, notes, documents and huma
 
 PRIME Digital Hub is being built to make that intelligence persistent.
 
+**Persistent memory is infrastructure. The learner's journey is the thing being preserved.**
+
+The proposed [System Governance Canon](governance/PRIME-SYSTEM-GOVERNANCE-CANON.md) makes this product thesis explicit: PRIME preserves how knowledge is encountered, practised, revisited, connected and used over time, including when the recorded learner state is retained. Its authority concerns the learning journey and its evidence under teacher judgment; it does not automatically extend to every external subject studied. See the [amendment registry](governance/LEARNING-JOURNEY-AMENDMENT-2026-09-19.md) for adoption and implementation status.
+
+Within language education, that journey includes expressing oneself and accessing other knowledge through the language. A learner's meaningful participation in a content task can be part of the programme's value, with support and claim boundaries recorded; long-term subject retention is not its only possible outcome.
+
 ---
 
 ## 1. THE PROBLEM
