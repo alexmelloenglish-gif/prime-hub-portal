@@ -113,7 +113,7 @@ This protects four invariants:
 
 ## 10. Error, pattern and state
 
-An error is an event, not a learner state. A self-correction is an event, not a state. A sequence of events may later support a bounded pattern, and a sufficiently supported pattern may contribute to an authorized state decision.
+An error is an event, not a learner state, and it is not inherently progress or regression. A self-correction is an event, not a state. A sequence of events may later support a bounded pattern, and a sufficiently supported pattern may contribute to an authorized state decision.
 
 A historical note such as "needs to self-correct X" must therefore remain time- and context-bound. It must not become a permanent identity claim. Later absence of self-correction may be compatible with improved automaticity, lack of opportunity, or lack of observation; the machine does not choose among these without evidence.
 
