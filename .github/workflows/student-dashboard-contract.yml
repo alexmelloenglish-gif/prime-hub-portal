@@ -38,3 +38,6 @@ jobs:
 
       - name: Run G6 authority infrastructure contract
         run: npm run g6:account-learner:self-test
+
+      - name: Build Next.js application
+        run: npx prisma generate && npx next build
