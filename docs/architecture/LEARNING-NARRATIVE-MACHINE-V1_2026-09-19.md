@@ -92,3 +92,41 @@ The included self-test proves:
 - the authorized next step is part of the narrative only when supplied.
 
 This is an implementation foundation, not production compliance.
+
+
+## 9. Learning movement is not state change
+
+The machine does not ask whether every lesson changed the current state before deciding whether the lesson has a story.
+
+Its primary question is:
+
+**What happened in this learner's journey during this period?**
+
+Only after the event history is assembled does the system ask whether any authorized observation justifies a separate Current State update.
+
+This protects four invariants:
+
+1. Evidence records events; it does not automatically declare states.
+2. Repeated state does not mean no progress; stability can represent retention, consolidation or continued use.
+3. Missing evidence does not mean regression; the behavior may not have been elicited, relevant or observed, or may no longer require the same visible correction.
+4. Student-generated evidence belongs to the learning record. It can document noticing, reflection or a learner's own account, while teacher authority remains required for pedagogical interpretation and state decisions.
+
+## 10. Error, pattern and state
+
+An error is an event, not a learner state. A self-correction is an event, not a state. A sequence of events may later support a bounded pattern, and a sufficiently supported pattern may contribute to an authorized state decision.
+
+A historical note such as "needs to self-correct X" must therefore remain time- and context-bound. It must not become a permanent identity claim. Later absence of self-correction may be compatible with improved automaticity, lack of opportunity, or lack of observation; the machine does not choose among these without evidence.
+
+The possible history error → noticing → prompted correction → self-correction → repeated accurate use → less need for correction is illustrative, not a developmental gate sequence. Learning may recur, reverse, skip or revisit these events.
+
+## 11. Learner-generated evidence
+
+The machine may accept teacher-validated evidence whose producer is the learner. A simple metacognitive record such as:
+
+**What did I say/write? → What should it be? → Can I fix it? → What do I notice?**
+
+can become part of the evidence available to future practice and narrative generation.
+
+The machine must distinguish the fact that a learner recorded or noticed something from the teacher's interpretation of what that event means pedagogically. Learner-generated evidence does not bypass teacher authorization or create a state by itself.
+
+This remains an implementation foundation; no student-facing Error Log is published by this change.
