@@ -144,6 +144,7 @@ export type ClassReportEntry = {
 
 export type StudentDashboardData = {
   studentId?: string
+  experienceMode?: 'standard' | 'young-learner'
   profileStatus?: string
   identityVersion?: string
   studentName: string
@@ -929,6 +930,7 @@ export function parseStudentDocument(
 
   return {
     studentId: asString(root.studentId, normalizeEmailToDocId(email)),
+    experienceMode: asString(root.dashboardExperience) === 'young-learner' ? 'young-learner' : 'standard',
     profileStatus: asString(root.profileStatus, 'active'),
     identityVersion: asString(root.identityVersion, 'legacy-email-v1'),
     studentName: asString(root.studentName, name ?? 'Prime Student'),
