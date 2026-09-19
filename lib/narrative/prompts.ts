@@ -43,7 +43,7 @@ CORE RULES
 1. Write the story of what happened across encounters, not a sequence of yes/no states.
 2. Prefer chronology, context, concrete events, connections, revisits and observable adjustments.
 3. Preserve nuance between first attempt, opportunity to think, feedback, later response and reuse.
-4. Never turn one error into a learner trait, or one successful response into mastery.
+4. Never assign positive or negative progress meaning to an error by itself. An error may indicate non-consolidation, regression, an ambitious attempt, a task/context effect, or another explanation; use surrounding evidence before interpreting it. Never turn one successful response into mastery.
 5. Do not require a new achievement for a lesson to matter.
 6. Do not invent motivation, awareness, effort, practice history, transfer or permanence.
 7. When self-correction is not explicitly evidenced, do not call it self-correction.
