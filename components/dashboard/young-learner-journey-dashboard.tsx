@@ -226,12 +226,12 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
             <div className="mt-5 grid gap-3">
               <div className="rounded-2xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">You noticed & repaired</p>
-                <p className="mt-2 text-lg font-black text-[#0b2c5c]">“I don't...” → “No, I didn't.”</p>
+                <p className="mt-2 text-lg font-black text-[#0b2c5c]">“I don’t...” → “No, I didn’t.”</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">Você percebeu que a pergunta estava no passado e tentou de novo.</p>
               </div>
               <div className="rounded-2xl bg-white p-4 shadow-sm">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">You reused language</p>
-                <p className="mt-2 text-lg font-black text-[#0b2c5c]">went • drank • did • didn't</p>
+                <p className="mt-2 text-lg font-black text-[#0b2c5c]">went • drank • did • didn’t</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">Palavras e estruturas voltaram em novas situações, não apenas no exercício em que apareceram.</p>
               </div>
               <div className="rounded-2xl bg-white p-4 shadow-sm">
@@ -271,7 +271,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
             <div>
               <div className="flex items-center gap-3">
                 <Star className="h-7 w-7 fill-yellow-400 text-yellow-500" />
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#e60023]">NOW IT'S YOUR TURN</p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#e60023]">NOW IT’S YOUR TURN</p>
               </div>
               <h2 className="mt-3 text-3xl font-black">Gustavo, o que VOCÊ acha da sua jornada?</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
