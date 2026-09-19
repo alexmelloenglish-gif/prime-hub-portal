@@ -560,5 +560,12 @@
     "Gustavo Drummond De Andrade Salgado",
     "Gustavo Salgado Drummond de Andrade"
   ],
-  "notes": "Family-facing canonical dashboard profile updated for the first five-lesson journey through 15 Sep 2026. Preserve all five class reports as learning history. Movement is not reduced to state change: consolidation, retrieval, reconstruction, attempts and self-correction remain meaningful evidence."
+  "notes": "Family-facing canonical dashboard profile updated for the first five-lesson journey through 15 Sep 2026. Preserve all five class reports as learning history. Movement is not reduced to state change: consolidation, retrieval, reconstruction, attempts and self-correction remain meaningful evidence.",
+  "dashboardExperience": "young-learner",
+  "journeyExperience": {
+    "familyViewPath": "/journey/gustavo-5-lessons-7q4m9",
+    "learnerCheckInPath": "/journey/gustavo-5-lessons-7q4m9/check-in",
+    "selfPerceptionSchemaVersion": "learner-self-perception-v1",
+    "note": "Learner ratings represent perceived challenge, not proficiency or canonical state."
+  }
 }
