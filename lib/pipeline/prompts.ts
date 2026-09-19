@@ -10,7 +10,8 @@ import type {
   PromptTwoInput,
 } from './contracts'
 import type { LearningNarrativeDraft, NarrativeInput } from '@/lib/narrative/contracts'
-import { NARRATIVE_SYSTEM_PROMPT, buildNarrativePrompt } from '@/lib/narrative/prompts'
+import { NARRATIVE_SYSTEM_PROMPT, NARRATIVE_OUTPUT_CONTRACT } from '@/lib/narrative/prompts'
+import { prepareNarrativeInput, validateNarrativeDraft } from '@/lib/narrative/engine'
 
 const CANONICAL_CONTRACT = `
 PROMPT 1 OFFICIAL — AI LESSON EXTRACTION AND PROPOSAL — LOCKED
@@ -83,7 +84,7 @@ function promptVersionForStage(stage: string): string {
 export class GeminiGenerationError extends Error {
   readonly provider = 'gemini'
   readonly stage: string
-  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json'
+  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json' | 'validation_failed'
   readonly httpStatus?: number
   readonly model?: string
   readonly requestId?: string
@@ -292,20 +293,35 @@ export async function runPromptOne(input: LessonTranscriptInput, transcriptId: s
 
 
 export async function runNarrativeSynthesis(input: NarrativeInput): Promise<LearningNarrativeDraft> {
+  const preparedInput = prepareNarrativeInput(input)
   const generated = await invokeJson<LearningNarrativeDraft>(
     'prompt-5',
     NARRATIVE_SYSTEM_PROMPT,
-    input,
-    buildNarrativePrompt(input),
+    preparedInput,
+    NARRATIVE_OUTPUT_CONTRACT,
   )
-  return {
+  const draft: LearningNarrativeDraft = {
     ...generated,
     schemaVersion: 'learning-narrative.v1',
-    studentId: input.studentId,
-    currentLessonId: input.currentLesson.lessonId,
+    studentId: preparedInput.studentId,
+    currentLessonId: preparedInput.currentLesson.lessonId,
     narrativeStatus: 'draft',
     authorityStatus: 'non_authoritative',
     requiresTeacherReview: true,
+  }
+  const validation = validateNarrativeDraft(draft, preparedInput)
+  if (!validation.passed) {
+    throw new GeminiGenerationError(
+      'prompt-5',
+      'validation_failed',
+      \`Narrative grounding validation failed: \${validation.errors.join(' ')}\`,
+      undefined,
+      draft.generationProvenance,
+    )
+  }
+  return {
+    ...draft,
+    validation,
   }
 }
 
