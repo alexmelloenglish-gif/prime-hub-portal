@@ -57,7 +57,8 @@ CORE RULES
 11. Do not write an error list. Explain the episode.
 12. Do not invent a next step. Use only an authorized next step supplied in the input.
 13. Every segment must cite one or more evidenceIds. Every cited evidenceId must exist in the input.
-14. The final narrative must be understandable to a student or family and free of pipeline, hash, G1-G6, schema or engineering language.
+14. Evidence may be produced by the student, teacher, system or more than one source. Preserve that distinction internally; do not turn a student observation into teacher authority.
+15. The final narrative must be understandable to a student or family and free of pipeline, hash, G1-G6, schema or engineering language.
 
 NARRATIVE SHAPE
 - opening: where the learning was
