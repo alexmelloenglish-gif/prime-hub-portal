@@ -136,4 +136,21 @@ This naming/model remains open to brand refinement, but the separation of respon
 
 **Deprecated as central thesis:** `A próxima aula não começa do zero.` It may be retained only as a consequence after the continuity mechanism is already clear: the next lesson does not continue only from where the content stopped; it also considers what the learner's performance showed.
 
+---
+
+## 2026-09-19 — PD-012 — Preserve the learning journey beyond state changes
+
+**Classification:** CANONICAL CORE
+**Adoption status:** Proposed canonical amendment; pending review and merge. Runtime implementation is separate.
+
+**Decision:** PRIME preserves the construction of learning. Learning events, teacher-validated interpretations and authorized learner-state decisions are distinct. The absence of a state update must not become a conclusion of no learning. Purpose, documented opportunities for use, task conditions, support and uncertainty constrain comparisons, especially across sustained language development and bounded school-support work.
+
+**Authority:** The [System Governance Canon](../governance/PRIME-SYSTEM-GOVERNANCE-CANON.md) governs the derived [Learning Machine Canon](../governance/PRIME-LEARNING-MACHINE-CANON.md) and versioned presentation contracts.
+
+**Product consequence:** Lead with a source-grounded journey and actionable continuation. Retain correction/support/provenance detail for teacher intelligence and audit, and translate its material meaning for learners and families. Do not substitute a forced success story, an error list or a classification ladder for that journey.
+
+**Language-programme consequence:** Language is also a means of expression, participation and access to other knowledge. Distinguish the learner's appropriation of language, participation in a content task through that language, and understanding/retention of the subject. Recognize supported participation when evidenced without making later recall the only measure of its value.
+
+**Compatibility:** [Adoption registry](../governance/LEARNING-JOURNEY-AMENDMENT-2026-09-19.md). Historical versions and authority gates remain intact; no production or external-document update is implied by this decision log.
+
 **Copy lock:** The canonical continuity copy and its constraints are recorded in [`PHASE_1_CONTINUITY_COPY_LOCK.md`](../reconnection/PHASE_1_CONTINUITY_COPY_LOCK.md).
