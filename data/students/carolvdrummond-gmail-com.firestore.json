@@ -1,1 +1,565 @@
-{"studentId":"stu_4c4da6c04ac4","studentName":"Gustavo Drummond de Andrade Salgado","studentEmail":"carolvdrummond@gmail.com","identityVersion":"prime-student-id-v1","identitySource":"teacher_student_intake","profileStatus":"active","dashboardSourcePolicy":"authorized_repository_snapshot","teacherName":"Alexandre Mello","program":"English Learning — School Support & Fluency Development","classFrequency":"Weekly / Semanal","currentLevel":"CEFR A1 — progressing toward A2","targetLevel":"CEFR A2","focus":"Building functional English while using school subjects as meaningful contexts for vocabulary, comprehension, retrieval and complete-answer production.","attendanceRate":"4/4 confirmed","attendanceLabel":"Consistency: 4 of 4 completed lessons — consistent","manageSpace":[{"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit","description":"Open Gustavo's longitudinal family learning portfolio with class history, progress, vocabulary and feedback.","icon":"folder-open"},{"id":"live-class","title":"Join My Live Class","href":"https://meet.google.com/imu-dfuo-stc","description":"Join Gustavo's regular live lesson.","icon":"video"},{"id":"support","title":"Prime Support","href":"https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+o+atendimento%2C+pode+me+ajudar%3F&type=phone_number&app_absent=0","description":"Get help with links, platform questions or class logistics.","icon":"headphones"}],"portfolioNavigation":[{"id":"nav-attendance","title":"Attendance Overview","href":"#attendance-overview"},{"id":"nav-progress","title":"Progress Tracker","href":"#progress-tracker"},{"id":"nav-vocabulary","title":"Vocabulary Bank","href":"#vocabulary-bank"},{"id":"nav-grammar","title":"Grammar Overview","href":"#grammar-overview"},{"id":"nav-feedback","title":"Teacher Feedback","href":"#teacher-feedback"}],"canonicalProjection":{"version":"student-dashboard-v1.0","currentState":{"level":{"value":"CEFR A1 — progressing toward A2","qualifier":"Teacher-validated current level. Lesson 4 adds academic-English evidence but does not by itself justify a CEFR level change.","status":"teacher-validated"},"targetLevel":{"value":"CEFR A2","qualifier":"Current dashboard target remains A2 pending broader independent evidence.","status":"teacher-validated"},"objective":{"value":"Increase functional independence in English and strengthen the ability to understand, retrieve and explain school content in English.","qualifier":"Current objective integrates general English development with bilingual school support.","status":"teacher-validated"},"focus":{"value":"Simple Past foundations, complete answers, vocabulary retrieval, academic instructions and Science concept explanation in English.","qualifier":"Updated with primary evidence from the 08 September Science revision lesson.","status":"portfolio-confirmed"}},"whatChanged":{"title":"Gustavo successfully transferred English into a bilingual Science revision task","summary":"Lesson 4 shows that Gustavo can use English to classify nutrients, follow a scientific sequence and reconstruct digestive-system concepts with guided support. Repeated retrieval improved performance across the lesson, although independent mastery of every item is not yet claimed.","changeType":"both","evidence":"08 September 2026 primary Gemini transcript: nutrient classification, digestive-system sequencing, matching, gap-fill, sentence reconstruction and final recall quiz.","status":"teacher-validated"},"priorities":[{"id":"priority-retrieval","title":"Retrieval with decreasing support","why":"Lesson 4 showed that repeated recall works well; the next step is producing the same concepts with fewer prompts.","evidence":"Science review progressed from modeling to matching, reconstruction and final quiz.","status":"teacher-validated"},{"id":"priority-complete-answers","title":"Complete short answers","why":"Gustavo often knows the concept before he can express it as a complete English sentence.","evidence":"Across Lessons 1–4, teacher modeling helps convert short responses into usable sentences.","status":"teacher-validated"},{"id":"priority-simple-past","title":"Simple Past foundations","why":"Past-tense forms are becoming productive but remain inconsistent in spontaneous communication.","evidence":"Lessons 2–3 show emerging use with continued support needed for irregular forms and questions.","status":"teacher-validated"},{"id":"priority-academic-english","title":"Academic English through school content","why":"Science created a high-value context for reading instructions, sequencing and explaining concepts in English.","evidence":"Lesson 4 primary transcript and completed PRIME Science review materials.","status":"portfolio-confirmed"}],"nextAction":{"id":"post-science-test-follow-up","authorizationStatus":"teacher-validated","destination":"https://meet.google.com/imu-dfuo-stc","outcome":"Use the Science test result and Gustavo's recall after the assessment to identify what transferred independently and what needs recycling.","title":"Post-test evidence check","description":"After the Science test, compare what Gustavo remembers independently with the supported performance from Lesson 4, then return to core English development without losing the academic vocabulary gained.","evidence":"Science test scheduled for 09 September 2026 after the completed intensive review on 08 September.","status":"teacher-validated"},"schedule":{"status":"unknown","label":"Weekly Tuesday schedule continues; next lesson content will be adjusted after the Science test result is known."}},"progressTracker":[{"id":"speaking","title":"Speaking / Fala","status":"Developing","insight":"Participa ativamente e tenta responder mesmo quando precisa de modelagem ou pistas.","accent":"yellow"},{"id":"interaction","title":"Interaction / Interação","status":"Developing → Functional","insight":"Mantém trocas simples, reage aos prompts e aceita correção e repetição de forma produtiva.","accent":"green"},{"id":"grammar","title":"Grammar / Gramática","status":"Developing","insight":"Simple Past está emergindo de reconhecimento para uso produtivo, ainda com instabilidade em perguntas e irregulares.","accent":"yellow"},{"id":"vocabulary","title":"Vocabulary / Vocabulário","status":"Active Growth","insight":"O repertório agora inclui linguagem escolar e científica, além de viagens, tecnologia, saúde e interesses pessoais.","accent":"green"},{"id":"academic-english","title":"Academic English / Inglês Acadêmico","status":"Developing → Applied","insight":"Na Lesson 4, usou inglês para classificar nutrientes, seguir instruções, ordenar processos e reconstruir conceitos de Science.","accent":"green"},{"id":"retrieval","title":"Recall & Retrieval / Recuperação","status":"Improving with support","insight":"A repetição espaçada dentro da aula produziu melhora clara entre explicação inicial, exercícios e quiz final.","accent":"blue"},{"id":"listening","title":"Listening / Compreensão auditiva","status":"Developing","insight":"Segue prompts curtos e instruções acadêmicas, beneficiando-se de repetição e apoio visual.","accent":"blue"},{"id":"overall-communication","title":"Overall communication / Comunicação geral","status":"Functional A1 — progressing toward A2","insight":"Consegue transmitir significado em contextos familiares e escolares, com crescente capacidade de usar o inglês para aprender conteúdo.","accent":"green"}],"attendanceOverview":[{"id":"class-2026-08-18","date":"August 18, 2026","status":"present","title":"Welcome back, real-life speaking and personal interests","summary":"Gustavo reactivated English through travel, sports, games, school subjects and personal interests, showing strong willingness to participate."},{"id":"class-2026-08-25","date":"August 25, 2026","status":"present","title":"School subjects, Flight Simulator and Past Simple","summary":"Connected personal interests with Past Simple, reading/listening, numbers and school-subject vocabulary."},{"id":"class-2026-09-01","date":"September 1, 2026","status":"present","title":"School English exam review","summary":"Worked with Simple Past, health vocabulary, should/shouldn't, reflexive pronouns and superlatives; past negatives appeared in chat and questions with did were corrected."},{"id":"class-2026-09-08","date":"September 8, 2026","status":"present","title":"Science Exam Intensive Review — Food, Nutrients & Digestion","summary":"Primary transcript confirms guided recall, nutrient classification, digestive-system sequencing, matching, gap-fill, reconstruction and a final quiz before the 09 September Science test."}],"classReports":[{"id":"class-report-1","date":"18 August 2026","title":"Class Report - 18 Aug 2026","summary":"Welcome-back and personalization lesson using travel, sports, games, Flight Simulator, school subjects, pets and technology to reactivate English.","focus":["Speaking confidence","Travel","Games and technology","School subjects","Spelling and short answers"],"vocabulary":["airport","flight","trip","Flight Simulator","steering wheel","pedals","football"],"teacherInsight":"Personalized topics generate strong engagement and willingness to communicate.","status":"published","contentStatus":"published"},{"id":"class-report-2","date":"25 August 2026","title":"Class Report - 25 Aug 2026","summary":"Connected school subjects and Flight Simulator with Past Simple, reading/listening, numbers and homework routines.","focus":["School subjects","Flight Simulator","Past Simple","Reading and listening","Numbers"],"vocabulary":["geography","mathematics","history","music","went","played","was","were","fifteen","fifty"],"teacherInsight":"Guided recycling supports accuracy; independent retrieval still needs observation.","status":"published","contentStatus":"published"},{"id":"class-report-3","date":"1 September 2026","title":"Class Report - 01 Sep 2026","summary":"Reviewed Simple Past, health vocabulary, should/shouldn't, reflexives and superlatives. Gustavo produced past negatives in chat and worked on base-form questions after did.","focus":["Simple Past","Past questions","Health vocabulary","Should / shouldn't","Reflexives","Superlatives"],"vocabulary":["stomach ache","cough","fever","toothache","runny nose","should","shouldn't","tallest","coldest"],"teacherInsight":"Past-tense production is emerging; retrieval speed and question formation remain important targets.","status":"published","contentStatus":"published"},{"id":"class-report-4","date":"8 September 2026","title":"Class Report - 08 Sep 2026 — Science Intensive Review","summary":"A 60-minute bilingual Science revision based on the school test notice. Gustavo worked through food and nutrients, vitamins and minerals, and the digestive system using visual review, guided recall, matching, gap-fill, reordering, sentence reconstruction and a final quiz.","focus":["Healthy eating","Food and nutrients","Vitamins and minerals","Digestive system","Academic vocabulary","Recall and reconstruction"],"vocabulary":["balanced diet","nutrients","carbohydrates","proteins","fats","vitamins","minerals","fibre","calcium","iron","digestion","mouth","oesophagus","stomach","small intestine","large intestine","anus"],"teacherInsight":"Primary transcript evidence shows successful supported retrieval. Gustavo repeated 'give us energy' for carbohydrates, classified foods, reconstructed the digestive route and correctly retrieved the large intestine as the site of water absorption. The lesson supports consolidation, not a claim of independent mastery of every item.","status":"published","contentStatus":"published"}],"goals":[{"id":"goal-retrieval","title":"Build independent retrieval","description":"Move from model → hint → answer toward accurate answers with fewer prompts.","status":"on-track"},{"id":"goal-complete-answers","title":"Build complete short answers","description":"Turn known concepts and one-word responses into simple complete English sentences.","status":"on-track"},{"id":"goal-simple-past","title":"Consolidate Past Simple","description":"Increase consistency with affirmative, negative and question forms in meaningful contexts.","status":"on-track"},{"id":"goal-academic-english","title":"Use English to learn school content","description":"Continue developing vocabulary, sequencing and explanation skills through selected school topics when pedagogically useful.","status":"on-track"}],"vocabularyBank":[{"id":"v1","term":"carbohydrates","meaning":"nutrients that give the body energy","example":"Carbohydrates give us energy."},{"id":"v2","term":"proteins","meaning":"nutrients that help the body grow and repair","example":"Proteins help us grow and repair our body."},{"id":"v3","term":"fibre","meaning":"food component that helps movement through the digestive system","example":"Fibre helps food move through the digestive system."},{"id":"v4","term":"calcium","meaning":"mineral important for strong bones and teeth","example":"Calcium makes our bones and teeth strong."},{"id":"v5","term":"iron","meaning":"mineral important for healthy blood","example":"Iron helps keep our blood healthy."},{"id":"v6","term":"digestion","meaning":"the process of breaking down food so the body can use it","example":"Digestion begins in the mouth."},{"id":"v7","term":"oesophagus","meaning":"tube that carries food from the mouth to the stomach","example":"Food moves down the oesophagus."},{"id":"v8","term":"stomach","meaning":"organ that mixes food with digestive juices","example":"The stomach mixes food with digestive juices."},{"id":"v9","term":"small intestine","meaning":"organ where nutrients are absorbed into the blood","example":"The small intestine absorbs nutrients into the blood."},{"id":"v10","term":"large intestine","meaning":"organ where water is absorbed","example":"The large intestine absorbs water."},{"id":"v11","term":"went","meaning":"past of go","example":"I went to school yesterday."},{"id":"v12","term":"didn't go","meaning":"negative Past Simple pattern","example":"I didn't go to the beach."},{"id":"v13","term":"Did you...?","meaning":"Past Simple question starter","example":"Did you play football yesterday?"},{"id":"v14","term":"should","meaning":"modal verb used for advice","example":"You should rest."},{"id":"v15","term":"Flight Simulator","meaning":"a computer simulation used to practice flying aircraft","example":"I like playing Flight Simulator."}],"grammarOverview":{"title":"Grammar & Language Overview (Cumulative)","summary":"Gustavo remains on an A1-to-A2 developmental path. Lesson 4 adds evidence that he can apply English to academic content when language is scaffolded through visual support, repetition and retrieval cycles.","focusPoints":["Simple Past: emerging productive use; continue building automatic retrieval.","Past questions: repeat Did + subject + base verb in meaningful contexts.","Complete answers: convert one-word knowledge into short accurate sentences.","Academic sequencing: use first, then, next, after that and finally to explain processes.","Science sentence frames: Carbohydrates give us energy; Proteins help us grow and repair; Digestion begins in the mouth; The small intestine absorbs nutrients; The large intestine absorbs water."]},"teacherFeedback":[{"id":"feedback-pt","title":"Feedback do Professor","body":"Gustavo mostrou nesta quarta aula que consegue usar o inglês não apenas para conversar, mas também como ferramenta para revisar conteúdo escolar. O melhor resultado apareceu quando o conteúdo foi recuperado várias vezes: primeiro com apoio visual e modelagem, depois em atividades de associação e organização, e finalmente em perguntas de recall. O próximo passo é observar quanto desse conhecimento ele recupera com menos ajuda após a prova, sem abandonar o desenvolvimento estrutural do inglês."},{"id":"feedback-en","title":"Teacher Feedback","body":"Lesson 4 showed that Gustavo can use English not only for conversation but also as a tool for learning school content. His strongest performance appeared when information was retrieved repeatedly: first with visual support and modeling, then through matching and sequencing, and finally through recall questions. The next step is to observe how much he retrieves with less support after the test while continuing his core English development."}],"cumulativeImpact":{"title":"Longitudinal Change — Lessons 1–4","summary":"Personalized communication → emerging Past Simple production → school-language consolidation → successful supported use of English for bilingual Science review. Progress is visible in participation, retrieval and functional application; CEFR level remains unchanged pending broader independent evidence.","evidence":["4/4 completed lessons confirmed: 18 Aug, 25 Aug, 01 Sep and 08 Sep 2026.","Lesson 3 showed emerging productive Past Simple use with continued support needs.","Lesson 4 primary transcript confirms Science vocabulary retrieval, digestive-system sequencing and final quiz participation.","Repeated recall and reconstruction were effective learning mechanisms for Gustavo.","The next meaningful evidence point is post-test recall and the Science test result, if shared by the family."]},"lessonRecords":[],"identityAliases":["carolvdrummond@gmail.com","Gustavo Drummond De Andrade Salgado","Gustavo Salgado Drummond de Andrade"],"notes":"Family-facing canonical dashboard profile. Four completed lessons are confirmed. Lesson 4 on 08 Sep 2026 is grounded in the primary Gemini transcript and PRIME Science review materials. Preserve prior reports and update progress only when evidence justifies it."}
+{
+  "studentId": "stu_4c4da6c04ac4",
+  "studentName": "Gustavo Drummond de Andrade Salgado",
+  "studentEmail": "carolvdrummond@gmail.com",
+  "identityVersion": "prime-student-id-v1",
+  "identitySource": "teacher_student_intake",
+  "profileStatus": "active",
+  "dashboardSourcePolicy": "authorized_repository_snapshot",
+  "teacherName": "Alexandre Mello",
+  "program": "English Learning — School Support & Fluency Development",
+  "classFrequency": "Weekly / Semanal",
+  "currentLevel": "CEFR A1 — progressing toward A2",
+  "targetLevel": "CEFR A2",
+  "focus": "Using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and use English for school content when relevant.",
+  "attendanceRate": "5/5 confirmed",
+  "attendanceLabel": "Consistency: 5 of 5 completed lessons — consistent",
+  "manageSpace": [
+    {
+      "id": "portfolio",
+      "title": "My Portfolio",
+      "href": "https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit",
+      "description": "Open Gustavo's longitudinal family learning portfolio with class history, progress, vocabulary and feedback.",
+      "icon": "folder-open"
+    },
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/imu-dfuo-stc",
+      "description": "Join Gustavo's regular live lesson.",
+      "icon": "video"
+    },
+    {
+      "id": "support",
+      "title": "Prime Support",
+      "href": "https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+o+atendimento%2C+pode+me+ajudar%3F&type=phone_number&app_absent=0",
+      "description": "Get help with links, platform questions or class logistics.",
+      "icon": "headphones"
+    }
+  ],
+  "portfolioNavigation": [
+    {
+      "id": "nav-attendance",
+      "title": "Attendance Overview",
+      "href": "#attendance-overview"
+    },
+    {
+      "id": "nav-progress",
+      "title": "Progress Tracker",
+      "href": "#progress-tracker"
+    },
+    {
+      "id": "nav-vocabulary",
+      "title": "Vocabulary Bank",
+      "href": "#vocabulary-bank"
+    },
+    {
+      "id": "nav-grammar",
+      "title": "Grammar Overview",
+      "href": "#grammar-overview"
+    },
+    {
+      "id": "nav-feedback",
+      "title": "Teacher Feedback",
+      "href": "#teacher-feedback"
+    }
+  ],
+  "canonicalProjection": {
+    "version": "student-dashboard-v1.0",
+    "currentState": {
+      "level": {
+        "value": "CEFR A1 — progressing toward A2",
+        "qualifier": "Teacher-validated current level. The five-lesson journey shows meaningful movement in use, retrieval and self-monitoring, but does not yet justify a CEFR level change.",
+        "status": "teacher-validated"
+      },
+      "targetLevel": {
+        "value": "CEFR A2",
+        "qualifier": "The direction remains A2: broader independent communication across familiar personal and school contexts.",
+        "status": "teacher-validated"
+      },
+      "objective": {
+        "value": "Use English increasingly as a tool to express his own world, tell real stories, learn school content when useful, and become more aware of how he learns.",
+        "qualifier": "The objective combines functional English development with learner awareness rather than treating grammar labels as the destination.",
+        "status": "teacher-validated"
+      },
+      "focus": {
+        "value": "Past stories and experiences, accurate present/past short answers, independent vocabulary retrieval, complete sentence production, self-correction and continued use of academic English when relevant.",
+        "qualifier": "Updated after Lesson 5 on 15 September 2026.",
+        "status": "teacher-validated"
+      }
+    },
+    "whatChanged": {
+      "title": "Past language returned in real communication — and Gustavo began noticing his own answers",
+      "summary": "Across the five lessons, Gustavo repeatedly used English to talk about his own world. Past language returned in different contexts instead of being treated as a one-off grammar topic. On 15 September, after answering a past question with “I don't”, he changed it to “No, I didn't”. He also reused went and drank in personal sentences. In Science, some language from the previous week was available again while other ideas needed another pass. This is evidence of movement, retrieval and noticing — not a claim that every form is already mastered independently.",
+      "changeType": "learner-progress",
+      "evidence": "Lessons 1–5: recurring past-language use in personal contexts; 15 Sep self-correction “I don't” → “No, I didn't”; reuse of went/drank; partial Science retrieval after one week.",
+      "status": "teacher-validated"
+    },
+    "priorities": [
+      {
+        "id": "priority-past-stories",
+        "title": "Tell real stories about the past",
+        "why": "Past forms become more meaningful when they help Gustavo talk about his own experiences rather than exist only as a grammar exercise.",
+        "evidence": "Across Lessons 1, 3 and 5, personal experiences naturally brought past language back into use.",
+        "status": "teacher-validated"
+      },
+      {
+        "id": "priority-now-past",
+        "title": "Listen for NOW vs PAST",
+        "why": "Choosing between Do...? and Did...? depends first on noticing the time meaning of the question.",
+        "evidence": "Lesson 5 showed present answers were more accessible while past answers varied between independent production and supported retrieval.",
+        "status": "teacher-validated"
+      },
+      {
+        "id": "priority-retrieval",
+        "title": "Try to retrieve before receiving help",
+        "why": "A clue or model can support learning, but the next useful evidence comes from seeing what returns when Gustavo tries first.",
+        "evidence": "Science and general-English tasks across Lessons 4–5 showed a mix of independent recall and supported reconstruction.",
+        "status": "teacher-validated"
+      },
+      {
+        "id": "priority-awareness",
+        "title": "Become a learning detective",
+        "why": "Gustavo is beginning to notice his own language. Brief reflection can help him recognize what he used, what he corrected and what he wants to try again.",
+        "evidence": "Lesson 5 self-correction provides a concrete starting point for learner self-awareness.",
+        "status": "teacher-validated"
+      }
+    ],
+    "nextAction": {
+      "id": "journey-check-in-and-past-story",
+      "authorizationStatus": "teacher-validated",
+      "destination": "https://meet.google.com/imu-dfuo-stc",
+      "outcome": "Compare Gustavo's own perception of what feels easy, possible with help or still needing study with fresh performance evidence from selected tasks.",
+      "title": "My English Journey Check-In + a new real story",
+      "description": "Start with a short self-awareness check-in about the language explored in these five lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.",
+      "evidence": "The first five lessons provide enough varied evidence to make learner perception itself a useful next source of information.",
+      "status": "teacher-validated"
+    },
+    "schedule": {
+      "status": "scheduled",
+      "label": "Regular Tuesday lesson cycle continues; the next lesson will use the five-lesson journey evidence and Gustavo's own self-assessment to choose what to revisit."
+    }
+  },
+  "progressTracker": [
+    {
+      "id": "real-life-speaking",
+      "title": "Real-life speaking / Falar sobre a própria vida",
+      "status": "Strong",
+      "insight": "Gustavo participates willingly and uses English to talk about holidays, school, sports, games, family and other parts of his own world.",
+      "accent": "green"
+    },
+    {
+      "id": "past-stories",
+      "title": "Past stories / Contar o que aconteceu",
+      "status": "Improving",
+      "insight": "Past forms have returned across several lessons. Sometimes they come independently; sometimes a clue or model is still useful.",
+      "accent": "blue"
+    },
+    {
+      "id": "now-vs-past",
+      "title": "Now or past? / Entender Do e Did",
+      "status": "Improving",
+      "insight": "Present answers are more accessible. Past answers are becoming more available, but consistency still varies.",
+      "accent": "yellow"
+    },
+    {
+      "id": "self-correction",
+      "title": "Noticing & self-correction / Perceber e tentar de novo",
+      "status": "Improving",
+      "insight": "On 15 September, Gustavo noticed that “I don't” did not match a past question and changed it to “No, I didn't”.",
+      "accent": "green"
+    },
+    {
+      "id": "retrieval",
+      "title": "Remembering & retrieving / Lembrar e recuperar",
+      "status": "Improving",
+      "insight": "Some Science language was still available after one week; other ideas benefited from another encounter. Both are useful evidence for what to revisit.",
+      "accent": "blue"
+    },
+    {
+      "id": "academic-english",
+      "title": "English for learning / Inglês para aprender outras coisas",
+      "status": "Improving",
+      "insight": "Gustavo used English to work with nutrients and digestion, showing that English can function as a tool for learning, not only as the lesson subject.",
+      "accent": "green"
+    }
+  ],
+  "attendanceOverview": [
+    {
+      "id": "class-2026-08-18",
+      "date": "August 18, 2026",
+      "status": "present",
+      "title": "Welcome back, real-life speaking and personal interests",
+      "summary": "Gustavo reactivated English through travel, sports, games, school subjects and personal interests, showing strong willingness to participate."
+    },
+    {
+      "id": "class-2026-08-25",
+      "date": "August 25, 2026",
+      "status": "present",
+      "title": "School subjects, Flight Simulator and Past Simple",
+      "summary": "Connected personal interests with Past Simple, reading/listening, numbers and school-subject vocabulary."
+    },
+    {
+      "id": "class-2026-09-01",
+      "date": "September 1, 2026",
+      "status": "present",
+      "title": "School English exam review",
+      "summary": "Worked with Simple Past, health vocabulary, should/shouldn't, reflexive pronouns and superlatives; past negatives appeared in chat and questions with did were corrected."
+    },
+    {
+      "id": "class-2026-09-08",
+      "date": "September 8, 2026",
+      "status": "present",
+      "title": "Science Exam Intensive Review — Food, Nutrients & Digestion",
+      "summary": "Primary transcript confirms guided recall, nutrient classification, digestive-system sequencing, matching, gap-fill, reconstruction and a final quiz before the 09 September Science test."
+    },
+    {
+      "id": "class-2026-09-15",
+      "date": "September 15, 2026",
+      "status": "present",
+      "title": "Science recall, present/past answers and personal past sentences",
+      "summary": "Checked what remained available from the previous Science lesson, returned to general English, contrasted Do/Did, reused past verbs in personal sentences and produced a notable self-correction."
+    }
+  ],
+  "classReports": [
+    {
+      "id": "class-report-1",
+      "date": "18 August 2026",
+      "title": "Class Report - 18 Aug 2026",
+      "summary": "Welcome-back and personalization lesson using travel, sports, games, Flight Simulator, school subjects, pets and technology to reactivate English.",
+      "focus": [
+        "Speaking confidence",
+        "Travel",
+        "Games and technology",
+        "School subjects",
+        "Spelling and short answers"
+      ],
+      "vocabulary": [
+        "airport",
+        "flight",
+        "trip",
+        "Flight Simulator",
+        "steering wheel",
+        "pedals",
+        "football"
+      ],
+      "teacherInsight": "Personalized topics generate strong engagement and willingness to communicate.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2",
+      "date": "25 August 2026",
+      "title": "Class Report - 25 Aug 2026",
+      "summary": "Connected school subjects and Flight Simulator with Past Simple, reading/listening, numbers and homework routines.",
+      "focus": [
+        "School subjects",
+        "Flight Simulator",
+        "Past Simple",
+        "Reading and listening",
+        "Numbers"
+      ],
+      "vocabulary": [
+        "geography",
+        "mathematics",
+        "history",
+        "music",
+        "went",
+        "played",
+        "was",
+        "were",
+        "fifteen",
+        "fifty"
+      ],
+      "teacherInsight": "Guided recycling supports accuracy; independent retrieval still needs observation.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-3",
+      "date": "1 September 2026",
+      "title": "Class Report - 01 Sep 2026",
+      "summary": "Reviewed Simple Past, health vocabulary, should/shouldn't, reflexives and superlatives. Gustavo produced past negatives in chat and worked on base-form questions after did.",
+      "focus": [
+        "Simple Past",
+        "Past questions",
+        "Health vocabulary",
+        "Should / shouldn't",
+        "Reflexives",
+        "Superlatives"
+      ],
+      "vocabulary": [
+        "stomach ache",
+        "cough",
+        "fever",
+        "toothache",
+        "runny nose",
+        "should",
+        "shouldn't",
+        "tallest",
+        "coldest"
+      ],
+      "teacherInsight": "Past-tense production is emerging; retrieval speed and question formation remain important targets.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-4",
+      "date": "8 September 2026",
+      "title": "Class Report - 08 Sep 2026 — Science Intensive Review",
+      "summary": "A 60-minute bilingual Science revision based on the school test notice. Gustavo worked through food and nutrients, vitamins and minerals, and the digestive system using visual review, guided recall, matching, gap-fill, reordering, sentence reconstruction and a final quiz.",
+      "focus": [
+        "Healthy eating",
+        "Food and nutrients",
+        "Vitamins and minerals",
+        "Digestive system",
+        "Academic vocabulary",
+        "Recall and reconstruction"
+      ],
+      "vocabulary": [
+        "balanced diet",
+        "nutrients",
+        "carbohydrates",
+        "proteins",
+        "fats",
+        "vitamins",
+        "minerals",
+        "fibre",
+        "calcium",
+        "iron",
+        "digestion",
+        "mouth",
+        "oesophagus",
+        "stomach",
+        "small intestine",
+        "large intestine",
+        "anus"
+      ],
+      "teacherInsight": "Primary transcript evidence shows successful supported retrieval. Gustavo repeated 'give us energy' for carbohydrates, classified foods, reconstructed the digestive route and correctly retrieved the large intestine as the site of water absorption. The lesson supports consolidation, not a claim of independent mastery of every item.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-5",
+      "date": "15 September 2026",
+      "title": "Class Report - 15 Sep 2026",
+      "summary": "Returned to general English after the Science review. Gustavo checked Science memory after one week, contrasted Do/Did answers, reused past verbs and built personal sentences.",
+      "focus": [
+        "Science recall after one week",
+        "Do / Did",
+        "Past short answers",
+        "Past verbs",
+        "Personal sentences",
+        "Self-correction"
+      ],
+      "vocabulary": [
+        "went",
+        "drank",
+        "did",
+        "didn't",
+        "large intestine"
+      ],
+      "teacherInsight": "Transfer points — Evidence: After “Did you go...?”, Gustavo first answered “I don't” and then changed it to “No, I didn't”. He also reused went and drank in personal sentences and recalled part of the Science language after one week. Interpretation: Past meaning is returning across contexts and there is emerging evidence of self-monitoring while speaking. Boundary: One self-correction does not establish mastery, and Science recall varied between independent retrieval and reconstruction with support. Next verification: Invite a new real past story, contrast Do/Did, let Gustavo attempt retrieval before help, and use a short learner-awareness check-in.",
+      "status": "published",
+      "contentStatus": "published"
+    }
+  ],
+  "goals": [
+    {
+      "id": "goal-past-story",
+      "title": "Tell real past stories",
+      "description": "Use past language to talk about real experiences, not only isolated exercises.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-now-past",
+      "title": "Hear the time meaning in questions",
+      "description": "Notice whether a question is about routines/now or a completed past event before choosing Do or Did.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-complete-message",
+      "title": "Build complete short messages",
+      "description": "Turn short answers into clear personal sentences that communicate a complete idea.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-retrieve-first",
+      "title": "Try to remember before the clue",
+      "description": "Attempt retrieval first, then use a clue or model when it helps learning continue.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-awareness",
+      "title": "Notice my own learning",
+      "description": "Recognize what feels easy, what needs help, what needs more practice and what changed during a lesson.",
+      "status": "on-track"
+    }
+  ],
+  "vocabularyBank": [
+    {
+      "id": "v1",
+      "term": "carbohydrates",
+      "meaning": "nutrients that give the body energy",
+      "example": "Carbohydrates give us energy."
+    },
+    {
+      "id": "v2",
+      "term": "proteins",
+      "meaning": "nutrients that help the body grow and repair",
+      "example": "Proteins help us grow and repair our body."
+    },
+    {
+      "id": "v3",
+      "term": "fibre",
+      "meaning": "food component that helps movement through the digestive system",
+      "example": "Fibre helps food move through the digestive system."
+    },
+    {
+      "id": "v4",
+      "term": "calcium",
+      "meaning": "mineral important for strong bones and teeth",
+      "example": "Calcium makes our bones and teeth strong."
+    },
+    {
+      "id": "v5",
+      "term": "iron",
+      "meaning": "mineral important for healthy blood",
+      "example": "Iron helps keep our blood healthy."
+    },
+    {
+      "id": "v6",
+      "term": "digestion",
+      "meaning": "the process of breaking down food so the body can use it",
+      "example": "Digestion begins in the mouth."
+    },
+    {
+      "id": "v7",
+      "term": "oesophagus",
+      "meaning": "tube that carries food from the mouth to the stomach",
+      "example": "Food moves down the oesophagus."
+    },
+    {
+      "id": "v8",
+      "term": "stomach",
+      "meaning": "organ that mixes food with digestive juices",
+      "example": "The stomach mixes food with digestive juices."
+    },
+    {
+      "id": "v9",
+      "term": "small intestine",
+      "meaning": "organ where nutrients are absorbed into the blood",
+      "example": "The small intestine absorbs nutrients into the blood."
+    },
+    {
+      "id": "v10",
+      "term": "large intestine",
+      "meaning": "organ where water is absorbed",
+      "example": "The large intestine absorbs water."
+    },
+    {
+      "id": "v11",
+      "term": "went",
+      "meaning": "past of go",
+      "example": "I went to school yesterday."
+    },
+    {
+      "id": "v12",
+      "term": "didn't go",
+      "meaning": "negative Past Simple pattern",
+      "example": "I didn't go to the beach."
+    },
+    {
+      "id": "v13",
+      "term": "Did you...?",
+      "meaning": "Past Simple question starter",
+      "example": "Did you play football yesterday?"
+    },
+    {
+      "id": "v14",
+      "term": "should",
+      "meaning": "modal verb used for advice",
+      "example": "You should rest."
+    },
+    {
+      "id": "v15",
+      "term": "Flight Simulator",
+      "meaning": "a computer simulation used to practice flying aircraft",
+      "example": "I like playing Flight Simulator."
+    },
+    {
+      "id": "v16",
+      "term": "drank",
+      "meaning": "past of drink",
+      "example": "I drank water yesterday."
+    },
+    {
+      "id": "v17",
+      "term": "Do you...?",
+      "meaning": "question starter often used for routines and present habits",
+      "example": "Do you play football?"
+    },
+    {
+      "id": "v18",
+      "term": "No, I didn't.",
+      "meaning": "short negative answer to a past question with Did",
+      "example": "Did you go to the cinema? No, I didn't."
+    },
+    {
+      "id": "v19",
+      "term": "myself / herself",
+      "meaning": "words used when the action returns to the same person",
+      "example": "I burnt myself. She looked at herself."
+    },
+    {
+      "id": "v20",
+      "term": "the most / -est",
+      "meaning": "patterns used to compare one thing with all the others",
+      "example": "the hottest; the most interesting"
+    }
+  ],
+  "grammarOverview": {
+    "title": "Language We Are Building",
+    "summary": "The aim is not to collect grammar labels. These language patterns matter because they help Gustavo tell stories, understand time, give advice, describe relationships between actions and people, compare things, and use English to learn.",
+    "focusPoints": [
+      "Talking about past experiences: use forms such as went and drank, and didn't + base verb.",
+      "Understanding time in questions: Do...? usually asks about routines or the present; Did...? asks about completed past events.",
+      "Giving advice: use should / shouldn't to say what someone could do.",
+      "Actions that return to the same person: myself, yourself, himself, herself.",
+      "Comparing one thing with all the others: shorter words often use -est; longer words often use the most; some forms are irregular, such as best.",
+      "Science in English: useful academic vocabulary and sequencing remain available for reuse when relevant."
+    ]
+  },
+  "teacherFeedback": [
+    {
+      "id": "feedback-journey-en",
+      "title": "Your first five-lesson journey",
+      "body": "Over these five lessons, Gustavo has been using English increasingly to talk about things that belong to his own world — holidays, school, sports, games and experiences. Talking about things that happened naturally brought past language into conversation. Those forms have returned several times: sometimes with a model or clue, sometimes through retrieval, and on 15 September through a clear self-correction. English was also used as a tool for Science. One week later, some of that language returned easily and some needed another pass. The important story is not simply what was right or wrong: it is that Gustavo is using, revisiting, noticing and reconnecting language over time."
+    },
+    {
+      "id": "feedback-journey-pt",
+      "title": "Leitura pedagógica da jornada",
+      "body": "Aprender não acontece em linha reta. Uma aula pode apresentar algo novo, fortalecer algo antigo, revelar um erro útil, recuperar uma ideia depois de alguns dias ou ajudar o aluno a perceber melhor o próprio inglês. O próximo ciclo vai preservar essa lógica: cada aula terá uma direção, sem exigir uma 'mudança de estado' artificial. Queremos que Gustavo se torne também um observador da própria aprendizagem — percebendo o que já consegue fazer, o que consegue tentar com ajuda e o que ainda quer estudar mais."
+    }
+  ],
+  "cumulativeImpact": {
+    "title": "Learning Journey — First 5 Lessons",
+    "summary": "Gustavo moved from reactivating English through personal conversation to repeatedly using past meaning in new contexts, preparing school content through English, retrieving part of that content after a week and beginning to notice and repair some of his own language. The journey is still in progress: repeated practice, support, reconstruction and consolidation are part of the movement, not evidence of failure.",
+    "evidence": [
+      "5/5 completed lessons confirmed: 18 Aug, 25 Aug, 01 Sep, 08 Sep and 15 Sep 2026.",
+      "Past meaning returned across personal conversation, school review and follow-up tasks rather than appearing only once.",
+      "15 Sep: self-correction from “I don't” to “No, I didn't” after a past question.",
+      "15 Sep: went and drank reused in personal sentences.",
+      "Science vocabulary and concepts showed mixed retrieval after one week: some remained available and some needed another pass.",
+      "No CEFR level change is claimed from these five lessons alone."
+    ]
+  },
+  "lessonRecords": [],
+  "identityAliases": [
+    "carolvdrummond@gmail.com",
+    "Gustavo Drummond De Andrade Salgado",
+    "Gustavo Salgado Drummond de Andrade",
+    "gustavo@leadster.com.br"
+  ],
+  "notes": "Family-facing canonical dashboard profile updated for the first five-lesson journey through 15 Sep 2026. Preserve all five class reports as learning history. Movement is not reduced to state change: consolidation, retrieval, reconstruction, attempts and self-correction remain meaningful evidence. gustavo@leadster.com.br is an additional teacher-authorized access email for the same learner; do not create a new studentId."
+}
