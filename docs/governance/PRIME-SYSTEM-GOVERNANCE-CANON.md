@@ -59,7 +59,7 @@ A **pattern** is a bounded interpretation supported by multiple relevant events.
 
 A **state** is a separate authorized decision about a defined learner claim.
 
-An error is therefore not a state. A self-correction is not a state. Repeated correct use is not required to produce a new state. These events may contribute to later interpretation when their context and recurrence justify it.
+An error is therefore not a state and does not have an automatic positive or negative meaning. It may reflect non-consolidation, a lapse under particular conditions, a more ambitious attempt, a task mismatch, a need for another encounter, or another explanation supported by the surrounding evidence. A self-correction is not a state. Repeated correct use is not required to produce a new state. These events may contribute to later interpretation when their context, purpose and recurrence justify it.
 
 A documented sequence may include error → noticing → prompted correction → self-correction → repeated accurate use → less need for correction, but this is an example of a possible history, not a required developmental ladder. Learning may move through these events in different orders, repeat them, skip them or return to them.
 
