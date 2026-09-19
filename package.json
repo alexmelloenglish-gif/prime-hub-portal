@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
-    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs && node scripts/canonical-student-consistency-audit.mjs && node scripts/student-dashboard-contract-regression-self-test.mjs",
+    "student-dashboard:self-test": "node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs && node scripts/canonical-student-consistency-audit.mjs && node scripts/student-dashboard-contract-regression-self-test.mjs && node scripts/g6-consumer-authority-self-test.mjs",
     "portfolio:truth-audit": "node scripts/portfolio-class-report-truth-audit.mjs",
     "verify:student-dashboard": "npm run student-dashboard:self-test && npm run canonical:validate:strict",
     "eligibility:self-test": "node scripts/eligibility-boundary-self-test.mjs",
@@ -29,6 +29,7 @@
     "canonical-independent-projection:g4:self-test": "node scripts/canonical-independent-projection-g4-self-test.mjs",
     "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs",
     "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs",
+    "g6:consumer-authority:self-test": "node scripts/g6-consumer-authority-self-test.mjs",
     "db:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {

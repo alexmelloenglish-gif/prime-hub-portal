@@ -7,6 +7,7 @@ import { authOptions } from '@/lib/auth'
 import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
 import { isAuthorizedLearner } from '@/lib/learner-eligibility'
 import { resolveStudentProfileAsset } from '@/lib/canonical-dashboard'
+import { getG6CanonicalDashboardState, isG6CanonicalConsumerEnabled } from '@/lib/g6-canonical-consumer'
 
 export default async function DashboardLayout({
   children,
@@ -34,22 +35,51 @@ export default async function DashboardLayout({
   }
 
   const adminUser = isAdminUser(activeUser)
-  const studentState = await getStudentDashboardState(activeUser)
-  const activeStudentEmail = studentState.student?.studentEmail ?? activeUser.email
-  const eligibleLearner = isAuthorizedLearner(activeStudentEmail)
 
-  if (!adminUser && !eligibleLearner && process.env.NODE_ENV !== 'development') {
-    redirect('/pending-access')
+  let topbarUser: {
+    name: string | null | undefined
+    email: string | null | undefined
+    image: string | null
   }
 
-  if (!studentState.hasAccess && !adminUser && process.env.NODE_ENV !== 'development') {
-    redirect('/pending-access')
-  }
+  if (!adminUser && isG6CanonicalConsumerEnabled()) {
+    const canonicalState = await getG6CanonicalDashboardState(activeUser)
 
-  const topbarUser = {
-    name: studentState.student?.studentName ?? activeUser.name,
-    email: studentState.student?.studentEmail ?? activeUser.email,
-    image: resolveStudentProfileAsset(studentState.student?.studentId, activeUser.image),
+    if (canonicalState.status !== 'AUTHORIZED' && process.env.NODE_ENV !== 'development') {
+      redirect('/pending-access')
+    }
+
+    if (canonicalState.status === 'AUTHORIZED') {
+      topbarUser = {
+        name: canonicalState.learnerName,
+        email: canonicalState.accountContactEmail ?? activeUser.email,
+        image: resolveStudentProfileAsset(canonicalState.learnerId, activeUser.image),
+      }
+    } else {
+      topbarUser = {
+        name: activeUser.name,
+        email: activeUser.email,
+        image: activeUser.image ?? null,
+      }
+    }
+  } else {
+    const studentState = await getStudentDashboardState(activeUser)
+    const activeStudentEmail = studentState.student?.studentEmail ?? activeUser.email
+    const eligibleLearner = isAuthorizedLearner(activeStudentEmail)
+
+    if (!adminUser && !eligibleLearner && process.env.NODE_ENV !== 'development') {
+      redirect('/pending-access')
+    }
+
+    if (!studentState.hasAccess && !adminUser && process.env.NODE_ENV !== 'development') {
+      redirect('/pending-access')
+    }
+
+    topbarUser = {
+      name: studentState.student?.studentName ?? activeUser.name,
+      email: studentState.student?.studentEmail ?? activeUser.email,
+      image: resolveStudentProfileAsset(studentState.student?.studentId, activeUser.image),
+    }
   }
 
   return (

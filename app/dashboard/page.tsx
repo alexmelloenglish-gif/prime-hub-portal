@@ -15,6 +15,7 @@ import {
   NextActionCard,
 } from '@/components/dashboard/student-dashboard-primitives'
 import { ProgressStateBadge } from '@/components/dashboard/progress-state-badge'
+import { G6CanonicalDashboardOverview } from '@/components/dashboard/g6-canonical-dashboard-overview'
 import { VocabularyReuseGrid } from '@/components/dashboard/vocabulary-reuse-grid'
 import { authOptions } from '@/lib/auth'
 import { canonicalLessonId } from '@/lib/canonical-student-projection'
@@ -25,6 +26,7 @@ import {
   selectCurrentFeedback,
 } from '@/lib/dashboard-display-budget'
 import { normalizeProgressState } from '@/lib/progress-states'
+import { getG6CanonicalDashboardState, isG6CanonicalConsumerEnabled } from '@/lib/g6-canonical-consumer'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -91,6 +93,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const session = await getServerSession(authOptions)
   const resolvedSearchParams = searchParams ? await searchParams : undefined
   if (!session?.user) redirect('/login')
+
+  if (isG6CanonicalConsumerEnabled() && !isAdminUser(session.user)) {
+    const canonicalState = await getG6CanonicalDashboardState(session.user)
+    if (canonicalState.status !== 'AUTHORIZED') {
+      redirect('/pending-access')
+    }
+
+    return <G6CanonicalDashboardOverview state={canonicalState} />
+  }
 
   const studentState = await getStudentDashboardState(session.user, resolvedSearchParams?.studentEmail)
   if (!studentState.hasAccess || !studentState.student) {
