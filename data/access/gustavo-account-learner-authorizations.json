@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "phase3-account-learner-authorization-v1",
+  "decision": {
+    "authorizedByEmail": "alexandre@primedigitalhub.com.br",
+    "sourceType": "owner_explicit_authorization",
+    "sourceReference": "phase3-gustavo-dual-account-access-2026-09-18",
+    "decisionDate": "2026-09-18"
+  },
+  "learner": {
+    "studentId": "stu_4c4da6c04ac4",
+    "displayName": "Gustavo Drummond de Andrade Salgado"
+  },
+  "accounts": [
+    {
+      "email": "gugasalgado7@gmail.com",
+      "name": "Gustavo Drummond de Andrade Salgado",
+      "relationType": "LEARNER_SELF",
+      "relationshipContext": "learner_self"
+    },
+    {
+      "email": "carolvdrummond@gmail.com",
+      "name": "Carol",
+      "relationType": "AUTHORIZED_ACCESS",
+      "relationshipContext": "mother_responsible"
+    }
+  ]
+}
