@@ -15,6 +15,7 @@ export type NarrativeEvidence = {
   statement: string
   sourceRefs: string[]
   authorization: 'teacher_validated' | 'canonical'
+  producer: 'student' | 'teacher' | 'system' | 'mixed' | 'unknown'
   domain: 'language' | 'content' | 'mixed' | 'unknown'
   support?: string | null
   relatedLessonIds?: string[]
