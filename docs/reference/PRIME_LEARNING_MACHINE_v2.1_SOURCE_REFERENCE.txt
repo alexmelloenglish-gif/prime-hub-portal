@@ -1,0 +1,899 @@
+PRIME LEARNING MACHINE v2.1 — HISTORICAL SOURCE REFERENCE
+
+Source: PRIME_Learning_Machine_FINAL_v2.1_MERGED.pdf, dated 18 September 2026, 23 pages.
+Provenance: text extracted from the owner-provided existing manual; this is not a new specification reconstructed from a transcript or projected learner state.
+Version note: cover/running headers say v2.0; sections 41–43 contain the v1.5 merge and final v2.1 overrides. These historical inconsistencies are preserved.
+Public-copy redactions: the private pilot learner name and lesson date are replaced by [PRIVATE PILOT] references; no learner source text is included.
+Current operating instructions and reconciliation of later owner decisions: ../operations/LEARNING_MACHINE_EXECUTION_HANDOFF_2026-09-19.md.
+This archived text is not proof of current runtime behavior. Later explicit owner decisions govern the scoped updates described in the handoff.
+
+BEGIN EXTRACTED SOURCE
+
+<PARSED TEXT FOR PAGE: 1 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+PRIME Learning Machine
+Canonical Manual v2.0 — FINAL MERGED SPECIFICATION
+Transcript Evidence Candidate Intelligence Teacher Authority Canonical → → → →
+Learning Record Verified Projections Student Experience Next Learning → → →
+Cycle
+Version: 2.0
+Date: 18 September 2026
+Status: Final merged manual for golden-specimen reprocessing
+Human-in-the-loop: mandatory
+Reference principle: Intelligence prepares. Teacher decides. System verifies. Dashboard explains.
+This document supersedes the split between the pedagogical manual v1.1 and the later canonical 
+authority specification. From v2.0 onward, they are one machine.
+<PARSED TEXT FOR PAGE: 2 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+1. Purpose and Definition of the Machine
+The PRIME Learning Machine is the human-readable reference implementation of the complete learning 
+pipeline. It must allow a teacher to take a real lesson transcript and reproduce, step by step, every 
+transformation required before a student-facing learning update becomes authoritative.
+The machine is deliberately more explicit than the production software. Its job is to open the hood: every 
+evidence item, interpretation, teacher decision, persistence choice, canonical record, verification result and 
+student projection must be inspectable.
+The machine has two equally important halves:
+Half Purpose Authority
+A — Intelligence preparation Turn the lesson source into evidence, 
+signals, insights, actions and candidate 
+learner state.
+AI may propose; no canonical authority.
+B — Authority and publication Record the teacher decision, 
+canonicalize the approved payload, 
+verify it, project it and expose only the 
+authorized student view.
+Teacher decision + verified system 
+transitions.
+2. The Final Canonical Pipeline
+RAW TRANSCRIPT / VERIFIED LESSON SOURCE
+ ↓
+01 INGEST + LESSON IDENTITY
+ ↓
+02 CALL REPORT
+ ↓
+03 ATOMIC EVIDENCE BANK
+ ↓
+04 SIGNAL DETECTION
+ ↓
+05 PEDAGOGICAL INSIGHTS
+ ↓
+06 PROPOSED TEACHING ACTIONS
+ ↓
+07 CANDIDATE LEARNING STATE
+ ↓
+08 CANDIDATE PORTFOLIO MEMORY
+ ↓
+09 CANDIDATE STUDENT DASHBOARD
+ ↓
+10 CANDIDATE STUDENT COPY
+ ↓
+11 TEACHER VALIDATION PACKAGE
+ ↓
+12 TEACHER DECISION
+ ↓
+13 ATOMIC CANONICALIZATION
+ ↓
+14 CANONICAL LEARNING RECORD (CLR)
+ ↓
+15 READ-BACK + HASH COMPARE (G3)
+ ↓
+16 VERIFIED PORTFOLIO PROJECTION (G4)
+ ↓
+17 VERIFIED LEARNING INTELLIGENCE PROJECTION (G5)
+ ↓
+<PARSED TEXT FOR PAGE: 3 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+18 AUTHORIZED CONSUMER PROJECTION (G6)
+ ↓
+19 STUDENT DASHBOARD
+ ↓
+20 NEXT LESSON BRIEF
+ ↓
+21 NEW ATTEMPT / NEW EVIDENCE
+The machine must never collapse this sequence into “Transcript AI summary Dashboard.” → →
+The most important authority boundary is between Step 11 and Step 12. Everything before a recorded teacher 
+decision is candidate material. Everything after Step 12 must be traceable to the exact teacher-approved 
+payload.
+3. Non-Negotiable Principles
+Rule Meaning
+Evidence before interpretation Every meaningful learning claim begins with observable 
+evidence or a verified prior record.
+Verbatim identity or UNKNOWN Student, teacher, date and duration must come from source 
+metadata/transcript exactly. Operator memory cannot silently 
+fill them.
+ASR boundary Computer-generated transcript errors are not pronunciation 
+evidence. Pronunciation and stable fluency require 
+audio/teacher confirmation.
+Attempt ≠ Evidence ≠ Assessment ≠ Progress A learner attempt can produce candidate evidence; it does not 
+automatically prove stable progress.
+AI proposes; teacher validates AI can organize and interpret. It cannot independently create 
+final pedagogical authority.
+APPROVED ≠ CANONICALIZED ≠ PROJECTED Teacher approval, canonical persistence and downstream 
+publication are distinct states.
+NOW may be empty The system must never invent a current state merely to fill the 
+UI.
+Student view is curated The student must not see raw transcript fragments, confidence 
+scores, hashes, source repositories or internal pipeline terms.
+Account identity ≠ learner identity Authentication email is not pedagogical identity. The consumer
+resolves an authorized learner relation first.
+One source of canonical truth Downstream projections read verified canonical state, not 
+competing email-based, Firestore, repository or legacy 
+snapshot authority.
+Determinism is testable Same authorized inputs must produce semantically equivalent 
+outputs; unexplained divergence is a specification defect.
+<PARSED TEXT FOR PAGE: 4 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+4. Required Inputs
+A run may begin only with the source material actually available. Missing context stays missing.
+STUDENT:
+LESSON DATE:
+TEACHER:
+LESSON ID (if available):
+RAW TRANSCRIPT / SOURCE:
+SOURCE METADATA:
+PREVIOUS VERIFIED CANONICAL STATE (if supplied):
+PREVIOUS VERIFIED EVIDENCE (if supplied):
+If a field is missing, write UNKNOWN. If no previous verified canonical state is supplied, the run must not infer 
+established strengths, recurrence or longitudinal change from operator memory.
+5. Source and Identity Rules
+ Copy student, teacher, date and duration verbatim from source or metadata.
+ Do not replace a source label such as “PRIME DIGITAL HUB” with a presumed personal teacher name.
+ Use transcript duration from metadata when available; do not estimate it.
+ Record source quality once per run.
+ Mark contradictory operational facts (scores, homework, access status) as UNVERIFIED unless the source 
+resolves them.
+ Keep account/contact information outside learner identity unless an explicit authorization relation exists.
+6. Step 01 — Ingest + Lesson Identity
+Goal: establish the lesson boundary without pedagogical interpretation.
+OUTPUT
+{
+ "lesson": {
+ "student": "",
+ "teacher": "",
+ "date": "",
+ "duration": "",
+ "lessonId": "",
+ "topic": "",
+ "context": ""
+ },
+ "materials": [],
+ "futureCommitments": [],
+ "unknown": [],
+ "sourceConfidence": "high|medium|low",
+ "sourceNote": ""
+}
+Forbidden: summarizing learner ability, assigning CEFR movement, or inferring a teacher identity not present 
+in source.
+7. Step 02 — Call Report
+Goal: preserve the observable instructional event before reducing it into evidence.
+ Lesson focus
+<PARSED TEXT FOR PAGE: 5 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+ Communicative situations
+ Language produced
+ Vocabulary encountered/used
+ Grammar encountered/used
+ Pronunciation — only if audio/teacher confirmed
+ Fluency — only with explicit source limitation
+ Communication strategies
+ Corrections/reformulations
+ Successful moments
+ Difficulty moments
+ Teacher interventions
+ Evidence requiring future attention
+OBSERVED and INTERPRETATION must remain separate.
+8. Step 03 — Atomic Evidence Bank
+Budget: 8–12 evidence items for a normal full lesson unless the source is too thin. Never pad evidence to reach 
+the budget.
+E-001
+evidence:
+category: grammar|vocabulary|pronunciation|fluency|communication|comprehension|strategy|
+confidence|other
+source:
+status: observed
+strength: weak|moderate|strong
+reusable: true|false
+limitation:
+Strength Rule
+STRONG At least 3 independent correct productions of the target 
+form/skill in the same lesson, without support.
+MODERATE 1–2 correct productions, or correct production with 
+support/prompting.
+WEAK Approximation/attempt without successful recovery, or 
+evidence whose correctness cannot be independently verified.
+Evidence IDs are immutable within the run. Downstream signals, insights, actions, portfolio updates and audit 
+manifests reference these IDs.
+9. Step 04 — Signal Detection
+Budget: 4–6 signals. Signals are patterns or potentially meaningful relationships, not facts about personality.
+{
+ "id": "S-001",
+ "signal": "",
+ "type": "strength|friction|pattern|progress|recurrence|attention",
+ "supportingEvidence": ["E-001"],
+ "recurrence": "new|recurring|confirmed",
+ "confidence": "low|medium|high",
+ "requiresTeacherReview": true
+}
+<PARSED TEXT FOR PAGE: 6 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+A single lesson normally creates NEW signals. Recurring/confirmed requires supplied verified historical 
+evidence.
+10. Step 05 — Pedagogical Insight
+Budget: 3–4 insights. Each insight answers: What does the evidence suggest may be happening in the learner’s 
+development?
+ Never diagnose.
+ Never infer psychological states.
+ Never claim causality without evidence.
+ Never turn an isolated error into a stable learner profile.
+ Preserve uncertainty and source limitations.
+ Insights remain proposals until teacher review.
+11. Step 06 — Teaching Actions
+Budget: 3–5 actions. Every action must be concrete enough to execute in the next lesson.
+{
+ "id": "A-001",
+ "action": "",
+ "reason": "",
+ "targetEvidence": ["E-001"],
+ "priority": "low|medium|high",
+ "when": "next_lesson|near_term|ongoing",
+ "authorizationStatus": "proposed"
+}
+Avoid generic actions such as “practice more.” Specify the number of items, target forms, degree of support 
+and observable success condition.
+<PARSED TEXT FOR PAGE: 7 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+12. Step 07 — Candidate Learning State
+The candidate learning state is conservative. It is not yet the CLR.
+Status Meaning
+ESTABLISHED Supported across multiple verified lessons or exceptionally 
+explicit and teacher-validated evidence.
+DEVELOPING Active area of work supported by current and/or recent 
+evidence.
+RECENT Demonstrated in the current lesson only.
+UNKNOWN Insufficient evidence. The missing evidence should be stated.
+Single-lesson rule: one lesson may populate RECENT or DEVELOPING. It must not create ESTABLISHED state by
+itself.
+Temporal model and status labels are complementary, not interchangeable:
+Temporal layer Question answered
+NOW What is currently valid enough to guide action?
+RECENT What new evidence or movement has just appeared?
+MEMORY What longitudinal information remains useful but is not the 
+immediate state?
+A status such as DEVELOPING can appear in NOW. A RECENT observation can remain in RECENT until teacher￾authorized reconciliation moves it into NOW.
+13. Longitudinal Reconciliation
+When a previous verified canonical state is supplied, the machine must reconcile rather than overwrite.
+Reconciliation class Meaning
+STILL TRUE Previous canonical belief remains supported.
+NEW EVIDENCE Current lesson adds evidence without changing the state.
+POSSIBLE CHANGE Evidence suggests the state may need revision; teacher decides.
+SUPERSEDED Teacher authorizes replacement of a previous canonical belief.
+NO EVIDENCE TO CHANGE Current lesson gives no basis to alter the prior state.
+What Changed requires a baseline, new authorized evidence, the nature of the difference, and teacher 
+validation. New activity alone is not automatically a change in learning state.
+14. Step 08 — Candidate Portfolio Memory
+Portfolio is persistent learning memory, not the canonical authority itself.
+{
+ "memoryUpdates": [
+ {
+ "memory": "",
+ "reason": "",
+ "evidence": ["E-001"],
+ "persistence": "temporary|active|established",
+ "teacherReviewRequired": true
+ }
+ ],
+ "notPersisted": [
+<PARSED TEXT FOR PAGE: 8 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+ {"excluded": "", "reason": ""}
+ ]
+}
+The notPersisted list is mandatory. At minimum consider excluding:
+ unclear ASR fragments
+ unverified test results/homework/access facts
+ unsupported CEFR progression
+ motivation/personality judgments
+ raw transcript content
+ one-off vocabulary that has no longitudinal value
+ claims whose authority belongs to another layer
+15. Steps 09–10 — Candidate Dashboard + Student Copy
+The candidate student view is generated before teacher approval so the teacher can review the exact learner￾facing consequence of the proposed state.
+It must answer:
+ What are we working on?
+ What did I demonstrate?
+ What is developing?
+ What evidence matters?
+ What should I do next?
+ What useful learning memory is worth keeping?
+Forbidden learner-facing language includes internal pipeline names such as G3/G4/G5/G6, canonical hash, 
+projection authority, repository source, Firestore, fallback, candidate confidence and raw evidence IDs.
+16. Step 11 — Teacher Validation Package
+The validation package is the teacher’s decision surface. It must be self-contained so the teacher does not need 
+to navigate backwards through raw artifacts.
+Validation package section Teacher needs to see
+Source & safety boundary Source identity, transcript quality, what cannot be observed.
+Current Learning State Exactly what would become authoritative.
+Core evidence Evidence IDs, strength, limitations.
+Pedagogical interpretation Signals/insights proposed.
+Persistence What enters Portfolio and at what persistence level.
+Not persisted Explicit negative authorization.
+Next actions What the system recommends, still clearly proposed.
+Student Dashboard Exact learner-facing projection.
+Student copy Exact wording if separately rendered.
+Approval scope What APPROVE EXACT PAYLOAD will authorize.
+The machine always emits the validation gate UNCHECKED.
+17. Step 12 — Teacher Decision
+Only an explicit teacher decision creates the authority transition.
+<PARSED TEXT FOR PAGE: 9 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+APPROVAL RECORD
+Decision: APPROVE EXACT PAYLOAD | APPROVE WITH EDITS | RETURN | REJECT
+Reviewer:
+Reviewer role:
+Decision timestamp: ISO timestamp with timezone
+Approval scope:
+Claims explicitly NOT authorized:
+Approved payload hash:
+Decision Effect
+APPROVE EXACT PAYLOAD The reviewed payload is authorized exactly as shown.
+APPROVE WITH EDITS Only the edited payload becomes eligible for canonicalization; 
+a new exact payload hash is required.
+RETURN No authority transition. Candidate returns for another 
+processing pass.
+REJECT No authority transition. Proposed interpretation must not 
+become canonical.
+An AI-generated checked gate is invalid by construction.
+<PARSED TEXT FOR PAGE: 10 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+18. Step 13 — Atomic Canonicalization
+Canonicalization receives one exact teacher-approved pedagogical payload and persists one authoritative 
+canonical state. It must not silently add new pedagogical claims.
+ The reviewer must be a persisted authorized teacher/admin identity in production.
+ The approved payload must be stable and hashable.
+ Teacher edits must be reflected before hashing.
+ Canonicalization must preserve decision provenance and source references.
+ Canonicalization itself does not mean downstream projection succeeded.
+CANDIDATE
+ ↓ teacher decision
+APPROVED PAYLOAD
+ ↓ atomic canonicalization
+CANONICAL LEARNING RECORD
+19. Step 14 — Canonical Learning Record (CLR)
+The CLR is the authoritative pedagogical state from which verified downstream projections derive.
+CANONICAL LEARNING RECORD
+recordId
+studentId
+recordVersion
+teacherDecisionId
+teacherDecisionTimestamp
+sourceReferences[]
+pedagogicalPayload
+canonicalPayloadHash
+authority
+createdAt
+The CLR should represent authorized learning state, not authentication/account information and not raw AI 
+reasoning.
+20. Step 15 — G3 Read-back + Hash Verification
+Publication is not trusted merely because a write call returned success.
+PUBLISH
+ ↓
+READ BACK PERSISTED CLR
+ ↓
+COMPARE:
+- record identity
+- version
+- canonical payload
+- teacher decision provenance
+- source references
+- SHA-256 hash
+ ↓
+PASS / FAIL
+Only G3 PASS makes the canonical record eligible for downstream verified projections. A FAIL blocks 
+publication and must never be presented as student-ready.
+<PARSED TEXT FOR PAGE: 11 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+21. Step 16 — G4 Verified Portfolio Projection
+G4 projects the verified CLR into persistent learner memory. Portfolio does not become a competing source of 
+canonical truth.
+ Source must be a G3-PASS CLR.
+ Projection must be deterministic/idempotent for the same authorized input.
+ Projection provenance must include canonical record identity/hash.
+ Legacy Portfolio snapshots may remain as history but cannot override verified CLR authority.
+22. Step 17 — G5 Verified Learning Intelligence Projection
+G5 converts verified canonical state into decision-support learning intelligence. It may include current focus, 
+priorities, teacher insight, learning signals, validated evidence, evidence boundaries, next action, next 
+verification, vocabulary and grammar corrections.
+G5 is downstream of authority. It must not re-open candidate interpretation as if it were canonical.
+23. Step 18 — G6 Authorized Consumer Projection
+G6 is the consumer authority boundary between authenticated accounts and the learner-facing Dashboard.
+AUTHENTICATED ACCOUNT
+ ↓
+AUTHORIZED AccountLearnerRelation
+ ↓
+studentId
+ ↓
+CANONICAL LEARNER DIRECTORY
+ ↓
+VERIFIED G5
+ ↓
+CLR LINEAGE + G3 PASS
+ ↓
+CURATED G6 CONSUMER PROJECTION
+ ↓
+STUDENT DASHBOARD
+G6 must fail closed when the account learner relation is absent, ambiguous or invalid. →
+24. Account / Learner Identity Contract
+Field / object Authority meaning
+studentId Operational learner identity.
+canonicalRecordId Identity of a specific canonical learner state.
+User.email / session.user.email Authenticated account identity only.
+studentEmail Legacy/ambiguous; not canonical authority.
+accountContactEmail Allowed only from explicit authorized account learner →
+relation.
+guardianEmail Allowed only from explicit modeled/authorized guardian 
+relation.
+AccountLearnerRelation Authorization bridge between account and learner.
+ Never infer account learner authorization merely because two emails are equal. →
+<PARSED TEXT FOR PAGE: 12 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+ One learner may have multiple authorized accounts without duplicating learner state.
+ The Dashboard resolves learner identity from studentId/canonicalRecordId after authorization, not from 
+email routing.
+ Legacy email paths may remain isolated temporarily but cannot be promoted to canonical authority.
+<PARSED TEXT FOR PAGE: 13 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+25. Step 19 — Canonical Student Dashboard Contract
+The Dashboard is a curated student-facing projection, not a database dump, transcript, Call Report or teacher 
+console.
+Layer Canonical meaning Typical sections
+NOW Current teacher-authorized learning 
+state that should guide the next action.
+Current State; What Matters Now; Next 
+Step.
+RECENT New authorized evidence/activity that 
+explains recent movement.
+What Changed; recent attended lessons; 
+recent evidence.
+MEMORY Useful longitudinal history that should 
+remain accessible without dominating 
+the current state.
+Class reports; vocabulary; grammar; 
+teacher feedback; portfolio history.
+The NOW layer must be rewritten when the understanding of the learner changes; it is not an append-only log.
+A recent lesson may move an old priority into MEMORY and replace NOW with a more precise priority. This is 
+the expected behavior, not data loss.
+26. Student-facing Evidence Authority Vocabulary
+Internal status Preferred student-facing label
+teacher-validated Teacher Validated
+portfolio-confirmed Portfolio Confirmed
+qualified Teacher Note
+not-available Not Available
+Do not collapse teacher-validated and portfolio-confirmed into the same badge if the product needs the 
+authority distinction.
+Status color is presentation only; status meaning must not depend on color.
+27. Progress and CEFR Safety
+ Do not invent progress percentages.
+ Do not infer CEFR advancement from one lesson.
+ A CEFR label shown in NOW must be teacher-authorized.
+ Do not create a separate target level unless the canonical product contract explicitly requires it.
+ Learner progress and learner-model progress are different concepts.
+ The absence of evidence to change a level is not evidence of regression.
+28. Portfolio Canonical Presentation
+The student-facing Portfolio may contain:
+1. Student / track identity
+2. Learning Snapshot
+3. Quick Access
+4. Current Learning State
+5. Strengths & Evidence
+6. Learning Patterns
+<PARSED TEXT FOR PAGE: 14 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+7. Current Pedagogical Priority
+8. Next Action & Follow-up
+9. Learning Memory & Next Cycle
+10. Family Guide when appropriate
+11. Attendance & Class History
+12. Progress Tracker
+13. Current Goals
+14. Vocabulary Bank
+15. Grammar & Accuracy
+16. Teacher Feedback & Growth Priorities
+17. Class Reports
+18. Recommended Next Steps
+19. Footer / links
+Teacher Validation tables are internal controls and should not remain in the student-facing Portfolio after 
+validation.
+29. Final Artifact Package per Lesson
+# Artifact Purpose Authority state
+01 lesson-identity Source boundary Candidate
+02 call-report Observable instructional 
+record
+Candidate
+03 evidence-bank Atomic evidence E-xxx Candidate
+04 signals Potential patterns Candidate
+05 insights Pedagogical interpretation Candidate
+06 teaching-actions Proposed actions Candidate
+07 candidate-learning-state Conservative state proposal Candidate
+08 candidate-portfolio-update Proposed persistence Candidate
+09 candidate-dashboard Exact proposed student 
+projection
+Candidate
+10 candidate-student-copy Exact student wording Candidate
+11 teacher-validation-package Self-contained teacher 
+decision surface
+Candidate
+12 teacher-decision Authority transition Authoritative decision
+13 canonicalization-manifest Exact approved payload →
+canonical write
+System authority
+14 canonical-learning-record Authoritative pedagogical 
+state
+Canonical
+15 canonical-readback￾verification
+G3 read-back/hash PASS|FAIL Verified
+16 portfolio-projection G4 Verified projection
+17 learning-intelligence￾projection
+G5 Verified projection
+18 consumer-projection G6 authorized learner view Verified projection
+19 student-dashboard Student experience Published only if authorized
+20 next-lesson-brief Next verification cycle Teacher-facing
+21 audit-manifest Complete lineage and 
+exclusions
+Audit
+<PARSED TEXT FOR PAGE: 15 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+30. Publication Firewall
+FORBIDDEN PATHS
+AI candidate ─────────────X────────────→ Canonical Learning Record
+AI insight ───────────────X────────────→ Student Dashboard
+Unreviewed transcript ───X────────────→ Portfolio authority
+Email match ─────────────X────────────→ Learner authorization
+Legacy snapshot ─────────X────────────→ Override verified CLR
+APPROVED only ───────────X────────────→ Assume PROJECTED
+Positive path:
+CAPTURE
+ ↓
+CANDIDATE
+ ↓
+REVIEW REQUIRED
+ ↓
+TEACHER DECISION
+ ↓
+CANONICALIZED
+ ↓
+G3 VERIFIED
+ ↓
+G4 / G5 VERIFIED
+ ↓
+G6 AUTHORIZED
+ ↓
+STUDENT VIEW
+31. Automation Target
+The production system should automate this machine, not invent a different pedagogical model.
+GOOGLE MEET / GEMINI / TRANSCRIPT SOURCE
+ ↓
+CAPTURE
+ ↓
+CANDIDATE GENERATION
+ ↓
+TEACHER REVIEW QUEUE
+ ↓
+EXPLICIT TEACHER DECISION
+ ↓
+CANONICALIZATION
+ ↓
+READ-BACK / HASH VERIFICATION
+ ↓
+VERIFIED PROJECTIONS
+ ↓
+AUTHORIZED CONSUMER
+ ↓
+DASHBOARD / PORTFOLIO / NEXT LESSON
+ Legacy automatic publication remains frozen.
+ AI cannot directly write canonical learning state.
+ Teacher approval is the authority transition.
+ APPROVED does not mean PROJECTED.
+ Dashboard never reads candidate records directly.
+<PARSED TEXT FOR PAGE: 16 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+ Retries must not inflate evidence counts or create duplicate canonical facts.
+32. Manual Reference Mode vs Production Runtime Mode
+Capability Manual reference mode Production runtime
+Evidence/insights/actions Fully testable Automated candidate generation
+Teacher approval Explicit human response Persisted authorized teacher/admin 
+decision
+Canonical payload hash Local/reference hash Persisted canonical hash
+Read-back Local file/object read-back Database read-back
+G3/G4/G5/G6 Reference simulation allowed if labeled Must run against real persisted data
+Account learner authorization → Can be described, not proven Must be runtime-proven
+Student publication Reference output only Authenticated authorized Dashboard
+A manual PASS must never be mislabeled as Production PASS. This distinction is mandatory in every audit 
+manifest.
+33. Convergence Test
+The golden-specimen test uses the same source lesson in independent runs.
+20. Run the same untouched transcript through the same machine independently.
+21. Do not expose one run’s output to the other before completion.
+22. Diff artifact by artifact.
+23. Classify divergence as Class A factual/structural, Class B pedagogical judgment, or Class C wording.
+24. Any Class A divergence is a machine-specification defect.
+25. Class B divergence beyond the tolerated set indicates a missing rubric or insufficient evidence boundary.
+26. Class C wording divergence is acceptable when semantics and authority remain equivalent.
+Acceptance criteria:
+ Zero Class-A identity/factual divergences.
+ Shared top evidence uses the same observable facts and compatible strength labels.
+ Learning State statuses are semantically equivalent.
+ Both gates are initially unchecked.
+ Both runs include notPersisted exclusions.
+ Neither run fabricates historical evidence.
+ Neither run publishes before teacher approval.
+ After the same teacher-approved payload, canonical hashes/projections are deterministic within the same 
+schema/version.
+34. Golden Specimen Protocol
+The [PRIVATE PILOT LESSON] is the designated golden specimen for v2.0 reprocessing.
+The next test must start again from the untouched transcript and, when longitudinal mode is intentionally 
+tested, the explicitly supplied previous verified canonical state. Previous v1.0/v1.1/v2 candidate outputs must 
+not be used as hidden evidence.
+The reprocessing run must produce all 21 artifacts in this manual and stop for teacher validation before any 
+canonical authority transition.
+<PARSED TEXT FOR PAGE: 17 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+35. Operator Workflow — Beginning to End
+27. Provide the untouched transcript/source and explicit metadata.
+28. Provide previous verified canonical state only when the run is intentionally longitudinal.
+29. Run Steps 01–10.
+30. Generate the self-contained Teacher Validation Package.
+31. Teacher chooses APPROVE EXACT PAYLOAD / APPROVE WITH EDITS / RETURN / REJECT.
+32. Persist the Teacher Decision.
+33. Canonicalize only the exact approved payload.
+34. Read back the canonical record and hash-compare.
+35. If G3 fails, STOP. Do not project.
+36. If G3 passes, generate G4 and G5 from verified CLR.
+37. Resolve the authenticated account through an authorized AccountLearnerRelation.
+38. Generate G6 only for the authorized studentId.
+39. Render the learner-facing Dashboard with NOW / RECENT / MEMORY.
+40. Generate the Next Lesson Brief.
+41. Carry the next real lesson back into the evidence cycle.
+<PARSED TEXT FOR PAGE: 18 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+36. MASTER EXECUTION PROMPT — v2.0
+You are the PRIME Digital Hub Learning Machine v2.0.
+Your job is to process a real lesson source through the PRIME pedagogical and canonical 
+authority model.
+PHASE A — CANDIDATE INTELLIGENCE
+1. INGEST + LESSON IDENTITY
+2. CALL REPORT
+3. EVIDENCE BANK
+4. SIGNAL DETECTION
+5. PEDAGOGICAL INSIGHTS
+6. PROPOSED TEACHING ACTIONS
+7. CANDIDATE LEARNING STATE
+8. CANDIDATE PORTFOLIO MEMORY
+9. CANDIDATE STUDENT DASHBOARD
+10. CANDIDATE STUDENT COPY
+11. TEACHER VALIDATION PACKAGE
+NON-NEGOTIABLE RULES:
+- Evidence before interpretation.
+- Verbatim identity or UNKNOWN.
+- Computer-generated transcript artifacts are not pronunciation evidence.
+- Pronunciation/stable fluency require teacher audio confirmation.
+- Evidence IDs are sequential E-001...
+- Normal full-lesson budget: 8–12 evidence items, 4–6 signals, 3–4 insights, 3–5 actions.
+- Strong = 3+ independent correct productions in the same lesson without support.
+- Moderate = 1–2 correct productions or supported correct production.
+- Weak = approximation, failed recovery, or evidence whose correctness cannot be independently
+established.
+- One lesson may create RECENT or DEVELOPING state, never ESTABLISHED by itself.
+- If no verified historical state is supplied, recurrence and established strengths are 
+UNKNOWN.
+- Portfolio must include notPersisted with explicit exclusions.
+- AI proposes; teacher validates.
+- Emit the Teacher Validation Package and gate UNCHECKED.
+- STOP before authority transition.
+PHASE B — ONLY AFTER EXPLICIT TEACHER DECISION
+12. TEACHER DECISION
+13. ATOMIC CANONICALIZATION
+14. CANONICAL LEARNING RECORD
+15. READ-BACK + HASH VERIFICATION (G3)
+16. VERIFIED PORTFOLIO PROJECTION (G4)
+17. VERIFIED LEARNING INTELLIGENCE PROJECTION (G5)
+18. AUTHORIZED CONSUMER PROJECTION (G6)
+19. STUDENT DASHBOARD
+20. NEXT LESSON BRIEF
+21. AUDIT MANIFEST
+AUTHORITY RULES:
+- APPROVED ≠ CANONICALIZED ≠ PROJECTED.
+- Never canonicalize a payload other than the exact teacher-approved payload.
+- G3 must read back persisted canonical state and compare identity, version, decision 
+provenance, source references, pedagogical payload and hash.
+- G4/G5 require G3 PASS.
+- G6 requires an explicit authorized account→learner relation and resolves by 
+studentId/canonicalRecordId, never by email authority.
+- Account email is authentication identity, not learner identity.
+- Student Dashboard never reads candidates, email-routed legacy learner state, raw transcript,
+confidence scores or internal infrastructure.
+<PARSED TEXT FOR PAGE: 19 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+- Student Dashboard uses NOW / RECENT / MEMORY.
+- NOW may be empty.
+- What Changed requires a previous baseline + new authorized evidence + a justified change.
+- Do not invent progress percentages or CEFR progression.
+- Do not leak G3/G4/G5/G6, hashes, Firestore, repository or projection authority into student￾facing copy.
+FINAL STATUS MUST REPORT:
+CANDIDATE PROCESSING: COMPLETE / INCOMPLETE
+TEACHER DECISION: PENDING / APPROVED / EDITED / RETURNED / REJECTED
+CANONICALIZATION: NOT RUN / PASS / FAIL
+G3: NOT RUN / PASS / FAIL
+G4: NOT RUN / VERIFIED / FAIL
+G5: NOT RUN / VERIFIED / FAIL
+G6: NOT RUN / VERIFIED / FAIL
+STUDENT DASHBOARD: BLOCKED / REFERENCE READY / PRODUCTION AUTHORIZED
+PERSISTENCE SAFE: YES / NO
+PRODUCTION RUNTIME PROVEN: YES / NO
+Never call a manual/reference result a production runtime proof.
+37. Teacher Validation Package — Canonical Template
+42. Source & safety boundary
+43. Proposed Current Learning State
+44. Core Evidence E-xxx with strengths and limitations
+45. Pedagogical interpretation
+46. What will enter Portfolio memory
+47. What will deliberately not be persisted
+48. Proposed next teaching actions
+49. Exact proposed Student Dashboard content
+50. Exact proposed student-facing copy
+51. What teacher approval will authorize
+52. Decision options and formal approval record
+The teacher should be able to approve without opening earlier files.
+38. Audit Manifest — Mandatory Fields
+runId
+machineVersion
+sourceReferences
+sourceQuality
+historicalStateUsed: true|false
+otherRunsConsulted: true|false
+evidenceIds[]
+signalIds[]
+insightIds[]
+actionIds[]
+teacherDecisionId
+teacherDecisionTimestamp
+approvedPayloadHash
+canonicalRecordId
+canonicalVersion
+canonicalHash
+g3Status
+<PARSED TEXT FOR PAGE: 20 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+g4ProjectionId/hash/status
+g5ProjectionId/hash/status
+g6ConsumerProjectionId/hash/status
+accountLearnerRelationId
+studentId
+productionWritePerformed
+productionRuntimeProven
+studentPublicationPerformed
+notAuthorizedClaims[]
+39. Definition of Done
+The manual machine is complete when one real lesson can pass through all candidate stages, teacher review, 
+canonical authority, verified projections and the next learning cycle without hidden reconstruction.
+The production machine is complete only when the same semantics are demonstrated in runtime with real 
+persisted authority.
+ONE REAL LESSON
+ ↓
+TRACEABLE EVIDENCE
+ ↓
+TEACHER-APPROVED EXACT PAYLOAD
+ ↓
+VERIFIED CANONICAL STATE
+ ↓
+AUTHORIZED PROJECTIONS
+ ↓
+CURATED STUDENT EXPERIENCE
+ ↓
+NEXT LESSON
+ ↓
+NEW EVIDENCE
+40. v2.0 Frozen Decisions
+ The v1.1 pedagogical machine and canonical G1–G6 authority model are one specification from v2.0 
+onward.
+ AI candidate only. →
+ Teacher approval authority transition. →
+ APPROVED ≠ CANONICALIZED ≠ PROJECTED.
+ Dashboard never reads candidate.
+ NOW / RECENT / MEMORY remain the temporal model.
+ NOW may be empty.
+ Evidence IDs and explicit evidence boundaries remain mandatory.
+ notPersisted remains mandatory.
+ The Teacher Validation Package is the default approval surface.
+ Account identity and learner identity remain separate.
+ studentId/canonicalRecordId are the consumer authority path.
+ Email is never promoted to learner authority.
+ Legacy pipelines/snapshots may remain isolated but cannot override the canonical path.
+ Read-back/hash verification precedes verified downstream projections.
+ Manual reference PASS is not Production runtime PASS.
+ [PRIVATE PILOT LESSON] is the v2.0 golden specimen for the next clean reprocessing run.
+<PARSED TEXT FOR PAGE: 21 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+NEXT CONTROLLED ACTION: reprocess the untouched [PRIVATE PILOT] transcript from Step 
+01 using this v2.0 specification. Do not reuse the previous candidate run as evidence. If a longitudinal 
+run is desired, supply only the verified pre-pilot canonical state as historical input.
+<PARSED TEXT FOR PAGE: 22 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+41. v1.5 Strict Authority Merge — Final Overrides
+This section incorporates the stricter authority requirements of PRIME Learning Machine — Unified v1.5. 
+Where an earlier v2.0 statement is less strict, the rules below prevail.
+ A completed teacher review checklist is preparation only. CHECKLIST COMPLETE ≠ PERSISTED TEACHER 
+DECISION.
+ Before the persisted teacher decision and matching G3 PASS, candidate evidence, signals, insights, learning 
+state, Portfolio memory, Dashboard content and student-facing copy remain proposed and not_persisted.
+ proposedPersistence ACTIVE or TEMPORARY does not mean the memory is active. It becomes eligible only 
+after approval, canonicalization and verification.
+ APPROVE WITH EDITS freezes a new exact payload and requires a new approvedPayloadHash.
+ G1/G2 eligibility is cumulative: persisted teacher decision + authorized reviewerId + resolved studentId + 
+valid source lineage + frozen approved payload + matching approvedPayloadHash + scopeType/scopeKey + 
+deterministic idempotencyKey.
+ Canonicalization requires sourceId/sourceRef, source timestamp when available, source hash when 
+computable, raw-source retention, and explicit source reliability.
+ Evidence strength describes how safely an observation supports interpretation; it does not score learner 
+ability.
+ Evidence candidates must be atomic and traceable to sourceId/sourceSpan when available, with an explicit
+boundary and immutable evidenceId.
+ Without G2 commit there is no CLR. Without matching G3 PASS there is no G4/G5. Without verified G4/G5 
+lineage and an active AccountLearnerRelation resolving the same studentId there is no G6. Without G6 
+there is no learner-facing publication.
+ APPROVED ≠ CANONICALIZED; CANONICALIZED ≠ G3 VERIFIED; G3 VERIFIED ≠ PROJECTED; PROJECTED ≠
+AUTHORIZED CONSUMPTION; AUTHORIZED CONSUMPTION ≠ PUBLICATION.
+ A blind transcript-only run may create candidate artifacts only and must stop at the Teacher Validation 
+Gate.
+ The final audit must explicitly report whether previous verified learner state was used, whether other 
+outputs were consulted, whether teacher approval was present, whether canonical writes occurred, and 
+whether publication occurred.
+42. Final Machine Status Contract
+DOCUMENT STATUS: FINAL_MERGED_SPECIFICATION
+SPECIFICATION VERSION: PRIME Learning Machine v2.1
+RUNTIME STATUS: NOT_PROVEN until exercised against persisted production authority
+DEFAULT BLIND-RUN STOP: TEACHER_VALIDATION_GATE
+CANDIDATE AUTHORITY: NONE
+CANONICAL WRITES: BLOCKED until cumulative G1/G2 eligibility passes
+STUDENT PUBLICATION: BLOCKED until G6 authorization passes
+FINAL AUTHORITY CHAIN:
+RAW SOURCE
+→ CANDIDATE PACKAGE
+→ TEACHER VALIDATION GATE
+→ PERSISTED TEACHER DECISION
+→ G1 CLR CONTRACT
+→ G2 ATOMIC CANONICALIZATION + IDEMPOTENCY
+→ G3 INDEPENDENT READ-BACK + HASH/FIELD COMPARE
+→ G4 VERIFIED PORTFOLIO
+→ G5 VERIFIED LEARNING INTELLIGENCE
+<PARSED TEXT FOR PAGE: 23 / 23>
+PRIME DIGITAL HUB | PRIME Learning Machine — Canonical Manual v2.0
+FINAL MERGED SPECIFICATION — 18 September 2026
+→ ACTIVE AccountLearnerRelation → studentId
+→ G6 AUTHORIZED CONSUMER
+→ STUDENT DASHBOARD PUBLICATION
+43. Final Frozen Rule
+Evidence may inform a proposal. Only a reviewed, identity-bound, payload-hashed, persisted and 
+verified authority chain may create learner-facing canonical truth.
+

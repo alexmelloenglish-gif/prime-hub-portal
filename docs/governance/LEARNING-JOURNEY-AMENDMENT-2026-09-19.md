@@ -45,3 +45,7 @@ Legacy contracts, JSON, templates and historical audits remain unchanged as vers
 | Production runtime compliance | Not verified |
 
 Retaining this distinction prevents a documentation merge from being mistaken for an implemented or deployed learning system.
+
+## Execution handoff — 19 September 2026
+
+Continue implementation through the [shared manual/automatic machine handoff](../operations/LEARNING_MACHINE_EXECUTION_HANDOFF_2026-09-19.md) and [PR #41](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/41). The existing complete v2.1 manual is now archived as a source reference in this branch; do not reconstruct the intermediate machine from final learner outputs. Manual and automatic initiation share the same processing and authority path. The next deliverable is an inspectable execution, not another general architecture audit.
