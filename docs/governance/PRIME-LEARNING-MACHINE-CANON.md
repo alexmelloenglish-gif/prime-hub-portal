@@ -58,11 +58,25 @@ Use only the parts supported by evidence. Unknown prior history is not a blank s
 
 Repetition alone does not prove consolidation. Later recall establishes that something was recalled in those conditions, not that all content is permanently retained. A correct answer does not establish independent retrieval unless that condition is documented. A supported answer may still show participation, reconstruction or connection when those events are evidenced.
 
-## 5. Attempt and adjustment
+## 5. Attempt, adjustment and event semantics
 
 Retain the sequence when available: first attempt → opportunity/cue → revised response. Preserve whether a model was supplied. Attribute self-correction only when the evidence warrants it.
 
 An activity's first-attempt score and subsequent learning have different purposes. If an exercise retains its initial score, a later adjustment can still be recorded separately. Scores must not become automatic mastery, CEFR or general-memory decisions. Do not claim that an activity preserves revisions if its tool does not record them.
+
+The machine must treat the following as different layers:
+
+- **Event:** what happened in a particular episode — an attempt, error, correction, self-correction, successful use, question, reconstruction or another observed occurrence.
+- **Pattern:** a bounded interpretation supported by multiple relevant events under sufficiently comparable conditions.
+- **State:** a separately authorized decision about a defined learner claim.
+
+**Error is not state. Self-correction is not state. Repeated correct use is not required to produce a new state.**
+
+A sequence such as `error → noticing → prompted correction → self-correction → repeated accurate use → less need for correction` may be a useful historical account, but it is not a required ladder. Events can recur, disappear, return or occur in another order.
+
+Do not persist a historical support need as a permanent learner trait. For example, “needs to self-correct X” describes an observed event pattern at a given time and task context; later absence of self-correction may mean increased automaticity, no relevant opportunity, or simply no observation. The machine must not select regression or improvement without supporting evidence.
+
+Student-generated observations can be captured as evidence events. A learner record such as **What did I say/write? → What should it be? → Can I fix it? → What do I notice?** may document noticing and reflection. It does not by itself authorize a pedagogical state change; teacher validation remains required.
 
 ## 6. Teacher review and publication
 
@@ -72,7 +86,11 @@ Student/family text translates authorized evidence into a human account; it does
 
 Preserve all existing candidate → teacher decision → canonical record → verified independent projection gates. A narrative must not become a new canonical source by being well written.
 
-## 7. Forbidden narrative defaults
+## 7. Evidence absence and narrative defaults
+
+Absence of evidence is not evidence of regression. A behavior may be absent because it was not elicited, was not relevant to the task, was not observed, or may no longer be needed in the same way.
+
+Repeated state is not evidence of stagnation. Stability may reflect retention, consolidation, maintenance, continued use or another meaningful episode.
 
 Do not lead student/family outputs with `unchanged`, `no progress`, `not mastered`, `failed retrieval`, `support-dependent`, `weak area` or an error list. Such language may appear in a separately governed teacher-facing analysis only with adequate scope and evidence.
 
