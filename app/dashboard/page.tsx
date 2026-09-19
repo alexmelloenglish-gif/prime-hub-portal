@@ -16,6 +16,7 @@ import {
 } from '@/components/dashboard/student-dashboard-primitives'
 import { ProgressStateBadge } from '@/components/dashboard/progress-state-badge'
 import { VocabularyReuseGrid } from '@/components/dashboard/vocabulary-reuse-grid'
+import { YoungLearnerJourneyDashboard } from '@/components/dashboard/young-learner-journey-dashboard'
 import { authOptions } from '@/lib/auth'
 import { canonicalLessonId } from '@/lib/canonical-student-projection'
 import { resolveCanonicalManageSpaceLinks } from '@/lib/canonical-student-links'
@@ -99,6 +100,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   const student = studentState.student
+
+  if (student.experienceMode === 'young-learner') {
+    return <YoungLearnerJourneyDashboard student={student} />
+  }
+
   const projection = buildDashboardProjection(student)
   const current = projection.currentState as {
     level?: ProjectionField
