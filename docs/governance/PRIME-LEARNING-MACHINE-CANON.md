@@ -66,7 +66,7 @@ An activity's first-attempt score and subsequent learning have different purpose
 
 The machine must treat the following as different layers:
 
-- **Event:** what happened in a particular episode — an attempt, error, correction, self-correction, successful use, question, reconstruction or another observed occurrence.
+- **Event:** what happened in a particular episode — an attempt, error, correction, self-correction, successful use, question, reconstruction or another observed occurrence. The event itself carries no automatic pedagogical valence.
 - **Pattern:** a bounded interpretation supported by multiple relevant events under sufficiently comparable conditions.
 - **State:** a separately authorized decision about a defined learner claim.
 
