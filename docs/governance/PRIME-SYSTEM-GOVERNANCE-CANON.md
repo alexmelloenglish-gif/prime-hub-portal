@@ -40,9 +40,30 @@ Every confirmed lesson belongs in the historical archive. A lesson does not lose
 
 A learning event, its pedagogical interpretation and an authorized state decision are separate things. A state can remain recorded at the same value while meaningful learning events accumulate.
 
-**No authorized state update is not a finding of no learning.** Absence of a new observation is not evidence of unchanged ability, forgetting or regression. Neither an elapsed number of lessons nor a correct-answer total mechanically establishes a state transition.
+**Learning movement is not the same thing as state change.**
+
+1. **Evidence records events; it does not automatically declare states.**
+2. **Repeated state does not mean no progress.** Stability may be compatible with retention, consolidation, maintenance, continued use or another meaningful episode.
+3. **Missing evidence does not mean regression.** A behavior may be absent because it was not elicited, was not relevant to the task, was not observed, or may no longer be needed in the same way.
+4. **Student-generated evidence is part of learning.** A learner may notice, describe or record an attempt, correction, question or difficulty. That record is evidence of the learner's experience and awareness; the teacher still validates its pedagogical meaning and any state conclusion.
+
+Therefore, an absent state update must never be rendered as proof that nothing happened, and an absent event must never be rendered as proof that a previously observed capability disappeared.
 
 State revision requires a teacher's reasoned assessment of relevant evidence: the scope of the claim, prior observations, opportunities to learn and use the knowledge, task demands, support, time, consistency, and relevant variation or transfer. These considerations are not an automatic score or a universal minimum lesson count. Record the limits of the conclusion.
+
+### Event → pattern → state
+
+An **event** belongs to the lesson or learner experience: an attempt, error, correction, self-correction, successful use, question, reconstruction or another observed occurrence.
+
+A **pattern** is a bounded interpretation supported by multiple relevant events. Repetition can matter, but repetition alone does not establish a pattern without comparable context.
+
+A **state** is a separate authorized decision about a defined learner claim.
+
+An error is therefore not a state. A self-correction is not a state. Repeated correct use is not required to produce a new state. These events may contribute to later interpretation when their context and recurrence justify it.
+
+A documented sequence may include error → noticing → prompted correction → self-correction → repeated accurate use → less need for correction, but this is an example of a possible history, not a required developmental ladder. Learning may move through these events in different orders, repeat them, skip them or return to them.
+
+The system must not retain a statement such as “needs to self-correct X” indefinitely merely because that was once observed. A later absence of self-correction may be consistent with improvement, lack of opportunity or another explanation; the record must not choose among those explanations without evidence.
 
 ## 6. Construction before correction
 
@@ -68,11 +89,13 @@ Teacher-validated participation in an English-mediated Science task can be a wor
 
 Personal appropriation is a longer-term interpretation of meaningful use, not a property inferred from an isolated correct form. Difficulty in a content task cannot be attributed to English alone without evidence distinguishing language demands, subject demands and task conditions.
 
-## 8. Awareness and human pedagogical authority
+## 8. Awareness, student-generated evidence and human pedagogical authority
 
 PRIME helps learners become aware of their journey: what they have encountered, returned to, connected and begun to use. It must make that history understandable without requiring a new achievement in every lesson.
 
-The teacher, coach or facilitator remains the pedagogical authority. The machine may organize evidence, surface connections and propose interpretations. The human validates their meaning and decides what should happen next. A polished narrative cannot substitute for that decision.
+The learner may also participate in producing the evidence. A simple record such as **What did I say/write? → What should it be? → Can I fix it? → What do I notice?** can preserve metacognitive events that might otherwise disappear from the formal record.
+
+Student-generated evidence is not a shortcut to authority. The learner's account records their experience, perception or attempted explanation; the teacher, coach or facilitator remains responsible for validating its pedagogical meaning and any authorized state decision. The machine may organize both learner- and teacher-generated evidence, surface connections and propose interpretations. A polished narrative cannot substitute for that human judgment.
 
 ## 9. Foundational principle
 
