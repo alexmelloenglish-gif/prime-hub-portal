@@ -1,5 +1,9 @@
 # Prime Hub Portal
 
+## Governance and learning presentation
+
+The [Learning Journey Amendment](docs/governance/LEARNING-JOURNEY-AMENDMENT-2026-09-19.md) records the proposed constitutional hierarchy, versioned presentation contracts, compatibility boundaries and implementation status. Its [source audit](docs/audits/LEARNING_JOURNEY_PRESENTATION_AUDIT_2026-09-19.md) identifies remaining work without claiming production compliance.
+
 Next.js application with:
 
 - Google-only authentication through NextAuth
