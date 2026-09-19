@@ -66,6 +66,7 @@ export type LearningNarrativeDraft = {
   sourceEvidenceIds: string[]
   boundaryNotes: string[]
   requiresTeacherReview: true
+  validation?: NarrativeValidation
   generationProvenance?: {
     provider: 'gemini'
     model?: string
