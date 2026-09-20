@@ -5,7 +5,9 @@ Status: COMPARISON COMPLETE / FULL CONTRACT CERTIFICATION NOT YET ACHIEVED
 
 ## Inputs
 
-A. Blind replay final output: PRIME Learning Machine v2.1, five lessons (18 Aug–15 Sep 2026), REFERENCE CERTIFICATION, five teacher decisions recorded as APPROVE EXACT PAYLOAD. Golden Witness was not available to that executor during replay.
+A1. Manus blind replay final output: PRIME Learning Machine v2.1, five lessons (18 Aug–15 Sep 2026), REFERENCE CERTIFICATION, five teacher decisions recorded as APPROVE EXACT PAYLOAD. Golden Witness was not available to that executor during replay.
+
+A2. Perplexity blind replay: same PRIME-LM-v2.1 blind protocol; five chronological lessons; five APPROVE EXACT PAYLOAD decisions; final replay generated only after Lesson 5 approval; Golden Witness not consulted during blind processing.
 
 B. Golden Witness/reference: current Gustavo repository profile on main, studentId stu_4c4da6c04ac4, containing five published Class Reports, canonical projection, progress tracker, cumulative impact and Young Learner journey configuration.
 
@@ -16,6 +18,16 @@ C. Contract: Unified Lesson & Portfolio Contract vNext on this architecture bran
 PASS for the comparison design: the blind replay explicitly states Golden Witness was not supplied during processing. Comparison is therefore post-replay.
 
 This does not independently prove every source-isolation property of the external execution; it records the supplied audit manifest and compares its final semantics.
+
+## Cross-executor finding — Manus vs Perplexity
+
+Both external executors preserve chronology, ASR limitations, baseline NONE, no CEFR inference, no regression inference, support-sensitive interpretation, no ESTABLISHED mastery, and REFERENCE CERTIFICATION separated from production.
+
+The main difference is projection/state compression. Perplexity places some past-simple, health/science and base/past work in DEVELOPING and short present/past responses in RECENT. Manus more explicitly leaves independent past production UNRESOLVED and self-correction as a RECENT EVENT. This is a Class B pedagogical/projection-label difference, not a Class A contradiction in the lesson events.
+
+Reconciliation: DEVELOPING may describe an area under development but must not imply independently demonstrated control. Independent past production remains UNRESOLVED until comparable low-support evidence exists. Self-correction remains event evidence until recurrence supports a longitudinal capability claim.
+
+Perplexity also proposes extra next-lesson checks (weekly routine/calendar, should/shouldn't, spelling). These are planning candidates, not learner-state contradictions.
 
 ## Core semantic comparison
 
@@ -37,7 +49,7 @@ This does not independently prove every source-isolation property of the externa
 
 ## Critical interpretation
 
-The blind replay and Golden Witness tell substantially the same learning film on the central claims:
+The external blind replays and Golden Witness tell substantially the same learning film on the central claims:
 - repeated personal communication;
 - past language remains in development rather than mastered;
 - support level matters;
@@ -110,11 +122,17 @@ Therefore REFERENCE CERTIFICATION is valid for the blind replay, but it is not e
 
 ## Decision
 
-GOLDEN-WITNESS SEMANTIC CORE: COMPATIBLE.
+MANUS ↔ GOLDEN WITNESS: SEMANTIC CORE COMPATIBLE.
+
+PERPLEXITY ↔ GOLDEN WITNESS: SEMANTIC CORE COMPATIBLE WITH PROJECTION-LABEL RECONCILIATION.
+
+MANUS ↔ PERPLEXITY: NO MATERIAL CLASS-A FACTUAL CONTRADICTION FOUND; CLASS-B DIFFERENCES EXIST IN STATE COMPRESSION AND NEXT-LESSON EMPHASIS.
+
+GOLDEN-WITNESS SEMANTIC CORE: CROSS-EXECUTOR COMPATIBLE.
 
 FULL vNext ACCEPTANCE SUITE: NOT YET COMPLETE.
 
-The replay passes the intended blind-reference comparison on the central pedagogical film, while exposing projection-label typing and baseline-provenance requirements that should be added to the contract before generalization.
+The two external replays pass the intended blind-reference comparison at the semantic/evidentiary core on the central pedagogical film, while exposing projection-label typing and baseline-provenance requirements that should be added to the contract before generalization.
 
 ## Next gate
 
