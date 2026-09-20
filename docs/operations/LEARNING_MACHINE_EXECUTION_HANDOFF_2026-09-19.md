@@ -10,6 +10,16 @@ The owner has asked engineering to stop expanding the architectural discussion w
 
 This handoff restores an existing reference and assigns the next implementation work. It is not another audit programme or a claim that the runtime is complete.
 
+## Clarification — existing real witness, 20 September 2026
+
+The owner explicitly identifies the already-processed multi-lesson private pilot, including its latest lesson, as a **real witness of execution**. Lesson processing and resulting learner artifacts have already occurred in the working collaboration. The pilot is not synthetic, and manual/operator execution must not be relabelled as mere simulation or as no execution.
+
+Teacher approval of specific reviewed outputs is pedagogical acceptance within that scope. Preserve the actual approvals, edits, versions and artifacts; this clarification is not blanket approval of every generated claim or proof of an unobserved technical stage. The pilot's value as a witness does not depend on an automatic trigger being available.
+
+**Correction to the earlier handoff wording:** "execution still needs to be demonstrated" must refer only to the software integration or particular runtime stages whose execution has not been demonstrated. It must not reset the existing pedagogical/manual execution and acceptance to zero. Missing production read-back evidence is not evidence that the teaching/processing/validation work never happened.
+
+Continue from the real witness: map and reuse existing source-linked intermediate artifacts, reviewed outputs and decisions as the implementation baseline. Record an unavailable intermediate as unavailable, not as proof that the whole run did not occur; recover only what is needed for the concrete integration step. The next implementation must reproduce the accepted semantics and preserve corrections made since those outputs. Do not require all lessons to be reprocessed or approved again merely to establish that manual execution counts.
+
 ## 1. The missing reference is now in GitHub
 
 Read [PRIME Learning Machine v2.1 — source reference](../reference/PRIME_LEARNING_MACHINE_v2.1_SOURCE_REFERENCE.txt). It is the extracted text of the existing 23-page `PRIME_Learning_Machine_FINAL_v2.1_MERGED.pdf`, dated 18 September 2026. It was read in full for this handoff. Private pilot identity/date were redacted from this public copy.
@@ -113,7 +123,7 @@ If a rendering-only step runs after authority, it must preserve the approved cla
 
 **Primary implementation thread: PR #41.** Use that conversation for handoffs, questions with concrete blockers and completion evidence.
 
-Deliver one manually initiated end-to-end run through the shared machine, using an authorized source and supplied history where available. First make artifacts 01–11 reproducible and inspectable; then resume from the persisted teacher decision through the existing canonical services. Absence of prior history does not prevent candidate processing: keep longitudinal claims unknown instead of inventing a baseline.
+Use the already-executed real pilot as the witness for integrating the shared software runner. Demonstrate the software stages that remain unverified, using its authorized source/history and preserving the reviewed meaning. Make artifacts 01–11 reproducible and inspectable where the integration requires them; reuse available artifacts and decisions, then resume through the existing canonical services at the appropriate recorded stage. This is implementation verification against an existing witness, not a requirement to prove from scratch that the pedagogical machine was ever executed. Absence of prior history does not prevent candidate processing: keep longitudinal claims unknown instead of inventing a baseline.
 
 Minimum acceptance evidence:
 
