@@ -11,7 +11,6 @@ import diegoProfile from '@/data/students/diegodasiro-gmail-com.firestore.json'
 import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
 import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
-import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 
@@ -174,7 +173,7 @@ export type StudentDashboardData = {
 
 export type StudentDashboardState = {
   hasAccess: boolean
-  source: 'firestore' | 'repository' | 'preview'
+  source: 'repository' | 'preview'
   student: StudentDashboardData | null
   isPreviewingAnotherStudent: boolean
   viewerEmail: string | null
@@ -964,97 +963,17 @@ export function parseStudentDocument(
 
 const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
-    const authoritativeRepositoryStudent = buildExplicitRepositoryStudent(email, name)
-    if (authoritativeRepositoryStudent) {
-      return {
-        hasAccess: true,
-        source: 'repository',
-        student: await mergePipelineProjection(email, authoritativeRepositoryStudent),
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
-    }
+    const repositoryStudent = buildRepositoryStudent(email, name)
+    const mergedStudent = repositoryStudent
+      ? await mergePipelineProjection(email, repositoryStudent)
+      : null
 
-    if (!isFirebaseConfigured) {
-      const repositoryStudent = buildRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'preview',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
-    }
-
-    try {
-      const firestore = getFirebaseFirestore()
-      const collectionName = process.env.FIREBASE_STUDENT_COLLECTION || 'students'
-      const normalizedEmail = email.trim().toLowerCase()
-      const directDoc = await withTimeout(
-        firestore.collection(collectionName).doc(normalizeEmailToDocId(normalizedEmail)).get(),
-        8000,
-        'Firestore direct student lookup'
-      )
-
-      if (directDoc.exists) {
-        return {
-          hasAccess: true,
-          source: 'firestore',
-          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name)),
-          isPreviewingAnotherStudent: false,
-          viewerEmail: email,
-        }
-      }
-
-      const querySnapshot = await withTimeout(
-        firestore.collection(collectionName).where('studentEmail', '==', normalizedEmail).limit(1).get(),
-        8000,
-        'Firestore email student lookup'
-      )
-
-      if (!querySnapshot.empty) {
-        return {
-          hasAccess: true,
-          source: 'firestore',
-          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name)),
-          isPreviewingAnotherStudent: false,
-          viewerEmail: email,
-        }
-      }
-
-      const repositoryStudent = buildExplicitRepositoryStudent(normalizedEmail, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(normalizedEmail, repositoryStudent) : null
-      if (mergedStudent) {
-        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
-          studentId: mergedStudent.studentId,
-          reason: 'firestore_document_not_found',
-        })
-      }
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'firestore',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
-    } catch (error) {
-      const repositoryStudent = buildExplicitRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
-      if (mergedStudent) {
-        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
-          studentId: mergedStudent.studentId,
-          reason: 'firestore_unavailable',
-          errorName: error instanceof Error ? error.name : 'UnknownError',
-        })
-      }
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'firestore',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
+    return {
+      hasAccess: Boolean(mergedStudent),
+      source: mergedStudent ? 'repository' : 'preview',
+      student: mergedStudent,
+      isPreviewingAnotherStudent: false,
+      viewerEmail: email,
     }
   }
 )
