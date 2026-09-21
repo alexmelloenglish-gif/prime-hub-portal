@@ -18,10 +18,11 @@ The existing Louise dashboard is not sufficient proof for the new-machine test. 
    - Topic/context: Diversity & Inclusion; workplace inclusion; TED-style source material; vocabulary such as *thrive* and *boost*.
    - Source limitation: speaker attribution is incomplete/uneven in the transcript. Use only clearly attributable learner turns.
 
-2. **2026-06-01 — raw meeting transcription**
-   - Drive source: `1apqAg_fLmjJ83ZUwJVTw0uxdJSIgM1yclRHDaC8HpK4`
-   - Topic/context: planning an LGBTQ+ inclusive business fair; company role; bureaucracy; city-hall permissions; services/products.
-   - Source limitation: short partial meeting transcript (~11 minutes), with early technical setup before Louise joins.
+2. **2026-06-01 — two-part original Tactiq PDF transcript**
+   - Original source A: `10eKsMQkR812vrEf9pDmgYglj_tDOKVQy` — Meeting Transcription (2).pdf — 11-minute opening/technical segment.
+   - Original source B: `18_hJVMJv_PJUvacNyEZ5eDoRxkJiBrI7` — Meeting Transcription (1).pdf — 36-minute continuation.
+   - Topic/context: planning an LGBTQ+ inclusive business fair; company role; participant selection; event scale; city-hall permissions; sponsorship; public funding; election-year organizational impact.
+   - Source treatment: the two PDFs form one interrupted lesson sequence. Derived canonical-test Docs remain excluded as primary evidence.
 
 3. **2026-07-20 — LOUISE D. SILVA NOGUEIRA**
    - Drive source: `1gcv5yWE684dJYpg8XfuzJy1RjYKVEiIe5qRMaTPsHIg`
@@ -67,31 +68,30 @@ The transcript is heavily teacher-led and speaker attribution is uneven. This le
 ### 2026-06-01 — Inclusive business fair / professional planning
 
 #### Observed
-Louise describes a real professional project:
-- organizing a fair;
-- the fair's purpose for small LGBTQ+ businesses;
-- products/services;
-- bureaucracy and city-hall permissions;
-- the difficulty of organizing the event.
+The original two-part transcript preserves a single professional conversation across a technical interruption.
 
-Examples of observable learner production include:
-- “I organize ... fair.”
-- explaining that small LGBTQ+ businesses “don't have a space”;
-- “my company organized this”;
-- lexical search for *bureaucracy*;
-- “I need to planning” during discussion of permissions and organization.
+Louise:
+- explains the purpose of an inclusive business fair for small LGBTQ+ businesses;
+- describes registration/qualification and expected attendance;
+- discusses city-hall permissions, sponsorship and public funding;
+- explains election-cycle changes inside her organization;
+- describes the need for adaptability after repeated organizational changes;
+- searches for and reuses vocabulary such as *bureaucracy*, *throughout*, *qualify*, *public money*, *artistic fee* and *adaptability*;
+- produces several first-attempt forms that are then repaired with teacher support, including verb-pattern and collocation issues.
 
 #### Interpretation candidate
-English is being used as a tool for real professional communication, not merely as lesson content. Louise can communicate purpose and operational difficulty even while lexical search and form accuracy interrupt precision.
+English is functioning as a real professional thinking/communication tool. Louise can sustain an extended explanation of a complex project, respond to follow-up questions and keep the conceptual thread active while repairing vocabulary and form.
 
 #### Boundary
-This is a short partial transcript. It supports a **real-world professional-use episode**, not a general mastery claim.
+Teacher lexical support is frequent and the ASR is imperfect. This supports **functional professional communication with repair**, not independent accuracy across all forms.
 
 #### Latent learning threads
-- event/project explanation;
-- bureaucracy / permission / city-hall vocabulary;
-- verb-pattern accuracy after *need to*;
-- organizing a short professional explanation with clearer sentence framing.
+- structuring a professional project explanation;
+- collocation/preposition precision;
+- verb-pattern accuracy;
+- expressing scale, process, criteria and institutional constraints;
+- opinion framing and workplace-change language;
+- preserving fluency while improving precision.
 
 ---
 
