@@ -964,6 +964,17 @@ export function parseStudentDocument(
 
 const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
+    const authoritativeRepositoryStudent = buildExplicitRepositoryStudent(email, name)
+    if (authoritativeRepositoryStudent) {
+      return {
+        hasAccess: true,
+        source: 'repository',
+        student: await mergePipelineProjection(email, authoritativeRepositoryStudent),
+        isPreviewingAnotherStudent: false,
+        viewerEmail: email,
+      }
+    }
+
     if (!isFirebaseConfigured) {
       const repositoryStudent = buildRepositoryStudent(email, name)
       const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
