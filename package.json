@@ -30,8 +30,9 @@
     "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs",
     "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs",
     "db:migrate:deploy": "prisma migrate deploy",
-    "learning-narrative:self-test": "node --experimental-strip-types scripts/learning-narrative-machine-self-test.mjs && npm run pedagogical-semantics:self-test",
-    "pedagogical-semantics:self-test": "node --experimental-strip-types scripts/pedagogical-processing-semantics-self-test.mjs"
+    "learning-narrative:self-test": "node --experimental-strip-types scripts/learning-narrative-machine-self-test.mjs && npm run pedagogical-semantics:self-test && npm run lesson-observability:self-test",
+    "pedagogical-semantics:self-test": "node --experimental-strip-types scripts/pedagogical-processing-semantics-self-test.mjs",
+    "lesson-observability:self-test": "node --experimental-strip-types scripts/lesson-observability-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
