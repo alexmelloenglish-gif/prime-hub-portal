@@ -623,13 +623,6 @@ function buildRepositoryStudent(email: string, name?: string | null): StudentDas
   return parseStudentDocument(profile, profileEmail, profileName)
 }
 
-function buildExplicitRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
-  const normalizedEmail = normalizeEmail(email)
-  const profile = verifiedRepositoryProfiles[normalizedEmail]
-  if (asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot') return null
-  return buildRepositoryStudent(normalizedEmail, name)
-}
-
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
   return {
     studentName: name ?? 'Prime Student',
@@ -658,19 +651,6 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
       summary: 'Published learning impact will appear here.',
       evidence: [],
     },
-  }
-}
-
-async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
-  let timeoutHandle: ReturnType<typeof setTimeout> | undefined
-  const timeout = new Promise<never>((_, reject) => {
-    timeoutHandle = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
-  })
-
-  try {
-    return await Promise.race([promise, timeout])
-  } finally {
-    if (timeoutHandle) clearTimeout(timeoutHandle)
   }
 }
 
