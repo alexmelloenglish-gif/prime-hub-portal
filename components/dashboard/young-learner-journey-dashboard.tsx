@@ -23,18 +23,6 @@ type Props = {
 
 const progressIcons = [MessageCircle, RefreshCw, Brain, CheckCircle2, Sparkles, Microscope]
 
-function familyInsight(text: string) {
-  return text
-    .replace(/Transfer points — Evidence:\s*/gi, '')
-    .replace(/Boundary:\s*/gi, 'Em aula, ')
-    .replace(/Next verification:\s*/gi, 'Próximo passo: ')
-    .replace(/independent mastery/gi, 'uso com mais autonomia')
-    .replace(/mastery/gi, 'uso consistente')
-    .replace(/not established/gi, 'ainda está sendo construído')
-    .replace(/not measured/gi, 'continua sendo desenvolvido')
-    .replace(/needs? (to be )?(checked|verified)/gi, 'será retomado em novas situações')
-}
-
 function statusLabel(status: string) {
   const key = status.toLowerCase()
   if (key.includes('strong')) return 'SUPER STRONG'
