@@ -1,68 +1,81 @@
 import assert from 'node:assert/strict'
 import {
-  classifyLearningStage,
+  proposeLearningStage,
   validateLearningStageAssessment,
 } from '../lib/narrative/pedagogical-semantics.ts'
 
+const base = {
+  construct: 'synthetic target',
+  condition: 'open communication',
+}
+
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 1,
     meaningfulManifestations: 1,
     relativeReliability: false,
-  }),
+  }).stage,
   'observed_signal',
 )
 
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 2,
     meaningfulManifestations: 2,
     relativeReliability: false,
-  }),
+  }).stage,
   'emerging',
 )
 
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 4,
     meaningfulManifestations: 4,
     relativeReliability: false,
-  }),
+  }).stage,
   'developing',
 )
 
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 5,
     meaningfulManifestations: 5,
     relativeReliability: false,
-  }),
+  }).stage,
   'developing',
   'Five manifestations without relative reliability must not be promoted to consistent.',
 )
 
-assert.equal(
-  classifyLearningStage({
-    credibleManifestations: 5,
-    meaningfulManifestations: 5,
-    relativeReliability: true,
-  }),
-  'consistent',
-)
+const consistent = proposeLearningStage({
+  construct: 'target pronunciation',
+  condition: 'after immediate teacher modeling',
+  credibleManifestations: 5,
+  meaningfulManifestations: 5,
+  relativeReliability: true,
+})
+assert.equal(consistent.stage, 'consistent')
+assert.equal(consistent.authorityStatus, 'candidate_non_authoritative')
+assert.equal(consistent.condition, 'after immediate teacher modeling')
 
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 5,
     meaningfulManifestations: 5,
     relativeReliability: true,
     previouslyConsistent: true,
     persistsOverTime: true,
-  }),
+  }).stage,
   'stable_established',
 )
 
 assert.equal(
-  classifyLearningStage({
+  proposeLearningStage({
+    ...base,
     credibleManifestations: 6,
     meaningfulManifestations: 6,
     relativeReliability: true,
@@ -72,12 +85,13 @@ assert.equal(
     flexible: true,
     transferable: true,
     durable: true,
-  }),
+  }).stage,
   'mastery',
 )
 
 assert.deepEqual(
   validateLearningStageAssessment({
+    ...base,
     credibleManifestations: 2,
     meaningfulManifestations: 3,
     relativeReliability: false,
@@ -87,6 +101,7 @@ assert.deepEqual(
 
 assert.ok(
   validateLearningStageAssessment({
+    ...base,
     credibleManifestations: 2,
     meaningfulManifestations: 2,
     relativeReliability: false,
@@ -94,6 +109,16 @@ assert.ok(
   }).some((error) => error.includes('cannot bypass prior consistency')),
 )
 
+assert.ok(
+  validateLearningStageAssessment({
+    ...base,
+    construct: '',
+    credibleManifestations: 1,
+    meaningfulManifestations: 1,
+    relativeReliability: false,
+  }).includes('construct is required.'),
+)
+
 console.log(
-  'Pedagogical Processing Freeze v1.0 self-test passed: observed/emerging/developing/consistent/stable/mastery thresholds are distinct and perfection is not a state.',
+  'Pedagogical Processing Freeze v1.0 self-test passed: stage semantics are condition-scoped, non-authoritative, and perfection is not a state.',
 )
