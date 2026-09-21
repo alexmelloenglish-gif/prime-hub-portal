@@ -150,3 +150,6 @@ assert.ok(studentDataSource.includes("asString(profile?.dashboardSourcePolicy) !
 assert.ok(studentDataSource.includes("reason: 'firestore_unavailable'"))
 
 console.log('Student Dashboard Presentation Contract v1 self-test passed: NOW/RECENT/MEMORY + Eduarda pedagogical What Changed + learner-facing authority labels + hidden technical evidence language + preserved learning history.')
+
+const claudioMission = JSON.parse(fs.readFileSync(path.join(root, 'data/students/claudio-bit-gmail-com.firestore.json'), 'utf8'))
+assert.equal(claudioMission.canonicalProjection.nextAction.destination, '/dashboard/action?studentEmail=claudio.bit%40gmail.com', 'Cláudio next action must stay inside the portal mission workspace')
