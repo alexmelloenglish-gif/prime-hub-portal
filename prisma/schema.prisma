@@ -592,5 +592,3 @@ model CanonicalLearningIntelligenceProjection {
   @@index([projectionStatus])
   @@map("canonical_learning_intelligence_projections")
 }
-
-
