@@ -1,11 +1,11 @@
 import type {
   NarrativeEvidence,
   NarrativeLessonFrame,
-} from './contracts'
+} from './contracts.ts'
 import type {
   LessonObservabilityAssessment,
   OpportunityExecution,
-} from './lesson-observability'
+} from './lesson-observability.ts'
 import { assessLessonObservability } from './lesson-observability'
 
 export type TargetAttainment =
