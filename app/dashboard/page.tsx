@@ -76,7 +76,7 @@ function reportLearningNotes(value: string) {
     if (content) parts[label] = content
   }
 
-  const noticed = [parts.Evidence, parts.Interpretation, parts.Boundary].filter(Boolean).join(' ')
+  const noticed = [parts.Evidence, parts.Interpretation].filter(Boolean).join(' ')
   return {
     noticed: noticed || null,
     next: parts['Next verification'] || null,
