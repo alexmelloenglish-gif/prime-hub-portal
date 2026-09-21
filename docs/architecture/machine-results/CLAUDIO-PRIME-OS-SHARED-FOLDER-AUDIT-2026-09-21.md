@@ -106,3 +106,27 @@ diving project provenance = CONFIRMED BY 17 AUG PRIMARY SOURCE
 longitudinal project thread = SUPPORTABLE
 additional Prime OS artifacts = PENDING LIVE DRIVE ACCESS
 ```
+
+
+---
+
+## Exact shared-folder reference supplied by owner
+
+Owner supplied the exact Google Drive folder:
+
+`https://drive.google.com/drive/folders/1ejewczZ3s5fbUyuNXBKmhEjSiUrSADUA`
+
+Folder ID:
+
+`1ejewczZ3s5fbUyuNXBKmhEjSiUrSADUA`
+
+Current-session verification:
+- no matching folder ID reference was found in the repository;
+- current `/Google Drive` Library mount is empty;
+- `Shared with me` collection exposes no items in this session;
+- the direct Drive URL could not be fetched by the web fallback;
+- therefore no live folder listing or file-content inspection was completed.
+
+This exact folder ID is now the canonical next discovery target for Cláudio historical-material recovery.
+
+Do not replace it with a guessed Prime OS path.
