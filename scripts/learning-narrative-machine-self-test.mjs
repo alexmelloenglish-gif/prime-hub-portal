@@ -4,6 +4,22 @@ import { validateNarrativeDraft, prepareNarrativeInput } from '../lib/narrative/
 const input = prepareNarrativeInput({
   studentId: 'synthetic-learner-001',
   studentName: 'Synthetic Learner',
+  lessonFrame: {
+    mode: 'mixed',
+    primaryTarget: 'Use present/past short answers in meaningful personal communication.',
+    expectedLearnerOutcome: 'Produce present/past short answers with reduced support while preserving natural conversation.',
+    showcaseOpportunities: [
+      {
+        opportunityId: 'showcase-01',
+        description: 'Personal weekend questions before explicit answer modeling.',
+        constructObserved: 'present/past response selection',
+        intendedCondition: 'open_communication',
+        boundary: 'Does not by itself establish general past-tense mastery.',
+      },
+    ],
+    secondaryRecycling: ['Earlier Science-through-English content may return naturally.'],
+    contextReason: 'Continue the existing personal-communication trajectory while allowing earlier content to reappear.',
+  },
   currentLesson: {
     lessonId: 'lesson-05',
     occurredAt: '2026-09-15',
@@ -39,6 +55,7 @@ const input = prepareNarrativeInput({
       producer: 'teacher',
       domain: 'language',
       support: 'teacher support documented',
+      condition: 'reconstructed',
     },
     {
       evidenceId: 'ev-02',
@@ -51,6 +68,7 @@ const input = prepareNarrativeInput({
       producer: 'student',
       domain: 'language',
       support: 'opportunity to reconsider documented',
+      condition: 'self_corrected',
       relatedLessonIds: ['lesson-01'],
     },
     {
@@ -63,6 +81,7 @@ const input = prepareNarrativeInput({
       authorization: 'teacher_validated',
       producer: 'teacher',
       domain: 'content',
+      condition: 'controlled_task',
     },
     {
       evidenceId: 'ev-05',
@@ -72,7 +91,9 @@ const input = prepareNarrativeInput({
       statement: 'When earlier Science content returned, some food examples were recalled and other ideas were reconstructed with prompts.',
       sourceRefs: ['src-05'],
       authorization: 'teacher_validated',
+      producer: 'mixed',
       domain: 'content',
+      condition: 'reconstructed',
       relatedLessonIds: ['lesson-03'],
     },
   ],
@@ -82,6 +103,10 @@ const input = prepareNarrativeInput({
     sourceRefs: ['teacher-decision-05'],
   },
 })
+
+assert.equal(input.lessonFrame?.mode, 'mixed')
+assert.equal(input.lessonFrame?.showcaseOpportunities?.[0]?.constructObserved, 'present/past response selection')
+assert.equal(input.evidence.find((item) => item.evidenceId === 'ev-02')?.condition, 'self_corrected')
 
 const draft = {
   schemaVersion: 'learning-narrative.v1',
@@ -114,6 +139,6 @@ const failed = validateNarrativeDraft(invalid, input)
 assert.equal(failed.passed, false)
 assert.ok(failed.errors.some((error) => error.includes('unknown evidence')))
 
-console.log('Learning Narrative Machine v1 self-test passed: longitudinal evidence, adjustment, content-participation boundary and authorized continuation are evidence-linked.')
-
 assert.equal(input.evidence.find((item) => item.evidenceId === 'ev-02')?.producer, 'student')
+
+console.log('Learning Narrative Machine v1 self-test passed: lesson intent, evidence condition, longitudinal movement, adjustment, content-participation boundary and authorized continuation remain evidence-linked.')
