@@ -105,7 +105,8 @@
       "studentName": "Gustavo Drummond De Andrade Salgado",
       "canonicalEmail": "carolvdrummond@gmail.com",
       "emailAliases": [
-        "carolvdrummond@gmail.com"
+        "carolvdrummond@gmail.com",
+        "gugasalgado7@gmail.com"
       ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
@@ -122,7 +123,22 @@
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Twice a week",
-      "notes": "Canonical longitudinal portfolio updated through five attended lessons (18 Aug–15 Sep 2026)."
+      "notes": "Canonical longitudinal portfolio updated through five attended lessons (18 Aug–15 Sep 2026).",
+      "learnerEmail": "gugasalgado7@gmail.com",
+      "authorizedAccessAccounts": [
+        {
+          "email": "gugasalgado7@gmail.com",
+          "name": "Gustavo Drummond de Andrade Salgado",
+          "relationType": "LEARNER_SELF",
+          "relationshipContext": "learner_self"
+        },
+        {
+          "email": "carolvdrummond@gmail.com",
+          "name": "Carol",
+          "relationType": "AUTHORIZED_ACCESS",
+          "relationshipContext": "mother_responsible"
+        }
+      ]
     },
     {
       "studentId": "stu_fb5b64e3437e",
