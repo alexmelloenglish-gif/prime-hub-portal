@@ -78,6 +78,8 @@ A rich lesson must not collapse to `NO CHANGE` merely because a state threshold 
 
 ## 5. Frozen state semantics
 
+These thresholds produce a **candidate, condition-scoped semantic proposal** for teacher review. They do not bypass teacher authority or automatically write canonical learner state.
+
 ### OBSERVED / SIGNAL
 - **Operational rule:** 1 pedagogically relevant occurrence.
 - **Meaning:** something relevant happened once.
