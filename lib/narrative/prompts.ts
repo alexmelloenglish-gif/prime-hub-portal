@@ -1,5 +1,5 @@
-import type { LearningNarrativeDraft, NarrativeInput } from './contracts'
-import type { GenerationProvenance } from '@/lib/pipeline/contracts'
+import type { LearningNarrativeDraft, NarrativeInput } from './contracts.ts'
+import type { GenerationProvenance } from '../pipeline/contracts.ts'
 
 export const NARRATIVE_PROMPT_VERSION = 'narrative-1.v2'
 
