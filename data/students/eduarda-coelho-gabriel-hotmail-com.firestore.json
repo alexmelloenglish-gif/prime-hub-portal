@@ -132,7 +132,7 @@
       "destination": "https://calendar.app.google/p85dYVaZomqCuPyj6",
       "outcome": "Observe what Eduarda can answer independently before adding models or prompts.",
       "title": "Six-question independence check",
-      "description": "In your next support lesson, you’ll answer six short questions: two about abilities, two about advice and two about Geography. Try them on your own first; your teacher will add support only when needed.",
+      "description": "Na próxima aula de apoio, Eduarda começa com seis perguntas curtas sem modelo: duas sobre abilities, duas sobre advice e duas sobre Geography. O professor acrescenta ajuda somente depois da primeira tentativa, para comparar produção independente e produção apoiada.",
       "evidence": "Recent lessons show that complete responses, modal choice and Geography explanations still need to be checked with less support.",
       "status": "qualified"
     },
@@ -144,38 +144,38 @@
   "progressTracker": [
     {
       "id": "complete-responses",
-      "title": "Complete Responses",
+      "title": "Complete responses / Respostas completas",
       "status": "Needs Focus",
-      "insight": "Return to student-authored production; August tasks frequently required teacher support or models.",
+      "insight": "Nas aulas de agosto, Eduarda frequentemente chegou às respostas com modelos ou apoio. A próxima evidência precisa começar com uma tentativa própria antes da ajuda.",
       "accent": "yellow"
     },
     {
       "id": "modals",
-      "title": "Modals in Context",
-      "status": "Needs Focus",
-      "insight": "Can and should were practiced with models; independent choice and construction still need verification.",
-      "accent": "yellow"
+      "title": "Can & should in context / Usar can e should com sentido",
+      "status": "Developing",
+      "insight": "Can/can't e should/shouldn't apareceram em prática guiada. A escolha e a construção sem modelo ainda precisam ser verificadas.",
+      "accent": "blue"
     },
     {
       "id": "geography",
-      "title": "Geography in English",
-      "status": "Needs Focus",
-      "insight": "Continue explaining concepts in complete sentences, not only recognizing key terms.",
-      "accent": "yellow"
+      "title": "Geography through English / Geografia em inglês",
+      "status": "Developing",
+      "insight": "Eduarda trabalhou economic sectors e water cycle em inglês. Reconhecer ou recuperar termos com apoio não prova ainda que consiga explicar os conceitos sozinha.",
+      "accent": "blue"
     },
     {
-      "id": "independent-listening",
-      "title": "Independent Listening",
-      "status": "Not Assessed",
-      "insight": "Not enough evidence is available to assess independent listening.",
-      "accent": "blue"
+      "id": "concept-vs-language",
+      "title": "Know it & explain it / Saber e explicar",
+      "status": "Developing",
+      "insight": "A jornada mostrou uma diferença importante: entender um conceito de Geography e formular uma resposta completa em inglês são evidências diferentes e devem ser observadas separadamente.",
+      "accent": "green"
     },
     {
       "id": "independent-task-performance",
-      "title": "Independent Task Performance",
+      "title": "Try first, then get help / Tentar antes da ajuda",
       "status": "Not Assessed",
-      "insight": "Not enough evidence is available to assess independent school-task performance.",
-      "accent": "blue"
+      "insight": "Ainda não há evidência suficiente de desempenho independente em tarefas comparáveis. O próximo check-in deve registrar a primeira tentativa e só depois acrescentar suporte.",
+      "accent": "yellow"
     }
   ],
   "attendanceOverview": [
@@ -546,5 +546,6 @@
       }
     ]
   },
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate."
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate. Young Learner projection enabled on 2026-09-21 from the existing seven-lesson authorized record; no transcript rerun and no new proficiency claim.",
+  "dashboardExperience": "young-learner"
 }
