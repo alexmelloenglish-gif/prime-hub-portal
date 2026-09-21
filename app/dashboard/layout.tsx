@@ -48,7 +48,11 @@ export default async function DashboardLayout({
 
   const topbarUser = {
     name: studentState.student?.studentName ?? activeUser.name,
-    email: studentState.student?.studentEmail ?? activeUser.email,
+    // Learner/responsible-account sessions display the authenticated account identity.
+    // Admin preview may continue to display the target learner's legacy/profile email.
+    email: adminUser
+      ? (studentState.student?.studentEmail ?? activeUser.email)
+      : activeUser.email,
     image: resolveStudentProfileAsset(studentState.student?.studentId, activeUser.image),
   }
 

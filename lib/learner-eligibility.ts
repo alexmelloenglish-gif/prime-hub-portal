@@ -20,6 +20,7 @@ export type LearnerEligibilityRecord = {
 type RegistryStudent = {
   studentId?: string
   canonicalEmail?: string
+  emailAliases?: string[]
   operatingEligibility?: OperatingEligibility
   activationAuthority?: ActivationAuthority
 }
@@ -30,7 +31,11 @@ export function getLearnerEligibility(email?: string | null): LearnerEligibility
   const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : ''
   if (!normalizedEmail) return null
 
-  const student = students.find((entry) => entry.canonicalEmail?.trim().toLowerCase() === normalizedEmail)
+  const student = students.find((entry) => {
+    if (entry.canonicalEmail?.trim().toLowerCase() === normalizedEmail) return true
+    return Array.isArray(entry.emailAliases)
+      && entry.emailAliases.some((alias) => alias.trim().toLowerCase() === normalizedEmail)
+  })
   if (!student?.studentId || !student.canonicalEmail || !student.operatingEligibility) return null
 
   return {
