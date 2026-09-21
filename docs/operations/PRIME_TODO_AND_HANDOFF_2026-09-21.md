@@ -122,9 +122,10 @@
   - exact unfinished stage;
   - retry/idempotency result.
 
-- [ ] **Implement ObservationDebt reconciliation in code + self-test**
-  - normative contract is now frozen;
-  - implementation is not yet proven.
+- [~] **ObservationDebt reconciliation library + self-test implemented; shared-runner integration still open**
+  - executable lifecycle/reconciliation utility is implemented on PR #46;
+  - build/self-test proof is required before merge;
+  - integration into the complete shared runner and durable persistence is still open.
   - required stage:
     ```text
     Evidence Bank
@@ -134,14 +135,14 @@
   - old debt must close/refine when its required opportunity occurs.
   - stale debt carried silently must equal zero.
 
-- [ ] **Create regression tests for CEFR authority**
-  - ordinary lesson/replay cannot mutate current or target CEFR;
-  - only formal assessment authority may propose an authorized CEFR profile transition.
+- [x] **CEFR authority regression guard added in PR #46**
+  - ordinary lesson/replay/lesson accumulation cannot authorize a CEFR transition;
+  - formal assessment/testing + pedagogical authorization + explicit profile update are required.
 
-- [ ] **Create regression tests for broad self-correction semantics**
-  - multiple learner-initiated repair types may contribute to the construct;
-  - do not collapse all evidence into one tense-specific label;
-  - do not require all manifestations in one lesson.
+- [x] **Broad self-correction regression guard added in PR #46**
+  - multiple learner-initiated repair types may contribute longitudinally;
+  - teacher-modeled correction is not silently counted as learner self-correction;
+  - no same-lesson quota is required.
 
 ---
 
@@ -320,7 +321,7 @@ These are not failures. They are the points where this workstream must stop inst
 | G6 | controlled provisioning, authenticated dual-account runtime witness, cutover authorization |
 | Attendance | real authoritative Meet → AttendanceRecord → downstream production trace |
 | Shared runner | implementation + deterministic/idempotent execution proof |
-| ObservationDebt | code/materialization + regression self-test |
+| ObservationDebt | shared-runner integration + persistence/read-back; library/self-test is covered by PR #46 |
 | PR #18 / #19 | map stacked candidate/capture lane to current CLR/shared-runner architecture |
 | PR #30 | semantic reconciliation against current machine; safe port decision |
 | LinkedIn | exact employment metadata + owner review before public profile publication |
