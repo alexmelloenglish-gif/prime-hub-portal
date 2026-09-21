@@ -10,7 +10,7 @@ import {
 import {
   AttendanceSummary,
   CurrentStateCard,
-  DevelopmentTrajectory
+  DevelopmentTrajectory,
   NextActionCard,
 } from '@/components/dashboard/student-dashboard-primitives'
 import { ProgressStateBadge } from '@/components/dashboard/progress-state-badge'
@@ -129,9 +129,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const attendedLessons = [...reconciledAttendance]
     .filter((entry) => entry.status === 'present')
     .sort((a, b) => (dateTimestamp(a.date) ?? 0) - (dateTimestamp(b.date) ?? 0))
-  const pendingAttendance = [...reconciledAttendance]
-    .filter((entry) => entry.status === 'pending')
-    .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
 
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
   const recentAttendance = reconciledAttendance.filter(
@@ -176,7 +173,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A focused view of where you are now, what matters next, your recent lessons and useful learning memory.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
-              {pendingAttendance.length ? null}
+
               <span className="rounded-full border border-violet-300 bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-950">Learning history available below</span>
             </div>
           </div>
