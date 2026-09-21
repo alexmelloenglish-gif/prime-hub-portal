@@ -55,26 +55,26 @@ export function validateNarrativeDraft(
 
   for (const segment of draft.segments) {
     if (!segment.evidenceIds.length) {
-      errors.push(\`Segment \${segment.segmentId} has no evidence references.\`)
+      errors.push(`Segment ${segment.segmentId} has no evidence references.`)
       continue
     }
     for (const id of segment.evidenceIds) {
       referenced.add(id)
-      if (!evidenceById.has(id)) errors.push(\`Segment \${segment.segmentId} references unknown evidence \${id}.\`)
+      if (!evidenceById.has(id)) errors.push(`Segment ${segment.segmentId} references unknown evidence ${id}.`)
     }
-    if (!segment.text.trim()) errors.push(\`Segment \${segment.segmentId} is empty.\`)
+    if (!segment.text.trim()) errors.push(`Segment ${segment.segmentId} is empty.`)
     if (LEADING_STATUS_PATTERNS.some((pattern) => pattern.test(segment.text.trim()))) {
-      warnings.push(\`Segment \${segment.segmentId} begins with status language; prefer the event/context itself.\`)
+      warnings.push(`Segment ${segment.segmentId} begins with status language; prefer the event/context itself.`)
     }
   }
 
   const narrativeEvidenceIds = new Set(draft.sourceEvidenceIds)
   for (const id of narrativeEvidenceIds) {
-    if (!evidenceById.has(id)) errors.push(\`Narrative sourceEvidenceIds contains unknown evidence \${id}.\`)
+    if (!evidenceById.has(id)) errors.push(`Narrative sourceEvidenceIds contains unknown evidence ${id}.`)
   }
 
   for (const id of referenced) {
-    if (!narrativeEvidenceIds.has(id)) errors.push(\`Evidence \${id} is used by a segment but missing from sourceEvidenceIds.\`)
+    if (!narrativeEvidenceIds.has(id)) errors.push(`Evidence ${id} is used by a segment but missing from sourceEvidenceIds.`)
   }
 
   if (!draft.narrativeText.trim()) errors.push('Narrative text is empty.')
