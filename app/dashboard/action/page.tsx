@@ -19,7 +19,12 @@ export default async function DashboardActionPage({ searchParams }: ActionPagePr
   const session = await getServerSession(authOptions)
   const resolvedSearchParams = searchParams ? await searchParams : undefined
 
-  if (!session?.user) redirect('/login')
+  if (!session?.user) {
+    const callbackUrl = resolvedSearchParams?.studentEmail
+      ? `/dashboard/action?studentEmail=${encodeURIComponent(resolvedSearchParams.studentEmail)}`
+      : '/dashboard/action'
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
+  }
 
   const studentState = await getStudentDashboardState(session.user, resolvedSearchParams?.studentEmail)
   if (!studentState.hasAccess || !studentState.student) {
