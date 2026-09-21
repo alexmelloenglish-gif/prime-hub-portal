@@ -35,7 +35,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
   const projection = student.canonicalProjection
   const firstName = student.studentName.split(' ')[0]
   const attended = student.attendanceOverview.filter((lesson) => lesson.status === 'present')
-  const journeyHref = '/journey/gustavo-5-lessons-7q4m9/check-in'
+  const isGustavo = student.studentId === 'stu_4c4da6c04ac4'\n  const journeyHref = isGustavo ? '/journey/gustavo-5-lessons-7q4m9/check-in' : null\n  const lessonCount = attended.length
 
   return (
     <main className="min-h-screen bg-[#f7fbff] text-[#0b2c5c]">
@@ -50,13 +50,13 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
               className="h-auto w-40 sm:w-52"
             />
             <div className="rounded-full border border-blue-200 bg-white/90 px-4 py-2 text-xs font-bold text-[#0b2c5c] shadow-sm">
-              5 aulas • 5 adventures ⭐
+              {lessonCount} aulas • {lessonCount} capítulos ⭐
             </div>
           </div>
 
           {publicMode ? (
             <div className="mb-5 inline-flex rounded-full bg-[#0b2c5c] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
-              Family Journey View • Carol & Guilherme
+              Family Journey View
             </div>
           ) : null}
 
@@ -74,15 +74,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
                 o que você tentou, o que voltou, o que precisou de ajuda e o que você já começou a perceber sozinho.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href={journeyHref}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-[#e60023] px-5 py-3 text-sm font-black text-white shadow-lg shadow-red-200 transition hover:-translate-y-0.5"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  FAZER MEU CHECK-IN
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-blue-200 bg-white px-5 py-3 text-sm font-bold text-[#0b2c5c] shadow-sm">
+                {journeyHref ? (\n                <Link\n                  href={journeyHref}\n                  className="inline-flex items-center gap-2 rounded-2xl bg-[#e60023] px-5 py-3 text-sm font-black text-white shadow-lg shadow-red-200 transition hover:-translate-y-0.5"\n                >\n                  <Sparkles className="h-4 w-4" />\n                  FAZER MEU CHECK-IN\n                  <ArrowRight className="h-4 w-4" />\n                </Link>\n                ) : null}\n                <div className="inline-flex items-center gap-2 rounded-2xl border border-blue-200 bg-white px-5 py-3 text-sm font-bold text-[#0b2c5c] shadow-sm">
                   <CalendarDays className="h-4 w-4 text-[#0057b8]" />
                   {student.attendanceRate}
                 </div>
@@ -189,7 +181,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
           <div className="flex items-center gap-3">
             <CalendarDays className="h-6 w-6 text-cyan-200" />
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-200">5 LESSONS • 5 CHAPTERS</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-200">{lessonCount} LESSONS • {lessonCount} CHAPTERS</p>
               <h2 className="text-2xl font-black">Sua história até aqui</h2>
             </div>
           </div>
@@ -215,34 +207,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-          <article className="rounded-[30px] border border-emerald-200 bg-emerald-50 p-6">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-7 w-7 text-emerald-700" />
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">REAL EVIDENCE</p>
-                <h2 className="text-2xl font-black">Coisas que você fez de verdade</h2>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3">
-              <div className="rounded-2xl bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">You noticed & repaired</p>
-                <p className="mt-2 text-lg font-black text-[#0b2c5c]">“I don’t...” → “No, I didn’t.”</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Você percebeu que a pergunta estava no passado e tentou de novo.</p>
-              </div>
-              <div className="rounded-2xl bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">You reused language</p>
-                <p className="mt-2 text-lg font-black text-[#0b2c5c]">went • drank • did • didn’t</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Palavras e estruturas voltaram em novas situações, não apenas no exercício em que apareceram.</p>
-              </div>
-              <div className="rounded-2xl bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">English became a tool</p>
-                <p className="mt-2 text-lg font-black text-[#0b2c5c]">“The large intestine absorbs water.”</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">Você usou inglês para chegar até um conhecimento de Science — não só para “estudar inglês”.</p>
-              </div>
-            </div>
-          </article>
-
-          <article className="rounded-[30px] border border-violet-200 bg-violet-50 p-6">
+          <article className="rounded-[30px] border border-emerald-200 bg-emerald-50 p-6">\n            <div className="flex items-center gap-3"><CheckCircle2 className="h-7 w-7 text-emerald-700" /><div><p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">VERIFIED JOURNEY EVIDENCE</p><h2 className="text-2xl font-black">O que as aulas realmente mostram</h2></div></div>\n            <div className="mt-5 space-y-3">\n              {student.classReports.slice(-3).reverse().map((report) => (\n                <div key={report.id} className="rounded-2xl bg-white p-4 shadow-sm">\n                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{report.date}</p>\n                  <p className="mt-2 text-sm font-black text-[#0b2c5c]">{report.title}</p>\n                  <p className="mt-2 text-sm leading-6 text-slate-600">{report.teacherInsight}</p>\n                </div>\n              ))}\n            </div>\n          </article>\n\n          <article className="rounded-[30px] border border-violet-200 bg-violet-50 p-6">
             <div className="flex items-center gap-3">
               <Target className="h-7 w-7 text-violet-700" />
               <div>
@@ -266,14 +231,14 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
           </article>
         </section>
 
-        <section className="rounded-[34px] border border-yellow-300 bg-gradient-to-br from-yellow-100 via-white to-red-50 p-6 shadow-lg md:p-8">
+        {journeyHref ? (\n        <section className="rounded-[34px] border border-yellow-300 bg-gradient-to-br from-yellow-100 via-white to-red-50 p-6 shadow-lg md:p-8">
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_auto]">
             <div>
               <div className="flex items-center gap-3">
                 <Star className="h-7 w-7 fill-yellow-400 text-yellow-500" />
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#e60023]">NOW IT’S YOUR TURN</p>
               </div>
-              <h2 className="mt-3 text-3xl font-black">Gustavo, o que VOCÊ acha da sua jornada?</h2>
+              <h2 className="mt-3 text-3xl font-black">{firstName}, o que VOCÊ acha da sua jornada?</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
                 A máquina e o professor têm evidências. Mas existe uma parte que só você pode contar:
                 como você acha que se sairia se tentasse essas coisas novamente hoje?
@@ -292,7 +257,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
           </div>
         </section>
 
-        <section className="grid gap-5 md:grid-cols-2">
+        ) : null}\n\n        <section className="grid gap-5 md:grid-cols-2">
           <article className="rounded-[30px] border border-slate-200 bg-white p-6">
             <div className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-[#0057b8]" />
@@ -328,11 +293,11 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
         {publicMode ? (
           <section className="rounded-[30px] border border-slate-200 bg-white p-6">
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#e60023]">FOR THE FAMILY</p>
-            <h2 className="mt-2 text-2xl font-black">Carol & Guilherme: o que esta leitura significa?</h2>
+            <h2 className="mt-2 text-2xl font-black">Para a família: o que esta leitura significa?</h2>
             <p className="mt-3 text-sm leading-7 text-slate-700">
               Este painel não transforma cada aula em uma nota nem força uma narrativa de avanço linear.
               Ele reúne episódios reais, tentativas, apoios, retornos, autocorreções e conexões para tornar a jornada mais visível.
-              O objetivo é que Gustavo desenvolva inglês e, ao mesmo tempo, fique cada vez melhor em observar como ele próprio aprende.
+              O objetivo é tornar a jornada visível sem transformar apoio, tentativa ou revisão em uma afirmação de domínio.
             </p>
           </section>
         ) : null}
