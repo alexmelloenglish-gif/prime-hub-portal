@@ -244,3 +244,25 @@ DASHBOARD-ONLY NORMALIZATION = REJECTED FOR LOUISE.
 NEW-MACHINE SOURCE REPROCESSING = IN PROGRESS.
 
 TECHNICAL/VALIDATION LANGUAGE MUST REMAIN INTERNAL EVEN AFTER CANONICALIZATION.
+
+
+## 2026-09-21 source-registry and artifact checkpoint
+
+The exact Google Sheet `PRIME_CORPUS_SOURCE_REGISTRY_V2` was updated after source-level recovery.
+
+Recovered/reconciled Louise sources now include:
+- 2026-03-02 summary-only source artifact `1FMXDQX0O8kVX9iZJCwUzDMUVewIWjcnE`;
+- 2026-04-22 original transcript PDF `1VRF3hXAvTYyscE8vUdCMxcEyShlpU02j`;
+- 2026-06-01 original Tactiq PDF segment A `10eKsMQkR812vrEf9pDmgYglj_tDOKVQy`;
+- 2026-06-01 original Tactiq PDF segment B `18_hJVMJv_PJUvacNyEZ5eDoRxkJiBrI7`;
+- 2026-07-20 Tactiq transcript `1gcv5yWE684dJYpg8XfuzJy1RjYKVEiIe5qRMaTPsHIg`.
+
+The 01 June pair is one interrupted lesson, not two pedagogical lessons. The second PDF was the missing source not previously represented in the registry.
+
+Four source-grounded vNext Corpus Reports plus one longitudinal synthesis and one learner-facing Portfolio draft were created in Louise's corpus folder. All remain **teacher-review candidates**. They are not yet canonical learner-state mutations and are not yet student-dashboard publication authority.
+
+Current unresolved provenance gaps:
+- 2026-03-16 legacy portfolio lesson: source transcript not recovered in this run;
+- 2026-08-10 legacy profile source: referenced source currently unavailable/404.
+
+This checkpoint also demonstrates a vNext semantic requirement: retained state is not absence of learning. Louise's source trail adds professional use, sustained meaning-making, lexical repair and context expansion without requiring a CEFR transition.
