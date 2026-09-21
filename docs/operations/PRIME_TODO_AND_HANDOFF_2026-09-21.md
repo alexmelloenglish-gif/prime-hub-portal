@@ -224,7 +224,16 @@
 
 ---
 
-# E. P1 — Prompt / extraction reconciliation
+# E. P1 — Prompt / extraction / candidate-lane reconciliation
+
+- [ ] **PR #18 / #19 — reconcile the stacked NEW INTELLIGENCE lane with the current shared-runner/CLR architecture**
+  - both drafts remain open;
+  - exact CandidateRecord / ReviewTransition / Canonicalization / AuthorizedProjection entities are not present verbatim in current main;
+  - PR #19 also contains useful source-capture, provenance, idempotency and diarization/identity-uncertainty protections;
+  - do not merge the stacked branches directly;
+  - map each invariant to current CLR/G1–G6/shared-runner contracts;
+  - port only genuinely missing behavior;
+  - then close both stale drafts with exact superseding commits.
 
 - [ ] **PR #30 — reconcile unique non-lossy extraction work; do not blindly merge or close**
   - PR #30 is stale against current architecture, but it contains useful prompt/schema changes not found verbatim in current main:
@@ -250,23 +259,29 @@
 - [x] Phase 1 — public landing page.
 - [x] Phase 2 — Professional Story Architecture + 30 sec / 2 min / full narrative.
 
-- [ ] **Phase 3 — LinkedIn Reconstruction**
-  - derive from the frozen Phase 2 story; do not rediscover the narrative.
-  - deliverables:
-    - LinkedIn headline;
-    - About section;
+- [~] **Phase 3 — LinkedIn Reconstruction**
+  - content package prepared in `docs/reconnection/PHASE_3_LINKEDIN_RECONSTRUCTION_DRAFT.md`.
+  - READY:
+    - headline draft;
+    - About draft;
     - Experience framing;
     - PRIME/product description;
-    - Featured section/material choices;
-    - profile language consistency;
-    - final review against sober-communication guardrails.
+    - Featured strategy;
+    - first public post draft;
+    - reconnect message patterns.
+  - REQUIRED BEFORE PUBLICATION:
+    - exact Cultura / Prime Language School employment titles and dates;
+    - owner approval of headline/About/public founder wording;
+    - approval of public Featured assets.
+  - LinkedIn publication has **not** been executed.
 
-- [ ] **Phase 4 — Reconnection map**
-  - prioritized people/relationships;
-  - shared history;
-  - current role/context;
-  - why relationship matters;
-  - appropriate first-contact route;
+- [~] **Phase 4 — Reconnection map**
+  - initial map prepared in `docs/reconnection/PHASE_4_CONTACT_MAP_v1.md`.
+  - first-wave / second-wave logic and per-contact record schema are defined.
+  - REQUIRED BEFORE OUTREACH:
+    - verify current roles for first-wave contacts;
+    - verify preferred contact channels;
+    - write individualized messages from the verified context.
   - no mass outreach.
 
 - [ ] **Phase 5 — individualized first-contact messages**
@@ -306,8 +321,10 @@ These are not failures. They are the points where this workstream must stop inst
 | Attendance | real authoritative Meet → AttendanceRecord → downstream production trace |
 | Shared runner | implementation + deterministic/idempotent execution proof |
 | ObservationDebt | code/materialization + regression self-test |
+| PR #18 / #19 | map stacked candidate/capture lane to current CLR/shared-runner architecture |
 | PR #30 | semantic reconciliation against current machine; safe port decision |
-| LinkedIn | owner review before public profile publication |
+| LinkedIn | exact employment metadata + owner review before public profile publication |
+| Reconnection map | current-role/contact-channel verification before individualized outreach |
 | External legacy trigger | provider-side trigger evidence, only if decommission proof is required |
 
 ---
@@ -317,9 +334,10 @@ These are not failures. They are the points where this workstream must stop inst
 1. **Do not interrupt PR #42 source reprocessing.**
 2. Build the **shared runner + durable run-history** on a separate non-conflicting workstream.
 3. Implement **ObservationDebt reconciliation + tests**.
-4. Reconcile **PR #30** into the current machine instead of merging the stale branch.
-5. Resume **Reconnection Phase 3 — LinkedIn Reconstruction**.
-6. Complete **G6** and **attendance** runtime proofs when their required authority/runtime access is available.
+4. Reconcile **PR #18/#19 and PR #30** into the current machine instead of merging stale stacked branches.
+5. **Reconnection Phase 3 content is prepared**; next action is owner metadata/wording validation, then profile publication.
+6. Verify **Phase 4 first-wave current roles/channels**, then draft individualized outreach.
+7. Complete **G6** and **attendance** runtime proofs when their required authority/runtime access is available.
 
 ---
 
