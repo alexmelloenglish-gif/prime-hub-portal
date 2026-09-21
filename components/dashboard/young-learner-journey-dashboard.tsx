@@ -238,7 +238,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
                 <div key={report.id} className="rounded-2xl bg-white p-4 shadow-sm">
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{report.date}</p>
                   <p className="mt-2 text-sm font-black text-[#0b2c5c]">{report.title}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">{familyInsight(report.teacherInsight)}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{report.summary}</p>
                 </div>
               ))}
             </div>
