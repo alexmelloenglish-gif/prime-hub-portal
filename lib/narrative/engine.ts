@@ -3,7 +3,7 @@ import type {
   NarrativeEvidence,
   NarrativeInput,
   NarrativeValidation,
-} from './contracts'
+} from './contracts.ts'
 
 const LEADING_STATUS_PATTERNS = [
   /^unchanged\b/i,
