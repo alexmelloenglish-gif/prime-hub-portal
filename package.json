@@ -28,12 +28,13 @@
     "canonical-readback:g3:self-test": "node scripts/canonical-readback-g3-self-test.mjs",
     "canonical-independent-projection:g4:self-test": "node scripts/canonical-independent-projection-g4-self-test.mjs",
     "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs",
-    "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs",
+    "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs && npm run young-learner-access:self-test",
     "db:migrate:deploy": "prisma migrate deploy",
     "learning-narrative:self-test": "node --experimental-strip-types scripts/learning-narrative-machine-self-test.mjs && npm run pedagogical-semantics:self-test && npm run lesson-observability:self-test && npm run lesson-digest:self-test",
     "pedagogical-semantics:self-test": "node --experimental-strip-types scripts/pedagogical-processing-semantics-self-test.mjs",
     "lesson-observability:self-test": "node --experimental-strip-types scripts/lesson-observability-self-test.mjs",
-    "lesson-digest:self-test": "node --experimental-strip-types scripts/lesson-digest-self-test.mjs"
+    "lesson-digest:self-test": "node --experimental-strip-types scripts/lesson-digest-self-test.mjs",
+    "young-learner-access:self-test": "node scripts/young-learner-access-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
