@@ -8,120 +8,525 @@
   "profileCompleteness": "canonical_longitudinal_profile",
   "dashboardSourcePolicy": "authorized_repository_snapshot",
   "profileSource": {
-    "sourceType": "portfolio_plus_google_docs_transcript",
-    "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
-    "sourceUrl": "https://docs.google.com/document/d/102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94/edit",
-    "sourceHash": "a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50",
-    "sourceDate": "2026-08-10",
-    "sourceAuthority": "portfolio_and_transcript_evidence"
+    "sourceType": "teacher_confirmed_portfolio_vnext",
+    "sourceDocumentId": "1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0",
+    "sourceUrl": "https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit",
+    "sourceHash": "2cfefe1a4e6eee6b0fcedca6e67f901f2e8af7f8e0701e3c1a4d3ad1407d0ac4",
+    "sourceHashBasis": "normalized_google_doc_text_sha256",
+    "sourceDate": "2026-09-21",
+    "sourceAuthority": "teacher_confirmed_vnext_projection"
   },
   "teacherName": "Alexandre Mello",
   "program": "Conversation Master",
   "classFrequency": "Once a week — Monday, 8:00–9:00 AM",
   "currentLevel": "B1",
   "targetLevel": "B2",
-  "focus": "Maintain strong conversational fluency while improving grammar precision, sentence framing and lexical retrieval in complex real-world discussion.",
-  "attendanceRate": "3 attended lessons",
-  "attendanceLabel": "Only portfolio-confirmed or transcript-confirmed lessons are counted as attended.",
+  "focus": "Precision inside fluency: preserve natural, meaningful conversation while making recurring collocations, prepositions, verb patterns, lexical retrieval and sentence framing more precise.",
+  "attendanceRate": "4 attended lessons",
+  "attendanceLabel": "Four learning moments are represented in the current journey: 2 Mar, 22 Apr, 1 Jun and 20 Jul 2026.",
   "manageSpace": [
-    {"id":"portfolio","title":"My Portfolio","href":"https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit","description":"Open Louise's canonical v1.0 longitudinal learning portfolio.","icon":"folder-open"},
-    {"id":"live-class","title":"Join My Live Class","href":"https://meet.google.com/kfk-fnbh-odk","description":"Join Louise's live Conversation Master lesson.","icon":"video"},
-    {"id":"class-materials","title":"Class Materials","href":"https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing","description":"Open lesson files and supporting class resources.","icon":"book-open"},
-    {"id":"support","title":"Prime Support","href":"https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F","description":"Get help with links, platform questions or class logistics.","icon":"headphones"}
+    {
+      "id": "portfolio",
+      "title": "My Portfolio",
+      "href": "https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit",
+      "description": "Open Louise's current English Learning Portfolio.",
+      "icon": "folder-open"
+    },
+    {
+      "id": "live-class",
+      "title": "Join My Live Class",
+      "href": "https://meet.google.com/kfk-fnbh-odk",
+      "description": "Join Louise's live Conversation Master lesson.",
+      "icon": "video"
+    },
+    {
+      "id": "class-materials",
+      "title": "Class Materials",
+      "href": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
+      "description": "Open lesson files and supporting class resources.",
+      "icon": "book-open"
+    },
+    {
+      "id": "support",
+      "title": "Prime Support",
+      "href": "https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F",
+      "description": "Get help with links, platform questions or class logistics.",
+      "icon": "headphones"
+    }
   ],
   "portfolioNavigation": [
-    {"id":"nav-attendance","title":"Attendance Overview","href":"#attendance-overview"},
-    {"id":"nav-progress","title":"Progress Tracker","href":"#progress-tracker"},
-    {"id":"nav-vocabulary","title":"Vocabulary Bank","href":"#vocabulary-bank"},
-    {"id":"nav-grammar","title":"Grammar Overview","href":"#grammar-overview"},
-    {"id":"nav-feedback","title":"Teacher Feedback","href":"#teacher-feedback"}
+    {
+      "id": "nav-attendance",
+      "title": "Attendance Overview",
+      "href": "#attendance-overview"
+    },
+    {
+      "id": "nav-progress",
+      "title": "Progress Tracker",
+      "href": "#progress-tracker"
+    },
+    {
+      "id": "nav-vocabulary",
+      "title": "Vocabulary Bank",
+      "href": "#vocabulary-bank"
+    },
+    {
+      "id": "nav-grammar",
+      "title": "Grammar Overview",
+      "href": "#grammar-overview"
+    },
+    {
+      "id": "nav-feedback",
+      "title": "Teacher Feedback",
+      "href": "#teacher-feedback"
+    }
   ],
   "canonicalProjection": {
     "version": "student-dashboard-v1.0",
     "currentState": {
-      "level": {"value":"B1","qualifier":"Teacher-validated in Louise's canonical Portfolio v1.0. The CEFR label is not inferred solely from transcript performance.","status":"teacher-validated"},
-      "targetLevel": {"value":"B2","qualifier":"Teacher-validated target recorded in Louise's canonical Portfolio v1.0.","status":"teacher-validated"},
-      "objective": {"value":"Maintain and refine conversational English through meaningful, intellectually engaging discussion.","qualifier":"The portfolio records a deliberate decision to continue English through conversation practice for long-term fluency and language maintenance.","status":"portfolio-confirmed"},
-      "focus": {"value":"Grammar precision, complete sentence framing, lexical retrieval and structured argumentation without reducing natural fluency.","qualifier":"Supported by the March portfolio reports and the 10 August 2026 transcript.","status":"portfolio-confirmed"}
+      "level": {
+        "value": "B1",
+        "qualifier": "Current English reference level.",
+        "status": "teacher-validated"
+      },
+      "targetLevel": {
+        "value": "B2",
+        "qualifier": "Next English reference target. This update keeps the current level at B1.",
+        "status": "teacher-validated"
+      },
+      "objective": {
+        "value": "Keep English active through meaningful conversation and use it confidently for professional, social and current-affairs topics.",
+        "qualifier": "Louise learns best when English is connected to ideas and situations that matter to her.",
+        "status": "portfolio-confirmed"
+      },
+      "focus": {
+        "value": "Precision inside fluency: clearer collocations, prepositions, verb patterns, lexical retrieval and sentence framing without losing spontaneity.",
+        "qualifier": "The current learning journey shows strong continuity of meaning-making alongside recurring opportunities to refine precision.",
+        "status": "portfolio-confirmed"
+      }
     },
     "whatChanged": {
-      "title": "Teacher-validated B1 → B2 pathway and weekly schedule added",
-      "summary": "Louise's canonical Portfolio v1.0 now confirms current level B1, target B2 and a weekly Monday 8:00–9:00 AM class rhythm while preserving the three-lesson longitudinal evidence set.",
-      "changeType": "teacher-validation-sync",
-      "evidence": "Teacher-updated canonical Portfolio v1.0 plus the documented lessons of 2 March, 16 March and 10 August 2026.",
+      "title": "Your learning journey is now up to date",
+      "summary": "Your current portfolio brings together four learning moments from March to July 2026 and shows a clear direction: keep your fluency strong while making your English more precise and reusable.",
+      "changeType": "learning-journey-refresh",
+      "evidence": "2 March, 22 April, 1 June and 20 July 2026.",
       "status": "teacher-validated"
     },
     "priorities": [
-      {"id":"priority-grammar-precision","title":"Grammar precision in spontaneous speech","why":"Louise can sustain complex conversation, but accuracy becomes less stable while she is formulating longer ideas in real time.","evidence":"March portfolio focus areas and recurrent tense, comparative, preposition and sentence-framing issues in the August transcript.","status":"portfolio-confirmed"},
-      {"id":"priority-lexical-retrieval","title":"Lexical precision and retrieval","why":"Her conceptual range is broad; the next gain is faster access to precise English with less word-searching and Portuguese transfer.","evidence":"August discussion repeatedly triggered useful lexical work around social inequality, household, cost of living, public transport and cultural events.","status":"portfolio-confirmed"},
-      {"id":"priority-structured-opinion","title":"Structured extended opinions","why":"Louise already has strong ideas and reflective depth. Clearer framing and sequencing will make complex arguments easier to follow.","evidence":"Extended August discussion across politics, inclusion, public policy, economics, transport and culture.","status":"qualified"}
+      {
+        "id": "priority-precision-inside-fluency",
+        "title": "Precision inside fluency",
+        "why": "Keep the conversation natural while making recurring collocations, prepositions, verb patterns and sentence framing more precise.",
+        "evidence": "The June and July lessons show sustained communication with useful repair and reformulation moments.",
+        "status": "portfolio-confirmed"
+      },
+      {
+        "id": "priority-lexical-retrieval",
+        "title": "Faster lexical retrieval",
+        "why": "Keep the message moving by paraphrasing first, then refine the missing word or expression.",
+        "evidence": "Across professional and current-affairs discussion, Louise repeatedly preserves meaning while searching for language.",
+        "status": "portfolio-confirmed"
+      },
+      {
+        "id": "priority-structured-opinion",
+        "title": "Clearer extended opinions",
+        "why": "Use a simple opening → reasons/examples → conclusion frame so complex ideas are easier to follow without sounding scripted.",
+        "evidence": "Louise already sustains complex discussion; the next gain is more economical organization of those ideas.",
+        "status": "qualified"
+      }
     ],
     "nextAction": {
-      "id": "next-current-affairs-precision-round",
+      "id": "next-structured-three-minute-opinion",
       "authorizationStatus": "qualified",
       "destination": "https://meet.google.com/kfk-fnbh-odk",
-      "outcome": "Deliver a structured three-minute opinion while maintaining fluency and improving precision.",
-      "title": "Current Affairs Precision Round",
-      "description": "Choose one meaningful topic and give a three-minute opinion with a clear opening position, two supporting reasons and a conclusion. Reuse at least three active vocabulary items and prioritize complete sentence framing while keeping the delivery natural.",
-      "evidence": "The latest transcript shows that Louise performs best in substantive discussion and that precision, rather than basic communication, is the most useful next step.",
+      "outcome": "Deliver a clear three-minute opinion while maintaining natural fluency and improving precision.",
+      "title": "Structured three-minute opinion",
+      "description": "Choose one meaningful topic. Give an opening position, two reasons or examples and a conclusion. Do the first attempt without interruption; then revisit only two or three high-value language points and try again.",
+      "evidence": "The current journey shows that meaningful adult topics produce Louise's strongest communication and create the best context for precision work.",
       "status": "qualified"
     },
-    "schedule": {"status":"teacher-validated","label":"Once a week — Monday, 8:00–9:00 AM."}
+    "schedule": {
+      "status": "teacher-validated",
+      "label": "Once a week — Monday, 8:00–9:00 AM."
+    }
   },
   "progressTracker": [
-    {"id":"fluency","title":"Fluency","status":"Strong","insight":"Sustains long, natural conversation across personal, professional, social and cultural topics.","accent":"green"},
-    {"id":"analytical-communication","title":"Analytical & Reflective Communication","status":"Strong","insight":"Connects abstract issues with personal and professional experience and supports opinions with examples.","accent":"green"},
-    {"id":"grammar-precision","title":"Grammar Precision","status":"Needs Focus","insight":"The main linguistic need is more consistent tense choice, sentence completion, comparison forms and verb-pattern control during spontaneous speech.","accent":"amber"},
-    {"id":"lexical-precision","title":"Lexical Precision & Reuse","status":"Improving","insight":"Louise has broad conceptual range and benefits from actively recycling precise vocabulary from meaningful discussions.","accent":"blue"}
+    {
+      "id": "meaningful-fluency",
+      "title": "Meaningful Conversation",
+      "status": "Strong",
+      "insight": "Sustains substantial conversation across professional, social and current-affairs topics.",
+      "accent": "green"
+    },
+    {
+      "id": "professional-communication",
+      "title": "Professional Communication",
+      "status": "Strong",
+      "insight": "Uses English to explain real projects, workplace themes, stakeholders and institutional constraints.",
+      "accent": "green"
+    },
+    {
+      "id": "precision",
+      "title": "Precision Inside Fluency",
+      "status": "Developing",
+      "insight": "The main next step is more natural collocations, prepositions, verb patterns and sentence framing during extended speech.",
+      "accent": "amber"
+    },
+    {
+      "id": "lexical-retrieval",
+      "title": "Lexical Retrieval",
+      "status": "Improving",
+      "insight": "Keeps meaning alive through repair and can strengthen the habit of paraphrasing before receiving the missing word.",
+      "accent": "blue"
+    }
   ],
   "attendanceOverview": [
-    {"id":"class-2026-03-02-louise","lessonId":"confirmed_20260302_louise","date":"March 2, 2026","status":"present","title":"Language learning, fluency maintenance and vocabulary retention","summary":"Conversation class documented in Louise's portfolio, focused on maintaining English through regular practice.","sourceType":"portfolio_class_report","authorityStatus":"portfolio-confirmed"},
-    {"id":"class-2026-03-16-louise","lessonId":"confirmed_20260316_louise","date":"March 16, 2026","status":"present","title":"Sign language, emotions, inclusion and professional communication","summary":"Conversation class documented in the portfolio connecting sign language, emotional expression, creativity and inclusion at work.","sourceType":"portfolio_class_report","authorityStatus":"portfolio-confirmed"},
-    {"id":"class-2026-08-10-louise","lessonId":"lesson_7fb6ee4263fd1731","date":"August 10, 2026","status":"present","title":"Politics, economic challenges, transport and cultural experiences","summary":"Extended conversation across politics, inequality, diversity, public security, cost of living, transport and cultural events, with sustained spontaneous interaction.","sourceType":"google_docs_transcript","sourceDocumentId":"102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94","sourceHash":"a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50","authorityStatus":"transcript-confirmed"}
+    {
+      "id": "class-2026-03-02-louise",
+      "lessonId": "vnext_20260302_louise",
+      "date": "March 2, 2026",
+      "status": "present",
+      "title": "Keeping English active",
+      "summary": "Louise connected regular conversation practice with keeping vocabulary and fluency available over time.",
+      "sourceType": "portfolio_vnext",
+      "authorityStatus": "portfolio-confirmed"
+    },
+    {
+      "id": "class-2026-04-22-louise",
+      "lessonId": "vnext_20260422_louise",
+      "date": "April 22, 2026",
+      "status": "present",
+      "title": "Diversity & Inclusion through English",
+      "summary": "English became a tool for discussing workplace inclusion and connecting new professional vocabulary to meaningful ideas.",
+      "sourceType": "portfolio_vnext",
+      "authorityStatus": "portfolio-confirmed"
+    },
+    {
+      "id": "class-2026-06-01-louise",
+      "lessonId": "vnext_20260601_louise",
+      "date": "June 1, 2026",
+      "status": "present",
+      "title": "Explaining a real professional project",
+      "summary": "Louise used English to explain an inclusive-business fair, including purpose, stakeholders, logistics, permissions, funding and organizational change.",
+      "sourceType": "portfolio_vnext",
+      "authorityStatus": "portfolio-confirmed"
+    },
+    {
+      "id": "class-2026-07-20-louise",
+      "lessonId": "vnext_20260720_louise",
+      "date": "July 20, 2026",
+      "status": "present",
+      "title": "Sustaining complex conversation",
+      "summary": "Louise maintained an extended discussion across current affairs and social themes, keeping ideas moving while negotiating vocabulary and phrasing.",
+      "sourceType": "portfolio_vnext",
+      "authorityStatus": "portfolio-confirmed"
+    }
   ],
   "classReports": [
-    {"id":"class-report-2026-03-02","date":"2 March 2026","title":"Class Report — 02 Mar 2026","summary":"Louise reflected on why she continues studying English through conversation practice and on how regular use supports vocabulary retention and long-term fluency.","focus":["Conversation fluency","Language-learning reflection","Grammar accuracy","Vocabulary retention"],"vocabulary":["dedicated","practice","fluency","vocabulary retention"],"teacherInsight":"Louise demonstrates a thoughtful and mature attitude toward language learning. Her motivation is a strong driver for long-term fluency.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-03-16","date":"16 March 2026","title":"Class Report — 16 Mar 2026","summary":"Louise connected sign-language learning with emotion, creativity, diversity and inclusion in her professional context.","focus":["Confident storytelling","Emotional vocabulary","Comparatives","Present perfect","Inclusive communication"],"vocabulary":["sadness","happiness","anger","fear","anxiety","patience","hearing impaired","visually impaired"],"teacherInsight":"Louise shows a strong ability to connect language learning with emotional intelligence and professional purpose.","status":"published","contentStatus":"published"},
-    {"id":"class-report-2026-08-10","date":"10 August 2026","title":"Class Report — 10 Aug 2026","summary":"Louise sustained a long conversation across politics, inequality, diversity, public security, economics, transport and cultural experiences, consistently connecting abstract themes with personal and professional examples.","focus":["Extended speaking","Grammar precision","Structured opinions","Lexical retrieval","Current affairs","Culture and transport"],"vocabulary":["refurbish","household","social inequality","cost of living","weakest link","far right","job market","public transport","souvenir"],"teacherInsight":"Louise's strongest learning route is meaningful conversation. The next step is greater linguistic precision inside the same intellectually rich format.","status":"published","contentStatus":"published"}
+    {
+      "id": "class-report-2026-03-02-vnext",
+      "lessonId": "vnext_20260302_louise",
+      "date": "2 March 2026",
+      "title": "Keeping English active",
+      "summary": "Louise began this cycle with a clear purpose: keep English active through regular, meaningful conversation. She connected continued use with vocabulary retention and long-term fluency.",
+      "focus": [
+        "Conversation continuity",
+        "Language-maintenance strategy",
+        "Vocabulary retention through use"
+      ],
+      "vocabulary": [
+        "dedicated",
+        "practice",
+        "fluency",
+        "vocabulary retention"
+      ],
+      "teacherInsight": "Regular meaningful use is an important part of Louise's long-term English strategy.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-04-22-vnext",
+      "lessonId": "vnext_20260422_louise",
+      "date": "22 April 2026",
+      "title": "Diversity & Inclusion through English",
+      "summary": "Louise used English to explore workplace inclusion and organizational culture, connecting new vocabulary to ideas with professional meaning.",
+      "focus": [
+        "Professional English",
+        "Diversity & Inclusion",
+        "Supported lexical expansion",
+        "Meaningful discussion"
+      ],
+      "vocabulary": [
+        "inclusion",
+        "thrive",
+        "boost",
+        "workplace culture",
+        "innovation"
+      ],
+      "teacherInsight": "Professional meaning is a strong access route for learning and reusing new language.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-06-01-vnext",
+      "lessonId": "vnext_20260601_louise",
+      "date": "1 June 2026",
+      "title": "Explaining a real professional project",
+      "summary": "Louise used English to explain a real inclusive-business fair, moving from social purpose to logistics, public institutions, funding and organizational change.",
+      "focus": [
+        "Professional project explanation",
+        "Lexical repair",
+        "Stakeholder language",
+        "Precision inside fluency"
+      ],
+      "vocabulary": [
+        "bureaucracy",
+        "public money",
+        "artistic fee",
+        "adaptability"
+      ],
+      "teacherInsight": "The strongest direction is to preserve functional professional communication and refine precision after the first uninterrupted attempt.",
+      "status": "published",
+      "contentStatus": "published"
+    },
+    {
+      "id": "class-report-2026-07-20-vnext",
+      "lessonId": "vnext_20260720_louise",
+      "date": "20 July 2026",
+      "title": "Sustaining complex conversation",
+      "summary": "Louise sustained a long conversation across complex social and current-affairs topics and kept ideas moving even when she needed a word or a more natural expression.",
+      "focus": [
+        "Extended speaking",
+        "Structured opinions",
+        "Lexical retrieval",
+        "Collocations and prepositions",
+        "Reformulation"
+      ],
+      "vocabulary": [
+        "cheer for",
+        "escape from",
+        "raise the trophy",
+        "voice an opinion",
+        "set boundaries"
+      ],
+      "teacherInsight": "The active learning edge is greater precision without sacrificing the spontaneity that already supports strong communication.",
+      "status": "published",
+      "contentStatus": "published"
+    }
   ],
   "goals": [
-    {"id":"goal-fluency-maintenance","title":"Maintain conversational fluency","description":"Keep English active through regular meaningful discussion rather than isolated drills.","status":"on-track"},
-    {"id":"goal-precision","title":"Increase linguistic precision","description":"Improve sentence framing, tense choice and natural phrasing while speaking spontaneously.","status":"on-track"},
-    {"id":"goal-vocabulary","title":"Strengthen active vocabulary retrieval","description":"Recycle a small number of useful words from real discussions until they become easier to retrieve spontaneously.","status":"on-track"}
+    {
+      "id": "goal-fluency",
+      "title": "Keep meaningful fluency strong",
+      "description": "Continue using English for substantial professional, social and current-affairs discussion.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-precision",
+      "title": "Build precision inside fluency",
+      "description": "Refine a small number of high-value collocations, prepositions, verb patterns and sentence frames after the first attempt.",
+      "status": "on-track"
+    },
+    {
+      "id": "goal-retrieval",
+      "title": "Strengthen retrieval through paraphrase",
+      "description": "When a word is missing, explain the idea another way first and then refine the exact expression.",
+      "status": "on-track"
+    }
   ],
   "vocabularyBank": [
-    {"id":"v1","term":"dedicated","meaning":"very committed","example":"She is dedicated to lifelong learning."},
-    {"id":"v2","term":"vocabulary retention","meaning":"the ability to remember and retrieve words","example":"Regular practice supports vocabulary retention."},
-    {"id":"v3","term":"refurbish","meaning":"renovate or improve a building or place","example":"They refurbished the old building."},
-    {"id":"v4","term":"household","meaning":"the people who live together as one domestic unit","example":"Household expenses have increased."},
-    {"id":"v5","term":"social inequality","meaning":"unequal access to income, opportunities or resources","example":"Social inequality affects access to education and health."},
-    {"id":"v6","term":"cost of living","meaning":"the amount of money needed for everyday expenses","example":"The cost of living has increased significantly."},
-    {"id":"v7","term":"weakest link","meaning":"the least effective or most vulnerable part of a system","example":"Public transport can be the weakest link in the event experience."},
-    {"id":"v8","term":"far right","meaning":"a political position on the extreme right of the political spectrum","example":"The discussion included the rise of far-right politics."},
-    {"id":"v9","term":"job market","meaning":"the supply of and demand for employment","example":"Young adults face a difficult job market."},
-    {"id":"v10","term":"public transport","meaning":"shared transport systems available to the public","example":"Public transport affects access to major events."},
-    {"id":"v11","term":"souvenir","meaning":"an object kept as a reminder of a place or event","example":"She likes to collect souvenirs from cultural events."}
+    {
+      "id": "v1",
+      "term": "inclusion",
+      "meaning": "creating conditions in which different people can participate and belong",
+      "example": "Inclusion goes beyond hiring."
+    },
+    {
+      "id": "v2",
+      "term": "thrive",
+      "meaning": "grow, develop or do well",
+      "example": "People thrive when they feel included."
+    },
+    {
+      "id": "v3",
+      "term": "boost",
+      "meaning": "increase or improve something",
+      "example": "Diversity can boost innovation."
+    },
+    {
+      "id": "v4",
+      "term": "workplace culture",
+      "meaning": "the shared habits, values and environment of a workplace",
+      "example": "Inclusion can strengthen workplace culture."
+    },
+    {
+      "id": "v5",
+      "term": "innovation",
+      "meaning": "new ideas, methods or solutions",
+      "example": "Different perspectives can support innovation."
+    },
+    {
+      "id": "v6",
+      "term": "bureaucracy",
+      "meaning": "administrative rules and procedures",
+      "example": "The event required dealing with city-hall bureaucracy."
+    },
+    {
+      "id": "v7",
+      "term": "public money",
+      "meaning": "money provided or managed by government or public institutions",
+      "example": "The project involved rules around public money."
+    },
+    {
+      "id": "v8",
+      "term": "artistic fee",
+      "meaning": "payment made to an artist for professional work",
+      "example": "The budget included an artistic fee."
+    },
+    {
+      "id": "v9",
+      "term": "adaptability",
+      "meaning": "the ability to adjust to change",
+      "example": "Frequent organizational change requires adaptability."
+    },
+    {
+      "id": "v10",
+      "term": "cheer for",
+      "meaning": "support a team or person enthusiastically",
+      "example": "Who do you cheer for?"
+    },
+    {
+      "id": "v11",
+      "term": "escape from",
+      "meaning": "get away from a place or situation",
+      "example": "They tried to escape from the crowd."
+    },
+    {
+      "id": "v12",
+      "term": "raise the trophy",
+      "meaning": "lift a trophy after winning",
+      "example": "The team raised the trophy."
+    },
+    {
+      "id": "v13",
+      "term": "voice an opinion",
+      "meaning": "express an opinion clearly",
+      "example": "She voiced her opinion during the discussion."
+    },
+    {
+      "id": "v14",
+      "term": "set boundaries",
+      "meaning": "define limits in a relationship or situation",
+      "example": "It is important to set boundaries."
+    }
   ],
   "grammarOverview": {
-    "title": "Grammar Overview (Cumulative)",
-    "summary": "Louise communicates effectively in extended spontaneous conversation. The priority is precision under cognitive load rather than elementary grammar coverage.",
+    "title": "Precision Overview",
+    "summary": "Louise communicates effectively in extended spontaneous conversation. The next step is to make recurring language patterns more natural without interrupting the flow of ideas.",
     "focusPoints": [
-      "Improve consistency when moving between past experiences and present meaning.",
-      "Use comparative forms more accurately and naturally.",
-      "Strengthen verb patterns such as need to, prefer to and decide to.",
-      "Complete sentence frames more consistently during long explanations.",
-      "Use reformulation and recasting inside meaningful conversation rather than isolated drills."
+      "Refine collocations and prepositions that recur in meaningful discussion.",
+      "Strengthen verb patterns inside real explanations rather than isolated drills.",
+      "Use clearer sentence framing when an opinion or explanation becomes long.",
+      "Organize extended opinions with an opening position, supporting reasons or examples and a conclusion.",
+      "Use delayed correction: first keep the message moving, then revisit only two or three high-value language points."
     ]
   },
   "teacherFeedback": [
-    {"id":"feedback-march-learning","title":"Learning Mindset","body":"Louise demonstrates a thoughtful and mature attitude toward language learning. Her motivation is a strong driver for long-term fluency.","status":"published"},
-    {"id":"feedback-communication-purpose","title":"Communication & Purpose","body":"Louise shows a strong ability to connect language learning with emotional intelligence and professional purpose.","status":"published"}
+    {
+      "id": "feedback-strength",
+      "title": "What is already working",
+      "body": "Louise communicates best when the topic is real, intellectually interesting and connected to professional or social life. She can sustain the message across complex changes of topic.",
+      "status": "published"
+    },
+    {
+      "id": "feedback-direction",
+      "title": "What comes next",
+      "body": "The priority is precision inside fluency: keep the conversation natural, then refine a small number of high-value expressions, structures and retrieval strategies.",
+      "status": "published"
+    }
   ],
   "lessonRecords": [
-    {"lessonId":"confirmed_20260302_louise","studentId":"stu_c5930e6e76ae","sourceType":"portfolio_class_report","lessonDate":"2026-03-02","artifactStatus":"confirmed","authorityStatus":"authoritative_learning_evidence","implementationStatus":"published"},
-    {"lessonId":"confirmed_20260316_louise","studentId":"stu_c5930e6e76ae","sourceType":"portfolio_class_report","lessonDate":"2026-03-16","artifactStatus":"confirmed","authorityStatus":"authoritative_learning_evidence","implementationStatus":"published"},
-    {"lessonId":"lesson_7fb6ee4263fd1731","studentId":"stu_c5930e6e76ae","sourceType":"google_docs_transcript","sourceDocumentId":"102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94","sourceHash":"a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50","lessonDate":"2026-08-10","artifactStatus":"confirmed","authorityStatus":"authoritative_learning_evidence","implementationStatus":"published"}
+    {
+      "lessonId": "vnext_20260302_louise",
+      "studentId": "stu_c5930e6e76ae",
+      "sourceType": "corpus_report_vnext",
+      "sourceDocumentId": "12ApGYjqAWQ9h5qgasWCWGFJqTbH-9QN1ELH49Jz2rPE",
+      "sourceHash": "d10fa05cc5b7605a9af4088b2fe0b5488f5ce5edda3f76013815251c713284ec",
+      "lessonDate": "2026-03-02",
+      "artifactStatus": "confirmed",
+      "authorityStatus": "authoritative_learning_evidence",
+      "implementationStatus": "published"
+    },
+    {
+      "lessonId": "vnext_20260422_louise",
+      "studentId": "stu_c5930e6e76ae",
+      "sourceType": "corpus_report_vnext",
+      "sourceDocumentId": "1wtNqpG0xm4nNAXRfZ7rspkt9iwY7zFa2tGrilItLEfY",
+      "sourceHash": "decae664d100ea3e19998cd295b36bdb50936710db7eec4e4dfd455532c6b27d",
+      "lessonDate": "2026-04-22",
+      "artifactStatus": "confirmed",
+      "authorityStatus": "authoritative_learning_evidence",
+      "implementationStatus": "published"
+    },
+    {
+      "lessonId": "vnext_20260601_louise",
+      "studentId": "stu_c5930e6e76ae",
+      "sourceType": "corpus_report_vnext",
+      "sourceDocumentId": "1PQsTUNt7g_lowx3kLczfnq4aONwxpDgdl7Ng3GK5v2I",
+      "sourceHash": "a2a6d9791d774a9d6dbef2f60e72e720cc61dec09ff3dd34635b722badc0a12e",
+      "lessonDate": "2026-06-01",
+      "artifactStatus": "confirmed",
+      "authorityStatus": "authoritative_learning_evidence",
+      "implementationStatus": "published"
+    },
+    {
+      "lessonId": "vnext_20260720_louise",
+      "studentId": "stu_c5930e6e76ae",
+      "sourceType": "corpus_report_vnext",
+      "sourceDocumentId": "10LxT-4EpF0lWfxPMC1bjvrHm18VTjcOY9_ytTy6WQ3k",
+      "sourceHash": "f2e9aafa61e66f3cfce441a5e28c219fb6e70a79ca820d3e245795275a69d187",
+      "lessonDate": "2026-07-20",
+      "artifactStatus": "confirmed",
+      "authorityStatus": "authoritative_learning_evidence",
+      "implementationStatus": "published"
+    }
   ],
-  "identityAliases": ["louise_nogueira@hotmail.com","louise.nogueira@hotmail.com","Louise Nogueira","Louise D. Silva Nogueira"],
-  "notes": "Canonical Louise profile aligned to the official Student Learning Portfolio v1.0 on 2026-09-11. Teacher Alex has validated CEFR B1 as the current level, CEFR B2 as the target, and a weekly Monday 8:00–9:00 AM schedule. The dashboard and portfolio use the shared PRIME Support WhatsApp destination. Four-state PRIME progress taxonomy applied."
+  "identityAliases": [
+    "louise_nogueira@hotmail.com",
+    "louise.nogueira@hotmail.com",
+    "Louise Nogueira",
+    "Louise D. Silva Nogueira"
+  ],
+  "notes": "Louise vNext repository projection completed from the teacher-approved 2026-09-21 package. Active vNext evidence: 02 Mar, 22 Apr, 01 Jun and 20 Jul 2026. Legacy records for 16 Mar and 10 Aug are preserved as source gaps and excluded from active vNext evidence. CEFR remains B1 with B2 as target; no B2 promotion.",
+  "legacySourceGaps": [
+    {
+      "lessonDate": "2026-03-16",
+      "legacyLessonId": "confirmed_20260316_louise",
+      "status": "preserved_legacy_source_gap",
+      "activeVNextEvidence": false,
+      "reason": "Legacy portfolio record preserved; raw source was not recovered for the vNext source-grounded run."
+    },
+    {
+      "lessonDate": "2026-08-10",
+      "legacyLessonId": "lesson_7fb6ee4263fd1731",
+      "status": "preserved_legacy_source_gap",
+      "activeVNextEvidence": false,
+      "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
+      "legacySourceHash": "a0659b2769e810e84a661ac8be6949a605b3f73560f0f3cbb5258e03d6cc3c50",
+      "reason": "Legacy source ID currently returns 404; the historical representation is preserved but is not active vNext evidence."
+    }
+  ],
+  "vNextEvidencePolicy": {
+    "activeEvidenceDates": [
+      "2026-03-02",
+      "2026-04-22",
+      "2026-06-01",
+      "2026-07-20"
+    ],
+    "legacySourceGapDates": [
+      "2026-03-16",
+      "2026-08-10"
+    ],
+    "historyDeletionAllowed": false
+  }
 }

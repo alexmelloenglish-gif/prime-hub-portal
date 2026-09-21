@@ -1,0 +1,79 @@
+{
+  "migrationId": "louise-vnext-2026-09-21",
+  "studentId": "stu_c5930e6e76ae",
+  "studentName": "Louise D. Silva Nogueira",
+  "branch": "canonical/louise-vnext-2026-09-21",
+  "executedOn": "2026-09-21",
+  "projectionContract": "student-dashboard-v1.0",
+  "teacherDecision": {
+    "status": "APPROVED",
+    "date": "2026-09-21",
+    "gateDocumentId": "1DH4aYd_vtBNnG_JDPd_pKcpR6g302QfrG_SaHpJqbKA",
+    "gateSha256": "d2052aaa3f2393d64ad4961659abf7b9985caee603c2bb980f88e3fe3b7da1be"
+  },
+  "sourceRegistry": {
+    "name": "PRIME_CORPUS_SOURCE_REGISTRY_V2",
+    "teacher_review": 1,
+    "canonicalized": 1
+  },
+  "level": {
+    "current": "B1",
+    "target": "B2",
+    "promotionApplied": false
+  },
+  "direction": "precision inside fluency",
+  "activeEvidence": [
+    {
+      "date": "2026-03-02",
+      "reportDocumentId": "12ApGYjqAWQ9h5qgasWCWGFJqTbH-9QN1ELH49Jz2rPE",
+      "sha256": "d10fa05cc5b7605a9af4088b2fe0b5488f5ce5edda3f76013815251c713284ec"
+    },
+    {
+      "date": "2026-04-22",
+      "reportDocumentId": "1wtNqpG0xm4nNAXRfZ7rspkt9iwY7zFa2tGrilItLEfY",
+      "sha256": "decae664d100ea3e19998cd295b36bdb50936710db7eec4e4dfd455532c6b27d"
+    },
+    {
+      "date": "2026-06-01",
+      "reportDocumentId": "1PQsTUNt7g_lowx3kLczfnq4aONwxpDgdl7Ng3GK5v2I",
+      "sha256": "a2a6d9791d774a9d6dbef2f60e72e720cc61dec09ff3dd34635b722badc0a12e"
+    },
+    {
+      "date": "2026-07-20",
+      "reportDocumentId": "10LxT-4EpF0lWfxPMC1bjvrHm18VTjcOY9_ytTy6WQ3k",
+      "sha256": "f2e9aafa61e66f3cfce441a5e28c219fb6e70a79ca820d3e245795275a69d187"
+    }
+  ],
+  "legacyPreserved": [
+    {
+      "date": "2026-03-16",
+      "reason": "source gap; raw transcript not recovered",
+      "activeVNextEvidence": false
+    },
+    {
+      "date": "2026-08-10",
+      "reason": "legacy source ID returns 404",
+      "sourceDocumentId": "102fKHv_pC4eT9K8xanOJdET23PrWOz2fv9wRTZrlC94",
+      "activeVNextEvidence": false
+    }
+  ],
+  "artifacts": {
+    "portfolio": {
+      "documentId": "1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0",
+      "sha256": "2cfefe1a4e6eee6b0fcedca6e67f901f2e8af7f8e0701e3c1a4d3ad1407d0ac4",
+      "studentFacing": true
+    },
+    "longitudinalSynthesis": {
+      "documentId": "11c9WfSyPs0vCe6ryqTC7ONA3Fd5GgIvJVko_TYU8n2w",
+      "sha256": "b130a7477f447bebd8846b8e1137f83088ed1df9c3d4bcd8792848df0b09762e",
+      "studentFacing": false
+    }
+  },
+  "publication": {
+    "repositoryProjection": "completed",
+    "portfolioPointer": "https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit",
+    "learnerFacingTechnicalLanguage": "removed_from_portfolio_header",
+    "legacyHistoryDeleted": false,
+    "productionDeployment": "not_performed_by_this_branch_execution"
+  }
+}
