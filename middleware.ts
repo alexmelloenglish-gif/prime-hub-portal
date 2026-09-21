@@ -12,9 +12,10 @@ const allowedDashboardPaths = new Set([
   '/dashboard/configuracoes',
   '/dashboard/admin',
   '/dashboard/admin/review',
+  '/dashboard/action',
 ])
 
-const allowedDashboardPrefixes = ['/dashboard/admin/intelligence']
+const allowedDashboardPrefixes = ['/dashboard/admin/intelligence', '/dashboard/action']
 
 function normalizeDashboardPath(pathname: string) {
   if (allowedDashboardPaths.has(pathname)) {
