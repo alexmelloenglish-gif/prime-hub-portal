@@ -104,3 +104,41 @@ Planned activity becomes history only when execution is evidenced. Hypothesis ma
 ## 15. Release gate
 Do not generalize by copying Gustavo UI.
 Generalization requires contract-backed representation, acceptance suite, Golden-Witness historical run, separation of recovered evidence vs interpretation changes vs contract changes vs actual learning changes, preview validation, and explicit release decision.
+
+
+## 16. Projection-language firewall
+
+Internal truth and consumer language are separate contracts.
+
+### Internal / Teacher Operational Projection
+May expose precise authority and evidence semantics such as:
+- teacher-confirmed / edited-and-confirmed;
+- insufficient evidence / not observed / unresolved;
+- supported versus independent retrieval;
+- observation debt;
+- baseline provenance;
+- publication and reconciliation state;
+- next verification conditions.
+
+These terms exist to protect pedagogical truth and machine governance.
+
+### Learner and Family Journey Projections
+Must not mechanically expose governance or audit vocabulary merely because it exists internally.
+
+Do not surface labels such as teacher-validated, portfolio-confirmed, insufficient evidence, not validated, mastery not established, unresolved observation debt, or needs verification as consumer-facing status language.
+
+Translate the authorized pedagogical meaning into humane, action-oriented narrative without strengthening the claim. Examples:
+- internal: independent retrieval unresolved → family: "We will give her more opportunities to try this first in her own words."
+- internal: supported retrieval only → family: "This language has already appeared with support; the next step is using it in new situations."
+- internal: observation debt → family: "This is something we want to revisit in the next part of the journey."
+- internal: no evidence to change state → family: omit the negative status unless it is materially necessary; describe what was experienced and what comes next.
+
+### Invariants
+1. Consumer simplification may soften technical vocabulary but may not strengthen the underlying evidence claim.
+2. Internal uncertainty remains preserved even when it is not displayed as a negative family-facing label.
+3. Teacher operational views may expose the full evidence/authority graph.
+4. Learner/family views prioritize journey, meaning, achievements, support, direction and next experience.
+5. A family dashboard is not an audit console.
+6. A learner dashboard is not a teacher validation queue.
+7. When uncertainty itself is pedagogically important to communicate, express it as a constructive next opportunity rather than a machine-status warning.
+8. Technical statuses remain machine-readable and available to authorized teacher/governance views even when hidden from consumer projections.
