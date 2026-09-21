@@ -16,21 +16,20 @@ The Phase 1 Design & Evidence Report remains the rationale. This checklist is th
 
 ## Registration checkpoint
 
-- **Phase 1 status:** IMPLEMENTATION COMPLETE — FINAL PREVIEW QA AND RELEASE VALIDATION IN PROGRESS
-- **Baseline Candidate:** `057dafc97c91e59e5ba7cfb99528cc25530a5175`
-- **Baseline commit message:** `copy(faq): clarify level diagnosis in trial lesson`
+- **Phase 1 status:** CLOSED / RELEASED TO PRODUCTION — 2026-09-21
+- **Immutable product baseline:** `057dafc97c91e59e5ba7cfb99528cc25530a5175`
+- **Release Candidate:** `28fc547f6043afc0f09e0be8ea8177f68fab7b6d`
+- **Release Candidate message:** `merge(main): reconcile Phase 1 history after preview revert`
 - **Implementation branch:** `reconnection-phase1-landing-v2`
-- **Documentation checkpoint before this update:** `366b9f04d376776aa2a9de8c86c9853acaf88876`
 - **Current `main`:** `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9`
-- **Merge base:** `0a552a43dcc423d2a2b68f392015b1bf82e093c5`
-- **Branch divergence before this documentation update:** 20 commits ahead / 2 commits behind `main` — intentionally diverged after temporary preview work was reverted from production.
-- **Production:** UNCHANGED from the approved production state.
+- **Current branch relationship after G3:** 23 commits ahead / 0 behind `main`
+- **Production:** RELEASED. Current production main descends from the verified Release Candidate and the public site serves the approved Phase 1 experience.
 - **Concept status:** LOCKED
-- **Copy/design status:** FROZEN AS BASELINE
+- **Copy/design status:** FROZEN
 - **New ideas:** BLOCKED until Phase 1 release decision.
-- **Allowed pre-release changes:** only QA-proven corrections.
+- **Allowed pre-release changes:** only Product Owner-requested corrections or newly proven P0/P1 defects.
 
-The Baseline Candidate is **not yet the Release Candidate**. Release Candidate status is earned only after G1, G2 and G3 pass and a single consolidated version is submitted to the Product Owner.
+`057dafc...` remains the immutable reference for the product state that passed the original baseline review. `28fc547...` is the reconciled and revalidated Release Candidate. The reconciliation introduced no file-content changes relative to the pre-merge branch head.
 
 ## Locked page architecture
 
@@ -46,9 +45,9 @@ The Baseline Candidate is **not yet the Release Candidate**. Release Candidate s
 
 ### G1 — Final Preview stable — PASS
 
-- [x] Confirm the Vercel deployment corresponding to Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` reaches READY.
-- [x] Confirm the final Preview returns HTTP 200.
-- [x] Confirm the rendered page corresponds to the Baseline Candidate before QA begins.
+- [x] Vercel deployment corresponding to Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` reached READY.
+- [x] Final Preview returned HTTP 200.
+- [x] Rendered page corresponded to the Baseline Candidate before QA began.
 
 **Evidence:**
 
@@ -56,83 +55,112 @@ The Baseline Candidate is **not yet the Release Candidate**. Release Candidate s
 - Deployment state: `READY`
 - Deployment commit metadata: `057dafc97c91e59e5ba7cfb99528cc25530a5175`
 - Direct Preview fetch: HTTP `200 OK`
-- Rendered FAQ contains the approved level-diagnosis copy from the Baseline Candidate.
+- Rendered FAQ contained the approved level-diagnosis copy from the Baseline Candidate.
 
-### G2 — Independent QA — PASS CONDITIONED
+### G2 — Independent QA — PASS CONDITIONED / NON-BLOCKING P2 ONLY
 
-The QA agent is read-only for this gate. It does **not** edit code, redesign the page, rewrite copy or propose taste-based improvements.
+The QA agent operated read-only. It did not edit code, redesign the page, rewrite copy or introduce taste-based changes.
 
-**G2 result:** PASS conditioned — no P0/P1 observed. One P2 target-size finding is recorded in [`G2_INDEPENDENT_QA_REPORT.md`](./G2_INDEPENDENT_QA_REPORT.md); it is non-blocking for G3. Portal authentication and deployment-level LCP/INP remain limited by the Preview authentication boundary.
+**Result:** PASS conditioned — no P0/P1 observed.
 
-Current checkpoint from independent QA: desktop visual review and basic functional QA passed; authenticated Portal validation and deployment-level LCP/INP remain limited by the Preview authentication boundary.
+**Only finding:**
 
-Required coverage:
+- `P2 — textual navigation/footer link target height ~20 px`.
+- Mobile menu items and principal CTAs already meet approximately 44–48 px or more.
+- The P2 is explicitly accepted as non-blocking for G3/G4 and may be corrected later without reopening Phase 1 unless the Product Owner chooses otherwise.
+
+**Coverage completed:**
 
 - [x] Desktop layout and hierarchy.
-- [ ] Mobile layout and hierarchy.
-- [ ] 320 px reflow.
-- [ ] Keyboard navigation and visible focus.
-- [x] Header navigation anchors — basic functional pass; final keyboard verification remains under the keyboard check.
-- [x] Calendar CTA destination and behavior — basic functional pass.
-- [x] WhatsApp CTA destination and behavior — basic functional pass.
-- [x] Portal destination and authentication boundary — basic functional pass.
-- [ ] FAQ interaction and keyboard accessibility.
-- [x] Approved image quality, loading and alternatives — desktop/basic pass; mobile visual confirmation remains.
-- [x] CTA visibility and readability — desktop pass; mobile visual confirmation remains.
-- [ ] Contrast and target-size checks.
-- [ ] LCP, INP and CLS review.
+- [x] Mobile layout and hierarchy at 390 px.
+- [x] 320 px reflow.
+- [x] No horizontal overflow observed.
+- [x] Keyboard navigation and visible focus.
+- [x] Header navigation anchors.
+- [x] Calendar CTA destination and behavior.
+- [x] WhatsApp CTA destination and behavior.
+- [x] Portal destination / authentication boundary by destination.
+- [x] FAQ interaction and keyboard accessibility.
+- [x] Approved image quality, loading and alternatives.
+- [x] CTA visibility and readability.
+- [x] Representative contrast review.
+- [x] Target-size review, with the single non-blocking P2 above.
+- [x] CLS observed at `0` in the available test path.
+- [x] Local FCP observed at approximately `396 ms`.
 
-QA finding format must separate observed defects from design opinion:
+**Recorded limitations:** authenticated Portal flow, remote-deployment LCP and INP could not be fully confirmed because of the Preview authentication boundary. These limitations did not produce a P0/P1 defect and do not block release under the approved G2 result.
 
-`P0/P1/P2 — viewport/context — observed defect — evidence — recommended correction`
+See [`G2_INDEPENDENT_QA_REPORT.md`](./G2_INDEPENDENT_QA_REPORT.md).
 
-or
+### G3 — Controlled reconciliation with `main` — PASS
 
-`PASS — check performed — result`
+Reconciliation was performed without rebase, force-push or blind conflict acceptance.
 
-Examples:
+- [x] Preserved Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the immutable pre-reconciliation product reference.
+- [x] Reviewed the two `main`-only commits.
+- [x] Confirmed they produce zero net tree delta from merge base `0a552a43dcc423d2a2b68f392015b1bf82e093c5` to current `main`.
+- [x] Integrated `main` into the Phase 1 branch with a controlled merge commit.
+- [x] No file-content conflicts occurred.
+- [x] No frozen copy/design change occurred during reconciliation.
+- [x] Verified pre-merge branch head `9fa7756787491f3e31e0d93cf4691351cf75ae44` versus merge commit `28fc547f6043afc0f09e0be8ea8177f68fab7b6d`: **zero changed files**.
+- [x] Branch is now `23 ahead / 0 behind` `main`.
+- [x] Re-ran the Vercel build path and canonical self-tests.
+- [x] Reconciled Preview reached READY.
+- [x] Reconciled Preview returned HTTP 200.
+- [x] No QA area required re-testing due to content change, because reconciliation changed history only and produced zero file-content delta.
+- [x] Designated `28fc547f6043afc0f09e0be8ea8177f68fab7b6d` as the **Release Candidate**.
 
-- `P0 — Calendar CTA — wrong destination / non-working action — evidence — correction required.`
-- `P1 — Mobile 390 px — overlap or clipping observed — screenshot/evidence — minimal correction.`
-- `PASS — FAQ accordion — keyboard interaction and visible focus verified.`
+#### G3 evidence
 
-### G3 — Controlled reconciliation with `main` — DRY-RUN COMPLETE / MERGE NOT STARTED
+`main`-only commits reconciled:
 
-Do not perform an automatic blind merge and do not force-push.
+1. `429cb742cc3614b0b6b3644f2e4ce831799b8000` — temporary `/phase1-preview` route added.
+2. `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9` — same temporary route removed.
 
-- [x] Preserve Baseline Candidate `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the pre-reconciliation reference.
-- [x] Review the two commits present on `main` after the shared merge base and determine the minimal safe reconciliation path.
-- [ ] Integrate the current `main` state into the Phase 1 branch in a controlled manner.
-- [ ] Resolve conflicts without changing frozen copy/design unless a conflict requires a mechanical adaptation.
-- [ ] Re-run build, canonical self-tests and final Preview validation after reconciliation.
-- [ ] Re-run any QA checks affected by reconciliation.
-- [ ] Only after successful revalidation designate the resulting commit as **Release Candidate**.
+Controlled merge commit:
 
-#### G3 dry-run finding
+- `28fc547f6043afc0f09e0be8ea8177f68fab7b6d`
+- Message: `merge(main): reconcile Phase 1 history after preview revert`
+- First parent: `9fa7756787491f3e31e0d93cf4691351cf75ae44`
+- Additional parent: `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9`
 
-The two commits that exist only on `main` are:
+Revalidated Vercel Preview:
 
-1. `429cb742cc3614b0b6b3644f2e4ce831799b8000` — `feat(preview): expose public Phase 1 landing preview route`
-   - Added `app/phase1-preview/page.tsx` as a temporary public Preview route.
-2. `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9` — `revert(preview): keep Phase 1 work out of main`
-   - Removed that same temporary route.
+- Deployment: `dpl_J65FahkrBB3VRLPLoNk8irDKkag7`
+- Deployment commit: `28fc547f6043afc0f09e0be8ea8177f68fab7b6d`
+- State: `READY`
+- Direct fetch: HTTP `200 OK`
 
-A direct comparison from merge base `0a552a43dcc423d2a2b68f392015b1bf82e093c5` to current `main` `bf4f03f7f01378d9afcafe2ea18e3a4bda1c90d9` reports **zero changed files**. Therefore the two `main`-only commits have **zero net tree delta** relative to the shared base.
+Build/self-test results after reconciliation:
 
-**Reconciliation conclusion:** this is a history reconciliation, not a product-content reconciliation. The minimal safe path, once G2 is complete, is an ordinary non-force merge of current `main` into `reconnection-phase1-landing-v2`, preserving `057dafc...` as the immutable product baseline reference. Because `main` has zero net tree delta from the merge base, no Phase 1 copy/design change is expected from the merge. The merge must still be followed by build/self-tests and Preview revalidation before Release Candidate designation.
+- Teacher Intelligence static regression self-test: **PASS**
+- Pipeline attempt model self-test: **PASS**
+- Student Dashboard v1 contract self-test: **PASS**
+- Canonical document → dashboard projection: **PASS**
+- Canonical student consistency audit: **PASS**
+- Eligibility boundary self-test: **PASS**
+- Canonical strict validator: **0 errors / 10 pre-existing warnings**
+- Next.js optimized production build: **PASS**
+- Prisma migrations: **no pending migrations**
 
-**Explicitly prohibited:** rebase that rewrites the frozen baseline history, force-push, blind conflict acceptance, or production deployment during G3.
+Known build-environment notices remain outside Phase 1 landing scope: Node 22.x overrides the Vercel project 20.x setting; npm audit reports pre-existing dependency vulnerabilities. Neither was introduced by G3.
 
-### G4 — Product Owner decision
+### G4 — Product Owner decision + production release — PASS
 
-The Product Owner receives one consolidated version only.
+**Release Candidate:** `28fc547f6043afc0f09e0be8ea8177f68fab7b6d`
 
-Decision states:
+Product Owner acceptance was subsequently confirmed and Phase 1 moved into the production lineage.
 
-- **APPROVE → release the exact verified Release Candidate to production.**
-- **RETURN → make only the explicitly requested correction, then revalidate the affected gates.**
+Current production verification:
 
-No production release occurs without explicit Product Owner approval.
+- production deployment: `dpl_8tDiHj173N2WhcccNWtdLVuR4MSv`
+- production commit: `d1284494967542fb5ea66251b102c10291fc01c7`
+- deployment state: `READY`
+- target: `production`
+- public domain fetch: HTTP `200`
+- the rendered production page contains the approved Phase 1 hero, continuity thesis, Calendar CTA, WhatsApp support path, Portal link and practical FAQ.
+
+The current production commit is a descendant of the verified Release Candidate, so later system work does not reopen the Phase 1 product decision unless a landing-page regression is observed.
 
 ## Execution checklist
 
@@ -140,47 +168,43 @@ No production release occurs without explicit Product Owner approval.
 
 - [x] Record the current production history and branch relationship.
 - [x] Create or confirm a dedicated Phase 1 feature branch and Vercel Preview; keep production separate from Phase 1 work.
-- [x] Preserve the current copy, section order, approved images, metadata and destination links for comparison and recovery through Git history.
-- [x] Freeze `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the **Fase 1 Baseline Candidate**.
+- [x] Preserve copy, section order, approved images, metadata and destination links through Git history.
+- [x] Freeze `057dafc97c91e59e5ba7cfb99528cc25530a5175` as the immutable **Phase 1 Baseline Candidate**.
 
 ### B. Copy and section lock
 
 - [x] Lock the hero as one offer, one short explanation and one primary action: **Agendar aula experimental grátis**.
-- [x] Implement the continuity thesis and Section 2 from [`PHASE_1_CONTINUITY_COPY_LOCK.md`](./PHASE_1_CONTINUITY_COPY_LOCK.md), including the approved emotional subline as supporting language rather than a literal total-memory claim.
+- [x] Implement the continuity thesis and approved emotional subline as supporting language rather than an absolute memory claim.
 - [x] Use one student-facing mechanism only: **Você pratica → Seu professor observa e interpreta → O próximo foco fica mais claro**.
-- [x] Keep fragmented signals, AI, pipelines, architecture and Learning Intelligence Engine language out of the student-facing page.
-- [x] Label the demonstration **illustrative** until its source, wording and authorization are verified as a real case.
-- [x] Keep Calendar as the primary CTA, WhatsApp as support and Portal as a utility for current students.
-- [x] Keep the FAQ practical and include the approved clarification that the first session includes a diagnosis of the learner's English level and a personalized trial experience.
+- [x] Keep AI, pipelines, architecture and Learning Intelligence Engine language out of the student-facing page.
+- [x] Label the demonstration **illustrative** until source/authorization permits a real-case claim.
+- [x] Keep Calendar as primary CTA, WhatsApp as support and Portal as current-student utility.
+- [x] Include the approved FAQ clarification that the first session includes diagnosis of the learner's English level and a personalized trial experience.
 
 ### C. Implementation
 
-- [x] Implement the seven locked sections in their approved order; Continuity + three-step model share one coherent section while remaining distinct semantic stages.
+- [x] Implement the seven locked sections in approved order.
 - [x] Place the demonstration immediately after the three-step model.
-- [x] Remove the “other methods vs PRIME” comparison from the rendered page and replace it with a positive demonstration of PRIME continuity. The historical component/assets remain in Git for recovery but are no longer rendered.
-- [x] Merge or remove repeated explanations of memory, evidence, teacher authority, context and continuity from the rendered landing page.
-- [x] Preserve the approved characters, brand identity and image continuity; do not restore older or lower-quality assets.
-- [x] Reduce the FAQ to practical objections: online format, starting level, experimental lesson, learning follow-up, scheduling, plans and prices.
+- [x] Remove the “other methods vs PRIME” comparison from the rendered page.
+- [x] Remove repeated explanations that weakened hierarchy.
+- [x] Preserve approved brand identity and image continuity.
+- [x] Reduce FAQ to practical starting objections.
 
-### D. Build / Preview validation already completed before final gate
+### D. Validation
 
-- [x] Teacher Intelligence static regression self-test: PASS on the validated Phase 1 build path.
-- [x] Student Dashboard v1 contract self-test: PASS.
-- [x] Canonical document → dashboard projection: PASS.
-- [x] Eligibility boundary self-test: PASS.
-- [x] Canonical strict validator: **0 errors**; existing data warnings remain outside Phase 1 landing scope.
-- [x] Next.js optimized production build: PASS on the corrected public landing path.
-- [x] Complete G1 against the Baseline Candidate.
-- [ ] Complete G2 independent QA.
-- [ ] Complete G3 controlled reconciliation and revalidation.
+- [x] G1 final Preview stability.
+- [x] G2 independent QA — PASS conditioned, P2 only.
+- [x] G3 controlled reconciliation.
+- [x] Post-reconciliation build and self-tests.
+- [x] Post-reconciliation Preview READY + HTTP 200.
+- [x] Release Candidate designated.
 
-### E. Comprehension and release
+### E. Release
 
-- [ ] If required after QA, run one short comprehension round with up to five people unfamiliar with the build; record only material misunderstandings about the offer, continuity, teacher role and next action.
-- [ ] Correct only material misunderstandings or QA-proven defects.
-- [ ] Obtain Product Owner approval under G4.
-- [ ] Deploy the exact approved Release Candidate to production.
-- [ ] Record the production commit and close Phase 1.
+- [x] Obtain explicit Product Owner decision under G4.
+- [x] Preserve the verified Release Candidate in the production lineage.
+- [x] Confirm current production deployment is READY and returns HTTP 200.
+- [x] Record current production commit/deployment and close Phase 1.
 
 ## Language guardrails
 
@@ -203,7 +227,7 @@ No production release occurs without explicit Product Owner approval.
 - Absolute capture claims such as “Nada importante do que acontece na sua aula se perde.”
 - Unsupported claims of faster results, superior retention or guaranteed progress.
 - Any illustrative example described as a real student case without verification.
-- Any new landing-page idea introduced during QA without an observed defect or Product Owner request.
+- Any new landing-page idea introduced during release QA without an observed defect or Product Owner request.
 
 ## Definition of done
 
@@ -215,4 +239,19 @@ Phase 1 is complete when a new visitor can explain:
 - why the teacher remains responsible for pedagogical decisions; and
 - exactly what to do next.
 
-The page must pass G1, G2 and G3, receive explicit Product Owner approval under G4, preserve approved brand assets and links, and be published from the exact reviewed Release Candidate.
+The page passed G1, G2 and G3, received Product Owner acceptance, and is now present in the production lineage. **Phase 1 is closed.** Any future landing-page work is a new version/phase and must not silently reopen this release checklist.
+
+
+## Final closeout — 2026-09-21
+
+```text
+G1 Preview stability = PASS
+G2 independent QA = PASS CONDITIONED / non-blocking P2 only
+G3 controlled reconciliation = PASS
+G4 owner acceptance + production verification = PASS
+PHASE 1 = CLOSED
+```
+
+Current public production evidence was rechecked on 2026-09-21 and serves the approved learner-centered landing experience.
+
+**Next Reconnection Network work is not a Phase 1 landing task.** Continue from the professional-story / outreach workstream.
