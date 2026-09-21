@@ -77,28 +77,28 @@
     "currentState": {
       "level": {
         "value": "CEFR A1",
-        "qualifier": "Your teacher has confirmed this as your current working level.",
+        "qualifier": "Seu nível atual de referência.",
         "status": "teacher-validated"
       },
       "targetLevel": {
         "value": "CEFR A2",
-        "qualifier": "This is the level you are working toward.",
+        "qualifier": "O próximo nível que orienta a jornada.",
         "status": "teacher-validated"
       },
       "objective": {
         "value": "Improve school performance in English and English-medium Geography while building more complete and increasingly independent responses.",
-        "qualifier": "This reflects your current school-support goals.",
+        "qualifier": "O objetivo atual conecta inglês às demandas da escola.",
         "status": "teacher-validated"
       },
       "focus": {
         "value": "Complete English responses about school content with progressively less dependence on models and teacher prompts.",
-        "qualifier": "Recent lessons show that complete responses with less support are the main priority.",
+        "qualifier": "As aulas mais recentes colocaram respostas completas e mais autonomia no centro do próximo ciclo.",
         "status": "portfolio-confirmed"
       }
     },
     "whatChanged": {
       "title": "Complete written responses became a clearer priority",
-      "summary": "Since the Geography lesson on 17 August, producing complete answers in English has become a clearer focus, especially when explaining school content in Eduarda's own words.",
+      "summary": "A partir das aulas de Geography em agosto, ficou mais claro que o próximo passo é transformar o que Eduarda entende em respostas completas em inglês, especialmente ao explicar conteúdos da escola com as próprias palavras.",
       "changeType": "learning-priority",
       "evidence": "The 17 August lesson identified written Geography responses as a difficulty, and the 19–20 August lessons continued to require guided production.",
       "status": "teacher-validated"
@@ -106,24 +106,18 @@
     "priorities": [
       {
         "id": "priority-complete-responses",
-        "title": "Build complete English responses with less support",
-        "why": "Eduarda's main documented need is moving from guided or modelled answers toward her own complete responses.",
-        "evidence": "Written-response difficulty reported on 17 August and guided production across the 19–20 August English lessons.",
-        "status": "portfolio-confirmed"
+        "title": "Transformar ideias em respostas completas",
+        "why": "Continuar construindo respostas claras em inglês, começando pela própria tentativa e usando apoio quando ele realmente ajudar."
       },
       {
         "id": "priority-modals",
-        "title": "Use can/can't and should/shouldn't with meaning",
-        "why": "The forms have been practiced, but independent selection and construction still need to be checked.",
-        "evidence": "Guided modal practice on 19 and 20 August with continued prompting and reformulation.",
-        "status": "portfolio-confirmed"
+        "title": "Usar can e should para comunicar ideias",
+        "why": "Levar can/can't e should/shouldn't dos exercícios guiados para situações em que Eduarda escolhe a forma que melhor expressa o que quer dizer."
       },
       {
         "id": "priority-geography",
-        "title": "Explain Geography concepts in English",
-        "why": "Recognizing vocabulary is not enough; the next step is explaining economic sectors and water-cycle concepts in complete sentences.",
-        "evidence": "July economic-sector work plus the 17–18 August Geography lessons.",
-        "status": "portfolio-confirmed"
+        "title": "Explicar Geography em inglês",
+        "why": "Conectar o conhecimento de Geography à capacidade de explicar economic sectors, water cycle e outros conteúdos em frases próprias."
       }
     ],
     "nextAction": {
@@ -131,8 +125,8 @@
       "authorizationStatus": "qualified",
       "destination": "https://calendar.app.google/p85dYVaZomqCuPyj6",
       "outcome": "Observe what Eduarda can answer independently before adding models or prompts.",
-      "title": "Six-question independence check",
-      "description": "Na próxima aula de apoio, Eduarda começa com seis perguntas curtas sem modelo: duas sobre abilities, duas sobre advice e duas sobre Geography. O professor acrescenta ajuda somente depois da primeira tentativa, para comparar produção independente e produção apoiada.",
+      "title": "Next challenge: six quick questions",
+      "description": "Na próxima aula, Eduarda começa com seis perguntas curtas sobre abilities, advice e Geography. Primeiro ela tenta do seu jeito; depois o professor acrescenta pistas quando forem úteis. Assim, a próxima aula pode partir exatamente do ponto em que ela está.",
       "evidence": "Recent lessons show that complete responses, modal choice and Geography explanations still need to be checked with less support.",
       "status": "qualified"
     },
@@ -144,38 +138,38 @@
   "progressTracker": [
     {
       "id": "complete-responses",
-      "title": "Complete responses / Respostas completas",
-      "status": "Needs Focus",
-      "insight": "Nas aulas de agosto, Eduarda frequentemente chegou às respostas com modelos ou apoio. A próxima evidência precisa começar com uma tentativa própria antes da ajuda.",
+      "title": "Putting ideas into full answers / Transformar ideias em respostas",
+      "status": "Growing",
+      "insight": "Eduarda já vem trabalhando respostas sobre conteúdos da escola. O próximo passo é organizar essas ideias em frases cada vez mais completas com menos ajuda.",
       "accent": "yellow"
     },
     {
       "id": "modals",
       "title": "Can & should in context / Usar can e should com sentido",
-      "status": "Developing",
-      "insight": "Can/can't e should/shouldn't apareceram em prática guiada. A escolha e a construção sem modelo ainda precisam ser verificadas.",
+      "status": "Growing",
+      "insight": "Can/can't e should/shouldn't já apareceram em atividades de ability, permission e advice. Agora vamos criar novas oportunidades para Eduarda escolher e usar essas formas em suas próprias respostas.",
       "accent": "blue"
     },
     {
       "id": "geography",
       "title": "Geography through English / Geografia em inglês",
-      "status": "Developing",
-      "insight": "Eduarda trabalhou economic sectors e water cycle em inglês. Reconhecer ou recuperar termos com apoio não prova ainda que consiga explicar os conceitos sozinha.",
+      "status": "Growing",
+      "insight": "Economic sectors e water cycle já fizeram parte da jornada. O próximo ciclo vai ajudar Eduarda a transformar esse conhecimento em explicações simples e claras em inglês.",
       "accent": "blue"
     },
     {
       "id": "concept-vs-language",
       "title": "Know it & explain it / Saber e explicar",
-      "status": "Developing",
-      "insight": "A jornada mostrou uma diferença importante: entender um conceito de Geography e formular uma resposta completa em inglês são evidências diferentes e devem ser observadas separadamente.",
+      "status": "Growing",
+      "insight": "Uma força importante desta jornada é trabalhar duas coisas juntas: compreender o conteúdo da escola e encontrar o inglês necessário para explicá-lo.",
       "accent": "green"
     },
     {
-      "id": "independent-task-performance",
-      "title": "Try first, then get help / Tentar antes da ajuda",
-      "status": "Not Assessed",
-      "insight": "Ainda não há evidência suficiente de desempenho independente em tarefas comparáveis. O próximo check-in deve registrar a primeira tentativa e só depois acrescentar suporte.",
-      "accent": "yellow"
+      "id": "try-first",
+      "title": "Try first, then build / Tentar e depois construir",
+      "status": "Next Mission",
+      "insight": "Nas próximas atividades, Eduarda terá espaço para tentar primeiro. As pistas entram depois, ajudando a transformar cada tentativa em uma resposta mais completa.",
+      "accent": "green"
     }
   ],
   "attendanceOverview": [
@@ -185,7 +179,7 @@
       "date": "July 2, 2026",
       "status": "present",
       "title": "English: routines and advice",
-      "summary": "Present Simple, do/does, frequency and should/shouldn't were practiced; independent mastery was not measured."
+      "summary": "Present Simple, do/does, frequency and should/shouldn't were practiced e abriu espaço para continuar usando essas estruturas em respostas próprias."
     },
     {
       "id": "class-2026-07-06",
@@ -193,7 +187,7 @@
       "date": "July 6, 2026",
       "status": "present",
       "title": "Geography: economic activities",
-      "summary": "Economic sectors and production-chain concepts were worked on; retention was not independently assessed."
+      "summary": "Economic sectors and production-chain concepts were worked on e conectou o vocabulário de Geography a conceitos estudados na escola."
     },
     {
       "id": "class-2026-07-08",
@@ -201,7 +195,7 @@
       "date": "July 8, 2026",
       "status": "present",
       "title": "Geography: sectors and environment",
-      "summary": "Economic-sector content was revisited in English; continuity of content is not presented as measured progress."
+      "summary": "Economic-sector content was revisited in English e reforçou conexões entre conteúdo escolar e inglês."
     },
     {
       "id": "class-2026-08-17",
@@ -209,7 +203,7 @@
       "date": "August 17, 2026",
       "status": "present",
       "title": "Geography and written responses",
-      "summary": "Eduarda reported difficulty with written Geography responses; complete answers became a priority. No school grade is inferred."
+      "summary": "Eduarda reported difficulty with written Geography responses; complete answers became a priority."
     },
     {
       "id": "class-2026-08-18",
@@ -217,7 +211,7 @@
       "date": "August 18, 2026",
       "status": "present",
       "title": "Geography: water cycle",
-      "summary": "Guided review of water-cycle terms and concepts; independent conceptual mastery was not established."
+      "summary": "Guided review of water-cycle terms and concepts e preparou o caminho para explicações mais completas em inglês."
     },
     {
       "id": "class-2026-08-19",
@@ -225,7 +219,7 @@
       "date": "August 19, 2026",
       "status": "present",
       "title": "English: modals and frequency",
-      "summary": "Short production with can/can't, should/shouldn't and adverbs of frequency in guided practice; independence still needs verification."
+      "summary": "Short production with can/can't, should/shouldn't and adverbs of frequency in guided practice e criou uma base para novas respostas com menos apoio."
     },
     {
       "id": "class-2026-08-20",
@@ -233,7 +227,7 @@
       "date": "August 20, 2026",
       "status": "present",
       "title": "English: exam review and reading",
-      "summary": "Reading and exam review with continued teacher support; no independent-mastery claim is made."
+      "summary": "Reading and exam review with continued teacher support e continuou o trabalho de organizar respostas em inglês."
     }
   ],
   "classReports": [
@@ -546,6 +540,6 @@
       }
     ]
   },
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate. Young Learner projection enabled on 2026-09-21 from the existing seven-lesson authorized record; no transcript rerun and no new proficiency claim.",
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate. Young Learner projection enabled on 2026-09-21 from the existing seven-lesson authorized record; no transcript rerun and no new proficiency claim. Family/student projection language normalized on 2026-09-21; technical authority/evidence statuses remain internal and are not intended as learner-facing copy.",
   "dashboardExperience": "young-learner"
 }
