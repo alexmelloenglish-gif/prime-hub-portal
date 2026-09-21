@@ -9,6 +9,9 @@ import type {
   PromptOneOutput,
   PromptTwoInput,
 } from './contracts'
+import type { LearningNarrativeDraft, NarrativeInput } from '@/lib/narrative/contracts'
+import { NARRATIVE_SYSTEM_PROMPT, NARRATIVE_OUTPUT_CONTRACT } from '@/lib/narrative/prompts'
+import { prepareNarrativeInput, validateNarrativeDraft } from '@/lib/narrative/engine'
 
 const CANONICAL_CONTRACT = `
 PROMPT 1 OFFICIAL — AI LESSON EXTRACTION AND PROPOSAL — LOCKED
@@ -74,13 +77,14 @@ function promptVersionForStage(stage: string): string {
     'prompt-2': 'prompt-2.v2.0',
     'prompt-3': 'prompt-3.v3',
     'prompt-4': 'prompt-4.v1',
+    'prompt-5': 'narrative-1.v1',
   } as Record<string, string>)[stage] || stage
 }
 
 export class GeminiGenerationError extends Error {
   readonly provider = 'gemini'
   readonly stage: string
-  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json'
+  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json' | 'validation_failed'
   readonly httpStatus?: number
   readonly model?: string
   readonly requestId?: string
@@ -285,6 +289,40 @@ export async function runPromptOne(input: LessonTranscriptInput, transcriptId: s
     CANONICAL_CONTRACT,
     fallbackPromptOne(input, transcriptId),
   )
+}
+
+
+export async function runNarrativeSynthesis(input: NarrativeInput): Promise<LearningNarrativeDraft> {
+  const preparedInput = prepareNarrativeInput(input)
+  const generated = await invokeJson<LearningNarrativeDraft>(
+    'prompt-5',
+    NARRATIVE_SYSTEM_PROMPT,
+    preparedInput,
+    NARRATIVE_OUTPUT_CONTRACT,
+  )
+  const draft: LearningNarrativeDraft = {
+    ...generated,
+    schemaVersion: 'learning-narrative.v1',
+    studentId: preparedInput.studentId,
+    currentLessonId: preparedInput.currentLesson.lessonId,
+    narrativeStatus: 'draft',
+    authorityStatus: 'non_authoritative',
+    requiresTeacherReview: true,
+  }
+  const validation = validateNarrativeDraft(draft, preparedInput)
+  if (!validation.passed) {
+    throw new GeminiGenerationError(
+      'prompt-5',
+      'validation_failed',
+      \`Narrative grounding validation failed: \${validation.errors.join(' ')}\`,
+      undefined,
+      draft.generationProvenance,
+    )
+  }
+  return {
+    ...draft,
+    validation,
+  }
 }
 
 export async function runPromptTwo(input: PromptTwoInput): Promise<ClassReportOutput> {
