@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "claudio-vnext-projection-candidate-v1",
+  "generatedAt": "2026-09-21",
+  "authorityStatus": "PENDING_TEACHER_AUTHORITY",
+  "studentId": "stu_e22a6c379329",
+  "learner": "Cláudio Bittencourt",
+  "priorAuthorizedProfile": {
+    "currentLevel": "CEFR B1",
+    "targetLevel": "CEFR B2",
+    "cefrMutationAuthorized": false
+  },
+  "sourceScope": {
+    "primaryReplayIncluded": [
+      "2026-08-17"
+    ],
+    "primarySourcesPending": [
+      "2026-03-02",
+      "2026-07-13"
+    ],
+    "excluded": [
+      "2026-08-28 synthetic test"
+    ],
+    "memoryOnly": [
+      "undated 8K television / World Cup lesson"
+    ]
+  },
+  "candidateProgress": [
+    {
+      "construct": "sustained_communication_and_reasoning",
+      "underlyingState": "Strong",
+      "learnerFacingLabel": "Available now",
+      "condition": "high-interest adult/technical conversation; frequent code-switching remains a boundary"
+    },
+    {
+      "construct": "precision_inside_extended_speaking",
+      "underlyingState": "Improving",
+      "learnerFacingLabel": "Growing",
+      "condition": "extended spontaneous interaction under cognitive/lexical load"
+    },
+    {
+      "construct": "technical_lexical_retrieval",
+      "underlyingState": "Improving",
+      "learnerFacingLabel": "Growing",
+      "condition": "technical domains with recurring teacher lexical support"
+    },
+    {
+      "construct": "discourse_organization",
+      "underlyingState": "Improving",
+      "learnerFacingLabel": "Growing",
+      "condition": "complex reasoning present; explicit structure remains a productive next verification"
+    }
+  ],
+  "retainedOrUnpromoted": [
+    {
+      "construct": "authentic_listening",
+      "action": "RETAIN_PRIOR_AUTHORIZED_STATE_IF_TEACHER_ACCEPTS",
+      "reason": "17 Aug shows authentic input plus meaningful follow-up, but not a clean independent comprehension test"
+    },
+    {
+      "construct": "self_correction",
+      "action": "NO_NEW_STATE_CLAIM",
+      "reason": "inspected source does not provide clean enough learner-initiated repair evidence for promotion"
+    },
+    {
+      "construct": "CEFR",
+      "action": "NO_CHANGE",
+      "reason": "ordinary lesson replay cannot change CEFR"
+    }
+  ],
+  "observationDebts": [
+    {
+      "debtId": "OD-CLAUDIO-01",
+      "claimToCheck": "Can Cláudio sustain a structured 3-minute high-interest argument primarily in English with reduced code-switching?",
+      "requiredOpportunity": "uninterrupted claim → two reasons → example → counterpoint → conclusion"
+    },
+    {
+      "debtId": "OD-CLAUDIO-02",
+      "claimToCheck": "Can Cláudio paraphrase a missing technical word before teacher supply?",
+      "requiredOpportunity": "technical lexical gap with paraphrase-first protocol"
+    },
+    {
+      "debtId": "OD-CLAUDIO-03",
+      "claimToCheck": "What can Cláudio retell independently after one short authentic clip?",
+      "requiredOpportunity": "single-listen 60–90 second authentic input followed by first-attempt retell"
+    },
+    {
+      "debtId": "OD-CLAUDIO-04",
+      "claimToCheck": "What returns from the 8K/16K historical thread without the teacher first narrating the old lesson?",
+      "requiredOpportunity": "no-model delayed topic reintroduction"
+    }
+  ],
+  "dashboardMigration": {
+    "namedStudentUIRequired": false,
+    "sharedAdultDashboard": true,
+    "compatibleWithVnextStateDisplay": true,
+    "mutationStatus": "NOT_AUTHORIZED_UNTIL_TEACHER_REVIEW_AND_SOURCE_RECONCILIATION"
+  }
+}
