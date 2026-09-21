@@ -76,6 +76,63 @@
       "note": "The 17 Aug primary transcript independently confirms that teacher and learner revisited this earlier topic. That does not recover the original lesson or authorize a dated attendance event."
     }
   ],
-  "sourceSetStatus": "PARTIAL_PRIMARY_SOURCE_RECOVERY",
-  "safeNextStep": "Replay 17 Aug now; continue discovery for 02 Mar and 13 Jul; do not fill those source gaps with legacy report prose."
+  "sourceSetStatus": "PARTIAL_PRIMARY_SOURCE_RECOVERY_WITH_AUTHORIZED_HISTORICAL_EVIDENCE",
+  "safeNextStep": "Use all authorized historical evidence as historical layer, replay 17 Aug from raw source, continue primary-source discovery for 02 Mar / 13 Jul, and never upgrade process/memory evidence into fabricated raw transcript.",
+  "discoveryEvidence": {
+    "driveHistorical": {
+      "processedFolderId": "1omPN8i31cwFeBLzEyQ5yOKnbmhMnhnO7",
+      "oldMeetRecordingsFolderId": "1p7u86xfGCRkbSBiNgSZMnUNO5j4S5vMw",
+      "currentConfiguredRootFolderId": "1LipcZbo-LNgCNOvjYzFpOzecOf4byDGL",
+      "evidence": [
+        "Historical handoff states that files for Gustavo, Cláudio and Eduarda were manually processed and moved to Processados.",
+        "The 17 Aug historical Meet Recordings inventory was captured before Cláudio's 19:48 lesson transcript appeared; absence from that earlier five-file snapshot is not evidence of no Cláudio source.",
+        "The persisted 17 Aug Cláudio transcript later carries driveFolderId 1p7u86xfGCRkbSBiNgSZMnUNO5j4S5vMw."
+      ]
+    },
+    "databaseSearch": {
+      "claudioTranscriptRows": 2,
+      "realRows": 1,
+      "syntheticRows": 1,
+      "note": "No additional persisted transcript row for Cláudio was found in Neon."
+    },
+    "librarySearch": {
+      "exactNameHits": [
+        "PRIME_Student_Master_Improved_2026-09-11.xlsx",
+        "Prime Master System Pro 3.0 (1).html"
+      ],
+      "transcriptTitleHits": 0,
+      "usefulFacts": [
+        "portfolio URL 1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc",
+        "weekly Monday 19:30 schedule",
+        "live Meet zbz-uiai-xng"
+      ]
+    }
+  },
+  "historicalEvidenceLayers": [
+    {
+      "layer": "PRIMARY_SOURCE",
+      "status": "AVAILABLE",
+      "scope": "17 Aug 2026 raw transcript, 93,426 chars"
+    },
+    {
+      "layer": "AUTHORIZED_HISTORICAL_REPORT",
+      "status": "AVAILABLE",
+      "scope": "02 Mar, 13 Jul and 17 Aug published class reports / canonical portfolio"
+    },
+    {
+      "layer": "PROCESS_PROVENANCE",
+      "status": "AVAILABLE",
+      "scope": "historical Processados movement claim + folder IDs + persisted Drive source metadata"
+    },
+    {
+      "layer": "MEMORY_ONLY",
+      "status": "AVAILABLE",
+      "scope": "undated 8K / World Cup lesson, independently referenced inside 17 Aug raw transcript"
+    },
+    {
+      "layer": "EXCLUDED",
+      "status": "AVAILABLE",
+      "scope": "synthetic 28 Aug Cláudio test transcript"
+    }
+  ]
 }
