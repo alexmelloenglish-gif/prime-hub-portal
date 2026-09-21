@@ -36,6 +36,10 @@ export default async function DashboardActionPage({ searchParams }: ActionPagePr
         title={action.title}
         description={action.description}
         vocabulary={student.vocabularyBank.map((item) => item.term)}
+        studentEmail={student.studentEmail}
+        actionId={action.id}
+        materialUrl={action.id === 'action-professional-introduction-60s' ? 'https://docs.google.com/presentation/d/18UsCOs01mfAj1EYmhWl7YzofIWPjnOiu/edit' : undefined}
+        bookingUrl={action.id === 'action-professional-introduction-60s' ? 'https://calendar.app.google/z1N7yrhvrVr6WyfFA' : undefined}
       />
     </SectionShell>
   )

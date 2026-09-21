@@ -54,6 +54,10 @@ function crossLearnerChecks(diegoFixture, eduardaFixture) {
 
 crossLearnerChecks(diego, eduarda)
 
+const middlewareSource = fs.readFileSync(path.join(root, 'middleware.ts'), 'utf8')
+if (!middlewareSource.includes("'/dashboard/action'")) fail('middleware must allow /dashboard/action')
+if (!middlewareSource.includes("'/dashboard/action'")) fail('learner action workspace route cannot be redirected back to /dashboard')
+
 function semanticChecks(fixture, label) {
   if (label === 'Eduarda') {
     if (fixture.canonicalProjection.currentState.level?.value !== 'CEFR A1') fail('Eduarda current level cannot change without a new teacher-authorized source correction')
@@ -98,4 +102,4 @@ expectSemanticFailure('source provenance removal', () => { const x = structuredC
 expectSemanticFailure('source provenance promotion', () => { const x = structuredClone(eduarda); x.sourceProvenance.nonProjectedRecords[0].classification = 'learning-evidence'; return x }, 'Eduarda')
 expectCrossLearnerFailure('cross-learner action swap', () => { const x = structuredClone(eduarda); x.canonicalProjection.nextAction.title = diego.canonicalProjection.nextAction.title; return x })
 
-console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + source-provenance separation + teacher-corrected Eduarda A1→A2 state + negative semantic mutations.')
+console.log('Student Dashboard contract regression self-test passed: schema + Diego/Eduarda fixtures + source-provenance separation + action-workspace routing + teacher-corrected Eduarda A1→A2 state + negative semantic mutations.')
