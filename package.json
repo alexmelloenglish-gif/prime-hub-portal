@@ -15,7 +15,7 @@
     "eligibility:self-test": "node scripts/eligibility-boundary-self-test.mjs",
     "canonical:validate": "node scripts/canonical-consistency-validator.mjs",
     "canonical:validate:strict": "node scripts/canonical-consistency-validator.mjs --strict",
-    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && npm run canonical-learning-intelligence:g5:self-test && npm run g6:account-learner:self-test && prisma generate && next build",
+    "build": "node scripts/rebuild-landing-assets.mjs && npm run teacher-intelligence:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && npm run canonical-learning-intelligence:g5:self-test && npm run g6:account-learner:self-test && npm run learning-narrative:self-test && prisma generate && next build",
     "vercel-build": "npm run build",
     "start": "next start",
     "lint": "next lint",
@@ -30,7 +30,8 @@
     "canonical-learning-intelligence:g5:self-test": "node scripts/canonical-independent-learning-intelligence-g5-self-test.mjs",
     "g6:account-learner:self-test": "node scripts/g6-account-learner-relation-self-test.mjs",
     "db:migrate:deploy": "prisma migrate deploy",
-    "learning-narrative:self-test": "node --experimental-strip-types scripts/learning-narrative-machine-self-test.mjs"
+    "learning-narrative:self-test": "node --experimental-strip-types scripts/learning-narrative-machine-self-test.mjs && npm run pedagogical-semantics:self-test",
+    "pedagogical-semantics:self-test": "node --experimental-strip-types scripts/pedagogical-processing-semantics-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
