@@ -33,6 +33,7 @@ assert.match(studentData, /'gugasalgado7@gmail.com': gustavoProfile/)
 assert.match(adminDashboard, /filter\(\(student\) => isAuthorizedLearner\(student\.studentEmail\)\)/)
 assert.match(dashboardLayout, /isAuthorizedLearner\(activeStudentEmail\)/)
 assert.match(dashboardLayout, /!adminUser && !eligibleLearner/)
+assert.match(dashboardLayout, /adminUser[\s\S]*activeUser\.email/, 'Non-admin learner/responsible sessions must preserve the authenticated account email in the topbar')
 
 console.log('Eligibility boundary self-test: PASS')
 console.log('Valéria: prospect / no activation authority / not an authorized learner')
