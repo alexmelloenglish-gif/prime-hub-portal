@@ -546,5 +546,19 @@
       }
     ]
   },
-  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate."
+  "notes": "Reconciled on 2026-09-15 to the teacher-corrected portfolio. CEFR A1 is the current teacher-confirmed level and CEFR A2 is the target. Seven lessons with documented pedagogical content are included in the learner-facing dashboard; source-only provenance remains separate.",
+  "learnerEmail": null,
+  "studentEmailOwnership": "responsible_adult_account",
+  "accountContactEmail": "midias83@hotmail.com",
+  "responsibleAdult": {
+    "name": "Michelle",
+    "email": "midias83@hotmail.com",
+    "relationship": "mother",
+    "accessRelationType": "AUTHORIZED_ACCESS"
+  },
+  "identityBoundary": {
+    "legacyStudentEmailCompatibilityOnly": true,
+    "learnerOwnedEmailStatus": "NOT_PROVIDED",
+    "note": "midias83@hotmail.com belongs to Michelle, Eduarda's mother/responsible adult; it must not be interpreted as Eduarda-owned email."
+  }
 }
