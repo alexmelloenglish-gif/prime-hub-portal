@@ -142,3 +142,41 @@ Translate the authorized pedagogical meaning into humane, action-oriented narrat
 6. A learner dashboard is not a teacher validation queue.
 7. When uncertainty itself is pedagogically important to communicate, express it as a constructive next opportunity rather than a machine-status warning.
 8. Technical statuses remain machine-readable and available to authorized teacher/governance views even when hidden from consumer projections.
+
+
+## 17. Non-evidence, non-validation and retained-state semantics
+
+A missing or unvalidated state transition must never be narrated as absence of learning.
+
+The machine must distinguish at least the following conditions:
+
+- **NO_EVIDENCE_RECORDED** — the relevant behavior is not present in the available record.
+- **NOT_OBSERVED** — the behavior was not observed; the task/opportunity may not have elicited it.
+- **INSUFFICIENT_FOR_CLAIM** — evidence exists, but it is not sufficient for the specific longitudinal claim under consideration.
+- **PENDING_TEACHER_AUTHORITY** — a machine interpretation/candidate exists, but the human authority transition has not occurred.
+- **STATE_RETAINED** — the existing canonical state remains because the new evidence does not justify a state change.
+- **NEGATIVE_EVIDENCE** — an observed performance in a relevant opportunity supports a bounded negative claim.
+
+These states are not interchangeable.
+
+### Core invariants
+
+1. **NO STATE CHANGE ≠ NO LEARNING.** A lesson may add context, meaning, connection, retrieval, repair, transfer, participation, continuity or a latent learning thread while the canonical state remains unchanged.
+2. **NOT VALIDATED ≠ FALSE.** Lack of teacher validation is an authority status, not evidence that the candidate observation did not happen.
+3. **NO EVIDENCE ≠ NEGATIVE EVIDENCE.** Absence of recorded evidence cannot be converted into inability, regression or deficit.
+4. **STATE RETAINED ≠ STAGNATION.** Stability may represent continuity, consolidation, maintenance or simply insufficient basis for a different state.
+5. Negative claims require an actual relevant opportunity, observable learner performance and appropriate support/context boundaries.
+6. The Lesson Archive must preserve meaningful learning episodes even when Current State does not change.
+7. The Learning Narrative must be allowed to describe meaningful movement without inventing a new state transition.
+8. Consumer projections should normally narrate the experience and next direction rather than expose internal no-evidence/non-validation labels.
+
+### Example
+
+Internal operational truth:
+`STATE_RETAINED + SUPPORTED_RETRIEVAL + PENDING_TEACHER_AUTHORITY`.
+
+Valid learner/family narrative:
+"This language has appeared in meaningful use, and the next lessons will create more opportunities to use it with increasing independence."
+
+Invalid inference:
+"No progress was made because the level/state did not change."
