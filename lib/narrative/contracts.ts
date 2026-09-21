@@ -7,6 +7,54 @@ export type NarrativeEvidenceType =
   | 'continuity'
   | 'teacher_context'
 
+export type EvidenceCondition =
+  | 'independent'
+  | 'self_corrected'
+  | 'one_clue'
+  | 'multiple_clues'
+  | 'modeled'
+  | 'reconstructed'
+  | 'controlled_task'
+  | 'open_communication'
+  | 'unknown'
+
+export type LessonMode = 'targeted' | 'exploratory' | 'mixed'
+
+export type ShowcaseOpportunity = {
+  opportunityId: string
+  description: string
+  constructObserved: string
+  intendedCondition: EvidenceCondition
+  boundary?: string | null
+}
+
+export type NarrativeLessonFrame = {
+  mode: LessonMode
+  primaryTarget: string
+  expectedLearnerOutcome?: string | null
+  showcaseOpportunities?: ShowcaseOpportunity[]
+  secondaryRecycling?: string[]
+  contextReason?: string | null
+  teacherNotes?: string[]
+}
+
+export type UncertaintyReason =
+  | 'not_tested'
+  | 'not_observed'
+  | 'insufficient_evidence'
+  | 'ambiguous_or_mixed_evidence'
+  | 'not_available'
+
+export type InvestigationFlag = {
+  trigger: string
+  evidenceIds: string[]
+  whyItMatters: string
+  currentInterpretations: string[]
+  remainingQuestion: string
+  suggestedFutureObservation?: string | null
+  teacherDecisionRequired: true
+}
+
 export type NarrativeEvidence = {
   evidenceId: string
   lessonId: string
@@ -18,6 +66,7 @@ export type NarrativeEvidence = {
   producer: 'student' | 'teacher' | 'system' | 'mixed' | 'unknown'
   domain: 'language' | 'content' | 'mixed' | 'unknown'
   support?: string | null
+  condition?: EvidenceCondition | null
   relatedLessonIds?: string[]
 }
 
@@ -33,6 +82,7 @@ export type NarrativeInput = {
   studentId: string
   studentName: string
   programme?: string
+  lessonFrame?: NarrativeLessonFrame
   currentLesson: NarrativeLessonContext
   priorLessons: NarrativeLessonContext[]
   evidence: NarrativeEvidence[]
