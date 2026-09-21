@@ -167,8 +167,16 @@
 - [~] **G6 Gustavo + Carol dual-account runtime witness**
   - PR #35: provisioning workstream;
   - PR #36: canonical consumer authority;
-  - PR #37: runtime-proof instrumentation.
-  - structural remediation exists; final dual-account runtime proof/cutover remains open.
+  - PR #37: **CLOSED / superseded** because direct Neon read-only access is restored.
+  - 2026-09-21 direct production preflight:
+    - Neon project visible;
+    - expected admin identity present;
+    - Gustavo pilot User absent;
+    - Carol pilot User absent;
+    - AccountLearnerRelation rows = 0;
+    - relation-event rows = 0.
+  - the former Neon-access blocker is therefore **closed**.
+  - controlled provisioning + dual-account runtime witness/cutover remain open.
 
   Required proof:
   ```text
@@ -184,6 +192,7 @@
   ```
 
 - [~] **Authoritative attendance full production trace**
+  - direct 2026-09-21 database read-back found `attendance_records = 0`; there is no production witness to promote.
   - implementation exists:
     - AttendanceRecord persistence;
     - Meet participant collector;
@@ -203,6 +212,10 @@
   → downstream consumer reads it
   → audit trail preserved
   ```
+
+- [x] **PR #37 temporary Preview preflight instrumentation retired**
+  - direct Neon access now provides the required read-only pre-provisioning state;
+  - PR #37 closed without merge.
 
 - [ ] **External legacy Google/Studio trigger verification — only if still operationally relevant**
   - repository-side old pipeline is contained;
@@ -274,8 +287,8 @@
 
 - [ ] **After PR #30 reconciliation, close its stale branch/PR with exact superseding evidence.**
 
-- [ ] **Review whether Issue #44 should remain as historical audit or be closed in favor of this canonical TODO.**
-  - once this file is present on main, Issue #44 should not remain a competing backlog.
+- [x] **Issue #44 superseded by this canonical TODO**
+  - close the issue after linking this file; it must not remain a competing backlog.
 
 - [ ] **Periodically verify this TODO against current main**
   - if a different agent closes an item, update this file instead of opening a parallel handoff.
