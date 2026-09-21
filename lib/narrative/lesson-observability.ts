@@ -1,4 +1,4 @@
-import type { LessonMode, ShowcaseOpportunity } from './contracts'
+import type { LessonMode, ShowcaseOpportunity } from './contracts.ts'
 
 export type OpportunityExecution = {
   opportunityId: string
