@@ -461,3 +461,93 @@ NEXT STUDENT PROCESSING PRIORITY = NOT YET FROZEN
 **NEXT AUTHORIZED PRODUCT ACTION:** choose the next student processing priority and process that student against the frozen canonical Portfolio + Dashboard system. Do not reactivate the legacy Laura ingestion flow unless an explicit product decision reverses the pause.
 
 **STATUS: 🚨 CANONICAL CURRENT RETURN POINT — 2026-09-11**
+
+---
+
+# 17. CURRENT OVERRIDE — 2026-09-21
+
+This section supersedes the older dated **CURRENT STOP POINT** above when determining present work. Historical sections remain preserved as evidence of earlier states.
+
+## Current verified repository / production
+
+```text
+repository = alexmelloenglish-gif/prime-hub-portal
+main = d1284494967542fb5ea66251b102c10291fc01c7
+production deployment = dpl_8tDiHj173N2WhcccNWtdLVuR4MSv
+production state = READY
+target = production
+public domain = https://www.primedigitalhub.com.br
+public fetch = HTTP 200
+```
+
+## Current architecture checkpoints
+
+```text
+PR #41 longitudinal narrative machine = MERGED
+PR #43 post-merge narrative recovery = MERGED
+Pedagogical Processing Freeze = PRESENT IN MAIN
+Learning Movement before State = FROZEN
+State change as lesson objective = REJECTED
+CEFR from ordinary lesson accumulation = PROHIBITED
+legacy repository-side automation = FROZEN / CONTAINED
+Gustavo five-lesson reference replay = COMPLETED
+Reconnection landing Phase 1 = CLOSED / PRODUCTION
+```
+
+## Current open execution gaps
+
+```text
+shared manual/automatic Learning Machine runner = OPEN
+durable run execution history / exact resume point = OPEN
+ObservationDebt lifecycle materialization = OPEN
+PR #42 vNext Preview = OPEN / latest observed deployment ERROR
+G6 Gustavo + Carol runtime witness = OPEN
+authoritative attendance full production trace = OPEN
+PR #30 non-lossy extraction reconciliation = OPEN
+Reconnection professional narrative derivatives / LinkedIn reconstruction = OPEN
+external historical Google trigger disablement = NOT VERIFIED / verify only if required
+```
+
+## Pedagogical authority override
+
+### CEFR
+
+CEFR is not a lesson-derived Learning Machine state.
+
+A level transition requires a formal assessment/testing event through an authorized tool/process, followed by pedagogical interpretation and an explicit authorized profile update.
+
+The Learning Machine may track evidence and recommend reassessment; it may not promote CEFR.
+
+### State movement
+
+The default narrative is the learning journey, not the absence/presence of state change.
+
+```text
+lesson
+→ learning movement
+→ longitudinal understanding
+→ optional state consequence
+```
+
+A retained state is normal.
+
+### Self-correction
+
+Self-correction is a broad learner-repair construct family. Specific manifestations remain construct- and condition-sensitive, but longitudinal movement must not be artificially narrowed to a single tense/response pattern.
+
+### Observation debt
+
+ObservationDebt belongs to machine uncertainty management. It must be reconciled when its required opportunity occurs and must never be presented as learner weakness merely because the system has not yet resolved the question.
+
+## Current reading order
+
+1. `docs/governance/PRIME_GOVERNANCE_CONTROL_CENTER_v1.md`
+2. `docs/operations/PRIME_TODO_AND_HANDOFF_2026-09-21.md`
+3. `docs/DO_NOT_REINVESTIGATE.md`
+4. `docs/PRIME_CANONICAL_CURRENT_STATE.md`
+5. `docs/PRIME_CANONICAL_PROJECT_REGISTRY.md`
+6. `docs/governance/SOURCE_BOUND_PROOF_CHECKLIST_v1.md`
+7. relevant domain contract / ADR / self-test
+8. runtime/deployment evidence when the task requires it
+
+**STATUS: CURRENT CANONICAL RETURN POINT — 2026-09-21.**
