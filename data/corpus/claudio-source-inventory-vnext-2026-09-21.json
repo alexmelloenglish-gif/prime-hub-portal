@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "prime-corpus-source-inventory-vnext-1",
+  "generatedAt": "2026-09-21",
+  "learner": {
+    "studentId": "stu_e22a6c379329",
+    "displayName": "Cláudio Bittencourt",
+    "canonicalEmail": "claudio.bit@gmail.com"
+  },
+  "purpose": "Source discovery before vNext reprocessing. Existing dashboard/profile claims are not treated as substitute raw evidence.",
+  "sources": [
+    {
+      "pedagogicalDate": "2026-03-02",
+      "sourceType": "read_ai_meeting_record",
+      "sourceId": null,
+      "currentRepositoryStatus": "confirmed_real_lesson",
+      "recoveryStatus": "RAW_SOURCE_NOT_RECOVERED",
+      "searched": [
+        "GitHub repository",
+        "ChatGPT Library/conversation files",
+        "Neon transcripts"
+      ],
+      "vNextReplayEligibility": "BLOCKED_PENDING_PRIMARY_SOURCE",
+      "note": "Current canonical profile/report may remain historical authorized baseline; it is not promoted as fresh source-level vNext evidence."
+    },
+    {
+      "pedagogicalDate": "2026-07-13",
+      "sourceType": "tactiq_transcript",
+      "sourceId": "1cXzSXJwoNyE_AxrKPJcPUg2cMNN8YLRY6kRwxxraBLA",
+      "currentRepositoryStatus": "confirmed_real_lesson",
+      "recoveryStatus": "SOURCE_REFERENCE_FOUND_RAW_CONTENT_NOT_RECOVERED",
+      "searched": [
+        "GitHub repository",
+        "ChatGPT Library/conversation files",
+        "Neon transcripts",
+        "Neon pipeline events"
+      ],
+      "vNextReplayEligibility": "BLOCKED_PENDING_PRIMARY_SOURCE",
+      "note": "The source ID is preserved by the current canonical profile, but no raw transcript content was recovered in this run."
+    },
+    {
+      "pedagogicalDate": "2026-08-17",
+      "sourceType": "gemini_meet_transcript",
+      "sourceId": "1qkRNcs9-jUkT01Jmw_LiJi3iLpvVTplQwSikEMjh0qw",
+      "neonTranscriptId": "cmtcalwpt000219r457hlsba9",
+      "neonPipelineRunId": "cmtcalwp3000019r4s10h2kn6",
+      "contentLength": 93426,
+      "identityVerified": true,
+      "attendanceStatus": "attended",
+      "triageStatus": "usable_transcript",
+      "recoveryStatus": "PRIMARY_SOURCE_RECOVERED_FROM_PRODUCTION_TRANSCRIPT_STORE",
+      "historicalProcessingStatus": {
+        "status": "failed",
+        "errorCode": "GEMINI_HTTP_ERROR",
+        "errorMessage": "Gemini request failed with HTTP 403",
+        "authorityStatus": "non_authoritative"
+      },
+      "vNextReplayEligibility": "ELIGIBLE",
+      "note": "Historical processor failure did not destroy the transcript. Reprocess from persisted source, not from failed prompt artifacts."
+    },
+    {
+      "pedagogicalDate": "2026-08-28",
+      "sourceType": "synthetic_test",
+      "sourceId": "1C6Bc0Lpgg3RP4f6fuMAbEw_QDDwvVWLdk20Z617ezoI",
+      "neonTranscriptId": "cmtce8tao0002v380ryf7fbbw",
+      "recoveryStatus": "RECOVERED_BUT_EXCLUDED",
+      "vNextReplayEligibility": "EXCLUDED_NON_PEDAGOGICAL",
+      "note": "Synthetic parser/Gemini integration test. NOT A REAL CLASS. Never use as learner evidence, attendance, memory or progress."
+    },
+    {
+      "pedagogicalDate": null,
+      "sourceType": "historical_memory",
+      "sourceId": null,
+      "title": "8K television / World Cup lesson",
+      "recoveryStatus": "ORIGINAL_SOURCE_AND_DATE_NOT_RECOVERED",
+      "vNextReplayEligibility": "MEMORY_ONLY",
+      "note": "The 17 Aug primary transcript independently confirms that teacher and learner revisited this earlier topic. That does not recover the original lesson or authorize a dated attendance event."
+    }
+  ],
+  "sourceSetStatus": "PARTIAL_PRIMARY_SOURCE_RECOVERY",
+  "safeNextStep": "Replay 17 Aug now; continue discovery for 02 Mar and 13 Jul; do not fill those source gaps with legacy report prose."
+}
