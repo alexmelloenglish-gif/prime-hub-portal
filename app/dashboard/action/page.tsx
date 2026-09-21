@@ -39,7 +39,7 @@ export default async function DashboardActionPage({ searchParams }: ActionPagePr
         studentEmail={student.studentEmail}
         actionId={action.id}
         materialUrl={action.id === 'action-professional-introduction-60s' ? 'https://docs.google.com/presentation/d/18UsCOs01mfAj1EYmhWl7YzofIWPjnOiu/edit' : undefined}
-        nextMissionUrl={action.id === 'action-professional-introduction-60s' ? `/dashboard/action/next?studentEmail=${encodeURIComponent(student.studentEmail)}` : undefined}
+        bookingUrl={action.id === 'action-professional-introduction-60s' ? 'https://calendar.app.google/z1N7yrhvrVr6WyfFA' : undefined}
       />
     </SectionShell>
   )
