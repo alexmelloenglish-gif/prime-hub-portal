@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "phase3-account-learner-authorization-v1",
+  "decision": {
+    "authorizedByEmail": "alexandre@primedigitalhub.com.br",
+    "sourceType": "owner_explicit_authorization",
+    "sourceReference": "phase3-eduarda-michelle-access-2026-09-21",
+    "decisionDate": "2026-09-21"
+  },
+  "learner": {
+    "studentId": "stu_e8661006824a",
+    "displayName": "Eduarda Coelho Gabriel",
+    "learnerEmail": null
+  },
+  "accounts": [
+    {
+      "email": "midias83@hotmail.com",
+      "name": "Michelle",
+      "relationType": "AUTHORIZED_ACCESS",
+      "relationshipContext": "mother_responsible",
+      "viewerMode": "RESPONSIBLE_ADULT"
+    }
+  ],
+  "identityBoundary": {
+    "legacyStudentEmail": "midias83@hotmail.com",
+    "legacyStudentEmailOwner": "Michelle",
+    "learnerOwnEmailStatus": "NOT_PROVIDED",
+    "rule": "The legacy studentEmail is compatibility data and must not be interpreted as Eduarda-owned email."
+  }
+}
