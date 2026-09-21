@@ -6,7 +6,7 @@ import type {
   LessonObservabilityAssessment,
   OpportunityExecution,
 } from './lesson-observability.ts'
-import { assessLessonObservability } from './lesson-observability'
+import { assessLessonObservability } from './lesson-observability.ts'
 
 export type TargetAttainment =
   | 'not_observable'
