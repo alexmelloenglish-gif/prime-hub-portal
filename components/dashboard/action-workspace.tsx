@@ -201,23 +201,23 @@ export function ActionWorkspace({
   if (submitted) {
     return (
       <div className="space-y-5">
-        <article className="rounded-[28px] border border-emerald-300/30 bg-emerald-300/10 p-7 text-center">
-          <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-300" />
-          <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+        <article className="rounded-[28px] border border-emerald-200 bg-emerald-50 p-7 text-center">
+          <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+          <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
             Submit successful
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">{config.successTitle}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-prime-cream/75">
+          <h2 className="mt-2 text-2xl font-semibold text-[#0a235c]">{config.successTitle}</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600">
             Your recording is saved for teacher review. It does not change your learning record until your teacher reviews it.
           </p>
         </article>
 
-        <article className="rounded-[28px] border border-sky-300/20 bg-sky-300/5 p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200">
+        <article className="rounded-[28px] border border-blue-200 bg-blue-50 p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0057b8]">
             Next step
           </p>
-          <h3 className="mt-2 text-xl font-semibold text-white">{config.nextTitle}</h3>
-          <p className="mt-2 text-sm leading-6 text-prime-cream/70">{config.nextCopy}</p>
+          <h3 className="mt-2 text-xl font-semibold text-[#0a235c]">{config.nextTitle}</h3>
+          <p className="mt-2 text-sm leading-6 text-slate-600">{config.nextCopy}</p>
           {bookingUrl ? (
             <a
               href={bookingUrl}
@@ -235,18 +235,18 @@ export function ActionWorkspace({
 
   return (
     <div className="space-y-5">
-      <article className="rounded-[28px] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-prime-cream/55">
+      <article className="rounded-[28px] border border-slate-200 bg-white p-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
           {config.eyebrow}
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">{title}</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-prime-cream/80">{description}</p>
+        <h2 className="mt-2 text-2xl font-semibold text-[#0a235c]">{title}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">{description}</p>
         {materialUrl && actionId === ITALO_ACTION_ID ? (
           <a
             href={materialUrl}
             target="_blank"
             rel="noreferrer"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-sky-200"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#0057b8]"
           >
             Review Maritime Interview Mission <ExternalLink className="h-4 w-4" />
           </a>
@@ -255,24 +255,24 @@ export function ActionWorkspace({
 
       <div className="grid gap-4 lg:grid-cols-2">
         {config.steps.map(([number, heading, copy]) => (
-          <article key={number} className="rounded-2xl border border-white/10 bg-black/15 p-5">
-            <p className="text-xs font-semibold text-sky-300">{number}</p>
-            <h3 className="mt-2 font-semibold text-white">{heading}</h3>
-            <p className="mt-2 text-sm leading-6 text-prime-cream/72">{copy}</p>
+          <article key={number} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <p className="text-xs font-semibold text-[#0057b8]">{number}</p>
+            <h3 className="mt-2 font-semibold text-[#0a235c]">{heading}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
           </article>
         ))}
       </div>
 
       {vocabulary.length ? (
-        <article className="rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">
+        <article className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
             {config.vocabularyLabel}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {vocabulary.slice(0, 6).map((term) => (
               <span
                 key={term}
-                className="rounded-full border border-amber-200/20 px-3 py-1.5 text-sm text-prime-cream/85"
+                className="rounded-full border border-amber-300 px-3 py-1.5 text-sm text-slate-700"
               >
                 {term}
               </span>
@@ -281,12 +281,12 @@ export function ActionWorkspace({
         </article>
       ) : null}
 
-      <article className="rounded-[28px] border border-sky-300/20 bg-sky-300/5 p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200">
+      <article className="rounded-[28px] border border-blue-200 bg-blue-50 p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0057b8]">
           {config.recordingLabel}
         </p>
-        <p className="mt-2 text-3xl font-semibold text-white">{seconds}s</p>
-        <p className="mt-2 max-w-2xl text-xs leading-5 text-prime-cream/55">
+        <p className="mt-2 text-3xl font-semibold text-[#0a235c]">{seconds}s</p>
+        <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-500">
           {config.recordingHint}
         </p>
 
@@ -311,15 +311,15 @@ export function ActionWorkspace({
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-sm font-semibold text-white"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-[#0a235c]"
           >
             <RotateCcw className="h-4 w-4" /> Try again
           </button>
         </div>
 
         {audioUrl ? (
-          <div className="mt-5 rounded-2xl border border-white/10 bg-black/15 p-4">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0a235c]">
               <Play className="h-4 w-4" /> Listen to your take
             </div>
             <audio controls src={audioUrl} className="w-full" />
@@ -335,9 +335,9 @@ export function ActionWorkspace({
           </div>
         ) : null}
 
-        {error ? <p className="mt-4 text-sm text-red-200">{error}</p> : null}
+        {error ? <p className="mt-4 text-sm text-red-700">{error}</p> : null}
 
-        <p className="mt-4 text-xs leading-5 text-prime-cream/50">
+        <p className="mt-4 text-xs leading-5 text-slate-500">
           After Submit, the recording is stored securely as a learner submission for teacher review. It is not automatically treated as teacher-confirmed learning evidence.
         </p>
       </article>
