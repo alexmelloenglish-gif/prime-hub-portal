@@ -2,20 +2,6 @@ import Link from 'next/link'
 import { ArrowRight, Route } from 'lucide-react'
 import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-data'
 
-const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': 'Teacher confirmed',
-  'portfolio-confirmed': 'Teacher confirmed',
-  qualified: 'Teacher note',
-  'not-available': 'Not available',
-}
-
-const evidenceStatusClasses: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': 'border-emerald-300 bg-emerald-100 text-emerald-900',
-  'portfolio-confirmed': 'border-blue-300 bg-blue-100 text-blue-900',
-  qualified: 'border-amber-300 bg-amber-100 text-amber-900',
-  'not-available': 'border-slate-300 bg-slate-100 text-slate-700',
-}
-
 function isExternalLink(href: string) {
   return href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:')
 }
@@ -25,24 +11,13 @@ function compactText(value: string, max = 150) {
   return { visible: `${value.slice(0, max).trimEnd()}…`, overflow: true }
 }
 
-export function EvidenceStatus({ status }: { status: ProjectionEvidenceStatus }) {
-  return (
-    <span className={`inline-flex shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${evidenceStatusClasses[status]}`}>
-      {evidenceStatusLabels[status]}
-    </span>
-  )
-}
-
 export function CurrentStateCard({ label, field }: { label: string; field: ProjectionField }) {
-  const value = field.value ?? 'Not yet established'
+  const value = field.value ?? 'Your next learning reference will appear here.'
   const compact = compactText(value)
 
   return (
     <article className="flex min-h-[190px] flex-col rounded-2xl border border-slate-300 bg-white p-5 shadow-sm ring-1 ring-slate-100">
-      <div className="flex min-h-8 items-start justify-between gap-3">
-        <p className="pt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-600">{label}</p>
-        <EvidenceStatus status={field.status} />
-      </div>
+      <div className="min-h-8"><p className="pt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-600">{label}</p></div>
       <p className="mt-4 break-words text-lg font-bold leading-7 text-[#0a235c]">{compact.visible}</p>
       {compact.overflow ? (
         <details className="mt-2 text-xs leading-5 text-slate-700">
@@ -55,8 +30,8 @@ export function CurrentStateCard({ label, field }: { label: string; field: Proje
 }
 
 export function DevelopmentTrajectory({ current, target }: { current?: ProjectionField; target?: ProjectionField }) {
-  const currentValue = current?.value ?? 'Current level not yet established'
-  const targetValue = target?.value ?? 'Target not yet validated'
+  const currentValue = current?.value ?? 'Current learning reference'
+  const targetValue = target?.value ?? 'Next learning direction'
 
   return (
     <section aria-label="Development trajectory" className="rounded-[24px] border border-indigo-200 bg-indigo-50/70 p-5 shadow-sm">
