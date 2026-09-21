@@ -594,22 +594,3 @@ model CanonicalLearningIntelligenceProjection {
 }
 
 
-model AudioMissionSubmission {
-  id          String   @id @default(cuid())
-  studentId   String
-  studentEmail String
-  actionId    String
-  mimeType    String
-  audioBase64 String   @db.Text
-  durationSeconds Int?
-  status      String   @default("submitted")
-  submittedAt DateTime @default(now())
-  reviewedAt  DateTime?
-  reviewerId  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([studentId, actionId, submittedAt])
-  @@index([status, submittedAt])
-  @@map("audio_mission_submissions")
-}
