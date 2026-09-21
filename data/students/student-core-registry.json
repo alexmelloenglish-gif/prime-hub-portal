@@ -83,7 +83,21 @@
       "pendingReviewCount": 0,
       "classFrequency": "Episodic on demand",
       "enrollmentMode": "episodic_remedial",
-      "notes": "Canonical longitudinal portfolio reconciled 2026-09-15. Eduarda is a returning learner receiving English and English-medium Geography school support on demand; no current event-specific live-class link is treated as canonical."
+      "notes": "Canonical longitudinal portfolio reconciled 2026-09-15. Eduarda is a returning learner receiving English and English-medium Geography school support on demand; no current event-specific live-class link is treated as canonical.",
+      "learnerEmail": null,
+      "canonicalEmailSemantics": "legacy_account_contact_not_learner_owned",
+      "authorizedAccessAccounts": [
+        {
+          "email": "midias83@hotmail.com",
+          "name": "Michelle",
+          "relationType": "AUTHORIZED_ACCESS",
+          "relationshipContext": "mother_responsible"
+        }
+      ],
+      "identityBoundary": {
+        "legacyCanonicalEmailCompatibilityOnly": true,
+        "learnerOwnedEmailStatus": "NOT_PROVIDED"
+      }
     },
     {
       "studentId": "stu_4c4da6c04ac4",
