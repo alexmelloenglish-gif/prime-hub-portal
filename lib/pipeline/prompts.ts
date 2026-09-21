@@ -9,9 +9,9 @@ import type {
   PromptOneOutput,
   PromptTwoInput,
 } from './contracts'
-import type { LearningNarrativeDraft, NarrativeInput } from '@/lib/narrative/contracts'
-import { NARRATIVE_SYSTEM_PROMPT, NARRATIVE_OUTPUT_CONTRACT } from '@/lib/narrative/prompts'
-import { prepareNarrativeInput, validateNarrativeDraft } from '@/lib/narrative/engine'
+import type { LearningNarrativeDraft, NarrativeInput } from '../narrative/contracts.ts'
+import { NARRATIVE_SYSTEM_PROMPT, NARRATIVE_OUTPUT_CONTRACT } from '../narrative/prompts.ts'
+import { prepareNarrativeInput, validateNarrativeDraft } from '../narrative/engine.ts'
 
 const CANONICAL_CONTRACT = `
 PROMPT 1 OFFICIAL — AI LESSON EXTRACTION AND PROPOSAL — LOCKED
