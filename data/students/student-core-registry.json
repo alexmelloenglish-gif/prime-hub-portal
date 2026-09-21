@@ -204,14 +204,18 @@
       "dashboardPath": "/dashboard?studentEmail=louise_nogueira%40hotmail.com",
       "links": {
         "liveClass": "https://meet.google.com/kfk-fnbh-odk",
-        "portfolio": "https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit",
+        "portfolio": "https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit",
         "classMaterials": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
         "homework": null
       },
       "historicalTranscriptCount": 2,
       "usableTranscriptCount": 1,
       "pendingReviewCount": 0,
-      "notes": "Canonical v1.0 portfolio and teacher validation synchronized on 2026-09-11."
+      "notes": "Louise vNext projection synchronized 2026-09-21. Active learning journey: 02 Mar, 22 Apr, 01 Jun and 20 Jul 2026. 16 Mar and 10 Aug remain preserved legacy/source gaps. Current level B1; target B2; no level promotion.",
+      "classFrequency": "Once a week — Monday, 8:00–9:00 AM",
+      "publishedHistoryCount": 4,
+      "vNextActiveEvidenceCount": 4,
+      "sourceGapCount": 2
     },
     {
       "studentId": "stu_c1724b66988e",
