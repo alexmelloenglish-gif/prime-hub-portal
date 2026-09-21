@@ -164,19 +164,17 @@
 
 # D. P1 — Runtime authority proofs
 
-- [~] **G6 Gustavo + Carol dual-account runtime witness**
-  - PR #35: provisioning workstream;
-  - PR #36: canonical consumer authority;
-  - PR #37: **CLOSED / superseded** because direct Neon read-only access is restored.
-  - 2026-09-21 direct production preflight:
-    - Neon project visible;
-    - expected admin identity present;
-    - Gustavo pilot User absent;
-    - Carol pilot User absent;
-    - AccountLearnerRelation rows = 0;
-    - relation-event rows = 0.
-  - the former Neon-access blocker is therefore **closed**.
-  - controlled provisioning + dual-account runtime witness/cutover remain open.
+- [~] **Young Learner account access / G6 runtime witness**
+  - production identity provisioning is now **COMPLETE** for:
+    - Gustavo `gugasalgado7@gmail.com` → `LEARNER_SELF` → `stu_4c4da6c04ac4`;
+    - Carol `carolvdrummond@gmail.com` → `AUTHORIZED_ACCESS` → same Gustavo studentId;
+    - Michelle `midias83@hotmail.com` → `AUTHORIZED_ACCESS` → Eduarda `stu_e8661006824a`.
+  - all three ACTIVE relations were read back with owner authorization hashes and AUTHORIZED lifecycle events.
+  - PR #47 merged the Young Learner access contract / identity correction.
+  - PR #48 merged a bounded legacy compatibility bridge so Gustavo's newly authorized self email can reach his existing Dashboard before the canonical G6 consumer cutover.
+  - production deployment for PR #48: `dpl_BwreUJy4ALgKiVGBkVBdiSf2qtNt` — READY — main `295af31a43c1e7dc1396ef002ab64aa365855954`.
+  - **remaining proof:** real Google/NextAuth sign-in by Gustavo, Carol and Michelle + authenticated Dashboard witness; this cannot be manufactured by an admin/agent.
+  - PR #36 canonical consumer cutover remains separate.
 
   Required proof:
   ```text
