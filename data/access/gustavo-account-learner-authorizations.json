@@ -8,20 +8,27 @@
   },
   "learner": {
     "studentId": "stu_4c4da6c04ac4",
-    "displayName": "Gustavo Drummond de Andrade Salgado"
+    "displayName": "Gustavo Drummond de Andrade Salgado",
+    "learnerEmail": "gugasalgado7@gmail.com"
   },
   "accounts": [
     {
       "email": "gugasalgado7@gmail.com",
       "name": "Gustavo Drummond de Andrade Salgado",
       "relationType": "LEARNER_SELF",
-      "relationshipContext": "learner_self"
+      "relationshipContext": "learner_self",
+      "viewerMode": "LEARNER"
     },
     {
       "email": "carolvdrummond@gmail.com",
       "name": "Carol",
       "relationType": "AUTHORIZED_ACCESS",
-      "relationshipContext": "mother_responsible"
+      "relationshipContext": "mother_responsible",
+      "viewerMode": "RESPONSIBLE_ADULT"
     }
-  ]
+  ],
+  "identityBoundary": {
+    "learnerOwnEmailStatus": "PROVIDED",
+    "rule": "Gustavo and Carol are separate authenticated accounts resolving to the same learner studentId."
+  }
 }
