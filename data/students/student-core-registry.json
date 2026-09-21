@@ -11,13 +11,20 @@
       "firestoreDocumentId": "claudio-bit-gmail-com",
       "studentName": "Cláudio Bittencourt",
       "canonicalEmail": "claudio.bit@gmail.com",
-      "emailAliases": ["claudio.bit@gmail.com"],
+      "emailAliases": [
+        "claudio.bit@gmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=claudio.bit%40gmail.com",
-      "links": {"liveClass":"https://meet.google.com/zbz-uiai-xng","portfolio":"https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": "https://meet.google.com/zbz-uiai-xng",
+        "portfolio": "https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -29,13 +36,22 @@
       "firestoreDocumentId": "diegodasiro-gmail-com",
       "studentName": "Diego da Silva Rodrigues",
       "canonicalEmail": "diegodasiro@gmail.com",
-      "emailAliases": ["diegodasiro@gmail.com", "Diego Da Zero", "Diego Dasiro"],
+      "emailAliases": [
+        "diegodasiro@gmail.com",
+        "Diego Da Zero",
+        "Diego Dasiro"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=diegodasiro%40gmail.com",
-      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": null,
+        "portfolio": "https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -47,32 +63,61 @@
       "firestoreDocumentId": "eduarda-coelho-gabriel-hotmail-com",
       "studentName": "Eduarda Coelho Gabriel",
       "canonicalEmail": "midias83@hotmail.com",
-      "emailAliases": ["Eduarda Dias Costa Coelho da Cunha Gabriel", "Eduarda Dias"],
+      "emailAliases": [
+        "Eduarda Dias Costa Coelho da Cunha Gabriel",
+        "Eduarda Dias"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=midias83%40hotmail.com",
-      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": null,
+        "portfolio": "https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
       "classFrequency": "Episodic on demand",
       "enrollmentMode": "episodic_remedial",
-      "notes": "Canonical longitudinal portfolio reconciled 2026-09-15. Eduarda is a returning learner receiving English and English-medium Geography school support on demand; no current event-specific live-class link is treated as canonical."
+      "notes": "Canonical longitudinal portfolio reconciled 2026-09-15. Eduarda is a returning learner receiving English and English-medium Geography school support on demand; no current event-specific live-class link is treated as canonical.",
+      "learnerEmail": null,
+      "canonicalEmailSemantics": "legacy_account_contact_not_learner_owned",
+      "authorizedAccessAccounts": [
+        {
+          "email": "midias83@hotmail.com",
+          "name": "Michelle",
+          "relationType": "AUTHORIZED_ACCESS",
+          "relationshipContext": "mother_responsible"
+        }
+      ],
+      "identityBoundary": {
+        "legacyCanonicalEmailCompatibilityOnly": true,
+        "learnerOwnedEmailStatus": "NOT_PROVIDED"
+      }
     },
     {
       "studentId": "stu_4c4da6c04ac4",
       "firestoreDocumentId": "carolvdrummond-gmail-com",
       "studentName": "Gustavo Drummond De Andrade Salgado",
       "canonicalEmail": "carolvdrummond@gmail.com",
-      "emailAliases": ["carolvdrummond@gmail.com"],
+      "emailAliases": [
+        "carolvdrummond@gmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=carolvdrummond%40gmail.com",
-      "links": {"liveClass":null,"portfolio":"https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": null,
+        "portfolio": "https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -90,7 +135,12 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=itallopires17%40gmail.com",
-      "links": {"liveClass":"https://meet.google.com/yvr-xrvs-gaw","portfolio":"https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": "https://meet.google.com/yvr-xrvs-gaw",
+        "portfolio": "https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -103,13 +153,20 @@
       "firestoreDocumentId": "lauramgcstemp-gmail-com",
       "studentName": "Laura Maria Galvão Costa Stempniewski",
       "canonicalEmail": "lauramgcstemp@gmail.com",
-      "emailAliases": ["lauramgcstemp@gmail.com"],
+      "emailAliases": [
+        "lauramgcstemp@gmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=lauramgcstemp%40gmail.com",
-      "links": {"liveClass":"https://meet.google.com/ogt-ubat-jan","portfolio":"https://docs.google.com/document/d/1oFi0k61KNLEsLkfvzXfUuMUBwR_vk0lnvhqU44ETghY/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": "https://meet.google.com/ogt-ubat-jan",
+        "portfolio": "https://docs.google.com/document/d/1oFi0k61KNLEsLkfvzXfUuMUBwR_vk0lnvhqU44ETghY/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -121,13 +178,20 @@
       "firestoreDocumentId": "louise-nogueira-hotmail-com",
       "studentName": "Louise D. Silva Nogueira",
       "canonicalEmail": "louise_nogueira@hotmail.com",
-      "emailAliases": ["louise.nogueira@hotmail.com"],
+      "emailAliases": [
+        "louise.nogueira@hotmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=louise_nogueira%40hotmail.com",
-      "links": {"liveClass":"https://meet.google.com/kfk-fnbh-odk","portfolio":"https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit","classMaterials":"https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing","homework":null},
+      "links": {
+        "liveClass": "https://meet.google.com/kfk-fnbh-odk",
+        "portfolio": "https://docs.google.com/document/d/1Yc3aUuzsyP9WIuCISCJWvbWE74anvKLXUjxv2A_Vt88/edit",
+        "classMaterials": "https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing",
+        "homework": null
+      },
       "historicalTranscriptCount": 2,
       "usableTranscriptCount": 1,
       "pendingReviewCount": 0,
@@ -138,13 +202,20 @@
       "firestoreDocumentId": "galvaonanda28-gmail-com",
       "studentName": "Maria Fernanda Galvão Costa Stempniewski",
       "canonicalEmail": "galvaonanda28@gmail.com",
-      "emailAliases": ["galvaonanda28@gmail.com"],
+      "emailAliases": [
+        "galvaonanda28@gmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "learner",
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=galvaonanda28%40gmail.com",
-      "links": {"liveClass":"https://meet.google.com/uzg-sumq-ttv","portfolio":"https://docs.google.com/document/d/1GEd4AZjP2PoSQUNuFucUPxfv1qlwZ-r8DGgMPNpsHsc/edit","classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": "https://meet.google.com/uzg-sumq-ttv",
+        "portfolio": "https://docs.google.com/document/d/1GEd4AZjP2PoSQUNuFucUPxfv1qlwZ-r8DGgMPNpsHsc/edit",
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -162,7 +233,12 @@
       "activationAuthority": "legacy_authorized_registry",
       "profileCompleteness": "canonical_longitudinal_profile",
       "dashboardPath": "/dashboard?studentEmail=rafael.copolillo%40gmail.com",
-      "links": {"liveClass":"https://meet.google.com/xjj-yqcc-wxb","portfolio":"https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit","classMaterials":"https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link","homework":"https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link"},
+      "links": {
+        "liveClass": "https://meet.google.com/xjj-yqcc-wxb",
+        "portfolio": "https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit",
+        "classMaterials": "https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link",
+        "homework": "https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link"
+      },
       "historicalTranscriptCount": 1,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -174,13 +250,20 @@
       "firestoreDocumentId": "vcrlima89-gmail-com",
       "studentName": "Valéria Cristina Rangel de Lima",
       "canonicalEmail": "vcrlima89@gmail.com",
-      "emailAliases": ["vcrlima89@gmail.com"],
+      "emailAliases": [
+        "vcrlima89@gmail.com"
+      ],
       "profileStatus": "active",
       "operatingEligibility": "prospect",
       "activationAuthority": null,
       "profileCompleteness": "onboarding_pending_links_and_history",
       "dashboardPath": "/dashboard?studentEmail=vcrlima89%40gmail.com",
-      "links": {"liveClass":null,"portfolio":null,"classMaterials":null,"homework":null},
+      "links": {
+        "liveClass": null,
+        "portfolio": null,
+        "classMaterials": null,
+        "homework": null
+      },
       "historicalTranscriptCount": 0,
       "usableTranscriptCount": 0,
       "pendingReviewCount": 0,
@@ -188,8 +271,26 @@
       "notes": "Student identity supplied in the teacher intake; academic history and links remain pending. Missing data must not be guessed. Operating eligibility is prospect; no learner activation authority is established."
     }
   ],
-  "requiredFieldsForNewStudent": ["studentId","studentName","canonicalEmail","teacherId","profileStatus","liveClassLink","portfolioLink","classMaterialsLink","dashboardPath"],
-  "optionalFieldsForNewStudent": ["emailAliases","homeworkLink","driveFolderId","classFrequency","program","targetLevel","notes"],
+  "requiredFieldsForNewStudent": [
+    "studentId",
+    "studentName",
+    "canonicalEmail",
+    "teacherId",
+    "profileStatus",
+    "liveClassLink",
+    "portfolioLink",
+    "classMaterialsLink",
+    "dashboardPath"
+  ],
+  "optionalFieldsForNewStudent": [
+    "emailAliases",
+    "homeworkLink",
+    "driveFolderId",
+    "classFrequency",
+    "program",
+    "targetLevel",
+    "notes"
+  ],
   "invariants": [
     "studentId is immutable",
     "canonicalEmail is the identity lookup key",
