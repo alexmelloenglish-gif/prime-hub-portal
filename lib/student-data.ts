@@ -212,6 +212,7 @@ const verifiedRepositoryProfiles: Record<string, DocumentData> = {
   'claudio.bit@gmail.com': claudioProfile as unknown as DocumentData,
   'vcrlima89@gmail.com': valeriaProfile as unknown as DocumentData,
   'carolvdrummond@gmail.com': gustavoProfile as unknown as DocumentData,
+  'gugasalgado7@gmail.com': gustavoProfile as unknown as DocumentData,
 }
 
 function getAdminPreviewEmails() {
