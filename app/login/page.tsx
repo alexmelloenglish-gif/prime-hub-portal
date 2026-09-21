@@ -25,6 +25,7 @@ const allowedCallbackUrls = new Set([
   '/dashboard/conversacao',
   '/dashboard/configuracoes',
   '/dashboard/admin',
+  '/dashboard/action',
 ])
 
 const primeSupportUrl =
