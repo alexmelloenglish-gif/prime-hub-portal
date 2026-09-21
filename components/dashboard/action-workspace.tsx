@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, CheckCircle2, ExternalLink, Mic, Play, RotateCcw, Square, Upload } from 'lucide-react'
 
-type Props = { title:string; description:string; vocabulary:string[]; studentEmail:string; actionId?:string; materialUrl?:string; bookingUrl?:string }
+type Props = { title:string; description:string; vocabulary:string[]; studentEmail:string; actionId?:string; materialUrl?:string; nextMissionUrl?:string }
 
-export function ActionWorkspace({ title, description, vocabulary, studentEmail, actionId, materialUrl, bookingUrl }: Props) {
+export function ActionWorkspace({ title, description, vocabulary, studentEmail, actionId, materialUrl, nextMissionUrl }: Props) {
   const [isRecording,setIsRecording]=useState(false)
   const [seconds,setSeconds]=useState(0)
   const [audioUrl,setAudioUrl]=useState<string|null>(null)
@@ -51,7 +51,7 @@ export function ActionWorkspace({ title, description, vocabulary, studentEmail, 
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-200">Next mission</p>
       <h3 className="mt-2 text-xl font-semibold text-white">Review your next class and continue your interview preparation.</h3>
       <p className="mt-2 text-sm leading-6 text-prime-cream/70">Your next live session is booked separately and is confirmed after advance payment.</p>
-      {bookingUrl?<a href={bookingUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#0a235c]">Review & book next class <ArrowRight className="h-4 w-4"/></a>:null}
+      {nextMissionUrl?<a href={nextMissionUrl} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#0a235c]">Review next mission <ArrowRight className="h-4 w-4"/></a>:null}
     </article>
   </div>
 
