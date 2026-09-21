@@ -314,7 +314,7 @@ export async function runNarrativeSynthesis(input: NarrativeInput): Promise<Lear
     throw new GeminiGenerationError(
       'prompt-5',
       'validation_failed',
-      \`Narrative grounding validation failed: \${validation.errors.join(' ')}\`,
+      `Narrative grounding validation failed: ${validation.errors.join(' ')}`,
       undefined,
       draft.generationProvenance,
     )
