@@ -390,8 +390,6 @@ async function main() {
       sourceSnapshot: snapshot.relativePath,
       output: `docs/student-portfolios/family-edition/${outputName}`,
       externalPortfolio: entry.links?.portfolio ?? null,
-      classReportCount: list(student.classReports).length,
-      generatedAt: new Date().toISOString(),
     })
   }
 
