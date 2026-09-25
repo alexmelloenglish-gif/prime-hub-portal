@@ -13,5 +13,5 @@ ALTER TABLE "pipeline_runs"
 CREATE INDEX "pipeline_runs_executionMode_status_idx"
   ON "pipeline_runs"("executionMode", "status");
 
-CREATE INDEX "pipeline_runs_normalizedRunIdentity_idx"
+CREATE UNIQUE INDEX "pipeline_runs_normalizedRunIdentity_key"
   ON "pipeline_runs"("normalizedRunIdentity");
