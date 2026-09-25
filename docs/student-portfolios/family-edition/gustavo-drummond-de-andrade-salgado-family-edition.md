@@ -11,25 +11,24 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 5 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and use English for school content when relevant.. O que ficou mais visível neste ciclo: Across the five lessons, Gustavo repeatedly used English to talk about his own world. Past language returned in different contexts instead of being treated as a one-off grammar topic. On 15 September, after answering a past question with “I don't”, he changed it to “No, I didn't”. He also reused went and drank in personal sentences. In Science, some language from the previous week was available again while other ideas needed another pass. This is evidence of movement, retrieval and noticing — not a claim that every form is already mastered independently. Próximo passo: My English Journey Check-In + a new real story.
+Este portfólio reúne 5 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem. Neste ciclo, em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana. Próximo passo: My English Journey Check-In + a new real story.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR A1 — progressing toward A2
 - **Objetivo de nível:** CEFR A2
-- **Frequência de aulas:** Weekly / Semanal
-- **Foco atual:** Using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and use English for school content when relevant.
+- **Frequência de aulas:** Twice a week
+- **Foco atual:** Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.
 - **Presença registrada:** 5/5 confirmed
 
 ## 3. Quick Access
 
 - [Meu Portfólio](https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit)
-- [Entrar na aula ao vivo](https://meet.google.com/imu-dfuo-stc)
 - [Suporte PRIME](https://api.whatsapp.com/send/?phone=5521965147515&text=Oi%21+Gostaria+de+falar+com+o+atendimento%2C+pode+me+ajudar%3F&type=phone_number&app_absent=0)
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Use English increasingly as a tool to express his own world, tell real stories, learn school content when useful, and become more aware of how he learns. Past stories and experiences, accurate present/past short answers, independent vocabulary retrieval, complete sentence production, self-correction and continued use of academic English when relevant.
+Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -40,7 +39,7 @@ Use English increasingly as a tool to express his own world, tell real stories, 
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Across the five lessons, Gustavo repeatedly used English to talk about his own world. Past language returned in different contexts instead of being treated as a one-off grammar topic. On 15 September, after answering a past question with “I don't”, he changed it to “No, I didn't”. He also reused went and drank in personal sentences. In Science, some language from the previous week was available again while other ideas needed another pass. This is evidence of movement, retrieval and noticing — not a claim that every form is already mastered independently.
+Em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -61,7 +60,7 @@ Start with a short self-awareness check-in about the language explored in these 
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-Gustavo moved from reactivating English through personal conversation to repeatedly using past meaning in new contexts, preparing school content through English, retrieving part of that content after a week and beginning to notice and repair some of his own language. The journey is still in progress: repeated practice, support, reconstruction and consolidation are part of the movement, not evidence of failure.
+A trajetória mostra uso, retomada, reconstrução e autocorreção. Nem tudo precisa estar dominado de forma independente para que exista aprendizagem significativa; o próximo ciclo continua observando o que retorna sozinho e o que ainda precisa de apoio.
 
 ## 10. Leitura para a família / Family Guide
 
