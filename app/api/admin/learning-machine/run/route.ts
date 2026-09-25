@@ -2,7 +2,6 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { executeSharedLearningMachine } from '@/lib/learning-machine/shared-runner'
-import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 import { parseTranscriptPayload } from '@/lib/pipeline/run'
 import { isAdminUser } from '@/lib/student-data'
 
@@ -17,17 +16,6 @@ export async function POST(request: Request) {
   }
   if (!isAdminUser(session.user)) {
     return NextResponse.json({ error: 'Administrator access required' }, { status: 403 })
-  }
-
-  if (PIPELINE_AUTOMATION_FROZEN) {
-    console.warn(JSON.stringify({
-      event: 'manual_learning_machine_blocked',
-      code: 'PIPELINE_AUTOMATION_FROZEN',
-    }))
-    return NextResponse.json(
-      pipelineFreezePayload('admin-learning-machine-run'),
-      { status: 503 },
-    )
   }
 
   try {

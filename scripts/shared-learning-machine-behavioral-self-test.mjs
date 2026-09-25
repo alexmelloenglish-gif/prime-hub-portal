@@ -66,6 +66,9 @@ assert.deepEqual(canonicalResumeStagesFrom('communication_projection'), [
 
 const pipeline = readFileSync('lib/pipeline/run.ts', 'utf8')
 const canonical = readFileSync('lib/learning-machine/canonical-continuation.ts', 'utf8')
+const automaticRoute = readFileSync('app/api/pipeline/ingest/route.ts', 'utf8')
+const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
+const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
 const migration = readFileSync(
   'prisma/migrations/20260925013000_add_shared_learning_machine_runner_state/migration.sql',
@@ -121,6 +124,26 @@ assert.match(
   canonical,
   /canonicalResumeStagesFrom\(run\.resumePoint\)/,
   'Canonical continuation must dispatch from the persisted exact resume point',
+)
+assert.match(
+  automaticRoute,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Automatic ingestion must remain frozen until production activation is authorized',
+)
+assert.doesNotMatch(
+  manualRoute,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Explicit administrator-triggered execution must remain usable while automation is frozen',
+)
+assert.doesNotMatch(
+  retryRoute,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Explicit administrator retry must remain usable while automation is frozen',
+)
+assert.match(
+  retryRoute,
+  /sourceFileId: sourceFileId \|\| undefined/,
+  'Manual/shared retry must not require Drive provenance when the run itself is known',
 )
 
 console.log('Shared PRIME Learning Machine behavioral self-test: PASS')

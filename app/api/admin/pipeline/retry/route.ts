@@ -1,7 +1,6 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
-import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 import { retryFailedPipelineRun } from '@/lib/pipeline/run'
 import { isAdminUser } from '@/lib/student-data'
 
@@ -18,25 +17,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Administrator access required' }, { status: 403 })
   }
 
-  if (PIPELINE_AUTOMATION_FROZEN) {
-    console.warn(JSON.stringify({ event: 'pipeline_retry_blocked', code: 'PIPELINE_AUTOMATION_FROZEN' }))
-    return NextResponse.json(pipelineFreezePayload('admin-pipeline-retry'), { status: 503 })
-  }
-
   try {
     const body = await request.json() as Record<string, unknown>
     const sourceFileId = typeof body.sourceFileId === 'string' ? body.sourceFileId.trim() : ''
     const expectedPipelineRunId =
       typeof body.pipelineRunId === 'string' ? body.pipelineRunId.trim() : ''
-    if (!sourceFileId || !expectedPipelineRunId) {
+    if (!expectedPipelineRunId) {
       return NextResponse.json(
-        { error: 'sourceFileId and pipelineRunId are required' },
+        { error: 'pipelineRunId is required' },
         { status: 400 },
       )
     }
 
     const result = await retryFailedPipelineRun({
-      sourceFileId,
+      sourceFileId: sourceFileId || undefined,
       expectedPipelineRunId,
       requestedBy: session.user.email || session.user.id || 'admin',
     })

@@ -1206,25 +1206,34 @@ export type AdminPipelineRetryResult = PipelineResult & {
 }
 
 export async function retryFailedPipelineRun(input: {
-  sourceFileId: string
+  sourceFileId?: string
   expectedPipelineRunId: string
   requestedBy: string
 }): Promise<AdminPipelineRetryResult> {
   const prisma = getPrismaClient()
-  const sourceFileId = input.sourceFileId.trim()
+  const sourceFileId = input.sourceFileId?.trim() || ''
   const expectedPipelineRunId = input.expectedPipelineRunId.trim()
-  if (!sourceFileId || !expectedPipelineRunId) {
-    throw new Error('sourceFileId and expectedPipelineRunId are required')
+  if (!expectedPipelineRunId) {
+    throw new Error('expectedPipelineRunId is required')
   }
 
-  const transcript = await prisma.transcript.findUnique({
-    where: { sourceFileId },
-    include: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1 } },
+  const latest = await prisma.pipelineRun.findUnique({
+    where: { id: expectedPipelineRunId },
+    include: { transcript: true },
   })
-  const latest = transcript?.pipelineRuns[0]
-  if (!transcript || !latest) throw new Error('Pipeline transcript not found')
-  if (latest.id !== expectedPipelineRunId) {
+  const transcript = latest?.transcript
+  if (!latest || !transcript) throw new Error('Pipeline transcript not found')
+
+  const newestAttempt = await prisma.pipelineRun.findFirst({
+    where: { transcriptId: transcript.id },
+    orderBy: { attemptNumber: 'desc' },
+    select: { id: true },
+  })
+  if (newestAttempt?.id !== expectedPipelineRunId) {
     throw new Error('Latest pipeline run changed; refresh before retrying')
+  }
+  if (sourceFileId && transcript.sourceFileId !== sourceFileId) {
+    throw new Error('sourceFileId does not match the preserved pipeline transcript')
   }
   if (latest.status !== 'failed') {
     throw new Error('Only the latest failed pipeline run can be retried')
@@ -1235,7 +1244,11 @@ export async function retryFailedPipelineRun(input: {
     ...rebuilt,
     metadata: {
       ...asRecord(rebuilt.metadata),
-      sourceFileId,
+      ...(transcript.sourceFileId
+        ? { sourceFileId: transcript.sourceFileId }
+        : sourceFileId
+          ? { sourceFileId }
+          : {}),
     },
   }
 
