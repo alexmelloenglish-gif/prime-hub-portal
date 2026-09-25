@@ -177,4 +177,3 @@ In your next support lesson, you’ll answer six short questions: two about abil
 ## 19. PRIME DIGITAL HUB
 
 **Your portfolio is designed to grow with every class.**
-
