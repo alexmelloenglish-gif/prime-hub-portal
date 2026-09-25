@@ -11,26 +11,26 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 4 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é precision inside fluency: preserve natural, meaningful conversation while making recurring collocations, prepositions, verb patterns, lexical retrieval and sentence framing more precise.. O que ficou mais visível neste ciclo: Your current portfolio brings together four learning moments from March to July 2026 and shows a clear direction: keep your fluency strong while making your English more precise and reusable. Próximo passo: Structured three-minute opinion.
+Este portfólio reúne 4 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Preservar a fluência natural enquanto melhora collocations, preposições, padrões verbais, recuperação lexical e construção de frases. Neste ciclo, quatro momentos de aprendizagem entre março e julho mostram uma direção consistente: Louise sustenta conversas significativas com boa fluência e agora trabalha para tornar o inglês mais preciso e mais fácil de reutilizar. Próximo passo: Structured three-minute opinion.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** B1
 - **Objetivo de nível:** B2
 - **Frequência de aulas:** Once a week — Monday, 8:00–9:00 AM
-- **Foco atual:** Precision inside fluency: preserve natural, meaningful conversation while making recurring collocations, prepositions, verb patterns, lexical retrieval and sentence framing more precise.
+- **Foco atual:** Preservar a fluência natural enquanto melhora collocations, preposições, padrões verbais, recuperação lexical e construção de frases.
 - **Presença registrada:** 4 attended lessons
 
 ## 3. Quick Access
 
 - [Meu Portfólio](https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit)
 - [Entrar na aula ao vivo](https://meet.google.com/kfk-fnbh-odk)
-- [Entrar na aula ao vivo](https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing)
+- [Materiais de aula](https://drive.google.com/drive/folders/1NoVcpa-MgT8frV6kLO0HUNoJ10yi-5hV?usp=sharing)
 - [Suporte PRIME](https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F)
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Keep English active through meaningful conversation and use it confidently for professional, social and current-affairs topics. Precision inside fluency: clearer collocations, prepositions, verb patterns, lexical retrieval and sentence framing without losing spontaneity.
+Preservar a fluência natural enquanto melhora collocations, preposições, padrões verbais, recuperação lexical e construção de frases.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -41,7 +41,7 @@ Keep English active through meaningful conversation and use it confidently for p
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Your current portfolio brings together four learning moments from March to July 2026 and shows a clear direction: keep your fluency strong while making your English more precise and reusable.
+Quatro momentos de aprendizagem entre março e julho mostram uma direção consistente: Louise sustenta conversas significativas com boa fluência e agora trabalha para tornar o inglês mais preciso e mais fácil de reutilizar.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -61,7 +61,7 @@ Choose one meaningful topic. Give an opening position, two reasons or examples a
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.
+A memória atual conecta quatro aulas confirmadas e mantém separadas as lacunas de fonte que ainda não podem ser tratadas como novas aulas publicadas.
 
 ## 10. Leitura para a família / Family Guide
 
