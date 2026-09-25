@@ -27,6 +27,7 @@ const forbidden = [
   /\bprisma\b/i,
   /\bschema\b/i,
   /\bruntime\b/i,
+  /\bdashboard\b/i,
   /sourceFileId/i,
   /validationTask/i,
   /authorityStatus/i,
