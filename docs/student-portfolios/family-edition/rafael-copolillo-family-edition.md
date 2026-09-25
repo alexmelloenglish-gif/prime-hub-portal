@@ -11,21 +11,21 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 10 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é fluency Development • Grammar Consolidation & Review. O que ficou mais visível neste ciclo: Rafael's record now reflects 15 scheduled lessons, 11 attended lessons and 4 absences. The latest confirmed attendance is 27 August 2026 and the latest scheduled event, 3 September 2026, is recorded as an absence. The portfolio does not contain a detailed class report for 27 August, so no new language-development claim is being inferred from that lesson. The strongest current evidence still points to high fluency with a narrower need for grammatical and lexical precision. Próximo passo: Write and lock five personal vocabulary sentences.
+Este portfólio reúne 10 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Manter a fluência forte enquanto aumenta a precisão gramatical, a naturalidade das frases e o reaproveitamento de vocabulário em conversas espontâneas. Neste ciclo, rafael mantém comunicação fluente e analítica. O foco atual ficou mais específico: escolher tempos verbais com mais precisão, completar ideias com naturalidade e transformar vocabulário recente em linguagem pessoal reutilizável. A presença de 27 de agosto está registrada, mas não há relatório detalhado dessa aula, então nenhum conteúdo foi inventado. Próximo passo: Write and lock five personal vocabulary sentences.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR B2
 - **Objetivo de nível:** CEFR C1
 - **Frequência de aulas:** Once a week
-- **Foco atual:** Fluency Development • Grammar Consolidation & Review
+- **Foco atual:** Manter a fluência forte enquanto aumenta a precisão gramatical, a naturalidade das frases e o reaproveitamento de vocabulário em conversas espontâneas.
 - **Presença registrada:** 11/15 confirmed
 
 ## 3. Quick Access
 
-- [Meu Portfólio](https://docs.google.com/document/d/1ZXPBlc34kkOcfqHWodI78_BwXuJfe-p7pU7uFLSk4bE/edit?usp=sharing)
+- [Meu Portfólio](https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit)
 - [Entrar na aula ao vivo](https://meet.google.com/xjj-yqcc-wxb)
-- [Entrar na aula ao vivo](https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link)
+- [Materiais de aula](https://drive.google.com/drive/folders/1uk3NeAMRyCKxlfryLYGiG9r9lybq3_an?usp=drive_link)
 - [Atividades](https://docs.google.com/document/d/1dVtVNt5t8yIuPRT6CvmeRv2_zxv3NevBVJzAYSdtL68/edit?usp=drive_link)
 - [My AI Speaking Mentor](https://chatgpt.com/gg/v/69d6f22fc1f481948eae7f49b44ace22?token=WUpdcx1iECMkOtDQnAyV6g)
 - [Agenda de aulas](https://stride.microsoft.com/agents/b1a8a526-7535-4cfb-a685-4ea39f3557f4#)
@@ -33,7 +33,7 @@ Este portfólio reúne 10 aulas com relatórios completos e a memória de aprend
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Increase grammatical and lexical precision while preserving strong fluency and analytical communication. Precise tense selection, natural sentence framing and high-value vocabulary reuse in spontaneous speaking.
+Manter a fluência forte enquanto aumenta a precisão gramatical, a naturalidade das frases e o reaproveitamento de vocabulário em conversas espontâneas.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -44,7 +44,7 @@ Increase grammatical and lexical precision while preserving strong fluency and a
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Rafael's record now reflects 15 scheduled lessons, 11 attended lessons and 4 absences. The latest confirmed attendance is 27 August 2026 and the latest scheduled event, 3 September 2026, is recorded as an absence. The portfolio does not contain a detailed class report for 27 August, so no new language-development claim is being inferred from that lesson. The strongest current evidence still points to high fluency with a narrower need for grammatical and lexical precision.
+Rafael mantém comunicação fluente e analítica. O foco atual ficou mais específico: escolher tempos verbais com mais precisão, completar ideias com naturalidade e transformar vocabulário recente em linguagem pessoal reutilizável. A presença de 27 de agosto está registrada, mas não há relatório detalhado dessa aula, então nenhum conteúdo foi inventado.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -64,7 +64,7 @@ Open Vocabulary to Reuse and write one sentence you would genuinely say for each
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-The confirmed portfolio now establishes a broad B2 learning history while the this edition highlights the priorities that matter most now.
+A trajetória preserva um histórico amplo de comunicação em temas pessoais, profissionais e reflexivos. O próximo ciclo prioriza precisão e reciclagem de linguagem sem reduzir a espontaneidade.
 
 ## 10. Leitura para a família / Family Guide
 
