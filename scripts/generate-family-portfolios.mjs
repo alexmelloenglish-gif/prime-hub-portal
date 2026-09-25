@@ -1,14 +1,22 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROOT = process.cwd()
 const REGISTRY_PATH = path.join(ROOT, 'data/students/student-core-registry.json')
 const OUTPUT_DIR = path.join(ROOT, 'docs/student-portfolios/family-edition')
+const STUDENTS_DIR = path.join(ROOT, 'data/students')
 
 const TECHNICAL_REPLACEMENTS = [
+  [/current-state update before the next projection change/gi, 'Current learning check before the next update'],
+  [/source-integrity reconstruction/gi, 'confirmed lesson record'],
+  [/learner model/gi, 'learning picture'],
+  [/without needing the dashboard to manufacture a progress claim/gi, 'while keeping the focus on meaningful communication rather than labels'],
+  [/the dashboard now preserves/gi, 'The current learning record preserves'],
+  [/the dashboard now uses/gi, 'The current learning record uses'],
+  [/dashboard exposes only the current actionable projection/gi, 'this edition highlights the priorities that matter most now'],
   [/\bcanonical\b/gi, 'confirmed'],
   [/\bauthoritative\b/gi, 'confirmed'],
-  [/\bprojection\b/gi, 'learning record update'],
+  [/\bprojection\b/gi, 'learning update'],
   [/\bpipeline\b/gi, 'learning process'],
   [/\brepository\b/gi, 'learning record'],
   [/\bfirestore\b/gi, 'learning record'],
@@ -100,6 +108,27 @@ function markdownTable(headers, rows) {
     `| ${headers.map(() => '---').join(' | ')} |`,
     ...rows.map((row) => `| ${row.map(esc).join(' | ')} |`),
   ].join('\n')
+}
+
+async function buildSnapshotIndex() {
+  const index = new Map()
+  const names = await readdir(STUDENTS_DIR)
+  for (const name of names) {
+    if (!name.endsWith('.json') || name === 'student-core-registry.json' || name === 'student-profile-assets.json') continue
+    try {
+      const fullPath = path.join(STUDENTS_DIR, name)
+      const value = JSON.parse(await readFile(fullPath, 'utf8'))
+      if (typeof value.studentId === 'string' && value.studentId.trim()) {
+        index.set(value.studentId.trim(), {
+          fullPath,
+          relativePath: `data/students/${name}`,
+        })
+      }
+    } catch {
+      // Non-student JSON files are ignored by this studentId index.
+    }
+  }
+  return index
 }
 
 function firstMeaningful(...values) {
@@ -321,8 +350,6 @@ ${nextActionText}
 ## 19. PRIME DIGITAL HUB
 
 **Your portfolio is designed to grow with every class.**
-
-_A aprendizagem é acompanhada ao longo do tempo. Informações internas de processamento, revisão técnica e funcionamento do sistema não fazem parte desta edição para o aluno e a família._
 `
 
   return content
@@ -335,15 +362,15 @@ async function main() {
   )
 
   await mkdir(OUTPUT_DIR, { recursive: true })
+  const snapshotIndex = await buildSnapshotIndex()
 
   const manifest = []
   for (const entry of learners) {
-    const snapshotPath = path.join(
-      ROOT,
-      'data/students',
-      `${entry.firestoreDocumentId}.firestore.json`,
-    )
-    const student = JSON.parse(await readFile(snapshotPath, 'utf8'))
+    const snapshot = snapshotIndex.get(entry.studentId)
+    if (!snapshot) {
+      throw new Error(`No student snapshot found for active learner ${entry.studentName} (${entry.studentId})`)
+    }
+    const student = JSON.parse(await readFile(snapshot.fullPath, 'utf8'))
     const outputName = `${slugify(entry.studentName)}-family-edition.md`
     const outputPath = path.join(OUTPUT_DIR, outputName)
     const content = buildPortfolio(student, entry)
@@ -360,7 +387,7 @@ async function main() {
     manifest.push({
       studentId: entry.studentId,
       studentName: entry.studentName,
-      sourceSnapshot: `data/students/${entry.firestoreDocumentId}.firestore.json`,
+      sourceSnapshot: snapshot.relativePath,
       output: `docs/student-portfolios/family-edition/${outputName}`,
       externalPortfolio: entry.links?.portfolio ?? null,
       classReportCount: list(student.classReports).length,
