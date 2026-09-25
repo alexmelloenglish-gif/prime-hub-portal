@@ -594,28 +594,35 @@ model CanonicalLearningIntelligenceProjection {
 }
 
 model AgentCoordinationEvent {
-  id               String   @id @default(uuid())
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  workstreamId     String
-  senderRole       String
-  targetRole       String
-  eventType        String
-  repo             String
-  issueNumber      Int?
-  prNumber         Int?
-  sha              String?
-  githubCommentUrl String?
-  sourceDeliveryId String
-  requiresAck      Boolean  @default(true)
-  ackStatus        String   @default("PENDING")
-  acknowledgedBy   String?
-  acknowledgedAt   DateTime?
-  idempotencyKey   String   @unique
-  payloadJson      Json?
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  workstreamId      String
+  senderRole        String
+  targetRole        String
+  eventType         String
+  repo              String
+  issueNumber       Int?
+  prNumber          Int?
+  sha               String?
+  githubCommentUrl  String?
+  sourceDeliveryId  String
+  requiresAck       Boolean  @default(true)
+  ackStatus         String   @default("PENDING")
+  acknowledgedBy    String?
+  acknowledgedAt    DateTime?
+  claimedBy         String?
+  claimedAt         DateTime?
+  leaseExpiresAt    DateTime?
+  dispatchAttempts  Int      @default(0)
+  lastDispatchAt    DateTime?
+  lastDispatchError String?  @db.Text
+  idempotencyKey    String   @unique
+  payloadJson       Json?
 
   @@index([workstreamId, createdAt])
   @@index([targetRole, ackStatus, createdAt])
+  @@index([targetRole, ackStatus, leaseExpiresAt, createdAt])
   @@index([repo, prNumber, sha])
   @@index([repo, issueNumber, createdAt])
   @@map("agent_coordination_events")
