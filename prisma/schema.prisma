@@ -159,7 +159,7 @@ model PipelineRun {
   lessonId                 String
   status                   String              @default("received")
   executionMode            String              @default("legacy")
-  normalizedRunIdentity    String?
+  normalizedRunIdentity    String?             @unique
   machineVersion           String?
   machineContractVersion   String?
   currentStage             String?
@@ -186,7 +186,6 @@ model PipelineRun {
   @@index([studentEmail, createdAt])
   @@index([status])
   @@index([executionMode, status])
-  @@index([normalizedRunIdentity])
   @@map("pipeline_runs")
 }
 
