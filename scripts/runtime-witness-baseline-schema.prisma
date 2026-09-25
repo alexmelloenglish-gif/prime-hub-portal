@@ -1,0 +1,598 @@
+// Runtime-witness disposable DB baseline.
+// Exact source: PR #59 base f96e7fcbbbe33844b06d5ba5dbb6b89bf7ff88c1.
+// This file is test-only and must never be used for Production migration.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String     @default("student")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  progress      Progress[]
+  accountLearnerRelations AccountLearnerRelation[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// G6 — Explicit Account → Learner authorization relation.
+// This is an identity/access relation, not a pedagogical record and not a guardian/contact relation.
+model AccountLearnerRelation {
+  id                 String   @id @default(cuid())
+  userId             String
+  studentId          String
+  status             String   @default("ACTIVE")
+  relationType       String
+  sourceType         String
+  sourceReference    String
+  authorizationHash  String?
+  authorizedBy       String
+  authorizedAt       DateTime
+  validFrom          DateTime?
+  validUntil         DateTime?
+  revokedBy          String?
+  revokedAt          DateTime?
+  revocationReason   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, studentId])
+  @@index([userId, status])
+  @@index([studentId, status])
+  @@index([status, validUntil])
+  events AccountLearnerRelationEvent[]
+
+  @@map("account_learner_relations")
+}
+
+model AccountLearnerRelationEvent {
+  id                 String   @id @default(cuid())
+  relationId         String
+  eventType          String
+  actorUserId        String
+  sourceType         String
+  sourceReference    String
+  authorizationHash  String?
+  reason             String?
+  occurredAt         DateTime @default(now())
+  metadata           Json?
+  createdAt          DateTime @default(now())
+
+  relation AccountLearnerRelation @relation(fields: [relationId], references: [id], onDelete: Restrict)
+
+  @@index([relationId, occurredAt])
+  @@index([eventType, occurredAt])
+  @@map("account_learner_relation_events")
+}
+
+model Course {
+  id          String     @id @default(cuid())
+  title       String     @unique
+  description String     @db.Text
+  level       String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lessons     Lesson[]
+  progress    Progress[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  courseId    String
+  order       Int
+  scheduledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, order])
+  @@index([scheduledAt])
+  @@map("lessons")
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  completed Int      @default(0)
+  status    String   @default("in_progress")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("progress")
+}
+
+model PipelineRun {
+  id                       String              @id @default(cuid())
+  idempotencyKey           String              @unique
+  transcriptId             String
+  attemptNumber            Int                 @default(1)
+  studentEmail             String
+  lessonId                 String
+  status                   String              @default("received")
+  promptOneSchemaVersion   String?
+  promptOneArtifact        Json?
+  promptThreeSchemaVersion String?
+  promptThreeArtifact      Json?
+  portfolioPatchId         String?
+  portfolioApplyStatus     String?
+  authorityStatus          String              @default("non_authoritative")
+  errorCode                String?
+  errorMessage             String?             @db.Text
+  startedAt                DateTime            @default(now())
+  completedAt              DateTime?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+  transcript               Transcript          @relation(fields: [transcriptId], references: [id], onDelete: Restrict)
+  reviewTasks              ReviewTask[]
+  evidenceCandidates       EvidenceCandidate[]
+
+  @@unique([transcriptId, attemptNumber])
+  @@index([studentEmail, createdAt])
+  @@index([status])
+  @@map("pipeline_runs")
+}
+
+model ReviewTask {
+  id            String      @id @default(cuid())
+  pipelineRunId String
+  studentEmail  String
+  lessonId      String
+  stage         String      @default("identity_review_required")
+  reviewerId    String?
+  reviewedAt    DateTime?
+  decision      String?
+  reason        String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+
+  @@unique([pipelineRunId, stage])
+  @@index([stage, createdAt])
+  @@index([studentEmail, createdAt])
+  @@map("review_tasks")
+}
+
+model Transcript {
+  id           String              @id @default(cuid())
+  externalId   String?
+  sourceFileId String?             @unique
+  studentEmail String
+  lessonId     String
+  source       String
+  effectiveAt  DateTime?
+  recordedAt   DateTime?
+  content      String              @db.Text
+  metadata     Json?
+  createdAt    DateTime            @default(now())
+  pipelineRuns PipelineRun[]
+  evidence     EvidenceCandidate[]
+
+  @@index([studentEmail, effectiveAt])
+  @@map("transcripts")
+}
+
+model EvidenceCandidate {
+  id             String      @id @default(cuid())
+  pipelineRunId  String
+  transcriptId   String
+  candidateKey   String
+  sourceSpan     String?
+  observation    String      @db.Text
+  category       String
+  confidence     Float?
+  state          String      @default("proposed")
+  requiresReview Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  transcript     Transcript  @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+  pipelineRun    PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+
+  @@unique([pipelineRunId, candidateKey])
+  @@index([transcriptId])
+  @@index([state])
+  @@map("evidence_candidates")
+}
+
+model LearningSignalProposal {
+  id             String   @id @default(cuid())
+  pipelineRunId  String
+  proposalKey    String
+  signal         String   @db.Text
+  rationale      String   @db.Text
+  evidenceIds    Json
+  proposedState  String   @default("proposed")
+  requiresReview Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@unique([pipelineRunId, proposalKey])
+  @@map("learning_signal_proposals")
+}
+
+model TeacherInsightProposal {
+  id             String   @id @default(cuid())
+  pipelineRunId  String
+  text           String   @db.Text
+  evidenceIds    Json
+  signalIds      Json
+  authorType     String   @default("ai")
+  isOfficial     Boolean  @default(false)
+  requiresReview Boolean  @default(true)
+  status         String   @default("proposed")
+  createdAt      DateTime @default(now())
+
+  @@unique([pipelineRunId])
+  @@map("teacher_insight_proposals")
+}
+
+model ClassReportProjection {
+  id                   String   @id @default(cuid())
+  pipelineRunId        String
+  reportId             String   @unique
+  studentEmail         String
+  studentId            String
+  lessonId             String
+  generatedAt          DateTime @default(now())
+  promptVersion        String   @default("prompt-2.v2.0")
+  projectionVersion    String   @default("projection-1")
+  sourceReferences     Json
+  sourceSnapshot       Json?
+  content              Json
+  documentStatus       String   @default("draft")
+  implementationStatus String   @default("not_proven")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([studentEmail, lessonId])
+  @@map("class_report_projections")
+}
+
+model PortfolioProjection {
+  id            String   @id @default(cuid())
+  studentEmail  String
+  projectionKey String
+  projection    Json
+  version       Int      @default(1)
+  sourceRunId   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentEmail, projectionKey])
+  @@map("portfolio_projections")
+}
+
+model CoachingGuidance {
+  id                    String   @id @default(cuid())
+  pipelineRunId         String
+  studentEmail          String
+  studentId             String?
+  teacherId             String?
+  content               Json
+  recommendationStatus  String   @default("ai_proposed")
+  isPedagogicalDecision Boolean  @default(false)
+  requiresHumanReview   Boolean  @default(true)
+  sourceReferences      Json?
+  documentStatus        String   @default("draft")
+  implementationStatus  String   @default("not_proven")
+  createdAt             DateTime @default(now())
+
+  @@unique([pipelineRunId])
+  @@map("coaching_guidance")
+}
+
+model PipelineEvent {
+  id            String   @id @default(cuid())
+  pipelineRunId String
+  eventType     String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  createdAt     DateTime @default(now())
+
+  @@unique([pipelineRunId, eventType, aggregateId])
+  @@index([aggregateType, aggregateId])
+  @@map("pipeline_events")
+}
+
+model AttendanceRecord {
+  id                  String   @id @default(cuid())
+  lessonId            String
+  studentEmail        String
+  studentId           String?
+  studentName         String?
+  teacherId           String?
+  teacherName         String?
+  status              String   @default("unknown")
+  authorityStatus     String   @default("not_proven")
+  source              String
+  sourceReference     String
+  meetingId           String?
+  conferenceRecordId  String?
+  participantId       String?
+  participantUserId   String?
+  scheduledStartAt    DateTime?
+  scheduledEndAt      DateTime?
+  conferenceStartAt   DateTime?
+  conferenceEndAt     DateTime?
+  participantStartAt  DateTime?
+  participantEndAt    DateTime?
+  reconciledAt        DateTime?
+  evidence            Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([lessonId, studentEmail])
+  @@index([studentEmail, scheduledStartAt])
+  @@index([authorityStatus, status])
+  @@index([conferenceRecordId])
+  @@map("attendance_records")
+}
+
+model ValidationTask {
+  id              String   @id @default(cuid())
+  type            String
+  entityType      String
+  entityId        String
+  status          String   @default("pending")
+  priority        Int      @default(0)
+  studentEmail    String?
+  lessonId        String?
+  title           String
+  description     String   @db.Text
+  evidence        Json
+  suggestedValue  Json?
+  reviewerId      String?
+  reviewedAt      DateTime?
+  decision        String?
+  reason          String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([type, entityType, entityId])
+  @@index([status, priority, createdAt])
+  @@index([studentEmail, status])
+  @@index([lessonId, status])
+  @@map("validation_tasks")
+}
+
+model VocabularyReuseSentence {
+  id            String   @id @default(cuid())
+  studentId     String?
+  studentEmail  String
+  vocabularyKey String
+  term          String
+  sentence      String   @db.Text
+  lockedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([studentEmail, vocabularyKey, createdAt])
+  @@map("vocabulary_reuse_sentences")
+}
+
+// G1 — Canonical Learning Record Contract
+//
+// This model defines the durable post-authority domain record only.
+// G2 owns atomic canonicalization, idempotency, and database migration/application.
+// G3 owns persisted read-back verification.
+model CanonicalLearningRecord {
+  canonicalRecordId   String   @id @default(cuid())
+  schemaVersion       String   @default("canonical-learning-record-v1")
+  studentId           String
+  studentEmail        String?
+  lessonId            String?
+  scopeType           String
+  scopeKey            String
+  canonicalVersion    Int
+  canonicalHash       String
+  hashAlgorithm       String   @default("sha256")
+
+  sourceReferences    Json
+  sourceHash          String?
+  transcriptId        String?
+  pipelineRunId       String?
+  proposalReferences  Json?
+
+  teacherDecisionId   String
+  reviewerId          String
+  reviewerRole        String
+  decisionType        String
+  authorityScope      String
+  decisionTimestamp   DateTime
+  canonicalizedAt     DateTime
+
+  pedagogicalPayload  Json
+  supersedesRecordId  String?
+  createdAt           DateTime @default(now())
+  canonicalizationProvenance CanonicalizationProvenance?
+  projections CanonicalLearningRecordProjection[]
+  learningIntelligenceProjections CanonicalLearningIntelligenceProjection[]
+
+  @@unique([studentId, scopeKey, canonicalVersion])
+  @@index([studentId, lessonId])
+  @@index([teacherDecisionId])
+  @@index([pipelineRunId])
+  @@index([canonicalHash])
+  @@map("canonical_learning_records")
+}
+
+
+model CanonicalizationProvenance {
+  id                  String   @id @default(cuid())
+  idempotencyKey      String   @unique
+  canonicalRecordId   String   @unique
+  studentId           String
+  scopeType           String
+  scopeKey            String
+  teacherDecisionId   String
+  authoritySourceType String
+  reviewerId          String
+  decisionTimestamp   DateTime
+  canonicalVersion    Int
+  canonicalHash       String
+  transactionStatus   String   @default("committed")
+  createdAt           DateTime @default(now())
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@unique([studentId, teacherDecisionId, scopeType, scopeKey])
+  @@index([studentId, scopeType, scopeKey])
+  @@index([teacherDecisionId])
+  @@map("canonicalization_provenance")
+}
+
+
+// G3 — Durable canonical read-back verification result.
+// A verification row is independent so FAIL can also be recorded when the
+// expected canonical record cannot be read back.
+model CanonicalLearningRecordVerification {
+  id                         String   @id @default(cuid())
+  verificationKey            String   @unique
+  expectedCanonicalRecordId  String
+  observedCanonicalRecordId  String?
+  expectedCanonicalVersion   Int
+  observedCanonicalVersion   Int?
+  expectedCanonicalHash      String
+  observedCanonicalHash      String?
+  expectedTeacherDecisionId  String
+  observedTeacherDecisionId  String?
+  expectedSourceReferences   Json
+  observedSourceReferences   Json?
+  expectedPedagogicalPayload Json
+  observedPedagogicalPayload Json?
+  fieldResults               Json
+  mismatchFields             Json
+  verificationStatus         String
+  verifiedAt                 DateTime @default(now())
+  createdAt                  DateTime @default(now())
+
+  @@index([expectedCanonicalRecordId])
+  @@index([verificationStatus])
+  @@map("canonical_learning_record_verifications")
+}
+
+ 
+// G4 — First independent projection
+// Additive projection record. It never replaces a legacy PortfolioProjection,
+// ClassReportProjection, dashboard snapshot, or Learning Intelligence record.
+model CanonicalLearningRecordProjection {
+  projectionId       String   @id @default(cuid())
+  projectionKey      String   @unique
+  targetType         String
+  projectionVersion  String
+  canonicalRecordId  String
+  canonicalVersion   Int
+  canonicalHash      String
+  studentId          String
+  studentEmail       String?
+  lessonId           String?
+  sourceReferences   Json
+  projection         Json
+  projectionHash     String
+  projectionStatus   String   @default("NOT_REQUESTED")
+  mismatchFields     Json     @default("[]")
+  verifiedAt         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@index([canonicalRecordId])
+  @@index([targetType, studentId])
+  @@index([projectionStatus])
+  @@map("canonical_learning_record_projections")
+}
+
+
+// G5 — Canonical Learning Intelligence Projection
+// Independent additive read model derived directly from CanonicalLearningRecord.
+// It is not the legacy Learning Intelligence consumer and is not a dashboard source in G5.
+model CanonicalLearningIntelligenceProjection {
+  projectionId             String   @id @default(cuid())
+  projectionKey            String   @unique
+  targetType               String
+  projectionVersion        String
+  projectionHash           String
+
+  canonicalRecordId        String
+  canonicalVersion         Int
+  canonicalHash            String
+
+  studentId                String
+  studentEmail             String?
+  scopeType                String
+  scopeKey                 String
+  lessonId                 String?
+
+  teacherDecisionId        String
+  validationTaskId         String?
+  teacherDecisionPackageId String?
+  authorityScope           String
+  sourceReferences         Json
+  g3VerificationId         String
+
+  projection               Json
+  projectionStatus         String   @default("NOT_REQUESTED")
+  mismatchFields           Json     @default("[]")
+
+  createdAt                DateTime @default(now())
+  verifiedAt               DateTime?
+  updatedAt                DateTime @updatedAt
+
+  canonicalRecord CanonicalLearningRecord @relation(fields: [canonicalRecordId], references: [canonicalRecordId], onDelete: Restrict)
+
+  @@unique([canonicalRecordId, targetType, projectionVersion])
+  @@index([studentId, targetType])
+  @@index([projectionStatus])
+  @@map("canonical_learning_intelligence_projections")
+}
