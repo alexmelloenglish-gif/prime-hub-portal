@@ -44,8 +44,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Apply repository migrations to disposable Postgres only
+      - name: Materialize exact pre-runner disposable baseline
+        run: npx prisma db push --schema scripts/runtime-witness-baseline-schema.prisma --skip-generate
+
+      - name: Register historical baseline migrations in disposable DB
+        shell: bash
+        run: |
+          set -euo pipefail
+          for dir in $(find prisma/migrations -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort); do
+            if [ "$dir" = "20260925013000_add_shared_learning_machine_runner_state" ]; then
+              continue
+            fi
+            npx prisma migrate resolve --applied "$dir"
+          done
+
+      - name: Apply repository shared-runner migration to disposable Postgres only
         run: npx prisma migrate deploy
+
+      - name: Verify migration state
+        run: npx prisma migrate status
 
       - name: Generate Prisma client
         run: npx prisma generate
