@@ -8,6 +8,8 @@ const STUDENTS_DIR = path.join(ROOT, 'data/students')
 
 const TECHNICAL_REPLACEMENTS = [
   [/current-state update before the next projection change/gi, 'Current learning check before the next update'],
+  [/not confirmed in the evidence used for the canonical reconstruction/gi, 'Ainda não confirmada nos registros disponíveis'],
+  [/\bdashboard\b/gi, 'learning record'],
   [/source-integrity reconstruction/gi, 'confirmed lesson record'],
   [/learner model/gi, 'learning picture'],
   [/without needing the dashboard to manufacture a progress claim/gi, 'while keeping the focus on meaningful communication rather than labels'],
@@ -54,6 +56,56 @@ const FORBIDDEN_INTERNAL_TERMS = [
   'vnext',
 ]
 
+
+const FAMILY_COPY_OVERRIDES = {
+  stu_cce1337c71da: {
+    focus: 'Manter a fluência forte enquanto aumenta a precisão gramatical, a naturalidade das frases e o reaproveitamento de vocabulário em conversas espontâneas.',
+    change: 'Rafael mantém comunicação fluente e analítica. O foco atual ficou mais específico: escolher tempos verbais com mais precisão, completar ideias com naturalidade e transformar vocabulário recente em linguagem pessoal reutilizável. A presença de 27 de agosto está registrada, mas não há relatório detalhado dessa aula, então nenhum conteúdo foi inventado.',
+    memory: 'A trajetória preserva um histórico amplo de comunicação em temas pessoais, profissionais e reflexivos. O próximo ciclo prioriza precisão e reciclagem de linguagem sem reduzir a espontaneidade.',
+  },
+  stu_c5930e6e76ae: {
+    focus: 'Preservar a fluência natural enquanto melhora collocations, preposições, padrões verbais, recuperação lexical e construção de frases.',
+    change: 'Quatro momentos de aprendizagem entre março e julho mostram uma direção consistente: Louise sustenta conversas significativas com boa fluência e agora trabalha para tornar o inglês mais preciso e mais fácil de reutilizar.',
+    memory: 'A memória atual conecta quatro aulas confirmadas e mantém separadas as lacunas de fonte que ainda não podem ser tratadas como novas aulas publicadas.',
+  },
+  stu_fb5b64e3437e: {
+    focus: 'Estruturar a apresentação profissional, ampliar o inglês marítimo útil e ganhar mais segurança e precisão em situações de entrevista.',
+    change: 'Uma aula confirmada já oferece um ponto de partida claro para o inglês profissional de Ítalo: transformar conhecimento técnico marítimo em respostas mais organizadas e confiantes em inglês.',
+    memory: 'Como ainda há apenas uma aula confirmada, este portfólio funciona como ponto de partida e não como conclusão de progresso de longo prazo.',
+  },
+  stu_e8661006824a: {
+    focus: 'Responder com frases mais completas e cada vez menos apoio, tanto em inglês quanto nas atividades de Geografia em inglês.',
+    change: 'Ao longo de sete aulas, ficou mais claro que o próximo ganho de Eduarda está em transformar reconhecimento e respostas guiadas em explicações completas com mais independência.',
+    memory: 'As sete aulas preservam a trajetória de apoio escolar em inglês e Geografia. O nível atual continua A1, com A2 como objetivo; a independência ainda está sendo construída.',
+  },
+  stu_b5a6b9640498: {
+    focus: 'Desenvolver respostas mais longas e conectadas, ampliar vocabulário, fortalecer listening autêntico e consolidar precisão gramatical no caminho de B1 para B2.',
+    change: 'As aulas de 28 de abril, 12 de maio e 22 de maio formam uma sequência de aprendizagem confirmada. Agendamentos posteriores continuam separados da presença real até haver confirmação.',
+    memory: 'O próximo ciclo mantém a direção B1→B2 com mais independência na fala, listening autêntico e precisão em respostas mais longas.',
+  },
+  stu_c1724b66988e: {
+    focus: 'Aprofundar leitura acadêmica, interpretação, precisão gramatical avançada e produção argumentativa no caminho de B2 para C1.',
+    change: 'As aulas de 24 de abril, 6 de junho e 19 de junho formam a base confirmada atual. O próximo passo é produzir nova evidência antes de qualquer mudança no quadro atual de aprendizagem.',
+    memory: 'A trajetória atual preserva três aulas confirmadas e separa antigos agendamentos de agosto da presença real. Uma nova tarefa de leitura e produção argumentativa deve atualizar o quadro antes de novas conclusões.',
+  },
+  stu_e01adc4e23d0: {
+    focus: 'Tornar a comunicação profissional mais clara, precisa e concisa sem perder a fluência, com atenção especial a linguagem de negócios de alta frequência.',
+    change: 'Quatro aulas mostram boa capacidade de explicar temas profissionais de forma espontânea. O próximo ganho está em organizar respostas executivas com mais concisão, precisão gramatical e reaproveitamento de vocabulário.',
+    memory: 'A memória atual conecta quatro aulas de inglês profissional e mantém o nível A2 com B1 como objetivo até que novas evidências justifiquem uma mudança.',
+  },
+  stu_e22a6c379329: {
+    focus: 'Sustentar fala mais longa e independente com melhor organização, recuperação de vocabulário técnico, precisão gramatical e compreensão de input autêntico.',
+    change: 'Três aulas confirmadas mostram uma trajetória B1→B2 em desenvolvimento. Uma aula histórica sobre televisão 8K e Copa do Mundo permanece apenas como memória porque a data e a fonte exatas ainda não foram recuperadas.',
+    memory: 'O próximo ciclo usa temas de alto interesse, especialmente mergulho e tecnologia, para tornar respostas longas mais organizadas, precisas e independentes.',
+  },
+  stu_4c4da6c04ac4: {
+    focus: 'Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.',
+    change: 'Em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana.',
+    memory: 'A trajetória mostra uso, retomada, reconstrução e autocorreção. Nem tudo precisa estar dominado de forma independente para que exista aprendizagem significativa; o próximo ciclo continua observando o que retorna sozinho e o que ainda precisa de apoio.',
+  },
+}
+
+
 function cleanText(value, fallback = '') {
   if (typeof value !== 'string') return fallback
   let text = value.trim()
@@ -92,9 +144,9 @@ function normalizeProgressStatus(value) {
 function linkLabel(link) {
   const id = String(link?.id ?? '').toLowerCase()
   if (id.includes('portfolio')) return 'Meu Portfólio'
-  if (id.includes('class') || id.includes('meet')) return 'Entrar na aula ao vivo'
   if (id.includes('material')) return 'Materiais de aula'
   if (id.includes('homework')) return 'Atividades'
+  if (id.includes('class') || id.includes('meet')) return 'Entrar na aula ao vivo'
   if (id.includes('calendar') || id.includes('schedule')) return 'Agenda de aulas'
   if (id.includes('support')) return 'Suporte PRIME'
   return cleanText(link?.title, 'Recurso de aprendizagem')
@@ -155,6 +207,7 @@ function buildExecutiveSummary(student) {
 }
 
 function buildPortfolio(student, registryEntry) {
+  const familyCopy = FAMILY_COPY_OVERRIDES[registryEntry.studentId] ?? {}
   const projection = obj(student.canonicalProjection)
   const currentState = obj(projection.currentState)
   const whatChanged = obj(projection.whatChanged)
@@ -167,7 +220,15 @@ function buildPortfolio(student, registryEntry) {
   const feedback = list(student.teacherFeedback)
   const progress = list(student.progressTracker)
   const goals = list(student.goals)
-  const links = list(student.manageSpace)
+  const snapshotLinks = list(student.manageSpace)
+  const registryLinks = registryEntry.links ?? {}
+  const links = [
+    registryLinks.portfolio ? { id: 'portfolio', title: 'My Portfolio', href: registryLinks.portfolio } : null,
+    registryLinks.liveClass ? { id: 'live-class', title: 'Join My Live Class', href: registryLinks.liveClass } : null,
+    registryLinks.classMaterials ? { id: 'class-materials', title: 'Class Materials', href: registryLinks.classMaterials } : null,
+    registryLinks.homework ? { id: 'homework', title: 'Homework', href: registryLinks.homework } : null,
+    ...snapshotLinks.filter((link) => !['portfolio', 'live-class', 'class-materials', 'homework'].includes(String(link?.id ?? ''))),
+  ].filter(Boolean)
   const impact = obj(student.cumulativeImpact)
 
   const strengths = progress
@@ -180,12 +241,15 @@ function buildPortfolio(student, registryEntry) {
     'Uma aula pode consolidar, reativar ou aprofundar algo importante mesmo quando o nível registrado permanece o mesmo.',
   ].join(' ')
 
-  const learningState = [
-    firstMeaningful(currentState?.objective?.value, student.objective),
-    firstMeaningful(currentState?.focus?.value, student.focus),
-  ].filter(Boolean).join(' ')
+  const learningState = familyCopy.focus
+    ? cleanText(familyCopy.focus)
+    : [
+        firstMeaningful(currentState?.objective?.value, student.objective),
+        firstMeaningful(currentState?.focus?.value, student.focus),
+      ].filter(Boolean).join(' ')
 
   const patternsText = firstMeaningful(
+    familyCopy.change,
     whatChanged.summary,
     feedback[0]?.body,
     'Ainda não há um padrão recorrente adicional que possa ser afirmado com segurança.'
@@ -258,6 +322,14 @@ function buildPortfolio(student, registryEntry) {
       ].filter(Boolean).join('\n\n')
     : '_O próximo passo será definido pelo professor a partir da próxima evidência disponível._'
 
+  const displayFocus = firstMeaningful(familyCopy.focus, student.focus, 'Continuidade da aprendizagem de inglês')
+  const displayFrequency = firstMeaningful(registryEntry.classFrequency, student.classFrequency, 'Ainda não confirmada')
+  const memoryText = firstMeaningful(
+    familyCopy.memory,
+    impact.summary,
+    'As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.'
+  )
+
   const content = `# Student Learning Portfolio — ${cleanText(student.studentName, registryEntry.studentName)}
 
 > **PRIME DIGITAL HUB**  
@@ -271,14 +343,19 @@ function buildPortfolio(student, registryEntry) {
 
 ### Resumo para o aluno e a família
 
-${buildExecutiveSummary(student)}
+${[
+  `Este portfólio reúne ${reports.length === 1 ? '1 aula com relatório completo' : `${reports.length} aulas com relatórios completos`} e a memória de aprendizagem atualmente confirmada.`,
+  familyCopy.focus ? `O foco atual é ${cleanText(familyCopy.focus)}` : '',
+  familyCopy.change ? `Neste ciclo, ${cleanText(familyCopy.change).charAt(0).toLowerCase()}${cleanText(familyCopy.change).slice(1)}` : '',
+  nextAction.title ? `Próximo passo: ${cleanText(nextAction.title)}.` : '',
+].filter(Boolean).join(' ')}
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** ${cleanText(student.currentLevel, 'Ainda não definido')}
 - **Objetivo de nível:** ${cleanText(student.targetLevel, 'Ainda não definido')}
-- **Frequência de aulas:** ${cleanText(student.classFrequency, 'Ainda não confirmada')}
-- **Foco atual:** ${cleanText(student.focus, 'Continuidade da aprendizagem de inglês')}
+- **Frequência de aulas:** ${displayFrequency}
+- **Foco atual:** ${displayFocus}
 - **Presença registrada:** ${cleanText(student.attendanceRate, 'Ainda não consolidada')}
 
 ## 3. Quick Access
@@ -307,7 +384,7 @@ ${nextActionText}
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-${cleanText(impact.summary, 'As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.')}
+${memoryText}
 
 ## 10. Leitura para a família / Family Guide
 
