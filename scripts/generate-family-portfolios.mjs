@@ -46,6 +46,7 @@ const FORBIDDEN_INTERNAL_TERMS = [
   'prisma',
   'schema',
   'runtime',
+  'dashboard',
   'sourcefileid',
   'validationtask',
   'authoritystatus',
@@ -360,7 +361,7 @@ ${[
 
 ## 3. Quick Access
 
-${quickLinks || '_Os links de aprendizagem disponíveis continuam acessíveis pelo Dashboard PRIME._'}
+${quickLinks || '_Os links de aprendizagem disponíveis continuam acessíveis pelo espaço PRIME._'}
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
