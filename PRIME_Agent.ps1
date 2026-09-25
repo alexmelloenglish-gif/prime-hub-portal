@@ -18,6 +18,7 @@ $AgentVersion = "vNEXT-1.0"
 $DeviceName   = "Dell Inspiron 3501"
 $StartTime    = Get-Date
 $script:ProcessCpuSamples = @{}
+$script:ModeSnapshot = $null
 
 # -- Garantir diretorio de logs ------------------------------
 if (-not (Test-Path $LogPath)) {
@@ -370,8 +371,159 @@ function Handle-Processes {
     }
 }
 
+function Get-ActivePowerPlanGuid {
+    try {
+        $line = powercfg /getactivescheme 2>$null | Out-String
+        $match = [regex]::Match($line, "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}")
+        if ($match.Success) { return $match.Value.ToLower() }
+    } catch {}
+    return $null
+}
+
+function Save-ModeSnapshot {
+    $priorities = @()
+    $names = @("chrome", "ChatGPT", "GPTClassic", "Manus", "Perplexity", "Comet", "Telegram", "iVCam", "msedge")
+    foreach ($name in $names) {
+        $items = Get-Process -Name $name -ErrorAction SilentlyContinue
+        foreach ($p in @($items)) {
+            try { $priorities += @{ pid = $p.Id; name = $p.ProcessName; priority = $p.PriorityClass.ToString() } } catch {}
+        }
+    }
+    $spooler = Get-Service -Name "Spooler" -ErrorAction SilentlyContinue
+    return @{
+        powerPlan = Get-ActivePowerPlanGuid
+        priorities = $priorities
+        spoolerStartup = if ($spooler) { (Get-CimInstance Win32_Service -Filter "Name='Spooler'" -ErrorAction SilentlyContinue).StartMode } else { $null }
+        spoolerRunning = if ($spooler) { $spooler.Status -eq "Running" } else { $false }
+    }
+}
+
+function Restore-ModeSnapshot {
+    param($Snapshot)
+    if (-not $Snapshot) { return @() }
+    $results = @()
+    if ($Snapshot.powerPlan) {
+        try { powercfg /setactive $Snapshot.powerPlan 2>&1 | Out-Null; $results += @{ action="RestorePowerPlan"; target=$Snapshot.powerPlan; result="SUCCESS" } } catch { $results += @{ action="RestorePowerPlan"; target=$Snapshot.powerPlan; result="FAILED"; detail=$_.ToString() } }
+    }
+    foreach ($item in @($Snapshot.priorities)) {
+        try {
+            $p = Get-Process -Id $item.pid -ErrorAction Stop
+            $p.PriorityClass = $item.priority
+            $results += @{ action="RestorePriority"; target="$($item.name)#$($item.pid)"; result="SUCCESS" }
+        } catch {}
+    }
+    $spooler = Get-Service -Name "Spooler" -ErrorAction SilentlyContinue
+    if ($spooler -and $Snapshot.spoolerStartup) {
+        try {
+            Set-Service -Name "Spooler" -StartupType $Snapshot.spoolerStartup -ErrorAction Stop
+            if ($Snapshot.spoolerRunning) { Start-Service -Name "Spooler" -ErrorAction SilentlyContinue } else { Stop-Service -Name "Spooler" -Force -ErrorAction SilentlyContinue }
+            $results += @{ action="RestoreService"; target="Spooler"; result="SUCCESS" }
+        } catch { $results += @{ action="RestoreService"; target="Spooler"; result="FAILED"; detail=$_.ToString() } }
+    }
+    Write-Audit "ModeRestore" "previous-state" "SUCCESS"
+    return $results
+}
+
+function Set-PolicyPowerPlan {
+    param([string]$Guid, [string]$Name)
+    try {
+        $available = powercfg /list 2>&1 | Out-String
+        if ($available -notmatch [regex]::Escape($Guid)) { throw "Plano não encontrado: $Name" }
+        powercfg /setactive $Guid 2>&1 | Out-Null
+        Write-Audit "PowerPlan" $Name "SUCCESS"
+        return @{ action="PowerPlan"; target=$Name; result="SUCCESS"; detail=$Guid }
+    } catch {
+        Write-Audit "PowerPlan" $Name "FAILED" $_.ToString()
+        return @{ action="PowerPlan"; target=$Name; result="FAILED"; detail=$_.ToString() }
+    }
+}
+
+function Set-PolicyPriority {
+    param([string[]]$Names, [string]$Priority)
+    $results = @()
+    foreach ($name in $Names) {
+        $items = @(Get-Process -Name $name -ErrorAction SilentlyContinue)
+        if ($items.Count -eq 0) { $results += @{ action="Priority"; target=$name; result="SKIPPED"; detail="Process not running" }; continue }
+        try {
+            $items | ForEach-Object { $_.PriorityClass = $Priority }
+            $results += @{ action="Priority"; target="$name -> $Priority"; result="SUCCESS"; detail="Applied to $($items.Count) process(es)" }
+            Write-Audit "Priority" "$name -> $Priority" "SUCCESS"
+        } catch {
+            $results += @{ action="Priority"; target="$name -> $Priority"; result="FAILED"; detail=$_.ToString() }
+            Write-Audit "Priority" "$name -> $Priority" "FAILED" $_.ToString()
+        }
+    }
+    return $results
+}
+
+function Stop-PolicyProcesses {
+    param([string[]]$Names)
+    $results = @()
+    foreach ($name in $Names) {
+        $items = @(Get-Process -Name $name -ErrorAction SilentlyContinue)
+        if ($items.Count -eq 0) { $results += @{ action="Block"; target=$name; result="SKIPPED"; detail="Process not running" }; continue }
+        try {
+            $items | Stop-Process -Force -ErrorAction Stop
+            $results += @{ action="Block"; target=$name; result="SUCCESS"; detail="Closed at mode activation; no firewall change" }
+            Write-Audit "Block" $name "SUCCESS"
+        } catch {
+            $results += @{ action="Block"; target=$name; result="FAILED"; detail=$_.ToString() }
+            Write-Audit "Block" $name "FAILED" $_.ToString()
+        }
+    }
+    return $results
+}
+
 function Handle-Mode {
     param($Context)
+    # Politicas v2: snapshot, prioridades conservadoras e nenhuma alteracao no Defender/firewall.
+    $policyBody = $null
+    try {
+        $policyReader = New-Object System.IO.StreamReader($Context.Request.InputStream)
+        $policyBody = ($policyReader.ReadToEnd() | ConvertFrom-Json)
+    } catch {}
+    $policyMode = if ($policyBody -and $policyBody.mode) { ([string]$policyBody.mode).ToLower() } else { "unknown" }
+    if ($policyMode -in @("normal", "restore", "desativar")) {
+        $restoreResults = Restore-ModeSnapshot $script:ModeSnapshot
+        $script:ModeSnapshot = $null
+        Write-Audit "ModeDeactivated" "normal" "SUCCESS"
+        Send-JsonResponse $Context @{ mode="normal"; timestamp=(Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); results=$restoreResults; summary=@{ total=$restoreResults.Count; success=($restoreResults | Where-Object { $_.result -eq "SUCCESS" }).Count; failed=($restoreResults | Where-Object { $_.result -eq "FAILED" }).Count; skipped=($restoreResults | Where-Object { $_.result -eq "SKIPPED" }).Count } }
+        return
+    }
+    if ($policyMode -in @("aula", "fluido", "trabalho")) {
+        if (-not $script:ModeSnapshot) { $script:ModeSnapshot = Save-ModeSnapshot }
+        $policyResults = @()
+        switch ($policyMode) {
+            "aula" {
+                # Google Meet/apresentacoes: Chrome e camera recebem prioridade moderada; IA permanece acessivel.
+                $policyResults += Set-PolicyPowerPlan "381b4222-f694-41f0-9685-ff5bb260df2e" "Balanceado"
+                $policyResults += Set-PolicyPriority @("chrome") "AboveNormal"
+                $policyResults += Set-PolicyPriority @("Telegram", "iVCam", "Comet") "AboveNormal"
+                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "Manus", "Perplexity") "BelowNormal"
+                $policyResults += Stop-PolicyProcesses @("msedge")
+            }
+            "fluido" {
+                # Fluido: streaming/Telegram/iVCam/Comet preservados; Edge e IA auxiliares encerrados.
+                $policyResults += Set-PolicyPowerPlan "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" "Alto Desempenho"
+                $policyResults += Set-PolicyPriority @("chrome") "High"
+                $policyResults += Set-PolicyPriority @("Telegram", "iVCam", "Comet") "AboveNormal"
+                $policyResults += Stop-PolicyProcesses @("msedge", "ChatGPT", "GPTClassic", "Manus", "Perplexity")
+            }
+            "trabalho" {
+                # Trabalho: equilibrio para uso prolongado, Chrome/Comet/Telegram/camera preservados.
+                $policyResults += Set-PolicyPowerPlan "381b4222-f694-41f0-9685-ff5bb260df2e" "Balanceado"
+                $policyResults += Set-PolicyPriority @("chrome", "Comet", "Telegram", "iVCam") "AboveNormal"
+                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "Manus", "Perplexity") "Normal"
+                $policyResults += Stop-PolicyProcesses @("msedge")
+            }
+        }
+        Write-Audit "ModeActivated" $policyMode "SUCCESS"
+        Send-JsonResponse $Context @{ mode=$policyMode; timestamp=(Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); policyVersion="v2"; results=$policyResults; summary=@{ total=$policyResults.Count; success=($policyResults | Where-Object { $_.result -eq "SUCCESS" }).Count; failed=($policyResults | Where-Object { $_.result -eq "FAILED" }).Count; skipped=($policyResults | Where-Object { $_.result -eq "SKIPPED" }).Count } }
+        return
+    }
+    Send-JsonResponse $Context @{ error="Modo desconhecido: $policyMode. Use: aula, fluido, trabalho, normal" } 400
+    return
+
     # Ler body da requisicao
     $body = $null
     try {
