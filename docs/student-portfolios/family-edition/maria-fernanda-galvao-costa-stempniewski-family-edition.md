@@ -11,7 +11,7 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é academic reading and interpretation, advanced grammar precision, argumentative discourse and exam preparation.. O que ficou mais visível neste ciclo: Maria Fernanda's dashboard now uses the source-integrity reconstruction from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learner model. Old August calendar bookings are not treated as attendance. Próximo passo: Current-state update before the next learning record update change.
+Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é academic reading and interpretation, advanced grammar precision, argumentative discourse and exam preparation.. O que ficou mais visível neste ciclo: Maria Fernanda's dashboard now uses the confirmed lesson record from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learning picture. Old August calendar bookings are not treated as attendance. Próximo passo: Current learning check before the next update.
 
 ## 2. Your Learning Snapshot
 
@@ -39,7 +39,7 @@ Increase precision and independence in Academic English on the B2→C1 pathway. 
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Maria Fernanda's dashboard now uses the source-integrity reconstruction from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learner model. Old August calendar bookings are not treated as attendance.
+Maria Fernanda's dashboard now uses the confirmed lesson record from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learning picture. Old August calendar bookings are not treated as attendance.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -51,7 +51,7 @@ Maria Fernanda's dashboard now uses the source-integrity reconstruction from 24 
 
 ## 8. Próxima ação e acompanhamento / Next Action & Follow-up
 
-**Current-state update before the next learning record update change**
+**Current learning check before the next update**
 
 Use a new academic reading task, fresh inversions/auxiliary prompts and a short argumentative production task. Compare the result with the June baseline before updating Maria Fernanda's learner state.
 
@@ -138,7 +138,7 @@ Advanced grammar lesson on inversions, auxiliary selection, conditional inversio
 
 ## 18. Recommended Next Steps
 
-**Current-state update before the next learning record update change**
+**Current learning check before the next update**
 
 Use a new academic reading task, fresh inversions/auxiliary prompts and a short argumentative production task. Compare the result with the June baseline before updating Maria Fernanda's learner state.
 
@@ -148,4 +148,3 @@ Use a new academic reading task, fresh inversions/auxiliary prompts and a short 
 
 **Your portfolio is designed to grow with every class.**
 
-_A aprendizagem é acompanhada ao longo do tempo. Informações internas de processamento, revisão técnica e funcionamento do sistema não fazem parte desta edição para o aluno e a família._
