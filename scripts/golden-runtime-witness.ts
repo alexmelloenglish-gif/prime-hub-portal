@@ -294,6 +294,7 @@ globalThis.fetch = async (_url, init = {}) => {
   })
 }
 
+async function main() {
 process.env.GOOGLE_AI_STUDIO_API_KEY = 'runtime-witness-mocked-provider'
 process.env.PRIME_PIPELINE_MODEL = 'runtime-witness-deterministic'
 delete process.env.FIREBASE_PROJECT_ID
@@ -573,3 +574,9 @@ fs.writeFileSync(
 )
 console.log(JSON.stringify(evidence, null, 2))
 await prisma.$disconnect()
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
