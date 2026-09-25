@@ -11,7 +11,7 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é speaking fluency, authentic listening, vocabulary expansion, grammar consolidation and academic English.. O que ficou mais visível neste ciclo: The dashboard now preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance. Próximo passo: Authentic listening + 2–3 minute retelling.
+Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é speaking fluency, authentic listening, vocabulary expansion, grammar consolidation and academic English.. O que ficou mais visível neste ciclo: The current learning record preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance. Próximo passo: Authentic listening + 2–3 minute retelling.
 
 ## 2. Your Learning Snapshot
 
@@ -40,7 +40,7 @@ Develop greater independence, precision and connected speech on the B1→B2 path
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-The dashboard now preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance.
+The current learning record preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -149,4 +149,3 @@ Use a short authentic listening segment first without subtitles, then retell the
 
 **Your portfolio is designed to grow with every class.**
 
-_A aprendizagem é acompanhada ao longo do tempo. Informações internas de processamento, revisão técnica e funcionamento do sistema não fazem parte desta edição para o aluno e a família._
