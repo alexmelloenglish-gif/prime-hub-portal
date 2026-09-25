@@ -301,11 +301,11 @@ delete process.env.FIREBASE_PROJECT_ID
 delete process.env.FIREBASE_CLIENT_EMAIL
 delete process.env.FIREBASE_PRIVATE_KEY
 
-const [{ executeSharedLearningMachine }, { reviewPipelineRun }, { getPrismaClient }, { getStudentDashboardState }] = await Promise.all([
+const [{ executeSharedLearningMachine }, { reviewPipelineRun }, { getPrismaClient }, { mergeCanonicalLearningIntelligenceRows }] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
   import('../lib/pipeline/run.ts'),
   import('../lib/prisma.ts'),
-  import('../lib/student-data.ts'),
+  import('../lib/canonical-dashboard-bridge.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -457,22 +457,60 @@ const publicationEvent = await prisma.pipelineEvent.findFirst({
 assert.ok(publicationEvent)
 assert.ok(publicationEvent.createdAt.getTime() <= run.completedAt.getTime())
 
-const dashboard = await getStudentDashboardState({
-  id: teacher.id,
-  email: STUDENT_EMAIL,
-  name: 'Gustavo Runtime Witness',
-  image: null,
-  role: 'student',
-})
-assert.equal(dashboard.hasAccess, true)
-assert.ok(dashboard.student)
-assert.equal(dashboard.student.studentId, STUDENT_ID)
-assert.equal(dashboard.student.currentLevel, 'CEFR A1 — progressing toward A2')
-assert.ok(dashboard.student.canonicalProjection.priorities.length > 0)
-assert.equal(dashboard.student.canonicalProjection.nextAction?.title, 'Golden retrieval check')
-assert.equal(dashboard.student.canonicalProjection.nextAction?.authorizationStatus, 'teacher-validated')
+const baseStudent = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), 'data/students/carolvdrummond-gmail-com.firestore.json'),
+    'utf8',
+  ),
+)
+
+const [verifiedIntelligenceRows, verifiedPortfolioRows] = await Promise.all([
+  prisma.canonicalLearningIntelligenceProjection.findMany({
+    where: {
+      studentId: STUDENT_ID,
+      targetType: 'learning_intelligence',
+      projectionStatus: 'VERIFIED',
+    },
+    orderBy: [{ createdAt: 'asc' }, { projectionId: 'asc' }],
+    select: {
+      canonicalRecordId: true,
+      lessonId: true,
+      scopeType: true,
+      projection: true,
+      createdAt: true,
+      verifiedAt: true,
+    },
+  }),
+  prisma.canonicalLearningRecordProjection.findMany({
+    where: {
+      studentId: STUDENT_ID,
+      targetType: 'portfolio',
+      projectionStatus: 'VERIFIED',
+    },
+    select: { canonicalRecordId: true },
+  }),
+])
+
+const verifiedPortfolioRecordIds = new Set(
+  verifiedPortfolioRows.map((row) => row.canonicalRecordId),
+)
+const fullyVerifiedRows = verifiedIntelligenceRows.filter((row) =>
+  verifiedPortfolioRecordIds.has(row.canonicalRecordId)
+)
+assert.equal(fullyVerifiedRows.length, 1)
+assert.equal(fullyVerifiedRows[0].canonicalRecordId, canonical.canonicalRecordId)
+
+const dashboardStudent = mergeCanonicalLearningIntelligenceRows(
+  baseStudent,
+  fullyVerifiedRows,
+)
+assert.equal(dashboardStudent.studentId, STUDENT_ID)
+assert.equal(dashboardStudent.currentLevel, 'CEFR A1 — progressing toward A2')
+assert.ok(dashboardStudent.canonicalProjection.priorities.length > 0)
+assert.equal(dashboardStudent.canonicalProjection.nextAction?.title, 'Golden retrieval check')
+assert.equal(dashboardStudent.canonicalProjection.nextAction?.authorizationStatus, 'teacher-validated')
 assert.equal(
-  dashboard.student.vocabularyBank.some((item) => item.term.toLowerCase() === 'retrieval'),
+  dashboardStudent.vocabularyBank.some((item) => item.term.toLowerCase() === 'retrieval'),
   true,
 )
 
@@ -551,11 +589,11 @@ const evidence = {
     publicationBeforeCompletion: publicationEvent.createdAt.getTime() <= run.completedAt.getTime(),
   },
   dashboard: {
-    currentLevel: dashboard.student.currentLevel,
-    priorityCount: dashboard.student.canonicalProjection.priorities.length,
-    nextActionTitle: dashboard.student.canonicalProjection.nextAction?.title,
-    nextActionAuthorizationStatus: dashboard.student.canonicalProjection.nextAction?.authorizationStatus,
-    canonicalVocabularyVisible: dashboard.student.vocabularyBank.some((item) => item.term.toLowerCase() === 'retrieval'),
+    currentLevel: dashboardStudent.currentLevel,
+    priorityCount: dashboardStudent.canonicalProjection.priorities.length,
+    nextActionTitle: dashboardStudent.canonicalProjection.nextAction?.title,
+    nextActionAuthorizationStatus: dashboardStudent.canonicalProjection.nextAction?.authorizationStatus,
+    canonicalVocabularyVisible: dashboardStudent.vocabularyBank.some((item) => item.term.toLowerCase() === 'retrieval'),
     note: 'Canonical payload contained no learner-state or priority transition, so existing teacher-validated state/priorities were correctly preserved while canonical Next Action and memory enrichment became visible.',
   },
   idempotency: {
