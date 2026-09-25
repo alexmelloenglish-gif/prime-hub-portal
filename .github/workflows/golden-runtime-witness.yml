@@ -68,7 +68,7 @@ jobs:
         run: npx prisma generate
 
       - name: Execute Golden runtime witness
-        run: node --experimental-strip-types --loader ./scripts/runtime-witness-alias-loader.mjs ./scripts/golden-runtime-witness.ts
+        run: npx --yes tsx@4.20.6 ./scripts/golden-runtime-witness.ts
 
       - name: Upload persisted witness evidence
         if: always()
