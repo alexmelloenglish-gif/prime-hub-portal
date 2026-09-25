@@ -1116,18 +1116,132 @@ export async function retryFailedPipelineRun(input: {
     },
   }
 
+  if (latest.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE) {
+    if (!latest.normalizedRunIdentity) {
+      throw new Error('Shared runner failed run is missing normalized identity')
+    }
+
+    const derived = buildSharedLearningMachineExecutionOptions({
+      transcript: retryInput,
+      triggerOrigin: 'retry',
+      requestedBy: input.requestedBy,
+    })
+    if (derived.normalizedRunIdentity !== latest.normalizedRunIdentity) {
+      throw new Error('Stored shared-run identity no longer matches the preserved transcript')
+    }
+
+    const retryExecutionOptions = persistedSharedExecutionOptions(
+      latest,
+      'retry',
+      input.requestedBy,
+    )
+    if (!retryExecutionOptions) {
+      throw new Error('Shared runner retry options could not be restored')
+    }
+
+    await recordSharedTriggerIfNeeded(latest.id, retryExecutionOptions)
+
+    const canonicalResume = new Set([
+      'canonicalization',
+      'canonical_verification',
+      'canonical_projections',
+      'communication_projection',
+    ])
+
+    let result: PipelineResult
+    try {
+      if (latest.resumePoint && canonicalResume.has(latest.resumePoint)) {
+        const authorityTask = await prisma.reviewTask.findFirst({
+          where: {
+            pipelineRunId: latest.id,
+            decision: 'approved',
+            reviewerId: { not: null },
+            reviewedAt: { not: null },
+          },
+          orderBy: { reviewedAt: 'desc' },
+        })
+        if (!authorityTask?.reviewerId || !authorityTask.reviewedAt) {
+          throw new Error('Shared runner canonical resume requires the persisted Teacher Authority decision')
+        }
+
+        await executeCanonicalContinuation({
+          pipelineRunId: latest.id,
+          reviewTaskId: authorityTask.id,
+          reviewerRef: authorityTask.reviewerId,
+          decisionTimestamp: authorityTask.reviewedAt,
+        })
+        await prisma.reviewTask.update({
+          where: { id: authorityTask.id },
+          data: { stage: 'completed' },
+        })
+        result = {
+          pipelineRunId: latest.id,
+          status: 'completed',
+          duplicate: false,
+          reviewTaskId: authorityTask.id,
+        }
+      } else {
+        result = await processLessonTranscript(retryInput, retryExecutionOptions)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown shared-runner resume failure'
+      await prisma.pipelineRun.update({
+        where: { id: latest.id },
+        data: {
+          status: 'failed',
+          errorCode: 'SHARED_RUNNER_RESUME_FAILED',
+          errorMessage: message,
+        },
+      })
+      throw error
+    }
+
+    await prisma.pipelineEvent.upsert({
+      where: {
+        pipelineRunId_eventType_aggregateId: {
+          pipelineRunId: latest.id,
+          eventType: 'PipelineRetryRequested',
+          aggregateId: `${latest.id}:${latest.resumePoint ?? 'unknown'}`,
+        },
+      },
+      update: {
+        payload: {
+          previousPipelineRunId: latest.id,
+          attemptNumber: latest.attemptNumber,
+          requestedBy: input.requestedBy,
+          retryMode: 'same_execution_resume',
+          resumePoint: latest.resumePoint,
+        },
+      },
+      create: {
+        pipelineRunId: latest.id,
+        eventType: 'PipelineRetryRequested',
+        aggregateType: 'PipelineRun',
+        aggregateId: `${latest.id}:${latest.resumePoint ?? 'unknown'}`,
+        payload: {
+          previousPipelineRunId: latest.id,
+          attemptNumber: latest.attemptNumber,
+          requestedBy: input.requestedBy,
+          retryMode: 'same_execution_resume',
+          resumePoint: latest.resumePoint,
+        },
+      },
+    })
+
+    const resumedRun = await prisma.pipelineRun.findUniqueOrThrow({
+      where: { id: latest.id },
+    })
+    return {
+      ...result,
+      pipelineRunId: latest.id,
+      errorCode: resumedRun.errorCode || undefined,
+    }
+  }
+
   let result: PipelineResult | null = null
   let executionError: unknown
   try {
-    const retryExecutionOptions =
-      latest.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE
-        ? buildSharedLearningMachineExecutionOptions({
-            transcript: retryInput,
-            triggerOrigin: 'retry',
-            requestedBy: input.requestedBy,
-          })
-        : undefined
-    result = await processLessonTranscript(retryInput, retryExecutionOptions)
+    result = await processLessonTranscript(retryInput)
   } catch (error) {
     executionError = error
   }
@@ -1138,7 +1252,7 @@ export async function retryFailedPipelineRun(input: {
   })
   if (!attemptedRun || attemptedRun.id === expectedPipelineRunId) {
     if (executionError) throw executionError
-    throw new Error('Pipeline retry did not create a new attempt')
+    throw new Error('Legacy pipeline retry did not create a new attempt')
   }
 
   await prisma.pipelineEvent.upsert({
