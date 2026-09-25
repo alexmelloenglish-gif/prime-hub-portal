@@ -11,11 +11,12 @@ permissions:
 
 jobs:
   student-dashboard-contract:
+    # Stable job name: configure this exact check as required before merging to main.
     name: Student Dashboard Contract
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout exact candidate SHA
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -27,17 +28,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Typecheck application
+      - name: TypeScript gate
         run: npx tsc --noEmit
 
-      - name: Run dashboard contract
+      - name: Student Dashboard v1.0 contract gate
         run: npm run student-dashboard:self-test
 
-      - name: Validate canonical data
+      - name: Canonical strict gate
         run: npm run canonical:validate:strict
 
-      - name: Run G6 authority infrastructure contract
+      - name: G6 authority gate
         run: npm run g6:account-learner:self-test
 
-      - name: Build Next.js application
+      - name: Next build gate
         run: npx prisma generate && npx next build
