@@ -1537,12 +1537,34 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
     })
 
     if (sharedResumeOptions) {
+      let learnerProducts:
+        | Awaited<ReturnType<typeof publishAfterReview>>
+        | undefined
       try {
         await executeCanonicalContinuation({
           pipelineRunId: run.id,
           reviewTaskId: task.id,
           reviewerRef: input.reviewerId,
           decisionTimestamp: reviewedAt,
+          communicationProjection: async () => {
+            learnerProducts = await publishAfterReview(
+              run.id,
+              normalizedInput,
+              task.id,
+              input.reviewerId,
+              input.reason,
+              {
+                finalizeRun: false,
+                finalizeReviewTask: false,
+                authorityStatus: 'teacher_authorized',
+              },
+            )
+            return {
+              classReportPublished: true,
+              portfolioApplyStatus: learnerProducts.portfolioApplyStatus,
+              portfolioVersion: learnerProducts.portfolioVersion,
+            }
+          },
         })
         await prisma.reviewTask.update({
           where: { id: task.id },
@@ -1553,6 +1575,8 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
           status: 'completed',
           duplicate: false,
           reviewTaskId: task.id,
+          report: learnerProducts?.report,
+          coaching: learnerProducts?.coaching,
         }
       } catch (error) {
         const message = error instanceof Error
@@ -1562,14 +1586,9 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
           where: { id: run.id },
           data: {
             status: 'failed',
-            currentStage: 'failed',
             errorCode: 'SHARED_RUNNER_CANONICAL_CONTINUATION_FAILED',
             errorMessage: message,
           },
-        })
-        await prisma.reviewTask.update({
-          where: { id: task.id },
-          data: { stage: 'publication_review_required' },
         })
         throw error
       }
@@ -1621,7 +1640,6 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
         status: 'failed',
         errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED',
         errorMessage: message,
-        ...(sharedResumeOptions ? { currentStage: 'failed' } : {}),
       },
     })
     await prisma.reviewTask.update({ where: { id: task.id }, data: { stage: 'processing_approved' } })
