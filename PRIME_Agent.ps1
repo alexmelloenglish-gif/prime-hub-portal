@@ -17,6 +17,7 @@ param(
 $AgentVersion = "vNEXT-1.0"
 $DeviceName   = "Dell Inspiron 3501"
 $StartTime    = Get-Date
+$script:ProcessCpuSamples = @{}
 
 # -- Garantir diretorio de logs ------------------------------
 if (-not (Test-Path $LogPath)) {
@@ -73,7 +74,7 @@ function Send-JsonResponse {
         $Context.Response.OutputStream.Write($bytes, 0, $bytes.Length)
         $Context.Response.OutputStream.Close()
     } catch {
-        Write-Log "Send-JsonResponse falhou (conexao encerrada pelo cliente): $($_.ToString())" "WARN"
+        Write-Log "Send-JsonResponse falhou (conexao encerrada pelo cliente): $_" "WARN"
         try { $Context.Response.OutputStream.Close() } catch {}
     }
 }
@@ -117,7 +118,7 @@ function Get-CpuMetrics {
             tempC       = $temp
         }
     } catch {
-        Write-Log "Erro ao coletar CPU: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar CPU: $_" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -136,7 +137,7 @@ function Get-RamMetrics {
             usedPct   = $usedPct
         }
     } catch {
-        Write-Log "Erro ao coletar RAM: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar RAM: $_" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -159,7 +160,7 @@ function Get-GpuMetrics {
         }
         return $result
     } catch {
-        Write-Log "Erro ao coletar GPU: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar GPU: $_" "ERROR"
         return @()
     }
 }
@@ -202,7 +203,7 @@ function Get-SsdMetrics {
         # Retornar null e mais honesto que um valor fixo falso
         return @{ drives = $result; volumes = $volumes; tempC = $ssdTempC }
     } catch {
-        Write-Log "Erro ao coletar SSD: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar SSD: $_" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -229,7 +230,7 @@ function Get-SystemInfo {
             lastBoot    = $os.LastBootUpTime.ToString("yyyy-MM-ddTHH:mm:ss")
         }
     } catch {
-        Write-Log "Erro ao coletar SystemInfo: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar SystemInfo: $_" "ERROR"
         return @{ error = $_.ToString() }
     }
 }
@@ -237,25 +238,56 @@ function Get-SystemInfo {
 function Get-TopProcesses {
     param([int]$Top = 15)
     try {
-        $procs = Get-Process -ErrorAction SilentlyContinue |
-            Where-Object { $_.CPU -ne $null } |
-            Sort-Object CPU -Descending |
-            Select-Object -First $Top
-        $result = @()
+        $now = Get-Date
+        $logicalProcessors = [Environment]::ProcessorCount
+        if ($logicalProcessors -lt 1) { $logicalProcessors = 1 }
+        $current = @{}
+        $procs = @(Get-Process -ErrorAction SilentlyContinue)
         foreach ($p in $procs) {
+            try {
+                if ($p.TotalProcessorTime) {
+                    $current[[int]$p.Id] = @{ time = $p.TotalProcessorTime.TotalSeconds; at = $now }
+                }
+            } catch {}
+        }
+        $rows = @()
+        foreach ($p in $procs) {
+            try {
+                if (-not $current.ContainsKey([int]$p.Id)) { continue }
+                $sample = $current[[int]$p.Id]
+                $cpuPct = 0
+                if ($script:ProcessCpuSamples.ContainsKey([int]$p.Id)) {
+                    $previous = $script:ProcessCpuSamples[[int]$p.Id]
+                    $elapsed = ($sample.at - $previous.at).TotalSeconds
+                    if ($elapsed -gt 0) {
+                        $delta = $sample.time - $previous.time
+                        $cpuPct = [math]::Round(($delta / $elapsed / $logicalProcessors) * 100, 1)
+                        if ($cpuPct -lt 0) { $cpuPct = 0 }
+                        if ($cpuPct -gt 100) { $cpuPct = 100 }
+                    }
+                }
+                $rows += [pscustomobject]@{ process = $p; cpuPct = $cpuPct }
+            } catch {}
+        }
+        $script:ProcessCpuSamples = $current
+        $rows = @($rows | Sort-Object cpuPct -Descending | Select-Object -First $Top)
+        $result = @()
+        foreach ($row in $rows) {
+            $p = $row.process
             $priorityStr = "Normal"
             try { if ($p.PriorityClass -ne $null) { $priorityStr = $p.PriorityClass.ToString() } } catch {}
             $result += @{
                 name     = $p.ProcessName
                 pid      = $p.Id
-                cpuSec   = [math]::Round($p.CPU, 2)
+                cpuPct   = $row.cpuPct
+                cpuSec   = [math]::Round($p.TotalProcessorTime.TotalSeconds, 2)
                 ramMB    = [math]::Round($p.WorkingSet64 / 1MB, 1)
                 priority = $priorityStr
             }
         }
         return $result
     } catch {
-        Write-Log "Erro ao coletar processos: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar processos: $_" "ERROR"
         return @()
     }
 }
@@ -271,7 +303,7 @@ function Get-DefenderStatus {
             threatStatus    = $defender.AMRunningMode
         }
     } catch {
-        Write-Log "Defender nao disponivel: $($_.ToString())" "WARN"
+        Write-Log "Defender nao disponivel: $_" "WARN"
         return @{ available = $false }
     }
 }
@@ -296,7 +328,7 @@ function Get-NetworkSpeed {
         }
         return @{ downloadMbps = 0; uploadMbps = 0; adapterName = $null }
     } catch {
-        Write-Log "Erro ao coletar rede: $($_.ToString())" "ERROR"
+        Write-Log "Erro ao coletar rede: $_" "ERROR"
         return @{ downloadMbps = 0; uploadMbps = 0 }
     }
 }
@@ -669,7 +701,7 @@ function Register-AgentUrl {
             Write-Host "[PRIME] Dashboard atualizado: $PublicUrl" -ForegroundColor Green
             return $true
         } catch {
-            Write-Log "Tentativa $($i+1) falhou ao registrar URL: $($_.ToString())" "WARN"
+            Write-Log "Tentativa $($i+1) falhou ao registrar URL: $_" "WARN"
             Start-Sleep -Seconds 3
         }
     }
@@ -733,7 +765,7 @@ while ($restartCount -lt $maxRestarts) {
                 $context = $listener.GetContext()
             } catch {
                 # GetContext pode falhar se o listener for parado externamente
-                Write-Log "GetContext falhou: $($_.ToString()) - reiniciando listener..." "WARN"
+                Write-Log "GetContext falhou: $_ - reiniciando listener..." "WARN"
                 break
             }
 
@@ -774,12 +806,12 @@ while ($restartCount -lt $maxRestarts) {
                     }
                 }
             } catch {
-                Write-Log "Erro ao processar $($path): $($_.ToString()) - continuando..." "WARN"
+                Write-Log "Erro ao processar $path: $_ - continuando..." "WARN"
                 try { $context.Response.OutputStream.Close() } catch {}
             }
         }
     } catch {
-        Write-Log "Erro no listener: $($_.ToString())" "ERROR"
+        Write-Log "Erro no listener: $_" "ERROR"
     } finally {
         try { if ($listener.IsListening) { $listener.Stop() } } catch {}
         try { $listener.Close() } catch {}
