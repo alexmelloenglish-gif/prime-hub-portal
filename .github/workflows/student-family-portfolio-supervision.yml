@@ -1,0 +1,56 @@
+name: Student Family Portfolio Supervision
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'data/students/**'
+      - 'docs/student-portfolios/family-edition/**'
+      - 'docs/audits/STUDENT_PORTFOLIO_FAMILY_SUPERVISION_2026-09-25.md'
+      - 'scripts/generate-family-portfolios.mjs'
+      - 'scripts/student-family-portfolio-supervision-self-test.mjs'
+      - '.github/workflows/student-family-portfolio-supervision.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/students/**'
+      - 'docs/student-portfolios/family-edition/**'
+      - 'scripts/generate-family-portfolios.mjs'
+      - 'scripts/student-family-portfolio-supervision-self-test.mjs'
+      - '.github/workflows/student-family-portfolio-supervision.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  portfolio-supervision:
+    name: Student Family Portfolio Supervision
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout exact candidate SHA
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Regenerate supervised family editions
+        run: node scripts/generate-family-portfolios.mjs
+
+      - name: Family portfolio supervision gate
+        run: node scripts/student-family-portfolio-supervision-self-test.mjs
+
+      - name: Generated portfolio drift gate
+        run: git diff --exit-code -- docs/student-portfolios/family-edition
+
+      - name: Student dashboard contract gate
+        run: npm run student-dashboard:self-test
+
+      - name: Canonical strict gate
+        run: npm run canonical:validate:strict
