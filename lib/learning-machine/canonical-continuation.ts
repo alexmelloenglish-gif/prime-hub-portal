@@ -458,14 +458,14 @@ export async function executeCanonicalContinuation(input: {
     projectionId: string
     projectionKey: string
     projectionHash: string
-    projectionStatus: 'VERIFIED'
+    projectionStatus: 'VERIFIED' | 'FAILED'
     idempotentReplay: boolean
   }
   let learningIntelligenceProjection: {
     projectionId: string
     projectionKey: string
     projectionHash: string
-    projectionStatus: 'VERIFIED'
+    projectionStatus: 'VERIFIED' | 'FAILED'
     idempotentReplay: boolean
   }
 
