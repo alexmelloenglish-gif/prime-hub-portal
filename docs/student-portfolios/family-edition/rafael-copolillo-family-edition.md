@@ -37,7 +37,7 @@ Increase grammatical and lexical precision while preserving strong fluency and a
 
 ## 5. Forças e evidências / Strengths & Evidence
 
-- **Fluency:** Sustains long, natural conversation on complex, personal and reflective topics without needing the dashboard to manufacture a progress claim.
+- **Fluency:** Sustains long, natural conversation on complex, personal and reflective topics while keeping the focus on meaningful communication rather than labels.
 - **Analytical & Reflective Communication:** Connects professional, political, social and personal realities with depth, supporting arguments and meaningful reflection.
 - **Grammar Precision:** The active need is sharper tense selection, complete sentence framing and smoother movement between past experience and present meaning.
 - **Lexical Precision & Reuse:** The cumulative vocabulary is broad; the current task is to retrieve a small set and make it personally reusable in spontaneous communication.
@@ -64,7 +64,7 @@ Open Vocabulary to Reuse and write one sentence you would genuinely say for each
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-The confirmed portfolio now establishes a broad B2 learning history while the dashboard exposes only the current actionable learning record update.
+The confirmed portfolio now establishes a broad B2 learning history while the this edition highlights the priorities that matter most now.
 
 ## 10. Leitura para a família / Family Guide
 
@@ -94,7 +94,7 @@ Este portfólio mostra apenas informações confirmadas e úteis para acompanhar
 
 | Área | Estado | O que isso significa |
 | --- | --- | --- |
-| Fluency | Strong | Sustains long, natural conversation on complex, personal and reflective topics without needing the dashboard to manufacture a progress claim. |
+| Fluency | Strong | Sustains long, natural conversation on complex, personal and reflective topics while keeping the focus on meaningful communication rather than labels. |
 | Analytical & Reflective Communication | Strong | Connects professional, political, social and personal realities with depth, supporting arguments and meaningful reflection. |
 | Grammar Precision | Improving | The active need is sharper tense selection, complete sentence framing and smoother movement between past experience and present meaning. |
 | Lexical Precision & Reuse | Improving | The cumulative vocabulary is broad; the current task is to retrieve a small set and make it personally reusable in spontaneous communication. |
@@ -257,4 +257,3 @@ Open Vocabulary to Reuse and write one sentence you would genuinely say for each
 
 **Your portfolio is designed to grow with every class.**
 
-_A aprendizagem é acompanhada ao longo do tempo. Informações internas de processamento, revisão técnica e funcionamento do sistema não fazem parte desta edição para o aluno e a família._
