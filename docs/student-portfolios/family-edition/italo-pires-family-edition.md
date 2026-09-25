@@ -123,4 +123,3 @@ Use four parts: who you are, your maritime training, relevant onboard or technic
 ## 19. PRIME DIGITAL HUB
 
 **Your portfolio is designed to grow with every class.**
-
