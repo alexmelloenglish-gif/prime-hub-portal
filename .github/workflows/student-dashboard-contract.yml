@@ -40,5 +40,8 @@ jobs:
       - name: G6 authority gate
         run: npm run g6:account-learner:self-test
 
+      - name: Shared Learning Machine gate
+        run: npm run shared-learning-machine:self-test
+
       - name: Next build gate
         run: npx prisma generate && npx next build
