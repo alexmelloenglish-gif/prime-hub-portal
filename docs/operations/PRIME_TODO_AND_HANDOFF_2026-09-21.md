@@ -342,3 +342,138 @@ These are not failures. They are the points where this workstream must stop inst
 # J. Handoff sentence
 
 > Start from the first unchecked item that matches your assigned workstream. Do not reconstruct closed architecture from chat. If you close something, update this file with the exact proof boundary.
+
+
+---
+
+# K. 2026-09-25 — Cross-agent reconciliation baseline A
+
+**Status:** REGISTERED / PENDING MERGE WITH 22–23 SEP OTHER-AGENT AUDIT
+
+**Purpose:** preserve the current consolidated priority reading so another agent can inspect it directly in GitHub, compare it with work performed on 22–23 September, and return only evidence-backed deltas. This section does not replace earlier proof boundaries; it updates the carry-forward reading from the 2026-09-21 checkpoint.
+
+## Reconciliation rule
+
+- Treat this section as **Baseline A**.
+- The other agent must compare its 22–23 Sep work against this baseline.
+- Do not reopen closed work merely because it appears in an older chat.
+- If the other agent has stronger evidence that changes an item below, report the exact PR / SHA / deployment / file / runtime witness.
+- Final statuses after merge should be one of:
+  - `DONE`
+  - `OPEN`
+  - `PARTIALLY DONE`
+  - `BLOCKED`
+  - `WAITING FOR HUMAN VALIDATION`
+  - `SUPERSEDED`
+
+## Current carry-forward priorities
+
+1. **P0 — Shared PRIME Learning Machine runner + durable run history**
+   - implement the complete shared runner;
+   - manual and automatic initiation must converge on the same normalized run;
+   - persist exact resume point, source/version/scope, machine/prompt/contract versions, artifacts/hashes, teacher package/decision, approved payload/hash, G2–G6 outcomes, delivery result, unfinished stage and retry/idempotency result.
+
+2. **P0 — Finish/reconcile PR #46 + durable ObservationDebt**
+   - PR #46 implements CEFR authority tests, broad self-correction semantics and ObservationDebt reconciliation guardrails;
+   - exact-head Preview was observed READY;
+   - PR #46 remains open;
+   - its own non-claim says it does not persist ObservationDebt to the database and does not implement the complete shared runner;
+   - next work: reconcile/rebase against current main, validate/merge the guardrails, then integrate durable ObservationDebt persistence into the shared runner.
+
+3. **P0/P1 — Resume and close PR #42 vNext workstream**
+   - do not reconstruct or restart it;
+   - first determine whether the previously assigned other-agent work is still active;
+   - closure still requires the intended source replay / Golden-Witness and teacher-review package, no learner-facing validation-language leakage, explicit authority transition, same-final-head Preview, merge/release decision, and production verification if released.
+
+4. **P1 — Reconcile PR #18 / #19 / #30 into current architecture**
+   - do not merge stale stacked branches wholesale;
+   - map Candidate/Review/Canonicalization/Projection, capture/provenance/idempotency/diarization protections and non-lossy extraction semantics onto CLR + G1–G6 + shared runner;
+   - port only genuinely missing behavior;
+   - add regression coverage;
+   - close stale PRs with exact superseding commits.
+
+5. **P1 — Complete G6 runtime authority proof and controlled cutover**
+   - PR #36 structural remediation exists and had exact-head Preview READY;
+   - PRs #47/#48 completed Young Learner provisioning / bounded compatibility work;
+   - remaining work is runtime authority proof, not architectural rediscovery;
+   - obtain real authenticated witnesses for Gustavo / Carol / Michelle as applicable;
+   - prove authorized account → relation → studentId → same verified canonical consumer state → Dashboard;
+   - perform controlled cutover only with explicit authorization;
+   - retire the temporary compatibility bridge after G6 becomes authoritative.
+
+6. **P1 — Authoritative attendance production witness**
+   - implementation exists but production witness remained unproven at the 21 Sep checkpoint;
+   - require the real chain:
+     `lesson → scheduled identity → Meet conference → signed-in participant → AttendanceRecord(authoritative) → downstream consumer → audit trail`.
+
+7. **Cláudio — reconcile PR #55 against current main; do not blindly merge**
+   - PR #54 real Cláudio dashboard mission workflow is merged and production-deployed;
+   - current main subsequently gained a standard Cláudio learning-journey page and Action Workspace readability/contrast work;
+   - PR #55 remains open and its standalone branch Preview was observed failed;
+   - compare only unique value still absent from current main;
+   - if none remains, close #55 as superseded rather than maintaining competing Journey implementations.
+
+8. **Governance — refresh this canonical handoff after cross-agent reconciliation**
+   - after the 22–23 Sep audit is merged, update this file with exact proof boundaries;
+   - explicitly record later outcomes such as merged PR #51, merged PR #54, current production lineage, and the final disposition of #46/#42/#55;
+   - do not create a parallel competing backlog.
+
+9. **Reconnection Phase 3 — LinkedIn Reconstruction**
+   - landing Phase 1 and professional-story Phase 2 are closed;
+   - validate exact Cultura / Prime Language School titles and dates;
+   - owner approves headline / About / public founder wording / Featured assets;
+   - then publish the LinkedIn reconstruction;
+   - do not reopen the landing-page workstream.
+
+10. **Reconnection Phases 4–7 — controlled outreach**
+    - verify current roles and preferred channels for first-wave contacts;
+    - draft individualized first-contact messages from verified context;
+    - maintain response/alignment log;
+    - create bounded collaboration pilots only where warranted;
+    - no mass outreach and no automatic promotion from enthusiasm to collaboration.
+
+11. **Conditional cleanup — external legacy Google/Studio trigger**
+    - investigate only if calls are still arriving or formal provider-side decommission proof is required;
+    - repository-side legacy automation remains contained;
+    - this must not displace higher-priority shared-runner / vNext / G6 work.
+
+12. **Operational follow-up — Carol / Gustavo lesson rescheduling**
+    - communication was prepared after the teacher's Tuesday medical emergency;
+    - confirm whether Carol replied and whether the requested Friday makeup lesson was scheduled/completed;
+    - if not, follow up;
+    - this is an operational/student task, not a Learning Machine architecture item.
+
+## Items already identified as no longer open
+
+- **PR #51 — Ítalo Maritime Interview audio mission:** merged; final implementation states no new database migration is required.
+- **PR #54 — Cláudio real dashboard mission workflow:** merged and production-deployed.
+- Do not re-open either item unless contradictory production evidence exists.
+
+## Current technical execution order
+
+1. shared runner + durable run history;
+2. PR #46 reconciliation / durable ObservationDebt;
+3. PR #42 vNext closure;
+4. PR #18/#19/#30 reconciliation;
+5. G6 runtime proof / controlled cutover;
+6. attendance production witness.
+
+Reconnection proceeds as an independent business workstream.
+
+## Other-agent merge package requested
+
+The agent holding 22–23 Sep context should return, without starting new implementation:
+
+| Item | Status | Evidence | Remaining action | Dependency | Supersedes/updates |
+|---|---|---|---|---|---|
+
+It should include:
+- tasks actually completed on 22–23 Sep;
+- tasks started but unfinished;
+- tasks clearly decided but never started;
+- obsolete/superseded tasks;
+- human/runtime validation still required;
+- new tasks absent from the 21 Sep handoff;
+- the first concrete unfinished action from that agent's work.
+
+> **Cross-agent handoff rule:** merge evidence into this canonical TODO. Do not create another competing roadmap.
