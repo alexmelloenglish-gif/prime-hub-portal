@@ -11,14 +11,14 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é academic reading and interpretation, advanced grammar precision, argumentative discourse and exam preparation.. O que ficou mais visível neste ciclo: Maria Fernanda's dashboard now uses the confirmed lesson record from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learning picture. Old August calendar bookings are not treated as attendance. Próximo passo: Current learning check before the next update.
+Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Aprofundar leitura acadêmica, interpretação, precisão gramatical avançada e produção argumentativa no caminho de B2 para C1. Neste ciclo, as aulas de 24 de abril, 6 de junho e 19 de junho formam a base confirmada atual. O próximo passo é produzir nova evidência antes de qualquer mudança no quadro atual de aprendizagem. Próximo passo: Current learning check before the next update.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR B2
 - **Objetivo de nível:** CEFR C1
-- **Frequência de aulas:** Not confirmed in the evidence used for the confirmed reconstruction
-- **Foco atual:** Academic reading and interpretation, advanced grammar precision, argumentative discourse and exam preparation.
+- **Frequência de aulas:** Not confirmed
+- **Foco atual:** Aprofundar leitura acadêmica, interpretação, precisão gramatical avançada e produção argumentativa no caminho de B2 para C1.
 - **Presença registrada:** 3 documented lessons
 
 ## 3. Quick Access
@@ -29,7 +29,7 @@ Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Increase precision and independence in Academic English on the B2→C1 pathway. Academic reading and interpretation, advanced grammar precision, discourse relations, argumentative production and exam preparation.
+Aprofundar leitura acadêmica, interpretação, precisão gramatical avançada e produção argumentativa no caminho de B2 para C1.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -39,7 +39,7 @@ Increase precision and independence in Academic English on the B2→C1 pathway. 
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Maria Fernanda's dashboard now uses the confirmed lesson record from 24 April, 6 June and 19 June to present a longitudinal B2→C1 learning picture. Old August calendar bookings are not treated as attendance.
+As aulas de 24 de abril, 6 de junho e 19 de junho formam a base confirmada atual. O próximo passo é produzir nova evidência antes de qualquer mudança no quadro atual de aprendizagem.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -59,7 +59,7 @@ Use a new academic reading task, fresh inversions/auxiliary prompts and a short 
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.
+A trajetória atual preserva três aulas confirmadas e separa antigos agendamentos de agosto da presença real. Uma nova tarefa de leitura e produção argumentativa deve atualizar o quadro antes de novas conclusões.
 
 ## 10. Leitura para a família / Family Guide
 
