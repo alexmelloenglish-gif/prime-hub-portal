@@ -854,39 +854,150 @@ export async function processLessonTranscript(
 
   if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
   await recordSharedTriggerIfNeeded(run.id, executionOptions)
+  const resumePointAtStart =
+    executionOptions && sharedSameExecutionResume
+      ? run.resumePoint
+      : executionOptions
+        ? 'prompt_1'
+        : null
+
   try {
-    if (executionOptions) {
-      await checkpointLearningMachine({
+    if (executionOptions && resumePointAtStart === 'awaiting_identity_review') {
+      const task = await prisma.reviewTask.findFirst({
+        where: { pipelineRunId: run.id, stage: 'identity_review_required' },
+      })
+      return {
         pipelineRunId: run.id,
-        stage: 'prompt_1',
-        status: 'processing',
-        resumePoint: 'prompt_1',
+        status: 'awaiting_review',
+        duplicate: true,
+        reviewTaskId: task?.id,
+        nextReviewStage: task?.stage,
+      }
+    }
+
+    if (executionOptions && resumePointAtStart === 'awaiting_teacher_authority') {
+      const task = await prisma.reviewTask.findFirst({
+        where: { pipelineRunId: run.id, stage: 'publication_review_required' },
+      })
+      return {
+        pipelineRunId: run.id,
+        status: 'awaiting_publication_review',
+        duplicate: true,
+        reviewTaskId: task?.id,
+        nextReviewStage: task?.stage,
+      }
+    }
+
+    if (
+      executionOptions
+      && (
+        resumePointAtStart === 'canonicalization'
+        || resumePointAtStart === 'canonical_verification'
+        || resumePointAtStart === 'canonical_projections'
+        || resumePointAtStart === 'communication_projection'
+      )
+    ) {
+      await prisma.pipelineRun.update({
+        where: { id: run.id },
+        data: { status: 'failed' },
+      })
+      return {
+        pipelineRunId: run.id,
+        status: 'failed',
+        duplicate: true,
+      }
+    }
+
+    let promptOne: PromptOneOutput
+    let persistedEvidenceCount: number
+
+    if (executionOptions && resumePointAtStart === 'draft_generation') {
+      promptOne = asRecord(run.promptOneArtifact) as unknown as PromptOneOutput
+      if (!promptOne.schema_version || !Array.isArray(promptOne.evidence_candidates)) {
+        throw new Error('Shared runner draft resume requires the persisted Prompt 1 artifact')
+      }
+      persistedEvidenceCount = await prisma.evidenceCandidate.count({
+        where: { transcriptId: transcript.id },
       })
     } else {
-      await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
+      if (executionOptions) {
+        await checkpointLearningMachine({
+          pipelineRunId: run.id,
+          stage: 'prompt_1',
+          status: 'processing',
+          resumePoint: 'prompt_1',
+        })
+      } else {
+        await prisma.pipelineRun.update({
+          where: { id: run.id },
+          data: { status: 'processing', errorCode: null, errorMessage: null },
+        })
+      }
+      promptOne = await runPromptOne(normalizedInput, transcript.id)
+      await prisma.pipelineRun.update({
+        where: { id: run.id },
+        data: {
+          promptOneSchemaVersion: promptOne.schema_version,
+          promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue,
+          authorityStatus: promptOne.authority_status,
+        },
+      })
+      persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
     }
-    const promptOne = await runPromptOne(normalizedInput, transcript.id)
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
-    const persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
 
-    // Identity check: trusted sources skip the identity review queue
+    // Identity check: trusted sources skip the identity review queue.
     if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
-      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne, persistedEvidenceCount, executionOptions)
-      // If continueAfterReview routed to publication_review_required (exception path), status is already updated.
-      const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
-      const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
+      const result = await continueAfterReview(
+        run.id,
+        normalizedInput,
+        transcript.id,
+        promptOne,
+        persistedEvidenceCount,
+        executionOptions,
+      )
+      const updatedRun = await prisma.pipelineRun.findUnique({
+        where: { id: run.id },
+        select: { status: true },
+      })
+      const finalStatus =
+        updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
       if (!result.qualityGate.allowed) {
-        return { pipelineRunId: run.id, status: 'not_proven', duplicate: false, report: result.report, coaching: result.coaching }
+        return {
+          pipelineRunId: run.id,
+          status: 'not_proven',
+          duplicate: false,
+          report: result.report,
+          coaching: result.coaching,
+        }
       }
       if (finalStatus === 'awaiting_publication_review') {
-        const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
-        return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
+        const publicationTask = await prisma.reviewTask.findFirst({
+          where: { pipelineRunId: run.id, stage: 'publication_review_required' },
+        })
+        return {
+          pipelineRunId: run.id,
+          status: finalStatus,
+          duplicate: false,
+          reviewTaskId: publicationTask?.id,
+          nextReviewStage: publicationTask?.stage,
+          report: result.report,
+          coaching: result.coaching,
+        }
       }
-      return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
+      return {
+        pipelineRunId: run.id,
+        status: finalStatus,
+        duplicate: false,
+        report: result.report,
+        coaching: result.coaching,
+      }
     }
 
-    // Ambiguous identity: send to review queue (unchanged behaviour)
-    const reviewTask = await createReviewTask(run.id, normalizedInput, 'identity_review_required')
+    const reviewTask = await createReviewTask(
+      run.id,
+      normalizedInput,
+      'identity_review_required',
+    )
     if (executionOptions) {
       await checkpointLearningMachine({
         pipelineRunId: run.id,
@@ -896,7 +1007,13 @@ export async function processLessonTranscript(
         payload: { reviewTaskId: reviewTask.id },
       })
     }
-    return { pipelineRunId: run.id, status: 'awaiting_review', duplicate: false, reviewTaskId: reviewTask.id, nextReviewStage: reviewTask.stage }
+    return {
+      pipelineRunId: run.id,
+      status: 'awaiting_review',
+      duplicate: false,
+      reviewTaskId: reviewTask.id,
+      nextReviewStage: reviewTask.stage,
+    }
   } catch (error) {
     if (isUniqueConstraintError(error) && sourceFileId) {
       const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
@@ -955,7 +1072,6 @@ export async function processLessonTranscript(
         status: 'failed',
         errorCode: isGeminiFailure ? `GEMINI_${error.code.toUpperCase()}` : 'PIPELINE_FAILED',
         errorMessage: message,
-        ...(executionOptions ? { currentStage: 'failed' } : {}),
       },
     })
     throw error
