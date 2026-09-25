@@ -14,6 +14,10 @@ import {
   recordLearningMachineTrigger,
 } from '@/lib/learning-machine/run-history'
 import {
+  claimFailedSharedRun,
+  resolveUniqueSharedRunConflict,
+} from '@/lib/learning-machine/behavioral-boundary'
+import {
   canonicalAuthorityPayloadHashForPipelineRun,
   executeCanonicalContinuation,
 } from '@/lib/learning-machine/canonical-continuation'
@@ -880,15 +884,35 @@ export async function processLessonTranscript(
       { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
       retryTranscript,
     )
-    run = await prisma.pipelineRun.update({
-      where: { id: existing.id },
-      data: {
-        status: 'processing',
-        errorCode: null,
-        errorMessage: null,
-        completedAt: null,
-      },
+    const resumeClaim = await claimFailedSharedRun({
+      claim: async () => (
+        await prisma.pipelineRun.updateMany({
+          where: {
+            id: existing.id,
+            status: 'failed',
+            executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+          },
+          data: {
+            status: 'processing',
+            errorCode: null,
+            errorMessage: null,
+            completedAt: null,
+          },
+        })
+      ).count,
+      readCurrent: () => prisma.pipelineRun.findUnique({
+        where: { id: existing.id },
+      }),
     })
+    if (!resumeClaim.claimed) {
+      await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+      return {
+        pipelineRunId: existing.id,
+        status: resumeClaim.current.status,
+        duplicate: true,
+      }
+    }
+    run = resumeClaim.current
     transcript = retryTranscript
   } else if (retryTranscript && existing?.status === 'failed') {
     normalizedInput = rebuildInput(
@@ -914,13 +938,15 @@ export async function processLessonTranscript(
       })
       transcript = retryTranscript
     } catch (error) {
-      if (!isUniqueConstraintError(error)) throw error
-      const concurrent = executionOptions
-        ? await prisma.pipelineRun.findUnique({
-            where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
-          })
-        : await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
-      if (!concurrent) throw error
+      const concurrent = await resolveUniqueSharedRunConflict({
+        error,
+        isUniqueConstraintError,
+        loadExisting: () => executionOptions
+          ? prisma.pipelineRun.findUnique({
+              where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+            })
+          : prisma.pipelineRun.findUnique({ where: { idempotencyKey } }),
+      })
       if (concurrent.studentEmail !== normalizedInput.studentEmail) {
         throw new Error('idempotency identity is already bound to a different student')
       }
@@ -961,13 +987,15 @@ export async function processLessonTranscript(
       transcript = createdTranscript
       run = createdTranscript.pipelineRuns[0]
     } catch (error) {
-      if (!isUniqueConstraintError(error)) throw error
-      const concurrent = executionOptions
-        ? await prisma.pipelineRun.findUnique({
-            where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
-          })
-        : await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
-      if (!concurrent) throw error
+      const concurrent = await resolveUniqueSharedRunConflict({
+        error,
+        isUniqueConstraintError,
+        loadExisting: () => executionOptions
+          ? prisma.pipelineRun.findUnique({
+              where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+            })
+          : prisma.pipelineRun.findUnique({ where: { idempotencyKey } }),
+      })
       if (concurrent.studentEmail !== normalizedInput.studentEmail) {
         throw new Error('idempotency identity is already bound to a different student')
       }
@@ -1287,6 +1315,35 @@ export async function retryFailedPipelineRun(input: {
     let result: PipelineResult
     try {
       if (latest.resumePoint && canonicalResume.has(latest.resumePoint)) {
+        const resumeClaim = await claimFailedSharedRun({
+          claim: async () => (
+            await prisma.pipelineRun.updateMany({
+              where: {
+                id: latest.id,
+                status: 'failed',
+                executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+              },
+              data: {
+                status: 'processing',
+                errorCode: null,
+                errorMessage: null,
+                completedAt: null,
+              },
+            })
+          ).count,
+          readCurrent: () => prisma.pipelineRun.findUnique({
+            where: { id: latest.id },
+          }),
+        })
+        if (!resumeClaim.claimed) {
+          return {
+            pipelineRunId: latest.id,
+            status: resumeClaim.current.status,
+            duplicate: true,
+            errorCode: resumeClaim.current.errorCode || undefined,
+          }
+        }
+
         const authorityEvent = await prisma.pipelineEvent.findFirst({
           where: {
             pipelineRunId: latest.id,
