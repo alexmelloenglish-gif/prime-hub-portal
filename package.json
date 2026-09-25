@@ -35,7 +35,7 @@
     "lesson-observability:self-test": "node --experimental-strip-types scripts/lesson-observability-self-test.mjs",
     "lesson-digest:self-test": "node --experimental-strip-types scripts/lesson-digest-self-test.mjs",
     "young-learner-access:self-test": "node scripts/young-learner-access-self-test.mjs",
-    "shared-learning-machine:self-test": "node scripts/shared-learning-machine-self-test.mjs"
+    "shared-learning-machine:self-test": "node scripts/shared-learning-machine-self-test.mjs && node --experimental-strip-types scripts/shared-learning-machine-behavioral-self-test.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
