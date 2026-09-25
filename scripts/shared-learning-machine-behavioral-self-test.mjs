@@ -116,6 +116,11 @@ assert.match(
   'Canonical resume must re-check the original persisted Teacher Authority',
 )
 assert.match(
+  pipeline,
+  /authorityEvent = await prisma\.pipelineEvent\.findFirst/,
+  'Canonical retry must recover the exact publication-authority event, not a generic earlier approval',
+)
+assert.match(
   canonical,
   /communicationProjection/,
   'Class Report and Portfolio publication must be part of shared-run completion',

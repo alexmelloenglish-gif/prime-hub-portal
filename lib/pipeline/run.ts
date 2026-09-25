@@ -1287,16 +1287,27 @@ export async function retryFailedPipelineRun(input: {
     let result: PipelineResult
     try {
       if (latest.resumePoint && canonicalResume.has(latest.resumePoint)) {
-        const authorityTask = await prisma.reviewTask.findFirst({
+        const authorityEvent = await prisma.pipelineEvent.findFirst({
           where: {
             pipelineRunId: latest.id,
-            decision: 'approved',
-            reviewerId: { not: null },
-            reviewedAt: { not: null },
+            eventType: 'PublicationReviewApproved',
           },
-          orderBy: { reviewedAt: 'desc' },
+          orderBy: { createdAt: 'desc' },
+          select: { aggregateId: true },
         })
-        if (!authorityTask?.reviewerId || !authorityTask.reviewedAt) {
+        if (!authorityEvent) {
+          throw new Error('Shared runner canonical resume requires the persisted Teacher Authority event')
+        }
+        const authorityTask = await prisma.reviewTask.findUnique({
+          where: { id: authorityEvent.aggregateId },
+        })
+        if (
+          !authorityTask
+          || authorityTask.pipelineRunId !== latest.id
+          || authorityTask.decision !== 'approved'
+          || !authorityTask.reviewerId
+          || !authorityTask.reviewedAt
+        ) {
           throw new Error('Shared runner canonical resume requires the persisted Teacher Authority decision')
         }
 
