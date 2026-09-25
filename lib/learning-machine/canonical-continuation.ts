@@ -322,6 +322,7 @@ export async function executeCanonicalContinuation(input: {
   reviewTaskId: string
   reviewerRef: string
   decisionTimestamp: Date
+  communicationProjection?: () => Promise<Record<string, unknown> | void>
 }) {
   const prisma = getPrismaClient()
   const run = await prisma.pipelineRun.findUnique({
@@ -510,6 +511,12 @@ export async function executeCanonicalContinuation(input: {
     learningIntelligenceProjection = projected.learningIntelligenceProjection
   }
 
+  let communicationProjection: Record<string, unknown> | null = null
+  if (shouldRun('communication_projection') && input.communicationProjection) {
+    const published = await input.communicationProjection()
+    communicationProjection = published ?? null
+  }
+
   const triggerOrigins = await listLearningMachineTriggerOrigins(input.pipelineRunId)
   const manifest = {
     manifestVersion: 'shared-runner-manifest-v1',
@@ -556,6 +563,7 @@ export async function executeCanonicalContinuation(input: {
         idempotentReplay: learningIntelligenceProjection.idempotentReplay,
       },
     },
+    communicationProjection,
     resumePoint: null,
     completedAt: new Date().toISOString(),
   }
