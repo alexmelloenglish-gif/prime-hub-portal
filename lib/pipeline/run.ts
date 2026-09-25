@@ -2,6 +2,21 @@ import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import { GeminiGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
 import { evaluateClassReportGate, evaluatePromptOneGate, qualityGateErrorMessage, QualityGateRejectedError, type QualityGateAssessment } from './quality-gate'
+import {
+  SHARED_LEARNING_MACHINE_CONTRACT_VERSION,
+  SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+  SHARED_LEARNING_MACHINE_VERSION,
+  buildSharedLearningMachineExecutionOptions,
+  type SharedLearningMachineExecutionOptions,
+} from '@/lib/learning-machine/shared-run-contract'
+import {
+  checkpointLearningMachine,
+  recordLearningMachineTrigger,
+} from '@/lib/learning-machine/run-history'
+import {
+  canonicalAuthorityPayloadHashForPipelineRun,
+  executeCanonicalContinuation,
+} from '@/lib/learning-machine/canonical-continuation'
 import type {
   CoachingGuidanceOutput,
   ClassReportOutput,
@@ -119,6 +134,36 @@ function isTrustedSource(input: LessonTranscriptInput, authorityStatus: string):
 // ---------------------------------------------------------------------------
 function shouldRequirePublicationReview(coaching: CoachingGuidanceOutput): boolean {
   return coaching.is_pedagogical_decision
+}
+
+function persistedSharedExecutionOptions(
+  run: {
+    executionMode: string
+    normalizedRunIdentity: string | null
+  },
+  triggerOrigin: SharedLearningMachineExecutionOptions['triggerOrigin'],
+  requestedBy?: string,
+): SharedLearningMachineExecutionOptions | undefined {
+  if (run.executionMode !== SHARED_LEARNING_MACHINE_EXECUTION_MODE) return undefined
+  if (!run.normalizedRunIdentity) {
+    throw new Error('Shared runner normalized identity is missing')
+  }
+  return {
+    executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+    normalizedRunIdentity: run.normalizedRunIdentity,
+    triggerOrigin,
+    requestedBy,
+    machineVersion: SHARED_LEARNING_MACHINE_VERSION,
+    machineContractVersion: SHARED_LEARNING_MACHINE_CONTRACT_VERSION,
+  }
+}
+
+async function recordSharedTriggerIfNeeded(
+  pipelineRunId: string,
+  options?: SharedLearningMachineExecutionOptions,
+) {
+  if (!options) return
+  await recordLearningMachineTrigger(pipelineRunId, options)
 }
 
 type ContinuationResult = {
@@ -310,8 +355,23 @@ async function applyPortfolioPatch(input: LessonTranscriptInput, runId: string, 
 //   - Normal path  → calls publishAfterReview internally (no human gate)
 //   - Exception    → creates publication_review_required task as before
 // ---------------------------------------------------------------------------
-async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput, persistedEvidenceCount: number): Promise<ContinuationResult> {
+async function continueAfterReview(
+  runId: string,
+  normalizedInput: LessonTranscriptInput,
+  transcriptId: string,
+  promptOne: PromptOneOutput,
+  persistedEvidenceCount: number,
+  executionOptions?: SharedLearningMachineExecutionOptions,
+): Promise<ContinuationResult> {
   const prisma = getPrismaClient()
+  if (executionOptions) {
+    await checkpointLearningMachine({
+      pipelineRunId: runId,
+      stage: 'draft_generation',
+      status: 'processing',
+      resumePoint: 'draft_generation',
+    })
+  }
   const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
   if (!promptOneGate.allowed) {
     await persistQualityGateRejection(runId, 'prompt-1', promptOneGate)
@@ -462,18 +522,33 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
     create: { pipelineRunId: runId, studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
   })
 
-  // Publication policy: exception path only
-  if (shouldRequirePublicationReview(coaching)) {
+  // Shared-runner mode always stops for explicit Teacher Authority.
+  // Legacy mode preserves its historical exception-only publication review.
+  const requiresPublicationReview =
+    Boolean(executionOptions) || shouldRequirePublicationReview(coaching)
+  if (requiresPublicationReview) {
     const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')
     await prisma.pipelineEvent.createMany({ data: [
       { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },
       { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
       { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
     ], skipDuplicates: true })
+    if (executionOptions) {
+      await checkpointLearningMachine({
+        pipelineRunId: runId,
+        stage: 'awaiting_teacher_authority',
+        status: 'awaiting_publication_review',
+        resumePoint: 'awaiting_teacher_authority',
+        payload: {
+          reviewTaskId: publicationTask.id,
+          normalizedRunIdentity: executionOptions.normalizedRunIdentity,
+        },
+      })
+    }
     return { report, coaching, qualityGate: reportGate }
   }
 
-  // Normal path: auto-publish without human gate
+  // Normal legacy path: auto-publish without human gate
   await prisma.pipelineEvent.createMany({ data: [
     { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: false, autoPublish: true } },
     { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_auto_publish' } },
@@ -562,7 +637,10 @@ async function createReviewTask(runId: string, input: LessonTranscriptInput, sta
   return task
 }
 
-export async function processLessonTranscript(input: LessonTranscriptInput): Promise<PipelineResult> {
+export async function processLessonTranscript(
+  input: LessonTranscriptInput,
+  executionOptions?: SharedLearningMachineExecutionOptions,
+): Promise<PipelineResult> {
   const prisma = getPrismaClient()
   let normalizedInput: LessonTranscriptInput = { ...input, studentEmail: normalizeEmail(input.studentEmail), source: input.source ?? 'google_meet' }
   const sourceFileId = getStableSourceFileId(normalizedInput)
@@ -579,6 +657,7 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
   const existingByKey = existingBySourceFile ? null : await prisma.pipelineRun.findUnique({ where: { idempotencyKey: baseIdempotencyKey }, include: { transcript: true } })
   const existing = existingBySourceFile?.pipelineRuns[0] || existingByKey
   if (existing?.status === 'completed') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     const storedReport = await prisma.classReportProjection.findUnique({ where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } } })
     const storedCoaching = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: existing.id } })
     return {
@@ -590,10 +669,12 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     }
   }
   if (existing?.status === 'awaiting_review') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     const task = await prisma.reviewTask.findFirst({ where: { pipelineRunId: existing.id, stage: 'identity_review_required' } })
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true, reviewTaskId: task?.id, nextReviewStage: task?.stage }
   }
   if (existing && existing.status !== 'failed') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true }
   }
   const attemptNumber = existing?.status === 'failed' ? existing.attemptNumber + 1 : 1
@@ -615,6 +696,12 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
           studentEmail: normalizedInput.studentEmail,
           lessonId: normalizedInput.lessonId,
           status: 'received',
+          executionMode: executionOptions?.executionMode ?? 'legacy',
+          normalizedRunIdentity: executionOptions?.normalizedRunIdentity ?? null,
+          machineVersion: executionOptions?.machineVersion ?? null,
+          machineContractVersion: executionOptions?.machineContractVersion ?? null,
+          currentStage: executionOptions ? 'received' : null,
+          resumePoint: executionOptions ? 'prompt_1' : null,
         },
       })
       transcript = retryTranscript
@@ -648,6 +735,12 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
               studentEmail: normalizedInput.studentEmail,
               lessonId: normalizedInput.lessonId,
               status: 'received',
+              executionMode: executionOptions?.executionMode ?? 'legacy',
+              normalizedRunIdentity: executionOptions?.normalizedRunIdentity ?? null,
+              machineVersion: executionOptions?.machineVersion ?? null,
+              machineContractVersion: executionOptions?.machineContractVersion ?? null,
+              currentStage: executionOptions ? 'received' : null,
+              resumePoint: executionOptions ? 'prompt_1' : null,
             },
           },
         },
@@ -664,15 +757,25 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
     }
   }
   if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
+  await recordSharedTriggerIfNeeded(run.id, executionOptions)
   try {
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
+    if (executionOptions) {
+      await checkpointLearningMachine({
+        pipelineRunId: run.id,
+        stage: 'prompt_1',
+        status: 'processing',
+        resumePoint: 'prompt_1',
+      })
+    } else {
+      await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
+    }
     const promptOne = await runPromptOne(normalizedInput, transcript.id)
     await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
     const persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
 
     // Identity check: trusted sources skip the identity review queue
     if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
-      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne, persistedEvidenceCount)
+      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne, persistedEvidenceCount, executionOptions)
       // If continueAfterReview routed to publication_review_required (exception path), status is already updated.
       const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
       const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
@@ -688,6 +791,15 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
 
     // Ambiguous identity: send to review queue (unchanged behaviour)
     const reviewTask = await createReviewTask(run.id, normalizedInput, 'identity_review_required')
+    if (executionOptions) {
+      await checkpointLearningMachine({
+        pipelineRunId: run.id,
+        stage: 'awaiting_identity_review',
+        status: 'awaiting_review',
+        resumePoint: 'awaiting_identity_review',
+        payload: { reviewTaskId: reviewTask.id },
+      })
+    }
     return { pipelineRunId: run.id, status: 'awaiting_review', duplicate: false, reviewTaskId: reviewTask.id, nextReviewStage: reviewTask.stage }
   } catch (error) {
     if (isUniqueConstraintError(error) && sourceFileId) {
@@ -747,6 +859,7 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
         status: 'failed',
         errorCode: isGeminiFailure ? `GEMINI_${error.code.toUpperCase()}` : 'PIPELINE_FAILED',
         errorMessage: message,
+        ...(executionOptions ? { currentStage: 'failed' } : {}),
       },
     })
     throw error
@@ -794,7 +907,15 @@ export async function retryFailedPipelineRun(input: {
   let result: PipelineResult | null = null
   let executionError: unknown
   try {
-    result = await processLessonTranscript(retryInput)
+    const retryExecutionOptions =
+      latest.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE
+        ? buildSharedLearningMachineExecutionOptions({
+            transcript: retryInput,
+            triggerOrigin: 'retry',
+            requestedBy: input.requestedBy,
+          })
+        : undefined
+    result = await processLessonTranscript(retryInput, retryExecutionOptions)
   } catch (error) {
     executionError = error
   }
@@ -907,14 +1028,104 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
   }
 
   const normalizedInput = rebuildInput(run, run.transcript)
+  const sharedResumeOptions = persistedSharedExecutionOptions(
+    run,
+    'resume',
+    input.reviewerId,
+  )
   if (isPublicationReview) {
-    await prisma.reviewTask.update({ where: { id: task.id }, data: { decision: 'approved', reason: input.reason?.trim() || null, reviewerId: input.reviewerId, reviewedAt, stage: 'publishing' } })
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'publishing', completedAt: null } })
-    await prisma.pipelineEvent.upsert({
-      where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: run.id, eventType: 'PublicationReviewApproved', aggregateId: task.id } },
-      update: { payload: { reviewTaskId: task.id, reviewerId: input.reviewerId, reason: input.reason || null } },
-      create: { pipelineRunId: run.id, eventType: 'PublicationReviewApproved', aggregateType: 'ReviewTask', aggregateId: task.id, payload: { reviewTaskId: task.id, reviewerId: input.reviewerId, reason: input.reason || null } },
+    const authorityBinding = sharedResumeOptions
+      ? await canonicalAuthorityPayloadHashForPipelineRun(run.id)
+      : null
+
+    await prisma.reviewTask.update({
+      where: { id: task.id },
+      data: {
+        decision: 'approved',
+        reason: input.reason?.trim() || null,
+        reviewerId: input.reviewerId,
+        reviewedAt,
+        stage: sharedResumeOptions ? 'canonicalizing' : 'publishing',
+      },
     })
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: sharedResumeOptions ? 'canonicalizing' : 'publishing',
+        completedAt: null,
+      },
+    })
+    await prisma.pipelineEvent.upsert({
+      where: {
+        pipelineRunId_eventType_aggregateId: {
+          pipelineRunId: run.id,
+          eventType: 'PublicationReviewApproved',
+          aggregateId: task.id,
+        },
+      },
+      update: {
+        payload: {
+          reviewTaskId: task.id,
+          reviewerId: input.reviewerId,
+          reason: input.reason || null,
+          canonicalAuthorityPayloadHash: authorityBinding?.hash ?? null,
+          sharedLearningMachine: Boolean(sharedResumeOptions),
+        },
+      },
+      create: {
+        pipelineRunId: run.id,
+        eventType: 'PublicationReviewApproved',
+        aggregateType: 'ReviewTask',
+        aggregateId: task.id,
+        payload: {
+          reviewTaskId: task.id,
+          reviewerId: input.reviewerId,
+          reason: input.reason || null,
+          canonicalAuthorityPayloadHash: authorityBinding?.hash ?? null,
+          sharedLearningMachine: Boolean(sharedResumeOptions),
+        },
+      },
+    })
+
+    if (sharedResumeOptions) {
+      try {
+        await executeCanonicalContinuation({
+          pipelineRunId: run.id,
+          reviewTaskId: task.id,
+          reviewerRef: input.reviewerId,
+          decisionTimestamp: reviewedAt,
+        })
+        await prisma.reviewTask.update({
+          where: { id: task.id },
+          data: { stage: 'completed' },
+        })
+        return {
+          pipelineRunId: run.id,
+          status: 'completed',
+          duplicate: false,
+          reviewTaskId: task.id,
+        }
+      } catch (error) {
+        const message = error instanceof Error
+          ? error.message
+          : 'Unknown shared-runner canonical continuation failure'
+        await prisma.pipelineRun.update({
+          where: { id: run.id },
+          data: {
+            status: 'failed',
+            currentStage: 'failed',
+            errorCode: 'SHARED_RUNNER_CANONICAL_CONTINUATION_FAILED',
+            errorMessage: message,
+          },
+        })
+        await prisma.reviewTask.update({
+          where: { id: task.id },
+          data: { stage: 'publication_review_required' },
+        })
+        throw error
+      }
+    }
+
     try {
       const result = await publishAfterReview(run.id, normalizedInput, task.id, input.reviewerId, input.reason)
       return { pipelineRunId: run.id, status: 'completed', duplicate: false, reviewTaskId: task.id, report: result.report, coaching: result.coaching }
@@ -942,7 +1153,7 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
 
   try {
     const persistedEvidenceCount = await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
-    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne, persistedEvidenceCount)
+    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne, persistedEvidenceCount, sharedResumeOptions)
     const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
     const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
     if (!result.qualityGate.allowed) {
@@ -955,7 +1166,15 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
     return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure after identity review'
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'failed', errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED', errorMessage: message } })
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: 'failed',
+        errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED',
+        errorMessage: message,
+        ...(sharedResumeOptions ? { currentStage: 'failed' } : {}),
+      },
+    })
     await prisma.reviewTask.update({ where: { id: task.id }, data: { stage: 'processing_approved' } })
     throw error
   }
