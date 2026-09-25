@@ -14,7 +14,7 @@ param(
     [switch]$Verbose
 )
 
-$AgentVersion = "vNEXT-1.0"
+$AgentVersion = "vNEXT-1.1"
 $DeviceName   = "Dell Inspiron 3501"
 $StartTime    = Get-Date
 $script:ProcessCpuSamples = @{}
@@ -410,7 +410,9 @@ function Restore-ModeSnapshot {
             $p = Get-Process -Id $item.pid -ErrorAction Stop
             $p.PriorityClass = $item.priority
             $results += @{ action="RestorePriority"; target="$($item.name)#$($item.pid)"; result="SUCCESS" }
-        } catch {}
+        } catch {
+            $results += @{ action="RestorePriority"; target="$($item.name)#$($item.pid)"; result="SKIPPED"; detail="Processo nao esta mais em execucao" }
+        }
     }
     $spooler = Get-Service -Name "Spooler" -ErrorAction SilentlyContinue
     if ($spooler -and $Snapshot.spoolerStartup) {
@@ -443,7 +445,11 @@ function Set-PolicyPriority {
     $results = @()
     foreach ($name in $Names) {
         $items = @(Get-Process -Name $name -ErrorAction SilentlyContinue)
-        if ($items.Count -eq 0) { $results += @{ action="Priority"; target=$name; result="SKIPPED"; detail="Process not running" }; continue }
+        if ($items.Count -eq 0) {
+            $results += @{ action="Priority"; target=$name; result="SKIPPED"; detail="Processo nao esta em execucao" }
+            Write-Audit "Priority" $name "SKIPPED" "Processo nao esta em execucao"
+            continue
+        }
         try {
             $items | ForEach-Object { $_.PriorityClass = $Priority }
             $results += @{ action="Priority"; target="$name -> $Priority"; result="SUCCESS"; detail="Applied to $($items.Count) process(es)" }
@@ -518,169 +524,13 @@ function Handle-Mode {
             }
         }
         Write-Audit "ModeActivated" $policyMode "SUCCESS"
-        Send-JsonResponse $Context @{ mode=$policyMode; timestamp=(Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); policyVersion="v2"; results=$policyResults; summary=@{ total=$policyResults.Count; success=($policyResults | Where-Object { $_.result -eq "SUCCESS" }).Count; failed=($policyResults | Where-Object { $_.result -eq "FAILED" }).Count; skipped=($policyResults | Where-Object { $_.result -eq "SKIPPED" }).Count } }
+        Send-JsonResponse $Context @{ mode=$policyMode; timestamp=(Get-Date -Format "yyyy-MM-ddTHH:mm:ss"); policyVersion="v3-aula-balanced"; results=$policyResults; summary=@{ total=$policyResults.Count; success=($policyResults | Where-Object { $_.result -eq "SUCCESS" }).Count; failed=($policyResults | Where-Object { $_.result -eq "FAILED" }).Count; skipped=($policyResults | Where-Object { $_.result -eq "SKIPPED" }).Count } }
         return
     }
     Send-JsonResponse $Context @{ error="Modo desconhecido: $policyMode. Use: aula, fluido, trabalho, normal" } 400
     return
 
-    # Ler body da requisicao
-    $body = $null
-    try {
-        $reader = New-Object System.IO.StreamReader($Context.Request.InputStream)
-        $bodyText = $reader.ReadToEnd()
-        $body = $bodyText | ConvertFrom-Json
-    } catch {}
 
-    $mode = if ($body -and $body.mode) { $body.mode } else { "unknown" }
-    $results = @()
-
-    switch ($mode.ToLower()) {
-        "aula" {
-            # Plano de energia: Alto Desempenho
-            try {
-                $ppResult = powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>&1
-                $results += @{ action="PowerPlan"; target="Alto Desempenho"; result="SUCCESS"; detail=$ppResult }
-                Write-Audit "PowerPlan" "Alto Desempenho" "SUCCESS"
-            } catch {
-                $results += @{ action="PowerPlan"; target="Alto Desempenho"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "PowerPlan" "Alto Desempenho" "FAILED" $_.ToString()
-            }
-            # Chrome -> High
-            $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
-            if ($chromeProcs) {
-                try { $chromeProcs | ForEach-Object { $_.PriorityClass = "High" }
-                    $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to High" }
-                    Write-Audit "Priority" "chrome -> High" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
-                    Write-Audit "Priority" "chrome -> High" "FAILED" $_.ToString()
-                }
-            } else {
-                $results += @{ action="Priority"; target="chrome"; result="SKIPPED"; detail="Process not running" }
-            }
-            # Edge -> BelowNormal
-            $edgeProcs = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
-            if ($edgeProcs) {
-                try { $edgeProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
-                    $results += @{ action="Priority"; target="msedge"; result="SUCCESS"; detail="Set to BelowNormal" }
-                    Write-Audit "Priority" "msedge -> BelowNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="msedge"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # ChatGPT -> BelowNormal (nunca encerrar)
-            $chatgptProcs = Get-Process -Name "ChatGPT" -ErrorAction SilentlyContinue
-            if ($chatgptProcs) {
-                try { $chatgptProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
-                    $results += @{ action="Priority"; target="ChatGPT"; result="SUCCESS"; detail="Set to BelowNormal (not killed)" }
-                    Write-Audit "Priority" "ChatGPT -> BelowNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="ChatGPT"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # Spooler -> Desativado
-            try {
-                Stop-Service -Name "Spooler" -Force -ErrorAction SilentlyContinue
-                Set-Service -Name "Spooler" -StartupType Disabled -ErrorAction SilentlyContinue
-                $results += @{ action="Service"; target="Spooler"; result="SUCCESS"; detail="Stopped and Disabled" }
-                Write-Audit "Service" "Spooler -> Disabled" "SUCCESS"
-            } catch {
-                $results += @{ action="Service"; target="Spooler"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "Service" "Spooler -> Disabled" "FAILED" $_.ToString()
-            }
-        }
-        "fluido" {
-            # Chrome -> High
-            $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
-            if ($chromeProcs) {
-                try { $chromeProcs | ForEach-Object { $_.PriorityClass = "High" }
-                    $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to High" }
-                    Write-Audit "Priority" "chrome -> High" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # Telegram -> AboveNormal
-            $telegramProcs = Get-Process -Name "Telegram" -ErrorAction SilentlyContinue
-            if ($telegramProcs) {
-                try { $telegramProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
-                    $results += @{ action="Priority"; target="Telegram"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "Telegram -> AboveNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="Telegram"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # iVCam -> AboveNormal
-            $ivcamProcs = Get-Process -Name "iVCam" -ErrorAction SilentlyContinue
-            if ($ivcamProcs) {
-                try { $ivcamProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
-                    $results += @{ action="Priority"; target="iVCam"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "iVCam -> AboveNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="iVCam"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # Edge -> BelowNormal
-            $edgeProcs = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
-            if ($edgeProcs) {
-                try { $edgeProcs | ForEach-Object { $_.PriorityClass = "BelowNormal" }
-                    $results += @{ action="Priority"; target="msedge"; result="SUCCESS"; detail="Set to BelowNormal" }
-                    Write-Audit "Priority" "msedge -> BelowNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="msedge"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-        }
-        "trabalho" {
-            # Plano de energia: Balanceado
-            try {
-                $ppResult = powercfg /setactive 381b4222-f694-41f0-9685-ff5bb260df2e 2>&1
-                $results += @{ action="PowerPlan"; target="Balanceado"; result="SUCCESS"; detail=$ppResult }
-                Write-Audit "PowerPlan" "Balanceado" "SUCCESS"
-            } catch {
-                $results += @{ action="PowerPlan"; target="Balanceado"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "PowerPlan" "Balanceado" "FAILED" $_.ToString()
-            }
-            # Chrome -> AboveNormal
-            $chromeProcs = Get-Process -Name "chrome" -ErrorAction SilentlyContinue
-            if ($chromeProcs) {
-                try { $chromeProcs | ForEach-Object { $_.PriorityClass = "AboveNormal" }
-                    $results += @{ action="Priority"; target="chrome"; result="SUCCESS"; detail="Set to AboveNormal" }
-                    Write-Audit "Priority" "chrome -> AboveNormal" "SUCCESS"
-                } catch {
-                    $results += @{ action="Priority"; target="chrome"; result="FAILED"; detail=$_.ToString() }
-                }
-            }
-            # Spooler -> Automatico
-            try {
-                Set-Service -Name "Spooler" -StartupType Automatic -ErrorAction SilentlyContinue
-                Start-Service -Name "Spooler" -ErrorAction SilentlyContinue
-                $results += @{ action="Service"; target="Spooler"; result="SUCCESS"; detail="Started and set to Automatic" }
-                Write-Audit "Service" "Spooler -> Automatic" "SUCCESS"
-            } catch {
-                $results += @{ action="Service"; target="Spooler"; result="FAILED"; detail=$_.ToString() }
-                Write-Audit "Service" "Spooler -> Automatic" "FAILED" $_.ToString()
-            }
-        }
-        default {
-            Send-JsonResponse $Context @{ error = "Modo desconhecido: $mode. Use: aula, fluido, trabalho" } 400
-            return
-        }
-    }
-
-    Write-Audit "ModeActivated" $mode "SUCCESS"
-    Send-JsonResponse $Context @{
-        mode      = $mode
-        timestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
-        results   = $results
-        summary   = @{
-            total   = $results.Count
-            success = ($results | Where-Object { $_.result -eq "SUCCESS" }).Count
-            failed  = ($results | Where-Object { $_.result -eq "FAILED" }).Count
-            skipped = ($results | Where-Object { $_.result -eq "SKIPPED" }).Count
-        }
-    }
 }
 
 function Handle-Audit {
