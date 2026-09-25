@@ -1,0 +1,1 @@
+Pre-checkpoint canonical handoff snapshot is preserved in Git history immediately before commit a52bef7c4d0ba8aa5c534d6bd274f1fe0462fa29. This marker exists because the 2026-09-25 cross-agent recovery checkpoint condensed previously recorded closed sections while making PR #59 the active validation target. Git history remains the authoritative full prior snapshot.
