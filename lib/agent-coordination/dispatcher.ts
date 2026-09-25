@@ -7,14 +7,27 @@ import {
 
 type FetchLike = typeof fetch
 
+type DispatchDependencies = {
+  claim?: typeof claimNextAgentCoordinationEvent
+  markDispatched?: typeof markAgentCoordinationDispatched
+  releaseLease?: typeof releaseAgentCoordinationLease
+  resolveWakeTarget?: typeof resolveAgentWakeTarget
+  fetchImpl?: FetchLike
+}
+
 export async function dispatchNextAgentCoordinationEvent(input: {
   targetRole: string
   dispatcherId: string
   workstreamId?: string | null
   leaseSeconds?: number
   fetchImpl?: FetchLike
-}) {
-  const event = await claimNextAgentCoordinationEvent({
+}, dependencies: DispatchDependencies = {}) {
+  const claim = dependencies.claim ?? claimNextAgentCoordinationEvent
+  const markDispatched = dependencies.markDispatched ?? markAgentCoordinationDispatched
+  const releaseLease = dependencies.releaseLease ?? releaseAgentCoordinationLease
+  const resolveWakeTarget = dependencies.resolveWakeTarget ?? resolveAgentWakeTarget
+
+  const event = await claim({
     targetRole: input.targetRole,
     claimedBy: input.dispatcherId,
     workstreamId: input.workstreamId,
@@ -25,9 +38,9 @@ export async function dispatchNextAgentCoordinationEvent(input: {
     return { status: 'idle' as const, event: null }
   }
 
-  const target = resolveAgentWakeTarget(event.targetRole)
+  const target = resolveWakeTarget(event.targetRole)
   if (!target) {
-    await releaseAgentCoordinationLease({
+    await releaseLease({
       eventId: event.id,
       claimedBy: input.dispatcherId,
       dispatchError: 'NO_WAKE_TARGET_CONFIGURED',
@@ -53,7 +66,7 @@ export async function dispatchNextAgentCoordinationEvent(input: {
     leaseExpiresAt: event.leaseExpiresAt?.toISOString() ?? null,
   }
 
-  const fetchImpl = input.fetchImpl ?? fetch
+  const fetchImpl = dependencies.fetchImpl ?? input.fetchImpl ?? fetch
   try {
     const response = await fetchImpl(target.url, {
       method: 'POST',
@@ -69,7 +82,7 @@ export async function dispatchNextAgentCoordinationEvent(input: {
 
     if (!response.ok) {
       const message = `WAKE_HTTP_${response.status}`
-      await releaseAgentCoordinationLease({
+      await releaseLease({
         eventId: event.id,
         claimedBy: input.dispatcherId,
         dispatchError: message,
@@ -81,7 +94,7 @@ export async function dispatchNextAgentCoordinationEvent(input: {
       }
     }
 
-    await markAgentCoordinationDispatched({
+    await markDispatched({
       eventId: event.id,
       claimedBy: input.dispatcherId,
     })
@@ -91,7 +104,7 @@ export async function dispatchNextAgentCoordinationEvent(input: {
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Wake dispatch failed'
-    await releaseAgentCoordinationLease({
+    await releaseLease({
       eventId: event.id,
       claimedBy: input.dispatcherId,
       dispatchError: message,
