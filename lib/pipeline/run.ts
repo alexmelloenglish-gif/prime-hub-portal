@@ -559,21 +559,62 @@ async function continueAfterReview(
   return { report, coaching, qualityGate: reportGate }
 }
 
-async function publishAfterReview(runId: string, normalizedInput: LessonTranscriptInput, reviewTaskId: string, reviewerId: string, reason?: string): Promise<{ report: ClassReportOutput; coaching?: CoachingGuidanceOutput }> {
+async function publishAfterReview(
+  runId: string,
+  normalizedInput: LessonTranscriptInput,
+  reviewTaskId: string,
+  reviewerId: string,
+  reason?: string,
+  options?: {
+    finalizeRun?: boolean
+    finalizeReviewTask?: boolean
+    authorityStatus?: string
+  },
+): Promise<{
+  report: ClassReportOutput
+  coaching?: CoachingGuidanceOutput
+  portfolioApplyStatus: string
+  portfolioVersion: number
+}> {
   const prisma = getPrismaClient()
   const projection = await prisma.classReportProjection.findUnique({
-    where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
+    where: {
+      studentEmail_lessonId: {
+        studentEmail: normalizedInput.studentEmail,
+        lessonId: normalizedInput.lessonId,
+      },
+    },
   })
-  const coachingProjection = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: runId } })
-  const run = await prisma.pipelineRun.findUnique({ where: { id: runId }, select: { promptOneArtifact: true, promptThreeArtifact: true, portfolioPatchId: true, transcript: { select: { id: true } } } })
+  const coachingProjection = await prisma.coachingGuidance.findUnique({
+    where: { pipelineRunId: runId },
+  })
+  const run = await prisma.pipelineRun.findUnique({
+    where: { id: runId },
+    select: {
+      promptOneArtifact: true,
+      promptThreeArtifact: true,
+      portfolioPatchId: true,
+      transcript: { select: { id: true } },
+    },
+  })
   if (!projection || !run) throw new Error('Draft publication artifacts not found')
+
   const report = asRecord(projection.content) as unknown as ClassReportOutput
   const promptOne = asRecord(run.promptOneArtifact) as unknown as PromptOneOutput
   const patch = asRecord(run.promptThreeArtifact) as unknown as PortfolioPatchOutput
-  if (!report.reportId || report.documentStatus !== 'draft' || !patch.patch_id || !Array.isArray(patch.operations)) throw new Error('Draft publication artifacts are invalid or already published')
+  if (
+    !report.reportId
+    || !['draft', 'published'].includes(report.documentStatus)
+    || !patch.patch_id
+    || !Array.isArray(patch.operations)
+  ) {
+    throw new Error('Publication artifacts are invalid')
+  }
 
   const persistedEvidenceCount = run.transcript
-    ? await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
+    ? await prisma.evidenceCandidate.count({
+        where: { transcriptId: run.transcript.id },
+      })
     : 0
   const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
   const reportGate = evaluateClassReportGate({ report, promptOneGate })
@@ -582,35 +623,117 @@ async function publishAfterReview(runId: string, normalizedInput: LessonTranscri
     throw new QualityGateRejectedError(reportGate)
   }
 
-  const publishedReport: ClassReportOutput = { ...report, documentStatus: 'published', contentStatus: 'validated', generationStatus: 'gemini_generated', implementationStatus: 'proven' }
-  await prisma.classReportProjection.update({
-    where: { id: projection.id },
-    data: { content: publishedReport as unknown as Prisma.InputJsonValue, documentStatus: 'published', implementationStatus: 'proven' },
-  })
+  const publishedReport: ClassReportOutput = {
+    ...report,
+    documentStatus: 'published',
+    contentStatus: 'validated',
+    generationStatus: 'gemini_generated',
+    implementationStatus: 'proven',
+  }
+  if (projection.documentStatus !== 'published') {
+    await prisma.classReportProjection.update({
+      where: { id: projection.id },
+      data: {
+        content: publishedReport as unknown as Prisma.InputJsonValue,
+        documentStatus: 'published',
+        implementationStatus: 'proven',
+      },
+    })
+  }
+
   const publishedPatch: PortfolioPatchOutput = {
     ...patch,
-    operations: patch.operations.map((operation) => operation.type === 'append_class_report_reference'
-      ? { ...operation, parameters: { ...operation.parameters, class_report_state: 'projection_published' } }
-      : operation),
+    operations: patch.operations.map((operation) =>
+      operation.type === 'append_class_report_reference'
+        ? {
+            ...operation,
+            parameters: {
+              ...operation.parameters,
+              class_report_state: 'projection_published',
+            },
+          }
+        : operation
+    ),
     documentStatus: 'draft',
     implementationStatus: 'proven',
   }
-  const portfolioApply = await applyPortfolioPatch(normalizedInput, runId, publishedPatch)
-  if (portfolioApply.status === 'version_rejected') throw new Error('Portfolio projection version conflict; publication was not applied')
-
-  await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'completed', completedAt: new Date(), promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue, portfolioApplyStatus: portfolioApply.status, authorityStatus: 'non_authoritative', errorCode: null, errorMessage: null } })
-
-  // Only update the ReviewTask record when this was triggered by a real human review task
-  const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
-  if (isHumanReview) {
-    await prisma.reviewTask.update({ where: { id: reviewTaskId }, data: { decision: 'approved', reviewerId, reviewedAt: new Date(), reason: reason?.trim() || null, stage: 'completed' } })
+  const portfolioApply = await applyPortfolioPatch(
+    normalizedInput,
+    runId,
+    publishedPatch,
+  )
+  if (portfolioApply.status === 'version_rejected') {
+    throw new Error('Portfolio projection version conflict; publication was not applied')
   }
 
-  await prisma.pipelineEvent.createMany({ data: [
-    { pipelineRunId: runId, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: projection.reportId, payload: { reviewerId, reviewTaskId, documentStatus: 'published', reason: reason || null, autoPublished: !isHumanReview } },
-    { pipelineRunId: runId, eventType: 'PortfolioProjectionUpdated', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { reviewerId, reviewTaskId, patchId: publishedPatch.patch_id, operationKey: publishedPatch.operation_key, applyStatus: portfolioApply.status, projectionVersion: portfolioApply.version } },
-  ], skipDuplicates: true })
-  return { report: publishedReport, coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined }
+  const finalizeRun = options?.finalizeRun ?? true
+  await prisma.pipelineRun.update({
+    where: { id: runId },
+    data: {
+      status: finalizeRun ? 'completed' : 'finalizing',
+      completedAt: finalizeRun ? new Date() : null,
+      promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue,
+      portfolioApplyStatus: portfolioApply.status,
+      authorityStatus: options?.authorityStatus ?? 'non_authoritative',
+      errorCode: null,
+      errorMessage: null,
+    },
+  })
+
+  const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
+  const finalizeReviewTask = options?.finalizeReviewTask ?? true
+  if (isHumanReview && finalizeReviewTask) {
+    await prisma.reviewTask.update({
+      where: { id: reviewTaskId },
+      data: {
+        decision: 'approved',
+        reviewerId,
+        reviewedAt: new Date(),
+        reason: reason?.trim() || null,
+        stage: 'completed',
+      },
+    })
+  }
+
+  await prisma.pipelineEvent.createMany({
+    data: [
+      {
+        pipelineRunId: runId,
+        eventType: 'ClassReportProjectionPublished',
+        aggregateType: 'ClassReportProjection',
+        aggregateId: projection.reportId,
+        payload: {
+          reviewerId,
+          reviewTaskId,
+          documentStatus: 'published',
+          reason: reason || null,
+          autoPublished: !isHumanReview,
+        },
+      },
+      {
+        pipelineRunId: runId,
+        eventType: 'PortfolioProjectionUpdated',
+        aggregateType: 'PortfolioProjection',
+        aggregateId: normalizedInput.studentEmail,
+        payload: {
+          reviewerId,
+          reviewTaskId,
+          patchId: publishedPatch.patch_id,
+          operationKey: publishedPatch.operation_key,
+          applyStatus: portfolioApply.status,
+          projectionVersion: portfolioApply.version,
+        },
+      },
+    ],
+    skipDuplicates: true,
+  })
+
+  return {
+    report: publishedReport,
+    coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined,
+    portfolioApplyStatus: portfolioApply.status,
+    portfolioVersion: portfolioApply.version,
+  }
 }
 
 async function createReviewTask(runId: string, input: LessonTranscriptInput, stage: 'identity_review_required' | 'publication_review_required') {
