@@ -654,12 +654,44 @@ export async function processLessonTranscript(
   if (existingBySourceFile && (existingBySourceFile.source !== 'google_meet' || existingBySourceFile.studentEmail !== normalizedInput.studentEmail)) {
     throw new Error('sourceFileId is already bound to a different student')
   }
-  const existingByKey = existingBySourceFile ? null : await prisma.pipelineRun.findUnique({ where: { idempotencyKey: baseIdempotencyKey }, include: { transcript: true } })
-  const existing = existingBySourceFile?.pipelineRuns[0] || existingByKey
+
+  const existingShared = executionOptions
+    ? await prisma.pipelineRun.findUnique({
+        where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+        include: { transcript: true },
+      })
+    : null
+  if (
+    existingShared
+    && (
+      existingShared.studentEmail !== normalizedInput.studentEmail
+      || existingShared.lessonId !== normalizedInput.lessonId
+    )
+  ) {
+    throw new Error('normalized run identity is already bound to a different learner or lesson')
+  }
+
+  const existingByKey = existingBySourceFile || existingShared
+    ? null
+    : await prisma.pipelineRun.findUnique({
+        where: { idempotencyKey: baseIdempotencyKey },
+        include: { transcript: true },
+      })
+  const existing = existingShared || existingBySourceFile?.pipelineRuns[0] || existingByKey
+
   if (existing?.status === 'completed') {
     await recordSharedTriggerIfNeeded(existing.id, executionOptions)
-    const storedReport = await prisma.classReportProjection.findUnique({ where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } } })
-    const storedCoaching = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: existing.id } })
+    const storedReport = await prisma.classReportProjection.findUnique({
+      where: {
+        studentEmail_lessonId: {
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+        },
+      },
+    })
+    const storedCoaching = await prisma.coachingGuidance.findUnique({
+      where: { pipelineRunId: existing.id },
+    })
     return {
       pipelineRunId: existing.id,
       status: existing.status,
@@ -668,21 +700,74 @@ export async function processLessonTranscript(
       coaching: (storedCoaching?.content || undefined) as PipelineResult['coaching'],
     }
   }
+
   if (existing?.status === 'awaiting_review') {
     await recordSharedTriggerIfNeeded(existing.id, executionOptions)
-    const task = await prisma.reviewTask.findFirst({ where: { pipelineRunId: existing.id, stage: 'identity_review_required' } })
-    return { pipelineRunId: existing.id, status: existing.status, duplicate: true, reviewTaskId: task?.id, nextReviewStage: task?.stage }
+    const task = await prisma.reviewTask.findFirst({
+      where: { pipelineRunId: existing.id, stage: 'identity_review_required' },
+    })
+    return {
+      pipelineRunId: existing.id,
+      status: existing.status,
+      duplicate: true,
+      reviewTaskId: task?.id,
+      nextReviewStage: task?.stage,
+    }
   }
+
+  if (existing?.status === 'awaiting_publication_review') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+    const task = await prisma.reviewTask.findFirst({
+      where: { pipelineRunId: existing.id, stage: 'publication_review_required' },
+    })
+    return {
+      pipelineRunId: existing.id,
+      status: existing.status,
+      duplicate: true,
+      reviewTaskId: task?.id,
+      nextReviewStage: task?.stage,
+    }
+  }
+
   if (existing && existing.status !== 'failed') {
     await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true }
   }
-  const attemptNumber = existing?.status === 'failed' ? existing.attemptNumber + 1 : 1
-  const idempotencyKey = createIdempotencyKey(normalizedInput, attemptNumber)
+
+  const sharedSameExecutionResume = Boolean(
+    executionOptions
+      && existing?.status === 'failed'
+      && existing.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+  )
+  const attemptNumber = sharedSameExecutionResume
+    ? existing!.attemptNumber
+    : existing?.status === 'failed'
+      ? existing.attemptNumber + 1
+      : 1
+  const idempotencyKey = executionOptions
+    ? executionOptions.normalizedRunIdentity
+    : createIdempotencyKey(normalizedInput, attemptNumber)
+
   let run
   let transcript
-  const retryTranscript = existingBySourceFile || existingByKey?.transcript
-  if (retryTranscript && existing?.status === 'failed') {
+  const retryTranscript = existingShared?.transcript || existingBySourceFile || existingByKey?.transcript
+
+  if (sharedSameExecutionResume && existing && retryTranscript) {
+    normalizedInput = rebuildInput(
+      { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
+      retryTranscript,
+    )
+    run = await prisma.pipelineRun.update({
+      where: { id: existing.id },
+      data: {
+        status: 'processing',
+        errorCode: null,
+        errorMessage: null,
+        completedAt: null,
+      },
+    })
+    transcript = retryTranscript
+  } else if (retryTranscript && existing?.status === 'failed') {
     normalizedInput = rebuildInput(
       { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
       retryTranscript,
@@ -707,10 +792,14 @@ export async function processLessonTranscript(
       transcript = retryTranscript
     } catch (error) {
       if (!isUniqueConstraintError(error)) throw error
-      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+      const concurrent = executionOptions
+        ? await prisma.pipelineRun.findUnique({
+            where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+          })
+        : await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
       if (!concurrent) throw error
       if (concurrent.studentEmail !== normalizedInput.studentEmail) {
-        throw new Error('idempotency key is already bound to a different student')
+        throw new Error('idempotency identity is already bound to a different student')
       }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
@@ -750,12 +839,19 @@ export async function processLessonTranscript(
       run = createdTranscript.pipelineRuns[0]
     } catch (error) {
       if (!isUniqueConstraintError(error)) throw error
-      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
+      const concurrent = executionOptions
+        ? await prisma.pipelineRun.findUnique({
+            where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+          })
+        : await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
       if (!concurrent) throw error
-      if (concurrent.studentEmail !== normalizedInput.studentEmail) throw new Error('idempotency key is already bound to a different student')
+      if (concurrent.studentEmail !== normalizedInput.studentEmail) {
+        throw new Error('idempotency identity is already bound to a different student')
+      }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
   }
+
   if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
   await recordSharedTriggerIfNeeded(run.id, executionOptions)
   try {
