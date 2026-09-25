@@ -122,7 +122,7 @@ export function mergeCanonicalLearningIntelligenceRows(
   let vocabularyBank = [...student.vocabularyBank]
   let grammarFocus = [...student.grammarOverview.focusPoints]
   let teacherFeedback = [...student.teacherFeedback]
-  let canonicalProjection: StudentDashboardProjection = {
+  const canonicalProjection: StudentDashboardProjection = {
     ...student.canonicalProjection,
     currentState: { ...student.canonicalProjection.currentState },
     priorities: [...student.canonicalProjection.priorities],
