@@ -33,6 +33,24 @@ export type SharedLearningMachineExecutionOptions = {
   machineContractVersion: typeof SHARED_LEARNING_MACHINE_CONTRACT_VERSION
 }
 
+export const CANONICAL_RESUME_STAGES = [
+  'canonicalization',
+  'canonical_verification',
+  'canonical_projections',
+  'communication_projection',
+] as const
+
+export type CanonicalResumeStage = (typeof CANONICAL_RESUME_STAGES)[number]
+
+export function canonicalResumeStagesFrom(
+  resumePoint: string | null | undefined,
+): CanonicalResumeStage[] {
+  const index = CANONICAL_RESUME_STAGES.indexOf(resumePoint as CanonicalResumeStage)
+  return index >= 0
+    ? CANONICAL_RESUME_STAGES.slice(index)
+    : [...CANONICAL_RESUME_STAGES]
+}
+
 function stableNormalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map((item) => stableNormalize(item))
   if (value && typeof value === 'object') {
