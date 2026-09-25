@@ -16,6 +16,10 @@ import {
   listLearningMachineTriggerOrigins,
   persistLearningMachineManifest,
 } from '@/lib/learning-machine/run-history'
+import {
+  canonicalResumeStagesFrom,
+  type CanonicalResumeStage,
+} from '@/lib/learning-machine/shared-run-contract'
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -369,18 +373,9 @@ export async function executeCanonicalContinuation(input: {
     decisionTimestamp: input.decisionTimestamp.toISOString(),
   }
 
-  const resumableStages = [
-    'canonicalization',
-    'canonical_verification',
-    'canonical_projections',
-    'communication_projection',
-  ] as const
-  type ResumableStage = (typeof resumableStages)[number]
-  const requestedResume = resumableStages.includes(run.resumePoint as ResumableStage)
-    ? run.resumePoint as ResumableStage
-    : 'canonicalization'
-  const shouldRun = (stage: ResumableStage) =>
-    resumableStages.indexOf(stage) >= resumableStages.indexOf(requestedResume)
+  const pendingCanonicalStages = canonicalResumeStagesFrom(run.resumePoint)
+  const shouldRun = (stage: CanonicalResumeStage) =>
+    pendingCanonicalStages.includes(stage)
 
   let canonicalization: {
     canonicalRecordId: string
