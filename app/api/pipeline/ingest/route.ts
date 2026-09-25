@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
+import { executeSharedLearningMachine } from '@/lib/learning-machine/shared-runner'
+import { parseTranscriptPayload } from '@/lib/pipeline/run'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const maxDuration = 300
 
 function isAuthorized(request: Request): boolean {
   const expected = process.env.PRIME_PIPELINE_INGEST_SECRET
@@ -20,5 +23,17 @@ export async function POST(request: Request) {
     return NextResponse.json(pipelineFreezePayload('pipeline-ingest'), { status: 503 })
   }
 
-  return NextResponse.json({ error: 'Pipeline ingestion is unavailable.' }, { status: 503 })
+  try {
+    const body = await request.json()
+    const transcript = parseTranscriptPayload(body)
+    const result = await executeSharedLearningMachine({
+      triggerOrigin: 'automatic',
+      requestedBy: 'pipeline-ingest',
+      transcript,
+    })
+    return NextResponse.json(result)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unable to execute PRIME Learning Machine'
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
 }
