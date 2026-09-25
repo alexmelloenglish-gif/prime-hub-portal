@@ -808,7 +808,7 @@ while ($restartCount -lt $maxRestarts) {
                     }
                 }
             } catch {
-                Write-Log "Erro ao processar $path: $_ - continuando..." "WARN"
+                Write-Log "Erro ao processar ${path}: $_ - continuando..." "WARN"
                 try { $context.Response.OutputStream.Close() } catch {}
             }
         }
