@@ -7,6 +7,11 @@ import {
   type AgentCoordinationAckStatus,
   type AgentCoordinationEventInput,
 } from '@/lib/agent-coordination/contract'
+import {
+  coordinationLeaseDeadline,
+  normalizeCoordinationLeaseSeconds,
+  normalizeCoordinationWorkerId,
+} from '@/lib/agent-coordination/active-contract'
 
 function asJson(value: Record<string, unknown> | null): Prisma.InputJsonValue | typeof Prisma.DbNull {
   return value ? JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue : Prisma.DbNull
@@ -98,6 +103,9 @@ export async function acknowledgeAgentCoordinationEvent(input: {
       ackStatus: requested,
       acknowledgedBy,
       acknowledgedAt: new Date(),
+      claimedBy: null,
+      claimedAt: null,
+      leaseExpiresAt: null,
     },
   })
 
@@ -143,4 +151,115 @@ export async function listPendingAgentCoordinationEvents(input: {
     orderBy: { createdAt: 'asc' },
     take: limit,
   })
+}
+
+
+export async function claimNextAgentCoordinationEvent(input: {
+  targetRole: string
+  claimedBy: string
+  workstreamId?: string | null
+  leaseSeconds?: number
+}) {
+  const prisma = getPrismaClient()
+  const targetRole = normalizeCoordinationWorkerId(input.targetRole, 'targetRole')
+  const claimedBy = normalizeCoordinationWorkerId(input.claimedBy, 'claimedBy')
+  const leaseSeconds = normalizeCoordinationLeaseSeconds(input.leaseSeconds)
+  const workstreamId = input.workstreamId?.trim() || undefined
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const now = new Date()
+    const candidate = await prisma.agentCoordinationEvent.findFirst({
+      where: {
+        targetRole,
+        ackStatus: 'PENDING',
+        ...(workstreamId ? { workstreamId } : {}),
+        OR: [
+          { leaseExpiresAt: null },
+          { leaseExpiresAt: { lte: now } },
+        ],
+      },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    if (!candidate) return null
+
+    const leaseExpiresAt = coordinationLeaseDeadline(now, leaseSeconds)
+    const claimed = await prisma.agentCoordinationEvent.updateMany({
+      where: {
+        id: candidate.id,
+        ackStatus: 'PENDING',
+        OR: [
+          { leaseExpiresAt: null },
+          { leaseExpiresAt: { lte: now } },
+        ],
+      },
+      data: {
+        claimedBy,
+        claimedAt: now,
+        leaseExpiresAt,
+        dispatchAttempts: { increment: 1 },
+        lastDispatchError: null,
+      },
+    })
+
+    if (claimed.count === 1) {
+      return prisma.agentCoordinationEvent.findUniqueOrThrow({
+        where: { id: candidate.id },
+      })
+    }
+  }
+
+  return null
+}
+
+export async function releaseAgentCoordinationLease(input: {
+  eventId: string
+  claimedBy: string
+  dispatchError?: string | null
+}) {
+  const prisma = getPrismaClient()
+  const eventId = input.eventId.trim()
+  const claimedBy = normalizeCoordinationWorkerId(input.claimedBy, 'claimedBy')
+  if (!eventId) throw new Error('eventId is required')
+
+  const released = await prisma.agentCoordinationEvent.updateMany({
+    where: {
+      id: eventId,
+      ackStatus: 'PENDING',
+      claimedBy,
+    },
+    data: {
+      claimedBy: null,
+      claimedAt: null,
+      leaseExpiresAt: null,
+      lastDispatchAt: new Date(),
+      lastDispatchError: input.dispatchError?.slice(0, 4000) || null,
+    },
+  })
+
+  return released.count === 1
+}
+
+export async function markAgentCoordinationDispatched(input: {
+  eventId: string
+  claimedBy: string
+}) {
+  const prisma = getPrismaClient()
+  const eventId = input.eventId.trim()
+  const claimedBy = normalizeCoordinationWorkerId(input.claimedBy, 'claimedBy')
+  if (!eventId) throw new Error('eventId is required')
+
+  const updated = await prisma.agentCoordinationEvent.updateMany({
+    where: {
+      id: eventId,
+      ackStatus: 'PENDING',
+      claimedBy,
+    },
+    data: {
+      lastDispatchAt: new Date(),
+      lastDispatchError: null,
+    },
+  })
+
+  return updated.count === 1
 }
