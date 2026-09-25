@@ -29,6 +29,9 @@ jobs:
   agent-coordination-bus:
     name: Agent Coordination Bus Phase 1
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+      DATABASE_URL_UNPOOLED: postgresql://ci:ci@localhost:5432/ci?schema=public
 
     steps:
       - name: Checkout exact candidate SHA
