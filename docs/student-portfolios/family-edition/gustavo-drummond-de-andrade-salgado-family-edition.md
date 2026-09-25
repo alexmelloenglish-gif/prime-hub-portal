@@ -188,4 +188,3 @@ Start with a short self-awareness check-in about the language explored in these 
 
 **Your portfolio is designed to grow with every class.**
 
-_A aprendizagem é acompanhada ao longo do tempo. Informações internas de processamento, revisão técnica e funcionamento do sistema não fazem parte desta edição para o aluno e a família._
