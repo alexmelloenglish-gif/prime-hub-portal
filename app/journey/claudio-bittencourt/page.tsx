@@ -31,7 +31,7 @@ export default function ClaudioJourneyPage() {
       <div className="mx-auto max-w-6xl px-5 py-12">
         <Kicker>YOUR PRIME LEARNING DASHBOARD</Kicker>
         <h1 className="mt-3 text-5xl font-black tracking-tight md:text-6xl">What matters now, Cláudio.</h1>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700">A human view of your journey: where you are, what the evidence supports, what stays useful and where we go next.</p>
+        <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-700">A clear view of your journey: where you are, what your lessons show, what stays useful and where we go next.</p>
         <div className="mt-6 flex flex-wrap gap-2 text-sm font-bold">
           <span className="rounded-full bg-white px-4 py-2 shadow-sm">{p.attendanceRate}</span>
           <span className="rounded-full bg-white px-4 py-2 shadow-sm">{p.currentLevel} → {p.targetLevel} direction</span>
@@ -53,11 +53,11 @@ export default function ClaudioJourneyPage() {
 
       <section className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-3">
-          <Kicker>HUMAN EVIDENCE · RECONCILED READING OF THE JOURNEY</Kicker>
+          <Kicker>WHAT YOUR LEARNING JOURNEY SHOWS</Kicker>
           <div className="mt-5 grid gap-6 md:grid-cols-3">
             <div><p className="text-xs font-black text-slate-400">WHAT HAPPENED</p><p className="mt-2 leading-7 text-slate-700">Three confirmed lessons preserve real conversation across personal topics, technology, AI, scuba diving, health, aviation, economics and logistics.</p></div>
-            <div><p className="text-xs font-black text-slate-400">WHAT WE UNDERSTAND</p><p className="mt-2 leading-7 text-slate-700">Cláudio sustains complex conversation and brings strong reasoning and domain knowledge. The B2 opportunity is greater precision, organization and automaticity.</p></div>
-            <div><p className="text-xs font-black text-slate-400">WHAT WE DO NOT CLAIM</p><p className="mt-2 leading-7 text-slate-700">One successful response does not prove mastery. Historical memory without recovered source/date is preserved as memory and is not counted as attendance.</p></div>
+            <div><p className="text-xs font-black text-slate-400">WHAT WE CAN SEE</p><p className="mt-2 leading-7 text-slate-700">Cláudio sustains complex conversation and brings strong reasoning and domain knowledge. The B2 opportunity is greater precision, organization and automaticity.</p></div>
+            <div><p className="text-xs font-black text-slate-400">WHAT WE ARE STILL CHECKING</p><p className="mt-2 leading-7 text-slate-700">One successful response does not mean a skill is fully established yet. Older learning notes without a recovered lesson date remain part of the learning memory, but are not counted as attendance.</p></div>
           </div>
         </Card>
       </section>
@@ -72,8 +72,8 @@ export default function ClaudioJourneyPage() {
       </section>
 
       <section>
-        <Kicker>MEMORY · EVIDENCE THAT STAYS USEFUL</Kicker>
-        <h2 className="mt-2 text-3xl font-black">What the evidence shows</h2>
+        <Kicker>MEMORY · WHAT STAYS USEFUL</Kicker>
+        <h2 className="mt-2 text-3xl font-black">What your lessons show</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-2">{p.progressTracker.map((x)=><Card key={x.id}><p className="text-xs font-black uppercase text-[#0057b8]">{x.status}</p><h3 className="mt-2 text-xl font-black">{x.title}</h3><p className="mt-2 leading-7 text-slate-600">{x.insight}</p></Card>)}</div>
       </section>
 
@@ -92,26 +92,26 @@ export default function ClaudioJourneyPage() {
       </section>
 
       <section>
-        <Kicker>NOW + NEXT · JOURNEY SIGNALS + DIRECTION</Kicker>
+        <Kicker>NOW + NEXT · YOUR FOCUS</Kicker>
         <div className="mt-5 grid gap-4 md:grid-cols-2">{cp.priorities.map(x=><Card key={x.id}><h3 className="text-xl font-black">{x.title}</h3><p className="mt-2 leading-7 text-slate-600">{x.why}</p></Card>)}</div>
       </section>
 
       <section className="rounded-[34px] bg-[#0b2c5c] p-7 text-white shadow-xl md:p-9">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200">NEXT STEP · AUTHORIZED LEARNING ACTION</p>
+        <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200">NEXT STEP · YOUR LEARNING ACTION</p>
         <h2 className="mt-3 text-4xl font-black">{cp.nextAction.title}</h2>
         <p className="mt-4 max-w-4xl text-lg leading-8 text-blue-50">{cp.nextAction.description}</p>
-        <p className="mt-3 text-sm text-blue-200">Outcome: {cp.nextAction.outcome}</p>
+        <p className="mt-3 text-sm text-blue-200">Goal: {cp.nextAction.outcome}</p>
         <Link href={cp.nextAction.destination} className="mt-6 inline-flex rounded-2xl bg-[#e60023] px-6 py-3 font-black text-white shadow-lg">OPEN NEXT STEP →</Link>
       </section>
 
       <section>
-        <Kicker>AWARENESS · LEARNER VIEW</Kicker>
+        <Kicker>YOUR LEARNING JOURNEY</Kicker>
         <Card className="mt-4">
           <h2 className="text-3xl font-black">What this journey tells us now</h2>
           <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-700">{p.teacherFeedback[0].body}</p>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl bg-blue-50 p-5"><p className="text-xs font-black text-slate-400">NEXT ACTION</p><p className="mt-2 font-black">Diving Decision Project</p></div>
-            <div className="rounded-2xl bg-blue-50 p-5"><p className="text-xs font-black text-slate-400">TEACHER ROLE</p><p className="mt-2 font-black">Interpret, connect, review</p></div>
+            <div className="rounded-2xl bg-blue-50 p-5"><p className="text-xs font-black text-slate-400">YOUR TEACHER</p><p className="mt-2 font-black">Connects your lessons and guides what comes next</p></div>
             <div className="rounded-2xl bg-blue-50 p-5"><p className="text-xs font-black text-slate-400">CONTINUITY</p><p className="mt-2 font-black">VIP Conversation Class · once a week</p></div>
           </div>
         </Card>
