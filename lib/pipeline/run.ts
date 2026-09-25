@@ -1287,11 +1287,33 @@ export async function retryFailedPipelineRun(input: {
           throw new Error('Shared runner canonical resume requires the persisted Teacher Authority decision')
         }
 
+        let learnerProducts:
+          | Awaited<ReturnType<typeof publishAfterReview>>
+          | undefined
         await executeCanonicalContinuation({
           pipelineRunId: latest.id,
           reviewTaskId: authorityTask.id,
           reviewerRef: authorityTask.reviewerId,
           decisionTimestamp: authorityTask.reviewedAt,
+          communicationProjection: async () => {
+            learnerProducts = await publishAfterReview(
+              latest.id,
+              retryInput,
+              authorityTask.id,
+              authorityTask.reviewerId!,
+              authorityTask.reason ?? undefined,
+              {
+                finalizeRun: false,
+                finalizeReviewTask: false,
+                authorityStatus: 'teacher_authorized',
+              },
+            )
+            return {
+              classReportPublished: true,
+              portfolioApplyStatus: learnerProducts.portfolioApplyStatus,
+              portfolioVersion: learnerProducts.portfolioVersion,
+            }
+          },
         })
         await prisma.reviewTask.update({
           where: { id: authorityTask.id },
@@ -1302,6 +1324,8 @@ export async function retryFailedPipelineRun(input: {
           status: 'completed',
           duplicate: false,
           reviewTaskId: authorityTask.id,
+          report: learnerProducts?.report,
+          coaching: learnerProducts?.coaching,
         }
       } else {
         result = await processLessonTranscript(retryInput, retryExecutionOptions)
