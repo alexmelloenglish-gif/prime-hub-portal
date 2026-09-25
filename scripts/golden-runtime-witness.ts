@@ -129,6 +129,16 @@ function promptOneFixture(input) {
 function promptTwoFixture(input) {
   const context = input.report_context
   const evidence = input.validated_evidence || []
+  const candidateEvidence = input.non_authoritative_proposals?.evidence_candidates || []
+  const sourceEvidenceIds = evidence.length
+    ? evidence.map((item) => item.evidence_id)
+    : candidateEvidence.map((item) => item.evidence_candidate_id)
+  const evidenceHighlights = evidence.length
+    ? evidence.map((item) => item.content)
+    : candidateEvidence.map((item) => item.content)
+  const sourceReferences = evidence.length
+    ? evidence.map((item) => item.source_reference)
+    : candidateEvidence.map((item) => item.provenance?.source_reference).filter(Boolean)
   return {
     reportId: context.report_id,
     lessonId: context.lesson_id,
@@ -137,12 +147,12 @@ function promptTwoFixture(input) {
     promptVersion: 'prompt-2.v2.0',
     projectionVersion: 'projection-1',
     authorityStatus: 'non_authoritative',
-    sourceReferences: evidence.map((item) => item.source_reference),
+    sourceReferences,
     title: 'Golden Runtime Class Report',
     markdown: '# Golden Runtime Class Report\n\nGustavo repaired a past answer and reused irregular past forms in a personal sentence.\n\nNext: retrieve the same pattern in a new story.',
     summary: 'Gustavo repaired a past answer and reused irregular past forms in a meaningful personal sentence.',
-    evidenceHighlights: evidence.length
-      ? evidence.map((item) => item.content)
+    evidenceHighlights: evidenceHighlights.length
+      ? evidenceHighlights
       : ['Gustavo repaired a past answer and reused irregular past forms in a personal sentence.'],
     grammarFocus: ['Did + base form', 'Past Simple short answers'],
     vocabulary: ['retrieval', 'went', 'drank'],
@@ -150,12 +160,12 @@ function promptTwoFixture(input) {
       original: 'Did you rode?',
       improved: 'Did you ride?',
       explanation: 'Use the base form after did.',
-      evidenceIds: evidence.map((item) => item.evidence_id),
+      evidenceIds: sourceEvidenceIds,
     }],
     homeworkRecommendation: 'Tell one real past story and ask two did-questions.',
     teacherInsight: null,
     teacherInsightStatus: 'omitted',
-    sourceEvidenceIds: evidence.map((item) => item.evidence_id),
+    sourceEvidenceIds,
     documentStatus: 'draft',
     contentStatus: 'validated',
     implementationStatus: 'not_proven',
