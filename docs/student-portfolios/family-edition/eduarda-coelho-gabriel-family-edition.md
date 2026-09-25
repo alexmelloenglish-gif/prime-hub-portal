@@ -11,14 +11,14 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 7 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é improve school performance in English and English-medium Geography through complete responses and progressively less teacher support.. O que ficou mais visível neste ciclo: Since the Geography lesson on 17 August, producing complete answers in English has become a clearer focus, especially when explaining school content in Eduarda's own words. Próximo passo: Six-question independence check.
+Este portfólio reúne 7 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Responder com frases mais completas e cada vez menos apoio, tanto em inglês quanto nas atividades de Geografia em inglês. Neste ciclo, ao longo de sete aulas, ficou mais claro que o próximo ganho de Eduarda está em transformar reconhecimento e respostas guiadas em explicações completas com mais independência. Próximo passo: Six-question independence check.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR A1
 - **Objetivo de nível:** CEFR A2
 - **Frequência de aulas:** Episodic on demand
-- **Foco atual:** Improve school performance in English and English-medium Geography through complete responses and progressively less teacher support.
+- **Foco atual:** Responder com frases mais completas e cada vez menos apoio, tanto em inglês quanto nas atividades de Geografia em inglês.
 - **Presença registrada:** 7 documented lessons
 
 ## 3. Quick Access
@@ -29,7 +29,7 @@ Este portfólio reúne 7 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Improve school performance in English and English-medium Geography while building more complete and increasingly independent responses. Complete English responses about school content with progressively less dependence on models and teacher prompts.
+Responder com frases mais completas e cada vez menos apoio, tanto em inglês quanto nas atividades de Geografia em inglês.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -37,7 +37,7 @@ _As forças atuais continuarão sendo descritas à medida que houver evidência 
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Since the Geography lesson on 17 August, producing complete answers in English has become a clearer focus, especially when explaining school content in Eduarda's own words.
+Ao longo de sete aulas, ficou mais claro que o próximo ganho de Eduarda está em transformar reconhecimento e respostas guiadas em explicações completas com mais independência.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -57,7 +57,7 @@ In your next support lesson, you’ll answer six short questions: two about abil
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-Seven documented lessons preserve Eduarda's July–August school-support history across English and English-medium Geography. The teacher-corrected portfolio records CEFR A1 as current level and CEFR A2 as target; the lesson history does not by itself establish advancement to A2 or independent mastery.
+As sete aulas preservam a trajetória de apoio escolar em inglês e Geografia. O nível atual continua A1, com A2 como objetivo; a independência ainda está sendo construída.
 
 ## 10. Leitura para a família / Family Guide
 
