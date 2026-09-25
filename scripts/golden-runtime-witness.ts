@@ -553,10 +553,15 @@ assert.deepEqual(countsAfterReplay, countsBeforeReplay)
 assert.equal(countsAfterReplay.pipelineRuns, 1)
 
 const triggerEvents = await prisma.pipelineEvent.findMany({
-  where: { pipelineRunId: run.id, eventType: 'LearningMachineTriggerObserved' },
+  where: { pipelineRunId: run.id, eventType: 'LearningMachineTriggerReceived' },
   orderBy: { createdAt: 'asc' },
 })
-assert.ok(triggerEvents.length >= 1)
+const triggerOrigins = triggerEvents
+  .map((event) => event.payload)
+  .filter((payload) => payload && typeof payload === 'object' && !Array.isArray(payload))
+  .map((payload) => payload.triggerOrigin)
+  .filter((origin) => typeof origin === 'string')
+assert.deepEqual([...new Set(triggerOrigins)].sort(), ['automatic', 'manual'])
 
 const evidence = {
   verdict: 'GOLDEN RUNTIME WITNESS PASS',
@@ -610,6 +615,7 @@ const evidence = {
     replayTrigger: 'automatic',
     replayReturnedDuplicate: replay.duplicate,
     samePipelineRunId: replay.pipelineRunId === run.id,
+    triggerOrigins: [...new Set(triggerOrigins)].sort(),
     countsBeforeReplay,
     countsAfterReplay,
   },
