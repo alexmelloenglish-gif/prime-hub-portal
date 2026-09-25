@@ -11,7 +11,10 @@ const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
 const freeze = readFileSync('lib/pipeline-freeze.ts', 'utf8')
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
-const migration = readFileSync('prisma/migrations/20260925013000_add_shared_learning_machine_runner_state/migration.sql', 'utf8')
+const migration = readFileSync(
+  'prisma/migrations/20260925013000_add_shared_learning_machine_runner_state/migration.sql',
+  'utf8',
+)
 
 assert.match(contract, /SHARED_LEARNING_MACHINE_VERSION = 'prime-learning-machine-v1'/)
 assert.match(contract, /createNormalizedRunIdentity/)
@@ -34,22 +37,36 @@ assert.match(manualRoute, /triggerOrigin: 'manual'/)
 assert.match(retryRoute, /retryFailedPipelineRun/)
 
 assert.match(schema, /executionMode\s+String\s+@default\("legacy"\)/)
-assert.match(schema, /normalizedRunIdentity\s+String\?/)
+assert.match(schema, /normalizedRunIdentity\s+String\?\s+@unique/)
 assert.match(schema, /currentStage\s+String\?/)
 assert.match(schema, /resumePoint\s+String\?/)
 assert.match(schema, /finalManifest\s+Json\?/)
 assert.match(migration, /ADD COLUMN "normalizedRunIdentity" TEXT/)
 assert.match(migration, /ADD COLUMN "finalManifest" JSONB/)
+assert.match(
+  migration,
+  /CREATE UNIQUE INDEX "pipeline_runs_normalizedRunIdentity_key"/,
+)
 
 assert.match(history, /LearningMachineTriggerReceived/)
 assert.match(history, /LearningMachineCheckpoint/)
 assert.match(history, /LearningMachineManifestPersisted/)
 assert.match(history, /resumePoint/)
 
-assert.match(pipeline, /Boolean\(executionOptions\) \|\| shouldRequirePublicationReview\(coaching\)/)
+assert.match(
+  pipeline,
+  /Boolean\(executionOptions\) \|\| shouldRequirePublicationReview\(coaching\)/,
+)
 assert.match(pipeline, /canonicalAuthorityPayloadHash/)
 assert.match(pipeline, /executeCanonicalContinuation/)
-assert.match(pipeline, /triggerOrigin: 'retry'/)\nassert.match(pipeline, /retryMode: 'same_execution_resume'/)\nassert.match(pipeline, /finalizeRun: false/)\nassert.doesNotMatch(pipeline, /currentStage:\\s*'failed'/)
+assert.match(pipeline, /triggerOrigin: 'retry'/)
+assert.match(pipeline, /retryMode: 'same_execution_resume'/)
+assert.match(pipeline, /finalizeRun: false/)
+assert.doesNotMatch(
+  pipeline,
+  /currentStage:\s*'failed'/,
+  'Failure status must not erase the exact interrupted stage',
+)
 assert.match(pipeline, /stage: 'awaiting_teacher_authority'/)
 
 assert.match(canonical, /canonicalizeLearningRecord\(command\)/)
@@ -58,7 +75,10 @@ assert.match(canonical, /projectCanonicalPortfolio/)
 assert.match(canonical, /projectCanonicalLearningIntelligence/)
 assert.match(canonical, /persistLearningMachineManifest/)
 assert.match(canonical, /verification\.status !== 'PASS'/)
-assert.match(canonical, /projectionStatus !== 'VERIFIED'/)\nassert.match(canonical, /assertPersistedPublicationAuthority/)\nassert.match(canonical, /communicationProjection/)\nassert.match(canonical, /canonicalResumeStagesFrom\\(run\\.resumePoint\\)/)
+assert.match(canonical, /projectionStatus !== 'VERIFIED'/)
+assert.match(canonical, /assertPersistedPublicationAuthority/)
+assert.match(canonical, /communicationProjection/)
+assert.match(canonical, /canonicalResumeStagesFrom\(run\.resumePoint\)/)
 
 assert.match(
   freeze,
