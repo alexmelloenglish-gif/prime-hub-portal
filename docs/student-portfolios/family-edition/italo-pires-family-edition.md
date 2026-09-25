@@ -11,24 +11,25 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 1 aula com relatório completo e a memória de aprendizagem atualmente confirmada. O foco atual é professional self-introduction, maritime vocabulary, interview structure, grammar accuracy and speaking confidence. O que ficou mais visível neste ciclo: PRIME now has an initial picture of how Italo uses his maritime knowledge in English, where communication already works and what needs focused practice next. This is learner-model growth, not a claim that his English level improved after one lesson. Próximo passo: Prepare and record a 60-second professional introduction.
+Este portfólio reúne 1 aula com relatório completo e a memória de aprendizagem atualmente confirmada. O foco atual é Estruturar a apresentação profissional, ampliar o inglês marítimo útil e ganhar mais segurança e precisão em situações de entrevista. Neste ciclo, uma aula confirmada já oferece um ponto de partida claro para o inglês profissional de Ítalo: transformar conhecimento técnico marítimo em respostas mais organizadas e confiantes em inglês. Próximo passo: Prepare and record a 60-second professional introduction.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR A2
 - **Objetivo de nível:** CEFR B1
 - **Frequência de aulas:** No recurring schedule confirmed
-- **Foco atual:** Professional self-introduction, maritime vocabulary, interview structure, grammar accuracy and speaking confidence
+- **Foco atual:** Estruturar a apresentação profissional, ampliar o inglês marítimo útil e ganhar mais segurança e precisão em situações de entrevista.
 - **Presença registrada:** 1/1 confirmed
 
 ## 3. Quick Access
 
-- [Meu Portfólio](https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg)
+- [Meu Portfólio](https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit)
+- [Entrar na aula ao vivo](https://meet.google.com/yvr-xrvs-gaw)
 - [Suporte PRIME](https://wa.me/5521965147515?text=Oi!%20Gostaria%20de%20falar%20com%20o%20atendimento%2C%20pode%20me%20ajudar%3F)
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Communicate his maritime training, experience and professional fit more clearly and confidently in interviews and offshore-work contexts. Professional self-introduction, interview-answer structure and high-value grammar accuracy.
+Estruturar a apresentação profissional, ampliar o inglês marítimo útil e ganhar mais segurança e precisão em situações de entrevista.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -36,7 +37,7 @@ _As forças atuais continuarão sendo descritas à medida que houver evidência 
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-PRIME now has an initial picture of how Italo uses his maritime knowledge in English, where communication already works and what needs focused practice next. This is learner-model growth, not a claim that his English level improved after one lesson.
+Uma aula confirmada já oferece um ponto de partida claro para o inglês profissional de Ítalo: transformar conhecimento técnico marítimo em respostas mais organizadas e confiantes em inglês.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -53,7 +54,7 @@ Use four parts: who you are, your maritime training, relevant onboard or technic
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-One confirmed lesson establishes an initial professional Maritime English baseline. This is a current evidence snapshot, not a cumulative progress claim.
+Como ainda há apenas uma aula confirmada, este portfólio funciona como ponto de partida e não como conclusão de progresso de longo prazo.
 
 ## 10. Leitura para a família / Family Guide
 
