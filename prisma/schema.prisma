@@ -158,6 +158,13 @@ model PipelineRun {
   studentEmail             String
   lessonId                 String
   status                   String              @default("received")
+  executionMode            String              @default("legacy")
+  normalizedRunIdentity    String?
+  machineVersion           String?
+  machineContractVersion   String?
+  currentStage             String?
+  resumePoint              String?
+  finalManifest            Json?
   promptOneSchemaVersion   String?
   promptOneArtifact        Json?
   promptThreeSchemaVersion String?
@@ -178,6 +185,8 @@ model PipelineRun {
   @@unique([transcriptId, attemptNumber])
   @@index([studentEmail, createdAt])
   @@index([status])
+  @@index([executionMode, status])
+  @@index([normalizedRunIdentity])
   @@map("pipeline_runs")
 }
 
