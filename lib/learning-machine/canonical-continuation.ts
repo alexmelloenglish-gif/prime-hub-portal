@@ -20,6 +20,10 @@ import {
   canonicalResumeStagesFrom,
   type CanonicalResumeStage,
 } from '@/lib/learning-machine/shared-run-contract'
+import {
+  assertTeacherAuthorityBinding,
+  resolveProtectedStage,
+} from '@/lib/learning-machine/behavioral-boundary'
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -202,12 +206,6 @@ async function assertPersistedPublicationAuthority(input: {
   }
 
   const persistedReviewer = await resolveReviewer(task.reviewerId)
-  if (persistedReviewer.id !== input.reviewerId) {
-    throw new Error('Shared runner Teacher Authority reviewer changed during resume')
-  }
-  if (task.reviewedAt.getTime() !== input.decisionTimestamp.getTime()) {
-    throw new Error('Shared runner Teacher Authority timestamp changed during resume')
-  }
 
   const approval = await prisma.pipelineEvent.findUnique({
     where: {
@@ -220,9 +218,18 @@ async function assertPersistedPublicationAuthority(input: {
     select: { payload: true },
   })
   const payload = asRecord(approval?.payload)
-  if (text(payload.canonicalAuthorityPayloadHash) !== input.authorityPayloadHash) {
-    throw new Error('Shared runner Teacher Authority payload hash changed during resume')
-  }
+  assertTeacherAuthorityBinding(
+    {
+      reviewerId: input.reviewerId,
+      decisionTimestamp: input.decisionTimestamp,
+      authorityPayloadHash: input.authorityPayloadHash,
+    },
+    {
+      reviewerId: persistedReviewer.id,
+      decisionTimestamp: task.reviewedAt,
+      authorityPayloadHash: text(payload.canonicalAuthorityPayloadHash),
+    },
+  )
 }
 
 async function loadCanonicalizationResult(input: {
@@ -377,134 +384,139 @@ export async function executeCanonicalContinuation(input: {
   const shouldRun = (stage: CanonicalResumeStage) =>
     pendingCanonicalStages.includes(stage)
 
-  let canonicalization: {
+  const canonicalization: {
     canonicalRecordId: string
     canonicalVersion: number
     canonicalHash: string
     provenanceId: string
     idempotencyKey: string
     idempotentReplay: boolean
-  }
-
-  if (shouldRun('canonicalization')) {
-    await checkpointLearningMachine({
-      pipelineRunId: input.pipelineRunId,
-      stage: 'canonicalization',
-      status: 'canonicalizing',
-      resumePoint: 'canonicalization',
-      payload: {
-        teacherDecisionId: input.reviewTaskId,
-        authorityPayloadHash,
-      },
-    })
-    canonicalization = await canonicalizeLearningRecord(command)
-    await checkpointLearningMachine({
-      pipelineRunId: input.pipelineRunId,
-      stage: 'canonical_verification',
-      status: 'verifying_canonical_record',
-      resumePoint: 'canonical_verification',
-      payload: {
-        canonicalRecordId: canonicalization.canonicalRecordId,
-        canonicalVersion: canonicalization.canonicalVersion,
-        canonicalHash: canonicalization.canonicalHash,
-      },
-    })
-  } else {
-    canonicalization = await loadCanonicalizationResult({
+  } = await resolveProtectedStage({
+    shouldRun: shouldRun('canonicalization'),
+    execute: async () => {
+      await checkpointLearningMachine({
+        pipelineRunId: input.pipelineRunId,
+        stage: 'canonicalization',
+        status: 'canonicalizing',
+        resumePoint: 'canonicalization',
+        payload: {
+          teacherDecisionId: input.reviewTaskId,
+          authorityPayloadHash,
+        },
+      })
+      const result = await canonicalizeLearningRecord(command)
+      await checkpointLearningMachine({
+        pipelineRunId: input.pipelineRunId,
+        stage: 'canonical_verification',
+        status: 'verifying_canonical_record',
+        resumePoint: 'canonical_verification',
+        payload: {
+          canonicalRecordId: result.canonicalRecordId,
+          canonicalVersion: result.canonicalVersion,
+          canonicalHash: result.canonicalHash,
+        },
+      })
+      return result
+    },
+    load: () => loadCanonicalizationResult({
       pipelineRunId: input.pipelineRunId,
       reviewTaskId: input.reviewTaskId,
-    })
-  }
+    }),
+  })
 
-  let verification: {
+  const verification: {
     verificationId: string
     status: 'PASS'
     mismatchFields: string[]
-  }
-
-  if (shouldRun('canonical_verification')) {
-    const verified = await verifyCanonicalLearningRecordReadBack({
-      command,
-      writeResult: canonicalization,
-    })
-    if (verified.status !== 'PASS') {
-      throw new Error(
-        `Shared runner canonical read-back verification failed: ${verified.mismatchFields.join(', ')}`,
-      )
-    }
-    verification = {
-      verificationId: verified.verificationId,
-      status: 'PASS',
-      mismatchFields: verified.mismatchFields,
-    }
-    await checkpointLearningMachine({
-      pipelineRunId: input.pipelineRunId,
-      stage: 'canonical_projections',
-      status: 'projecting_canonical_record',
-      resumePoint: 'canonical_projections',
-      payload: {
-        canonicalRecordId: canonicalization.canonicalRecordId,
-        verificationId: verification.verificationId,
-      },
-    })
-  } else {
-    verification = await loadVerificationResult({
+  } = await resolveProtectedStage({
+    shouldRun: shouldRun('canonical_verification'),
+    execute: async () => {
+      const verified = await verifyCanonicalLearningRecordReadBack({
+        command,
+        writeResult: canonicalization,
+      })
+      if (verified.status !== 'PASS') {
+        throw new Error(
+          `Shared runner canonical read-back verification failed: ${verified.mismatchFields.join(', ')}`,
+        )
+      }
+      const result = {
+        verificationId: verified.verificationId,
+        status: 'PASS' as const,
+        mismatchFields: verified.mismatchFields,
+      }
+      await checkpointLearningMachine({
+        pipelineRunId: input.pipelineRunId,
+        stage: 'canonical_projections',
+        status: 'projecting_canonical_record',
+        resumePoint: 'canonical_projections',
+        payload: {
+          canonicalRecordId: canonicalization.canonicalRecordId,
+          verificationId: result.verificationId,
+        },
+      })
+      return result
+    },
+    load: () => loadVerificationResult({
       canonicalRecordId: canonicalization.canonicalRecordId,
       reviewTaskId: input.reviewTaskId,
-    })
-  }
+    }),
+  })
 
-  let portfolioProjection: {
-    projectionId: string
-    projectionKey: string
-    projectionHash: string
-    projectionStatus: 'VERIFIED' | 'FAILED'
-    idempotentReplay: boolean
-  }
-  let learningIntelligenceProjection: {
-    projectionId: string
-    projectionKey: string
-    projectionHash: string
-    projectionStatus: 'VERIFIED' | 'FAILED'
-    idempotentReplay: boolean
-  }
-
-  if (shouldRun('canonical_projections')) {
-    const projected = await Promise.all([
-      projectCanonicalPortfolio({
-        canonicalRecordId: canonicalization.canonicalRecordId,
-        requiredG3VerificationId: verification.verificationId,
-      }),
-      projectCanonicalLearningIntelligence({
-        canonicalRecordId: canonicalization.canonicalRecordId,
-        requiredG3VerificationId: verification.verificationId,
-      }),
-    ])
-    portfolioProjection = projected[0]
-    learningIntelligenceProjection = projected[1]
-    if (
-      portfolioProjection.projectionStatus !== 'VERIFIED'
-      || learningIntelligenceProjection.projectionStatus !== 'VERIFIED'
-    ) {
-      throw new Error('Shared runner canonical projection verification failed')
-    }
-    await checkpointLearningMachine({
-      pipelineRunId: input.pipelineRunId,
-      stage: 'communication_projection',
-      status: 'finalizing',
-      resumePoint: 'communication_projection',
-      payload: {
-        canonicalRecordId: canonicalization.canonicalRecordId,
-        verificationId: verification.verificationId,
-        portfolioProjectionId: portfolioProjection.projectionId,
-        learningIntelligenceProjectionId: learningIntelligenceProjection.projectionId,
-      },
-    })
-  } else {
-    const projected = await loadProjectionResults(canonicalization.canonicalRecordId)
-    portfolioProjection = projected.portfolioProjection
-    learningIntelligenceProjection = projected.learningIntelligenceProjection
-  }
+  const projections = await resolveProtectedStage({
+    shouldRun: shouldRun('canonical_projections'),
+    execute: async () => {
+      const projected = await Promise.all([
+        projectCanonicalPortfolio({
+          canonicalRecordId: canonicalization.canonicalRecordId,
+          requiredG3VerificationId: verification.verificationId,
+        }),
+        projectCanonicalLearningIntelligence({
+          canonicalRecordId: canonicalization.canonicalRecordId,
+          requiredG3VerificationId: verification.verificationId,
+        }),
+      ])
+      const nextPortfolioProjection = projected[0]
+      const nextLearningIntelligenceProjection = projected[1]
+      if (
+        nextPortfolioProjection.projectionStatus !== 'VERIFIED'
+        || nextLearningIntelligenceProjection.projectionStatus !== 'VERIFIED'
+      ) {
+        throw new Error('Shared runner canonical projection verification failed')
+      }
+      await checkpointLearningMachine({
+        pipelineRunId: input.pipelineRunId,
+        stage: 'communication_projection',
+        status: 'finalizing',
+        resumePoint: 'communication_projection',
+        payload: {
+          canonicalRecordId: canonicalization.canonicalRecordId,
+          verificationId: verification.verificationId,
+          portfolioProjectionId: nextPortfolioProjection.projectionId,
+          learningIntelligenceProjectionId: nextLearningIntelligenceProjection.projectionId,
+        },
+      })
+      return {
+        portfolioProjection: {
+          projectionId: nextPortfolioProjection.projectionId,
+          projectionKey: nextPortfolioProjection.projectionKey,
+          projectionHash: nextPortfolioProjection.projectionHash,
+          projectionStatus: 'VERIFIED' as const,
+          idempotentReplay: nextPortfolioProjection.idempotentReplay,
+        },
+        learningIntelligenceProjection: {
+          projectionId: nextLearningIntelligenceProjection.projectionId,
+          projectionKey: nextLearningIntelligenceProjection.projectionKey,
+          projectionHash: nextLearningIntelligenceProjection.projectionHash,
+          projectionStatus: 'VERIFIED' as const,
+          idempotentReplay: nextLearningIntelligenceProjection.idempotentReplay,
+        },
+      }
+    },
+    load: () => loadProjectionResults(canonicalization.canonicalRecordId),
+  })
+  const portfolioProjection = projections.portfolioProjection
+  const learningIntelligenceProjection = projections.learningIntelligenceProjection
 
   let communicationProjection: Record<string, unknown> | null = null
   if (shouldRun('communication_projection') && input.communicationProjection) {
