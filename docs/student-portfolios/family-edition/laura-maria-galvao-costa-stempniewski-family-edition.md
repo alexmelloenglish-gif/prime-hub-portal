@@ -11,14 +11,14 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é speaking fluency, authentic listening, vocabulary expansion, grammar consolidation and academic English.. O que ficou mais visível neste ciclo: The current learning record preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance. Próximo passo: Authentic listening + 2–3 minute retelling.
+Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Desenvolver respostas mais longas e conectadas, ampliar vocabulário, fortalecer listening autêntico e consolidar precisão gramatical no caminho de B1 para B2. Neste ciclo, as aulas de 28 de abril, 12 de maio e 22 de maio formam uma sequência de aprendizagem confirmada. Agendamentos posteriores continuam separados da presença real até haver confirmação. Próximo passo: Authentic listening + 2–3 minute retelling.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR B1
 - **Objetivo de nível:** CEFR B2
 - **Frequência de aulas:** Individual lessons — schedule according to the Prime calendar
-- **Foco atual:** Speaking fluency, authentic listening, vocabulary expansion, grammar consolidation and academic English.
+- **Foco atual:** Desenvolver respostas mais longas e conectadas, ampliar vocabulário, fortalecer listening autêntico e consolidar precisão gramatical no caminho de B1 para B2.
 - **Presença registrada:** 3 documented lessons
 
 ## 3. Quick Access
@@ -29,7 +29,7 @@ Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Develop greater independence, precision and connected speech on the B1→B2 pathway while using meaningful personal, academic and school contexts. Longer connected answers, authentic listening with less subtitle dependence, vocabulary expansion, relative clauses, passive voice and accuracy in extended speech.
+Desenvolver respostas mais longas e conectadas, ampliar vocabulário, fortalecer listening autêntico e consolidar precisão gramatical no caminho de B1 para B2.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -40,7 +40,7 @@ Develop greater independence, precision and connected speech on the B1→B2 path
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-The current learning record preserves the documented 28 April, 12 May and 22 May lessons as a connected B1→B2 learning history instead of relying on later calendar bookings as if they were attendance.
+As aulas de 28 de abril, 12 de maio e 22 de maio formam uma sequência de aprendizagem confirmada. Agendamentos posteriores continuam separados da presença real até haver confirmação.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -60,7 +60,7 @@ Use a short authentic listening segment first without subtitles, then retell the
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.
+O próximo ciclo mantém a direção B1→B2 com mais independência na fala, listening autêntico e precisão em respostas mais longas.
 
 ## 10. Leitura para a família / Family Guide
 
