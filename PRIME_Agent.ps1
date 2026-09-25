@@ -505,7 +505,7 @@ function Handle-Mode {
                 $policyResults += Set-PolicyPowerPlan "381b4222-f694-41f0-9685-ff5bb260df2e" "Balanceado"
                 $policyResults += Set-PolicyPriority @("chrome") "AboveNormal"
                 $policyResults += Set-PolicyPriority @("Telegram", "iVCam", "Comet") "AboveNormal"
-                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "Manus", "Perplexity") "BelowNormal"
+                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "ChatGPT Classic", "Manus", "Perplexity") "BelowNormal"
                 $policyResults += Stop-PolicyProcesses @("msedge")
             }
             "fluido" {
@@ -513,13 +513,13 @@ function Handle-Mode {
                 $policyResults += Set-PolicyPowerPlan "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c" "Alto Desempenho"
                 $policyResults += Set-PolicyPriority @("chrome") "High"
                 $policyResults += Set-PolicyPriority @("Telegram", "iVCam", "Comet") "AboveNormal"
-                $policyResults += Stop-PolicyProcesses @("msedge", "ChatGPT", "GPTClassic", "Manus", "Perplexity")
+                $policyResults += Stop-PolicyProcesses @("msedge", "ChatGPT", "GPTClassic", "ChatGPT Classic", "Manus", "Perplexity")
             }
             "trabalho" {
                 # Trabalho: equilibrio para uso prolongado, Chrome/Comet/Telegram/camera preservados.
                 $policyResults += Set-PolicyPowerPlan "381b4222-f694-41f0-9685-ff5bb260df2e" "Balanceado"
                 $policyResults += Set-PolicyPriority @("chrome", "Comet", "Telegram", "iVCam") "AboveNormal"
-                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "Manus", "Perplexity") "Normal"
+                $policyResults += Set-PolicyPriority @("ChatGPT", "GPTClassic", "ChatGPT Classic", "Manus", "Perplexity") "Normal"
                 $policyResults += Stop-PolicyProcesses @("msedge")
             }
         }

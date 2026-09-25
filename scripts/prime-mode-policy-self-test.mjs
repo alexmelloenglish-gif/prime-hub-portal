@@ -6,7 +6,7 @@ const policyDoc = readFileSync(new URL("../docs/PRIME_MODE_POLICY_2026-09-25.md"
 
 assert.match(agent, /\$AgentVersion = "vNEXT-1\.1"/);
 assert.match(agent, /policyVersion="v3-aula-balanced"/);
-assert.match(agent, /Set-PolicyPriority @\("ChatGPT", "GPTClassic", "Manus", "Perplexity"\) "BelowNormal"/);
+assert.match(agent, /Set-PolicyPriority @\("ChatGPT", "GPTClassic", "ChatGPT Classic", "Manus", "Perplexity"\) "BelowNormal"/);
 assert.match(agent, /# Google Meet\/apresentacoes: Chrome e camera recebem prioridade moderada; IA permanece acessivel\./);
 assert.match(agent, /Stop-PolicyProcesses @\("msedge"\)/);
 assert.match(agent, /ModeRestore/);
