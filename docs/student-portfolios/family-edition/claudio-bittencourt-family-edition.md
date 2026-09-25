@@ -11,14 +11,14 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é build more independent, precise and sustained spoken English through high-interest conversation, technical vocabulary, real-world reasoning and lexical/grammatical refinement.. O que ficou mais visível neste ciclo: The profile moved from schedule-only onboarding to a documented B1→B2 learning trajectory using three confirmed real lessons and one preserved historical lesson memory. Próximo passo: Scuba Diving Destinations — Decision Project.
+Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Sustentar fala mais longa e independente com melhor organização, recuperação de vocabulário técnico, precisão gramatical e compreensão de input autêntico. Neste ciclo, três aulas confirmadas mostram uma trajetória B1→B2 em desenvolvimento. Uma aula histórica sobre televisão 8K e Copa do Mundo permanece apenas como memória porque a data e a fonte exatas ainda não foram recuperadas. Próximo passo: Scuba Diving Destinations — Decision Project.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR B1
 - **Objetivo de nível:** CEFR B2
 - **Frequência de aulas:** Once a week
-- **Foco atual:** Build more independent, precise and sustained spoken English through high-interest conversation, technical vocabulary, real-world reasoning and lexical/grammatical refinement.
+- **Foco atual:** Sustentar fala mais longa e independente com melhor organização, recuperação de vocabulário técnico, precisão gramatical e compreensão de input autêntico.
 - **Presença registrada:** 3 confirmed lessons
 
 ## 3. Quick Access
@@ -28,7 +28,7 @@ Este portfólio reúne 3 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Increase precision, organization and automaticity in extended spoken English. Extended answers, technical vocabulary retrieval, B2 discourse tools, grammar under pressure and authentic listening.
+Sustentar fala mais longa e independente com melhor organização, recuperação de vocabulário técnico, precisão gramatical e compreensão de input autêntico.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -39,7 +39,7 @@ Increase precision, organization and automaticity in extended spoken English. Ex
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-The profile moved from schedule-only onboarding to a documented B1→B2 learning trajectory using three confirmed real lessons and one preserved historical lesson memory.
+Três aulas confirmadas mostram uma trajetória B1→B2 em desenvolvimento. Uma aula histórica sobre televisão 8K e Copa do Mundo permanece apenas como memória porque a data e a fonte exatas ainda não foram recuperadas.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -60,7 +60,7 @@ Compare three destinations using conditions, depth, visibility, marine life, saf
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-As próximas aulas continuarão conectando o que já foi aprendido com novas oportunidades de uso do inglês.
+O próximo ciclo usa temas de alto interesse, especialmente mergulho e tecnologia, para tornar respostas longas mais organizadas, precisas e independentes.
 
 ## 10. Leitura para a família / Family Guide
 
