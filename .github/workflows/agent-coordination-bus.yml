@@ -1,14 +1,16 @@
-name: Agent Coordination Bus Phase 1
+name: Agent Coordination Bus
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, infra/agent-coordination-bus-phase1-2026-09-25]
     paths:
       - 'lib/agent-coordination/**'
       - 'app/api/coordination/**'
       - 'prisma/schema.prisma'
       - 'prisma/migrations/20260925162500_add_agent_coordination_bus_phase1/**'
+      - 'prisma/migrations/20260925213000_add_agent_coordination_bus_phase2_active/**'
       - 'scripts/agent-coordination-bus-self-test.mjs'
+      - 'scripts/agent-coordination-active-self-test.mjs'
       - 'docs/operations/AGENT_COORDINATION_BUS_PHASE1.md'
       - '.env.example'
       - '.github/workflows/agent-coordination-bus.yml'
@@ -19,7 +21,9 @@ on:
       - 'app/api/coordination/**'
       - 'prisma/schema.prisma'
       - 'prisma/migrations/20260925162500_add_agent_coordination_bus_phase1/**'
+      - 'prisma/migrations/20260925213000_add_agent_coordination_bus_phase2_active/**'
       - 'scripts/agent-coordination-bus-self-test.mjs'
+      - 'scripts/agent-coordination-active-self-test.mjs'
       - '.github/workflows/agent-coordination-bus.yml'
 
 permissions:
@@ -27,7 +31,7 @@ permissions:
 
 jobs:
   agent-coordination-bus:
-    name: Agent Coordination Bus Phase 1
+    name: Agent Coordination Bus
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
@@ -52,8 +56,11 @@ jobs:
       - name: Validate Prisma schema
         run: npx prisma validate
 
-      - name: Coordination bus self-test
+      - name: Coordination bus Phase 1 self-test
         run: node --experimental-strip-types scripts/agent-coordination-bus-self-test.mjs
+
+      - name: Coordination bus Phase 2 active self-test
+        run: node --experimental-strip-types scripts/agent-coordination-active-self-test.mjs
 
       - name: TypeScript gate
         run: npx tsc --noEmit
