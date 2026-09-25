@@ -189,3 +189,53 @@ If any corrective commit changes PR #59 head, all merge-critical exact-SHA proof
 # J. Handoff sentence
 
 > Read Section L first. PR #59 is the recovered active P0 implementation. Continue validation/correction there; do not restart the shared runner, do not resurrect legacy PRs, do not merge/release an untested SHA, and record every material cross-agent delta in Issue #58 plus this handoff so Alexandre is never the synchronization mechanism.
+
+
+---
+
+# M. 2026-09-25 — Agent Coordination Bus Phase 1
+
+**Status:** ACTIVE NON-BLOCKING INFRASTRUCTURE SPRINT  
+**Coordination authority:** Issue #58  
+**Branch:** `infra/agent-coordination-bus-phase1-2026-09-25`
+
+This sprint was accepted with changes in Issue #58. It is deliberately outside the PR #59 and learner-visible delivery critical paths.
+
+## Scope
+
+- GitHub remains the sole evidence/governance source.
+- Neon stores only routing, deduplication and acknowledgement envelopes.
+- Pipedream is the planned GitHub event delivery layer.
+- Slack/email, if added, are human observability only.
+- Phase 1 event types are limited to candidate/validation/correction routing.
+- The bus cannot grant Teacher Authority, merge authority, release authority, runtime migration authority or canonical learner state.
+
+## Phase 1 implementation target
+
+```text
+GitHub event
+→ Pipedream
+→ secured coordination API
+→ Neon agent_coordination_events
+→ target-role notification
+→ executor reads GitHub evidence
+→ ACK/result reflected in GitHub
+→ bus records ACK/result envelope
+```
+
+## Proof boundary
+
+Before this sprint can be called implemented:
+
+- additive Prisma migration exists;
+- idempotency key is deterministic and database-unique;
+- webhook redelivery collapses to one ledger event;
+- ACK transitions are terminal/idempotent;
+- API is secret-protected;
+- payload is routing metadata only;
+- synthetic coordination self-test passes;
+- Prisma validation and TypeScript pass on the exact candidate SHA;
+- same-head Preview is READY;
+- real Pipedream/GitHub delivery remains a separate runtime witness until configured and exercised.
+
+> This sprint must not delay PR #59 or the learner-visible canonical dashboard bridge.
