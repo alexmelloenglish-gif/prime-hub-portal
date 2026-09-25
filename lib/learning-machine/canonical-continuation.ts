@@ -516,8 +516,20 @@ export async function executeCanonicalContinuation(input: {
         },
       })
       return {
-        portfolioProjection: nextPortfolioProjection,
-        learningIntelligenceProjection: nextLearningIntelligenceProjection,
+        portfolioProjection: {
+          projectionId: nextPortfolioProjection.projectionId,
+          projectionKey: nextPortfolioProjection.projectionKey,
+          projectionHash: nextPortfolioProjection.projectionHash,
+          projectionStatus: 'VERIFIED' as const,
+          idempotentReplay: nextPortfolioProjection.idempotentReplay,
+        },
+        learningIntelligenceProjection: {
+          projectionId: nextLearningIntelligenceProjection.projectionId,
+          projectionKey: nextLearningIntelligenceProjection.projectionKey,
+          projectionHash: nextLearningIntelligenceProjection.projectionHash,
+          projectionStatus: 'VERIFIED' as const,
+          idempotentReplay: nextLearningIntelligenceProjection.idempotentReplay,
+        },
       }
     },
     load: () => loadProjectionResults(canonicalization.canonicalRecordId),
