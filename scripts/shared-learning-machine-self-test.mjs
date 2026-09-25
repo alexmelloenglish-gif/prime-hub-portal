@@ -49,7 +49,7 @@ assert.match(history, /resumePoint/)
 assert.match(pipeline, /Boolean\(executionOptions\) \|\| shouldRequirePublicationReview\(coaching\)/)
 assert.match(pipeline, /canonicalAuthorityPayloadHash/)
 assert.match(pipeline, /executeCanonicalContinuation/)
-assert.match(pipeline, /triggerOrigin: 'retry'/)
+assert.match(pipeline, /triggerOrigin: 'retry'/)\nassert.match(pipeline, /retryMode: 'same_execution_resume'/)\nassert.match(pipeline, /finalizeRun: false/)\nassert.doesNotMatch(pipeline, /currentStage:\\s*'failed'/)
 assert.match(pipeline, /stage: 'awaiting_teacher_authority'/)
 
 assert.match(canonical, /canonicalizeLearningRecord\(command\)/)
@@ -58,7 +58,7 @@ assert.match(canonical, /projectCanonicalPortfolio/)
 assert.match(canonical, /projectCanonicalLearningIntelligence/)
 assert.match(canonical, /persistLearningMachineManifest/)
 assert.match(canonical, /verification\.status !== 'PASS'/)
-assert.match(canonical, /projectionStatus !== 'VERIFIED'/)
+assert.match(canonical, /projectionStatus !== 'VERIFIED'/)\nassert.match(canonical, /assertPersistedPublicationAuthority/)\nassert.match(canonical, /communicationProjection/)\nassert.match(canonical, /canonicalResumeStagesFrom\\(run\\.resumePoint\\)/)
 
 assert.match(
   freeze,
