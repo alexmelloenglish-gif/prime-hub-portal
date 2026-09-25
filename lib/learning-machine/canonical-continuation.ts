@@ -384,16 +384,14 @@ export async function executeCanonicalContinuation(input: {
   const shouldRun = (stage: CanonicalResumeStage) =>
     pendingCanonicalStages.includes(stage)
 
-  let canonicalization: {
+  const canonicalization: {
     canonicalRecordId: string
     canonicalVersion: number
     canonicalHash: string
     provenanceId: string
     idempotencyKey: string
     idempotentReplay: boolean
-  }
-
-  canonicalization = await resolveProtectedStage({
+  } = await resolveProtectedStage({
     shouldRun: shouldRun('canonicalization'),
     execute: async () => {
       await checkpointLearningMachine({
@@ -426,13 +424,11 @@ export async function executeCanonicalContinuation(input: {
     }),
   })
 
-  let verification: {
+  const verification: {
     verificationId: string
     status: 'PASS'
     mismatchFields: string[]
-  }
-
-  verification = await resolveProtectedStage({
+  } = await resolveProtectedStage({
     shouldRun: shouldRun('canonical_verification'),
     execute: async () => {
       const verified = await verifyCanonicalLearningRecordReadBack({
@@ -466,21 +462,6 @@ export async function executeCanonicalContinuation(input: {
       reviewTaskId: input.reviewTaskId,
     }),
   })
-
-  let portfolioProjection: {
-    projectionId: string
-    projectionKey: string
-    projectionHash: string
-    projectionStatus: 'VERIFIED' | 'FAILED'
-    idempotentReplay: boolean
-  }
-  let learningIntelligenceProjection: {
-    projectionId: string
-    projectionKey: string
-    projectionHash: string
-    projectionStatus: 'VERIFIED' | 'FAILED'
-    idempotentReplay: boolean
-  }
 
   const projections = await resolveProtectedStage({
     shouldRun: shouldRun('canonical_projections'),
@@ -534,8 +515,8 @@ export async function executeCanonicalContinuation(input: {
     },
     load: () => loadProjectionResults(canonicalization.canonicalRecordId),
   })
-  portfolioProjection = projections.portfolioProjection
-  learningIntelligenceProjection = projections.learningIntelligenceProjection
+  const portfolioProjection = projections.portfolioProjection
+  const learningIntelligenceProjection = projections.learningIntelligenceProjection
 
   let communicationProjection: Record<string, unknown> | null = null
   if (shouldRun('communication_projection') && input.communicationProjection) {
