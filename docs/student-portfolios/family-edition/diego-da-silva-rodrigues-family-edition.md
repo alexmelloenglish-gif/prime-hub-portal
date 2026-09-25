@@ -11,14 +11,14 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 4 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é professional English — Marketing, Cosmetic Industry & Global Business | executive clarity, accuracy and active business-language reuse. O que ficou mais visível neste ciclo: Four documented lessons now connect Diego's strong spontaneous professional communication to a focused A2→B1 refinement path: executive clarity, high-frequency accuracy and active business-language reuse. Próximo passo: 60–90 Second Executive Response.
+Este portfólio reúne 4 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Tornar a comunicação profissional mais clara, precisa e concisa sem perder a fluência, com atenção especial a linguagem de negócios de alta frequência. Neste ciclo, quatro aulas mostram boa capacidade de explicar temas profissionais de forma espontânea. O próximo ganho está em organizar respostas executivas com mais concisão, precisão gramatical e reaproveitamento de vocabulário. Próximo passo: 60–90 Second Executive Response.
 
 ## 2. Your Learning Snapshot
 
 - **Nível atual:** CEFR A2
 - **Objetivo de nível:** CEFR B1
 - **Frequência de aulas:** Every two weeks
-- **Foco atual:** Professional English — Marketing, Cosmetic Industry & Global Business | executive clarity, accuracy and active business-language reuse
+- **Foco atual:** Tornar a comunicação profissional mais clara, precisa e concisa sem perder a fluência, com atenção especial a linguagem de negócios de alta frequência.
 - **Presença registrada:** 4 attended lessons
 
 ## 3. Quick Access
@@ -28,7 +28,7 @@ Este portfólio reúne 4 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Communicate professional knowledge and decisions more precisely and concisely in English across marketing, beauty, retail and global-business contexts. Executive clarity, high-frequency grammar accuracy, natural business phrasing and active business-vocabulary reuse without reducing fluency.
+Tornar a comunicação profissional mais clara, precisa e concisa sem perder a fluência, com atenção especial a linguagem de negócios de alta frequência.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -39,7 +39,7 @@ Communicate professional knowledge and decisions more precisely and concisely in
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Four documented lessons now connect Diego's strong spontaneous professional communication to a focused A2→B1 refinement path: executive clarity, high-frequency accuracy and active business-language reuse.
+Quatro aulas mostram boa capacidade de explicar temas profissionais de forma espontânea. O próximo ganho está em organizar respostas executivas com mais concisão, precisão gramatical e reaproveitamento de vocabulário.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -59,7 +59,7 @@ Deliver a 60–90 second professional answer using Claim → Reason → Example 
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-Four attended lessons document strong spontaneous professional communication and a focused refinement path toward executive clarity, grammatical consistency and active business-language reuse. This record does not by itself establish CEFR advancement or causal impact.
+A memória atual conecta quatro aulas de inglês profissional e mantém o nível A2 com B1 como objetivo até que novas evidências justifiquem uma mudança.
 
 ## 10. Leitura para a família / Family Guide
 
