@@ -9,6 +9,8 @@ const STUDENTS_DIR = path.join(ROOT, 'data/students')
 const TECHNICAL_REPLACEMENTS = [
   [/current-state update before the next projection change/gi, 'Current learning check before the next update'],
   [/not confirmed in the evidence used for the canonical reconstruction/gi, 'Ainda não confirmada nos registros disponíveis'],
+  [/without needing the dashboard to manufacture a progress claim/gi, 'while keeping the focus on meaningful communication rather than labels'],
+  [/without needing the learning record to manufacture a progress claim/gi, 'while keeping the focus on meaningful communication rather than labels'],
   [/\bdashboard\b/gi, 'learning record'],
   [/source-integrity reconstruction/gi, 'confirmed lesson record'],
   [/learner model/gi, 'learning picture'],
