@@ -426,3 +426,36 @@ exact resume + retry/idempotency history
 ## Cross-agent operating rule
 
 > Current `main` is the sole implementation baseline. Closed legacy PRs are provenance only. Do not create a competing roadmap, do not resurrect stale branches, and do not promote chat discussion to `DONE` without exact repository/runtime evidence.
+
+
+## 2026-09-26 — Finalization queue after integrated proof
+
+This section supersedes older pre-integration wording for the current finalization sequence.
+
+### Core technical state now proven
+- [x] PR #65 integrated candidate `1f704ab97ac858fbad54a01126f12293e6f39358` is the current pre-Production proof target.
+- [x] Same-SHA Student Dashboard Contract, Agent Coordination Bus, Golden Runtime Witness and Coordination Runtime Witness all PASS.
+- [x] Same-SHA Vercel Preview/deployment status is SUCCESS.
+- [x] Disposable-Postgres rehearsal successfully applies the integrated post-baseline migrations in order and returns clean migration status.
+- [x] PR #66 and #67 isolated witness lanes are superseded by the integrated #65 witnesses and preserved only as provenance.
+
+### Required to finish the core platform
+- [ ] Merge the validated #65 integration candidate into `main` with exact merge SHA recorded.
+- [ ] Apply the three validated additive migrations to Production in recorded order with pre/post read-back.
+- [ ] Deploy the merged exact `main` SHA to Vercel Production and verify runtime health on the official domain.
+- [ ] Configure the real Production coordination wake/auth target while keeping automatic Learning Machine ingestion frozen for preflight.
+- [ ] Execute one controlled Production activation witness through Teacher Authority and verify durable run, canonical record, G3/G4/G5 projections, dashboard read-back, coordination ACK and no duplicate protected write.
+- [ ] Only after that witness passes, enable the intended automatic trigger path and immediately verify idempotency/freeze rollback behavior.
+- [ ] Close component PRs #59/#60/#61/#63/#64 as superseded after the integrated merge is safely established.
+
+### Product-completion work outside the core activation path
+- [ ] Integrate PR #62 family-portfolio presentation layer after rebasing/revalidating it on the new main.
+- [ ] Synchronize/read back the external learner/family Google Docs where still required.
+- [ ] Complete real authenticated G6 sign-in witnesses for the named learner/guardian accounts.
+- [ ] Complete the authoritative attendance Production trace.
+- [ ] Resolve only genuinely missing ObservationDebt, vNext/Portfolio/Awareness and candidate/capture semantics after current-main gap audit.
+- [ ] Verify/disable any legacy external Google/Studio trigger only if still operationally relevant.
+- [ ] Add repository branch protection / required checks so exact-SHA discipline is enforced administratively.
+
+### Scope note
+Reconnection/LinkedIn phases remain business-development work, not a blocker for declaring the learning platform technically complete.
