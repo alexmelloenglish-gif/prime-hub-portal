@@ -2,6 +2,25 @@ import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import { GeminiGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
 import { evaluateClassReportGate, evaluatePromptOneGate, qualityGateErrorMessage, QualityGateRejectedError, type QualityGateAssessment } from './quality-gate'
+import {
+  SHARED_LEARNING_MACHINE_CONTRACT_VERSION,
+  SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+  SHARED_LEARNING_MACHINE_VERSION,
+  buildSharedLearningMachineExecutionOptions,
+  type SharedLearningMachineExecutionOptions,
+} from '@/lib/learning-machine/shared-run-contract'
+import {
+  checkpointLearningMachine,
+  recordLearningMachineTrigger,
+} from '@/lib/learning-machine/run-history'
+import {
+  claimFailedSharedRun,
+  resolveUniqueSharedRunConflict,
+} from '@/lib/learning-machine/behavioral-boundary'
+import {
+  canonicalAuthorityPayloadHashForPipelineRun,
+  executeCanonicalContinuation,
+} from '@/lib/learning-machine/canonical-continuation'
 import type {
   CoachingGuidanceOutput,
   ClassReportOutput,
@@ -119,6 +138,36 @@ function isTrustedSource(input: LessonTranscriptInput, authorityStatus: string):
 // ---------------------------------------------------------------------------
 function shouldRequirePublicationReview(coaching: CoachingGuidanceOutput): boolean {
   return coaching.is_pedagogical_decision
+}
+
+function persistedSharedExecutionOptions(
+  run: {
+    executionMode: string
+    normalizedRunIdentity: string | null
+  },
+  triggerOrigin: SharedLearningMachineExecutionOptions['triggerOrigin'],
+  requestedBy?: string,
+): SharedLearningMachineExecutionOptions | undefined {
+  if (run.executionMode !== SHARED_LEARNING_MACHINE_EXECUTION_MODE) return undefined
+  if (!run.normalizedRunIdentity) {
+    throw new Error('Shared runner normalized identity is missing')
+  }
+  return {
+    executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+    normalizedRunIdentity: run.normalizedRunIdentity,
+    triggerOrigin,
+    requestedBy,
+    machineVersion: SHARED_LEARNING_MACHINE_VERSION,
+    machineContractVersion: SHARED_LEARNING_MACHINE_CONTRACT_VERSION,
+  }
+}
+
+async function recordSharedTriggerIfNeeded(
+  pipelineRunId: string,
+  options?: SharedLearningMachineExecutionOptions,
+) {
+  if (!options) return
+  await recordLearningMachineTrigger(pipelineRunId, options)
 }
 
 type ContinuationResult = {
@@ -310,8 +359,23 @@ async function applyPortfolioPatch(input: LessonTranscriptInput, runId: string, 
 //   - Normal path  → calls publishAfterReview internally (no human gate)
 //   - Exception    → creates publication_review_required task as before
 // ---------------------------------------------------------------------------
-async function continueAfterReview(runId: string, normalizedInput: LessonTranscriptInput, transcriptId: string, promptOne: PromptOneOutput, persistedEvidenceCount: number): Promise<ContinuationResult> {
+async function continueAfterReview(
+  runId: string,
+  normalizedInput: LessonTranscriptInput,
+  transcriptId: string,
+  promptOne: PromptOneOutput,
+  persistedEvidenceCount: number,
+  executionOptions?: SharedLearningMachineExecutionOptions,
+): Promise<ContinuationResult> {
   const prisma = getPrismaClient()
+  if (executionOptions) {
+    await checkpointLearningMachine({
+      pipelineRunId: runId,
+      stage: 'draft_generation',
+      status: 'processing',
+      resumePoint: 'draft_generation',
+    })
+  }
   const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
   if (!promptOneGate.allowed) {
     await persistQualityGateRejection(runId, 'prompt-1', promptOneGate)
@@ -462,18 +526,33 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
     create: { pipelineRunId: runId, studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
   })
 
-  // Publication policy: exception path only
-  if (shouldRequirePublicationReview(coaching)) {
+  // Shared-runner mode always stops for explicit Teacher Authority.
+  // Legacy mode preserves its historical exception-only publication review.
+  const requiresPublicationReview =
+    Boolean(executionOptions) || shouldRequirePublicationReview(coaching)
+  if (requiresPublicationReview) {
     const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')
     await prisma.pipelineEvent.createMany({ data: [
       { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },
       { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
       { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
     ], skipDuplicates: true })
+    if (executionOptions) {
+      await checkpointLearningMachine({
+        pipelineRunId: runId,
+        stage: 'awaiting_teacher_authority',
+        status: 'awaiting_publication_review',
+        resumePoint: 'awaiting_teacher_authority',
+        payload: {
+          reviewTaskId: publicationTask.id,
+          normalizedRunIdentity: executionOptions.normalizedRunIdentity,
+        },
+      })
+    }
     return { report, coaching, qualityGate: reportGate }
   }
 
-  // Normal path: auto-publish without human gate
+  // Normal legacy path: auto-publish without human gate
   await prisma.pipelineEvent.createMany({ data: [
     { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: false, autoPublish: true } },
     { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_auto_publish' } },
@@ -484,21 +563,62 @@ async function continueAfterReview(runId: string, normalizedInput: LessonTranscr
   return { report, coaching, qualityGate: reportGate }
 }
 
-async function publishAfterReview(runId: string, normalizedInput: LessonTranscriptInput, reviewTaskId: string, reviewerId: string, reason?: string): Promise<{ report: ClassReportOutput; coaching?: CoachingGuidanceOutput }> {
+async function publishAfterReview(
+  runId: string,
+  normalizedInput: LessonTranscriptInput,
+  reviewTaskId: string,
+  reviewerId: string,
+  reason?: string,
+  options?: {
+    finalizeRun?: boolean
+    finalizeReviewTask?: boolean
+    authorityStatus?: string
+  },
+): Promise<{
+  report: ClassReportOutput
+  coaching?: CoachingGuidanceOutput
+  portfolioApplyStatus: string
+  portfolioVersion: number
+}> {
   const prisma = getPrismaClient()
   const projection = await prisma.classReportProjection.findUnique({
-    where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } },
+    where: {
+      studentEmail_lessonId: {
+        studentEmail: normalizedInput.studentEmail,
+        lessonId: normalizedInput.lessonId,
+      },
+    },
   })
-  const coachingProjection = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: runId } })
-  const run = await prisma.pipelineRun.findUnique({ where: { id: runId }, select: { promptOneArtifact: true, promptThreeArtifact: true, portfolioPatchId: true, transcript: { select: { id: true } } } })
+  const coachingProjection = await prisma.coachingGuidance.findUnique({
+    where: { pipelineRunId: runId },
+  })
+  const run = await prisma.pipelineRun.findUnique({
+    where: { id: runId },
+    select: {
+      promptOneArtifact: true,
+      promptThreeArtifact: true,
+      portfolioPatchId: true,
+      transcript: { select: { id: true } },
+    },
+  })
   if (!projection || !run) throw new Error('Draft publication artifacts not found')
+
   const report = asRecord(projection.content) as unknown as ClassReportOutput
   const promptOne = asRecord(run.promptOneArtifact) as unknown as PromptOneOutput
   const patch = asRecord(run.promptThreeArtifact) as unknown as PortfolioPatchOutput
-  if (!report.reportId || report.documentStatus !== 'draft' || !patch.patch_id || !Array.isArray(patch.operations)) throw new Error('Draft publication artifacts are invalid or already published')
+  if (
+    !report.reportId
+    || !['draft', 'published'].includes(report.documentStatus)
+    || !patch.patch_id
+    || !Array.isArray(patch.operations)
+  ) {
+    throw new Error('Publication artifacts are invalid')
+  }
 
   const persistedEvidenceCount = run.transcript
-    ? await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
+    ? await prisma.evidenceCandidate.count({
+        where: { transcriptId: run.transcript.id },
+      })
     : 0
   const promptOneGate = evaluatePromptOneGate({ promptOne, persistedEvidenceCount })
   const reportGate = evaluateClassReportGate({ report, promptOneGate })
@@ -507,35 +627,117 @@ async function publishAfterReview(runId: string, normalizedInput: LessonTranscri
     throw new QualityGateRejectedError(reportGate)
   }
 
-  const publishedReport: ClassReportOutput = { ...report, documentStatus: 'published', contentStatus: 'validated', generationStatus: 'gemini_generated', implementationStatus: 'proven' }
-  await prisma.classReportProjection.update({
-    where: { id: projection.id },
-    data: { content: publishedReport as unknown as Prisma.InputJsonValue, documentStatus: 'published', implementationStatus: 'proven' },
-  })
+  const publishedReport: ClassReportOutput = {
+    ...report,
+    documentStatus: 'published',
+    contentStatus: 'validated',
+    generationStatus: 'gemini_generated',
+    implementationStatus: 'proven',
+  }
+  if (projection.documentStatus !== 'published') {
+    await prisma.classReportProjection.update({
+      where: { id: projection.id },
+      data: {
+        content: publishedReport as unknown as Prisma.InputJsonValue,
+        documentStatus: 'published',
+        implementationStatus: 'proven',
+      },
+    })
+  }
+
   const publishedPatch: PortfolioPatchOutput = {
     ...patch,
-    operations: patch.operations.map((operation) => operation.type === 'append_class_report_reference'
-      ? { ...operation, parameters: { ...operation.parameters, class_report_state: 'projection_published' } }
-      : operation),
+    operations: patch.operations.map((operation) =>
+      operation.type === 'append_class_report_reference'
+        ? {
+            ...operation,
+            parameters: {
+              ...operation.parameters,
+              class_report_state: 'projection_published',
+            },
+          }
+        : operation
+    ),
     documentStatus: 'draft',
     implementationStatus: 'proven',
   }
-  const portfolioApply = await applyPortfolioPatch(normalizedInput, runId, publishedPatch)
-  if (portfolioApply.status === 'version_rejected') throw new Error('Portfolio projection version conflict; publication was not applied')
-
-  await prisma.pipelineRun.update({ where: { id: runId }, data: { status: 'completed', completedAt: new Date(), promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue, portfolioApplyStatus: portfolioApply.status, authorityStatus: 'non_authoritative', errorCode: null, errorMessage: null } })
-
-  // Only update the ReviewTask record when this was triggered by a real human review task
-  const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
-  if (isHumanReview) {
-    await prisma.reviewTask.update({ where: { id: reviewTaskId }, data: { decision: 'approved', reviewerId, reviewedAt: new Date(), reason: reason?.trim() || null, stage: 'completed' } })
+  const portfolioApply = await applyPortfolioPatch(
+    normalizedInput,
+    runId,
+    publishedPatch,
+  )
+  if (portfolioApply.status === 'version_rejected') {
+    throw new Error('Portfolio projection version conflict; publication was not applied')
   }
 
-  await prisma.pipelineEvent.createMany({ data: [
-    { pipelineRunId: runId, eventType: 'ClassReportProjectionPublished', aggregateType: 'ClassReportProjection', aggregateId: projection.reportId, payload: { reviewerId, reviewTaskId, documentStatus: 'published', reason: reason || null, autoPublished: !isHumanReview } },
-    { pipelineRunId: runId, eventType: 'PortfolioProjectionUpdated', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { reviewerId, reviewTaskId, patchId: publishedPatch.patch_id, operationKey: publishedPatch.operation_key, applyStatus: portfolioApply.status, projectionVersion: portfolioApply.version } },
-  ], skipDuplicates: true })
-  return { report: publishedReport, coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined }
+  const finalizeRun = options?.finalizeRun ?? true
+  await prisma.pipelineRun.update({
+    where: { id: runId },
+    data: {
+      status: finalizeRun ? 'completed' : 'finalizing',
+      completedAt: finalizeRun ? new Date() : null,
+      promptThreeArtifact: publishedPatch as unknown as Prisma.InputJsonValue,
+      portfolioApplyStatus: portfolioApply.status,
+      authorityStatus: options?.authorityStatus ?? 'non_authoritative',
+      errorCode: null,
+      errorMessage: null,
+    },
+  })
+
+  const isHumanReview = !reviewTaskId.startsWith('auto-publish-')
+  const finalizeReviewTask = options?.finalizeReviewTask ?? true
+  if (isHumanReview && finalizeReviewTask) {
+    await prisma.reviewTask.update({
+      where: { id: reviewTaskId },
+      data: {
+        decision: 'approved',
+        reviewerId,
+        reviewedAt: new Date(),
+        reason: reason?.trim() || null,
+        stage: 'completed',
+      },
+    })
+  }
+
+  await prisma.pipelineEvent.createMany({
+    data: [
+      {
+        pipelineRunId: runId,
+        eventType: 'ClassReportProjectionPublished',
+        aggregateType: 'ClassReportProjection',
+        aggregateId: projection.reportId,
+        payload: {
+          reviewerId,
+          reviewTaskId,
+          documentStatus: 'published',
+          reason: reason || null,
+          autoPublished: !isHumanReview,
+        },
+      },
+      {
+        pipelineRunId: runId,
+        eventType: 'PortfolioProjectionUpdated',
+        aggregateType: 'PortfolioProjection',
+        aggregateId: normalizedInput.studentEmail,
+        payload: {
+          reviewerId,
+          reviewTaskId,
+          patchId: publishedPatch.patch_id,
+          operationKey: publishedPatch.operation_key,
+          applyStatus: portfolioApply.status,
+          projectionVersion: portfolioApply.version,
+        },
+      },
+    ],
+    skipDuplicates: true,
+  })
+
+  return {
+    report: publishedReport,
+    coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined,
+    portfolioApplyStatus: portfolioApply.status,
+    portfolioVersion: portfolioApply.version,
+  }
 }
 
 async function createReviewTask(runId: string, input: LessonTranscriptInput, stage: 'identity_review_required' | 'publication_review_required') {
@@ -562,7 +764,10 @@ async function createReviewTask(runId: string, input: LessonTranscriptInput, sta
   return task
 }
 
-export async function processLessonTranscript(input: LessonTranscriptInput): Promise<PipelineResult> {
+export async function processLessonTranscript(
+  input: LessonTranscriptInput,
+  executionOptions?: SharedLearningMachineExecutionOptions,
+): Promise<PipelineResult> {
   const prisma = getPrismaClient()
   let normalizedInput: LessonTranscriptInput = { ...input, studentEmail: normalizeEmail(input.studentEmail), source: input.source ?? 'google_meet' }
   const sourceFileId = getStableSourceFileId(normalizedInput)
@@ -576,11 +781,44 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
   if (existingBySourceFile && (existingBySourceFile.source !== 'google_meet' || existingBySourceFile.studentEmail !== normalizedInput.studentEmail)) {
     throw new Error('sourceFileId is already bound to a different student')
   }
-  const existingByKey = existingBySourceFile ? null : await prisma.pipelineRun.findUnique({ where: { idempotencyKey: baseIdempotencyKey }, include: { transcript: true } })
-  const existing = existingBySourceFile?.pipelineRuns[0] || existingByKey
+
+  const existingShared = executionOptions
+    ? await prisma.pipelineRun.findUnique({
+        where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+        include: { transcript: true },
+      })
+    : null
+  if (
+    existingShared
+    && (
+      existingShared.studentEmail !== normalizedInput.studentEmail
+      || existingShared.lessonId !== normalizedInput.lessonId
+    )
+  ) {
+    throw new Error('normalized run identity is already bound to a different learner or lesson')
+  }
+
+  const existingByKey = existingBySourceFile || existingShared
+    ? null
+    : await prisma.pipelineRun.findUnique({
+        where: { idempotencyKey: baseIdempotencyKey },
+        include: { transcript: true },
+      })
+  const existing = existingShared || existingBySourceFile?.pipelineRuns[0] || existingByKey
+
   if (existing?.status === 'completed') {
-    const storedReport = await prisma.classReportProjection.findUnique({ where: { studentEmail_lessonId: { studentEmail: normalizedInput.studentEmail, lessonId: normalizedInput.lessonId } } })
-    const storedCoaching = await prisma.coachingGuidance.findUnique({ where: { pipelineRunId: existing.id } })
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+    const storedReport = await prisma.classReportProjection.findUnique({
+      where: {
+        studentEmail_lessonId: {
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+        },
+      },
+    })
+    const storedCoaching = await prisma.coachingGuidance.findUnique({
+      where: { pipelineRunId: existing.id },
+    })
     return {
       pipelineRunId: existing.id,
       status: existing.status,
@@ -589,19 +827,94 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
       coaching: (storedCoaching?.content || undefined) as PipelineResult['coaching'],
     }
   }
+
   if (existing?.status === 'awaiting_review') {
-    const task = await prisma.reviewTask.findFirst({ where: { pipelineRunId: existing.id, stage: 'identity_review_required' } })
-    return { pipelineRunId: existing.id, status: existing.status, duplicate: true, reviewTaskId: task?.id, nextReviewStage: task?.stage }
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+    const task = await prisma.reviewTask.findFirst({
+      where: { pipelineRunId: existing.id, stage: 'identity_review_required' },
+    })
+    return {
+      pipelineRunId: existing.id,
+      status: existing.status,
+      duplicate: true,
+      reviewTaskId: task?.id,
+      nextReviewStage: task?.stage,
+    }
   }
+
+  if (existing?.status === 'awaiting_publication_review') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+    const task = await prisma.reviewTask.findFirst({
+      where: { pipelineRunId: existing.id, stage: 'publication_review_required' },
+    })
+    return {
+      pipelineRunId: existing.id,
+      status: existing.status,
+      duplicate: true,
+      reviewTaskId: task?.id,
+      nextReviewStage: task?.stage,
+    }
+  }
+
   if (existing && existing.status !== 'failed') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     return { pipelineRunId: existing.id, status: existing.status, duplicate: true }
   }
-  const attemptNumber = existing?.status === 'failed' ? existing.attemptNumber + 1 : 1
-  const idempotencyKey = createIdempotencyKey(normalizedInput, attemptNumber)
+
+  const sharedSameExecutionResume = Boolean(
+    executionOptions
+      && existing?.status === 'failed'
+      && existing.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+  )
+  const attemptNumber = sharedSameExecutionResume
+    ? existing!.attemptNumber
+    : existing?.status === 'failed'
+      ? existing.attemptNumber + 1
+      : 1
+  const idempotencyKey = executionOptions
+    ? executionOptions.normalizedRunIdentity
+    : createIdempotencyKey(normalizedInput, attemptNumber)
+
   let run
   let transcript
-  const retryTranscript = existingBySourceFile || existingByKey?.transcript
-  if (retryTranscript && existing?.status === 'failed') {
+  const retryTranscript = existingShared?.transcript || existingBySourceFile || existingByKey?.transcript
+
+  if (sharedSameExecutionResume && existing && retryTranscript) {
+    normalizedInput = rebuildInput(
+      { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
+      retryTranscript,
+    )
+    const resumeClaim = await claimFailedSharedRun({
+      claim: async () => (
+        await prisma.pipelineRun.updateMany({
+          where: {
+            id: existing.id,
+            status: 'failed',
+            executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+          },
+          data: {
+            status: 'processing',
+            errorCode: null,
+            errorMessage: null,
+            completedAt: null,
+          },
+        })
+      ).count,
+      readCurrent: () => prisma.pipelineRun.findUnique({
+        where: { id: existing.id },
+      }),
+    })
+    if (!resumeClaim.claimed) {
+      await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+      return {
+        pipelineRunId: existing.id,
+        status: resumeClaim.current.status,
+        duplicate: true,
+      }
+    }
+    run = resumeClaim.current
+    transcript = retryTranscript
+  } else if (retryTranscript && existing?.status === 'failed') {
     normalizedInput = rebuildInput(
       { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
       retryTranscript,
@@ -615,15 +928,27 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
           studentEmail: normalizedInput.studentEmail,
           lessonId: normalizedInput.lessonId,
           status: 'received',
+          executionMode: executionOptions?.executionMode ?? 'legacy',
+          normalizedRunIdentity: executionOptions?.normalizedRunIdentity ?? null,
+          machineVersion: executionOptions?.machineVersion ?? null,
+          machineContractVersion: executionOptions?.machineContractVersion ?? null,
+          currentStage: executionOptions ? 'received' : null,
+          resumePoint: executionOptions ? 'prompt_1' : null,
         },
       })
       transcript = retryTranscript
     } catch (error) {
-      if (!isUniqueConstraintError(error)) throw error
-      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
-      if (!concurrent) throw error
+      const concurrent = await resolveUniqueSharedRunConflict({
+        error,
+        isUniqueConstraintError,
+        loadExisting: () => executionOptions
+          ? prisma.pipelineRun.findUnique({
+              where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+            })
+          : prisma.pipelineRun.findUnique({ where: { idempotencyKey } }),
+      })
       if (concurrent.studentEmail !== normalizedInput.studentEmail) {
-        throw new Error('idempotency key is already bound to a different student')
+        throw new Error('idempotency identity is already bound to a different student')
       }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
@@ -648,6 +973,12 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
               studentEmail: normalizedInput.studentEmail,
               lessonId: normalizedInput.lessonId,
               status: 'received',
+              executionMode: executionOptions?.executionMode ?? 'legacy',
+              normalizedRunIdentity: executionOptions?.normalizedRunIdentity ?? null,
+              machineVersion: executionOptions?.machineVersion ?? null,
+              machineContractVersion: executionOptions?.machineContractVersion ?? null,
+              currentStage: executionOptions ? 'received' : null,
+              resumePoint: executionOptions ? 'prompt_1' : null,
             },
           },
         },
@@ -656,39 +987,184 @@ export async function processLessonTranscript(input: LessonTranscriptInput): Pro
       transcript = createdTranscript
       run = createdTranscript.pipelineRuns[0]
     } catch (error) {
-      if (!isUniqueConstraintError(error)) throw error
-      const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
-      if (!concurrent) throw error
-      if (concurrent.studentEmail !== normalizedInput.studentEmail) throw new Error('idempotency key is already bound to a different student')
+      const concurrent = await resolveUniqueSharedRunConflict({
+        error,
+        isUniqueConstraintError,
+        loadExisting: () => executionOptions
+          ? prisma.pipelineRun.findUnique({
+              where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+            })
+          : prisma.pipelineRun.findUnique({ where: { idempotencyKey } }),
+      })
+      if (concurrent.studentEmail !== normalizedInput.studentEmail) {
+        throw new Error('idempotency identity is already bound to a different student')
+      }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
   }
-  if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
-  try {
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'processing', errorCode: null, errorMessage: null } })
-    const promptOne = await runPromptOne(normalizedInput, transcript.id)
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { promptOneSchemaVersion: promptOne.schema_version, promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue, authorityStatus: promptOne.authority_status } })
-    const persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
 
-    // Identity check: trusted sources skip the identity review queue
-    if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
-      const result = await continueAfterReview(run.id, normalizedInput, transcript.id, promptOne, persistedEvidenceCount)
-      // If continueAfterReview routed to publication_review_required (exception path), status is already updated.
-      const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
-      const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
-      if (!result.qualityGate.allowed) {
-        return { pipelineRunId: run.id, status: 'not_proven', duplicate: false, report: result.report, coaching: result.coaching }
+  if (!run || !transcript) throw new Error('Pipeline attempt initialization failed')
+  await recordSharedTriggerIfNeeded(run.id, executionOptions)
+  const resumePointAtStart =
+    executionOptions && sharedSameExecutionResume
+      ? run.resumePoint
+      : executionOptions
+        ? 'prompt_1'
+        : null
+
+  try {
+    if (executionOptions && resumePointAtStart === 'awaiting_identity_review') {
+      const task = await prisma.reviewTask.findFirst({
+        where: { pipelineRunId: run.id, stage: 'identity_review_required' },
+      })
+      return {
+        pipelineRunId: run.id,
+        status: 'awaiting_review',
+        duplicate: true,
+        reviewTaskId: task?.id,
+        nextReviewStage: task?.stage,
       }
-      if (finalStatus === 'awaiting_publication_review') {
-        const publicationTask = await prisma.reviewTask.findFirst({ where: { pipelineRunId: run.id, stage: 'publication_review_required' } })
-        return { pipelineRunId: run.id, status: finalStatus, duplicate: false, reviewTaskId: publicationTask?.id, nextReviewStage: publicationTask?.stage, report: result.report, coaching: result.coaching }
-      }
-      return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
     }
 
-    // Ambiguous identity: send to review queue (unchanged behaviour)
-    const reviewTask = await createReviewTask(run.id, normalizedInput, 'identity_review_required')
-    return { pipelineRunId: run.id, status: 'awaiting_review', duplicate: false, reviewTaskId: reviewTask.id, nextReviewStage: reviewTask.stage }
+    if (executionOptions && resumePointAtStart === 'awaiting_teacher_authority') {
+      const task = await prisma.reviewTask.findFirst({
+        where: { pipelineRunId: run.id, stage: 'publication_review_required' },
+      })
+      return {
+        pipelineRunId: run.id,
+        status: 'awaiting_publication_review',
+        duplicate: true,
+        reviewTaskId: task?.id,
+        nextReviewStage: task?.stage,
+      }
+    }
+
+    if (
+      executionOptions
+      && (
+        resumePointAtStart === 'canonicalization'
+        || resumePointAtStart === 'canonical_verification'
+        || resumePointAtStart === 'canonical_projections'
+        || resumePointAtStart === 'communication_projection'
+      )
+    ) {
+      await prisma.pipelineRun.update({
+        where: { id: run.id },
+        data: { status: 'failed' },
+      })
+      return {
+        pipelineRunId: run.id,
+        status: 'failed',
+        duplicate: true,
+      }
+    }
+
+    let promptOne: PromptOneOutput
+    let persistedEvidenceCount: number
+
+    if (executionOptions && resumePointAtStart === 'draft_generation') {
+      promptOne = asRecord(run.promptOneArtifact) as unknown as PromptOneOutput
+      if (!promptOne.schema_version || !Array.isArray(promptOne.evidence_candidates)) {
+        throw new Error('Shared runner draft resume requires the persisted Prompt 1 artifact')
+      }
+      persistedEvidenceCount = await prisma.evidenceCandidate.count({
+        where: { transcriptId: transcript.id },
+      })
+    } else {
+      if (executionOptions) {
+        await checkpointLearningMachine({
+          pipelineRunId: run.id,
+          stage: 'prompt_1',
+          status: 'processing',
+          resumePoint: 'prompt_1',
+        })
+      } else {
+        await prisma.pipelineRun.update({
+          where: { id: run.id },
+          data: { status: 'processing', errorCode: null, errorMessage: null },
+        })
+      }
+      promptOne = await runPromptOne(normalizedInput, transcript.id)
+      await prisma.pipelineRun.update({
+        where: { id: run.id },
+        data: {
+          promptOneSchemaVersion: promptOne.schema_version,
+          promptOneArtifact: promptOne as unknown as Prisma.InputJsonValue,
+          authorityStatus: promptOne.authority_status,
+        },
+      })
+      persistedEvidenceCount = await persistPromptOne(run.id, transcript.id, promptOne)
+    }
+
+    // Identity check: trusted sources skip the identity review queue.
+    if (isTrustedSource(normalizedInput, promptOne.authority_status)) {
+      const result = await continueAfterReview(
+        run.id,
+        normalizedInput,
+        transcript.id,
+        promptOne,
+        persistedEvidenceCount,
+        executionOptions,
+      )
+      const updatedRun = await prisma.pipelineRun.findUnique({
+        where: { id: run.id },
+        select: { status: true },
+      })
+      const finalStatus =
+        updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
+      if (!result.qualityGate.allowed) {
+        return {
+          pipelineRunId: run.id,
+          status: 'not_proven',
+          duplicate: false,
+          report: result.report,
+          coaching: result.coaching,
+        }
+      }
+      if (finalStatus === 'awaiting_publication_review') {
+        const publicationTask = await prisma.reviewTask.findFirst({
+          where: { pipelineRunId: run.id, stage: 'publication_review_required' },
+        })
+        return {
+          pipelineRunId: run.id,
+          status: finalStatus,
+          duplicate: false,
+          reviewTaskId: publicationTask?.id,
+          nextReviewStage: publicationTask?.stage,
+          report: result.report,
+          coaching: result.coaching,
+        }
+      }
+      return {
+        pipelineRunId: run.id,
+        status: finalStatus,
+        duplicate: false,
+        report: result.report,
+        coaching: result.coaching,
+      }
+    }
+
+    const reviewTask = await createReviewTask(
+      run.id,
+      normalizedInput,
+      'identity_review_required',
+    )
+    if (executionOptions) {
+      await checkpointLearningMachine({
+        pipelineRunId: run.id,
+        stage: 'awaiting_identity_review',
+        status: 'awaiting_review',
+        resumePoint: 'awaiting_identity_review',
+        payload: { reviewTaskId: reviewTask.id },
+      })
+    }
+    return {
+      pipelineRunId: run.id,
+      status: 'awaiting_review',
+      duplicate: false,
+      reviewTaskId: reviewTask.id,
+      nextReviewStage: reviewTask.stage,
+    }
   } catch (error) {
     if (isUniqueConstraintError(error) && sourceFileId) {
       const concurrent = await prisma.pipelineRun.findUnique({ where: { idempotencyKey } })
@@ -758,25 +1234,34 @@ export type AdminPipelineRetryResult = PipelineResult & {
 }
 
 export async function retryFailedPipelineRun(input: {
-  sourceFileId: string
+  sourceFileId?: string
   expectedPipelineRunId: string
   requestedBy: string
 }): Promise<AdminPipelineRetryResult> {
   const prisma = getPrismaClient()
-  const sourceFileId = input.sourceFileId.trim()
+  const sourceFileId = input.sourceFileId?.trim() || ''
   const expectedPipelineRunId = input.expectedPipelineRunId.trim()
-  if (!sourceFileId || !expectedPipelineRunId) {
-    throw new Error('sourceFileId and expectedPipelineRunId are required')
+  if (!expectedPipelineRunId) {
+    throw new Error('expectedPipelineRunId is required')
   }
 
-  const transcript = await prisma.transcript.findUnique({
-    where: { sourceFileId },
-    include: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1 } },
+  const latest = await prisma.pipelineRun.findUnique({
+    where: { id: expectedPipelineRunId },
+    include: { transcript: true },
   })
-  const latest = transcript?.pipelineRuns[0]
-  if (!transcript || !latest) throw new Error('Pipeline transcript not found')
-  if (latest.id !== expectedPipelineRunId) {
+  const transcript = latest?.transcript
+  if (!latest || !transcript) throw new Error('Pipeline transcript not found')
+
+  const newestAttempt = await prisma.pipelineRun.findFirst({
+    where: { transcriptId: transcript.id },
+    orderBy: { attemptNumber: 'desc' },
+    select: { id: true },
+  })
+  if (newestAttempt?.id !== expectedPipelineRunId) {
     throw new Error('Latest pipeline run changed; refresh before retrying')
+  }
+  if (sourceFileId && transcript.sourceFileId !== sourceFileId) {
+    throw new Error('sourceFileId does not match the preserved pipeline transcript')
   }
   if (latest.status !== 'failed') {
     throw new Error('Only the latest failed pipeline run can be retried')
@@ -787,8 +1272,198 @@ export async function retryFailedPipelineRun(input: {
     ...rebuilt,
     metadata: {
       ...asRecord(rebuilt.metadata),
-      sourceFileId,
+      ...(transcript.sourceFileId
+        ? { sourceFileId: transcript.sourceFileId }
+        : sourceFileId
+          ? { sourceFileId }
+          : {}),
     },
+  }
+
+  if (latest.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE) {
+    if (!latest.normalizedRunIdentity) {
+      throw new Error('Shared runner failed run is missing normalized identity')
+    }
+
+    const derived = buildSharedLearningMachineExecutionOptions({
+      transcript: retryInput,
+      triggerOrigin: 'retry',
+      requestedBy: input.requestedBy,
+    })
+    if (derived.normalizedRunIdentity !== latest.normalizedRunIdentity) {
+      throw new Error('Stored shared-run identity no longer matches the preserved transcript')
+    }
+
+    const retryExecutionOptions = persistedSharedExecutionOptions(
+      latest,
+      'retry',
+      input.requestedBy,
+    )
+    if (!retryExecutionOptions) {
+      throw new Error('Shared runner retry options could not be restored')
+    }
+
+    await recordSharedTriggerIfNeeded(latest.id, retryExecutionOptions)
+
+    const canonicalResume = new Set([
+      'canonicalization',
+      'canonical_verification',
+      'canonical_projections',
+      'communication_projection',
+    ])
+
+    let result: PipelineResult
+    try {
+      if (latest.resumePoint && canonicalResume.has(latest.resumePoint)) {
+        const resumeClaim = await claimFailedSharedRun({
+          claim: async () => (
+            await prisma.pipelineRun.updateMany({
+              where: {
+                id: latest.id,
+                status: 'failed',
+                executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+              },
+              data: {
+                status: 'processing',
+                errorCode: null,
+                errorMessage: null,
+                completedAt: null,
+              },
+            })
+          ).count,
+          readCurrent: () => prisma.pipelineRun.findUnique({
+            where: { id: latest.id },
+          }),
+        })
+        if (!resumeClaim.claimed) {
+          return {
+            pipelineRunId: latest.id,
+            status: resumeClaim.current.status,
+            duplicate: true,
+            errorCode: resumeClaim.current.errorCode || undefined,
+          }
+        }
+
+        const authorityEvent = await prisma.pipelineEvent.findFirst({
+          where: {
+            pipelineRunId: latest.id,
+            eventType: 'PublicationReviewApproved',
+          },
+          orderBy: { createdAt: 'desc' },
+          select: { aggregateId: true },
+        })
+        if (!authorityEvent) {
+          throw new Error('Shared runner canonical resume requires the persisted Teacher Authority event')
+        }
+        const authorityTask = await prisma.reviewTask.findUnique({
+          where: { id: authorityEvent.aggregateId },
+        })
+        if (
+          !authorityTask
+          || authorityTask.pipelineRunId !== latest.id
+          || authorityTask.decision !== 'approved'
+          || !authorityTask.reviewerId
+          || !authorityTask.reviewedAt
+        ) {
+          throw new Error('Shared runner canonical resume requires the persisted Teacher Authority decision')
+        }
+
+        let learnerProducts:
+          | Awaited<ReturnType<typeof publishAfterReview>>
+          | undefined
+        await executeCanonicalContinuation({
+          pipelineRunId: latest.id,
+          reviewTaskId: authorityTask.id,
+          reviewerRef: authorityTask.reviewerId,
+          decisionTimestamp: authorityTask.reviewedAt,
+          communicationProjection: async () => {
+            learnerProducts = await publishAfterReview(
+              latest.id,
+              retryInput,
+              authorityTask.id,
+              authorityTask.reviewerId!,
+              authorityTask.reason ?? undefined,
+              {
+                finalizeRun: false,
+                finalizeReviewTask: false,
+                authorityStatus: 'teacher_authorized',
+              },
+            )
+            return {
+              classReportPublished: true,
+              portfolioApplyStatus: learnerProducts.portfolioApplyStatus,
+              portfolioVersion: learnerProducts.portfolioVersion,
+            }
+          },
+        })
+        await prisma.reviewTask.update({
+          where: { id: authorityTask.id },
+          data: { stage: 'completed' },
+        })
+        result = {
+          pipelineRunId: latest.id,
+          status: 'completed',
+          duplicate: false,
+          reviewTaskId: authorityTask.id,
+          report: learnerProducts?.report,
+          coaching: learnerProducts?.coaching,
+        }
+      } else {
+        result = await processLessonTranscript(retryInput, retryExecutionOptions)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown shared-runner resume failure'
+      await prisma.pipelineRun.update({
+        where: { id: latest.id },
+        data: {
+          status: 'failed',
+          errorCode: 'SHARED_RUNNER_RESUME_FAILED',
+          errorMessage: message,
+        },
+      })
+      throw error
+    }
+
+    await prisma.pipelineEvent.upsert({
+      where: {
+        pipelineRunId_eventType_aggregateId: {
+          pipelineRunId: latest.id,
+          eventType: 'PipelineRetryRequested',
+          aggregateId: `${latest.id}:${latest.resumePoint ?? 'unknown'}`,
+        },
+      },
+      update: {
+        payload: {
+          previousPipelineRunId: latest.id,
+          attemptNumber: latest.attemptNumber,
+          requestedBy: input.requestedBy,
+          retryMode: 'same_execution_resume',
+          resumePoint: latest.resumePoint,
+        },
+      },
+      create: {
+        pipelineRunId: latest.id,
+        eventType: 'PipelineRetryRequested',
+        aggregateType: 'PipelineRun',
+        aggregateId: `${latest.id}:${latest.resumePoint ?? 'unknown'}`,
+        payload: {
+          previousPipelineRunId: latest.id,
+          attemptNumber: latest.attemptNumber,
+          requestedBy: input.requestedBy,
+          retryMode: 'same_execution_resume',
+          resumePoint: latest.resumePoint,
+        },
+      },
+    })
+
+    const resumedRun = await prisma.pipelineRun.findUniqueOrThrow({
+      where: { id: latest.id },
+    })
+    return {
+      ...result,
+      pipelineRunId: latest.id,
+      errorCode: resumedRun.errorCode || undefined,
+    }
   }
 
   let result: PipelineResult | null = null
@@ -805,7 +1480,7 @@ export async function retryFailedPipelineRun(input: {
   })
   if (!attemptedRun || attemptedRun.id === expectedPipelineRunId) {
     if (executionError) throw executionError
-    throw new Error('Pipeline retry did not create a new attempt')
+    throw new Error('Legacy pipeline retry did not create a new attempt')
   }
 
   await prisma.pipelineEvent.upsert({
@@ -907,14 +1582,123 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
   }
 
   const normalizedInput = rebuildInput(run, run.transcript)
+  const sharedResumeOptions = persistedSharedExecutionOptions(
+    run,
+    'resume',
+    input.reviewerId,
+  )
   if (isPublicationReview) {
-    await prisma.reviewTask.update({ where: { id: task.id }, data: { decision: 'approved', reason: input.reason?.trim() || null, reviewerId: input.reviewerId, reviewedAt, stage: 'publishing' } })
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'publishing', completedAt: null } })
-    await prisma.pipelineEvent.upsert({
-      where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: run.id, eventType: 'PublicationReviewApproved', aggregateId: task.id } },
-      update: { payload: { reviewTaskId: task.id, reviewerId: input.reviewerId, reason: input.reason || null } },
-      create: { pipelineRunId: run.id, eventType: 'PublicationReviewApproved', aggregateType: 'ReviewTask', aggregateId: task.id, payload: { reviewTaskId: task.id, reviewerId: input.reviewerId, reason: input.reason || null } },
+    const authorityBinding = sharedResumeOptions
+      ? await canonicalAuthorityPayloadHashForPipelineRun(run.id)
+      : null
+
+    await prisma.reviewTask.update({
+      where: { id: task.id },
+      data: {
+        decision: 'approved',
+        reason: input.reason?.trim() || null,
+        reviewerId: input.reviewerId,
+        reviewedAt,
+        stage: sharedResumeOptions ? 'canonicalizing' : 'publishing',
+      },
     })
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: sharedResumeOptions ? 'canonicalizing' : 'publishing',
+        completedAt: null,
+      },
+    })
+    await prisma.pipelineEvent.upsert({
+      where: {
+        pipelineRunId_eventType_aggregateId: {
+          pipelineRunId: run.id,
+          eventType: 'PublicationReviewApproved',
+          aggregateId: task.id,
+        },
+      },
+      update: {
+        payload: {
+          reviewTaskId: task.id,
+          reviewerId: input.reviewerId,
+          reason: input.reason || null,
+          canonicalAuthorityPayloadHash: authorityBinding?.hash ?? null,
+          sharedLearningMachine: Boolean(sharedResumeOptions),
+        },
+      },
+      create: {
+        pipelineRunId: run.id,
+        eventType: 'PublicationReviewApproved',
+        aggregateType: 'ReviewTask',
+        aggregateId: task.id,
+        payload: {
+          reviewTaskId: task.id,
+          reviewerId: input.reviewerId,
+          reason: input.reason || null,
+          canonicalAuthorityPayloadHash: authorityBinding?.hash ?? null,
+          sharedLearningMachine: Boolean(sharedResumeOptions),
+        },
+      },
+    })
+
+    if (sharedResumeOptions) {
+      let learnerProducts:
+        | Awaited<ReturnType<typeof publishAfterReview>>
+        | undefined
+      try {
+        await executeCanonicalContinuation({
+          pipelineRunId: run.id,
+          reviewTaskId: task.id,
+          reviewerRef: input.reviewerId,
+          decisionTimestamp: reviewedAt,
+          communicationProjection: async () => {
+            learnerProducts = await publishAfterReview(
+              run.id,
+              normalizedInput,
+              task.id,
+              input.reviewerId,
+              input.reason,
+              {
+                finalizeRun: false,
+                finalizeReviewTask: false,
+                authorityStatus: 'teacher_authorized',
+              },
+            )
+            return {
+              classReportPublished: true,
+              portfolioApplyStatus: learnerProducts.portfolioApplyStatus,
+              portfolioVersion: learnerProducts.portfolioVersion,
+            }
+          },
+        })
+        await prisma.reviewTask.update({
+          where: { id: task.id },
+          data: { stage: 'completed' },
+        })
+        return {
+          pipelineRunId: run.id,
+          status: 'completed',
+          duplicate: false,
+          reviewTaskId: task.id,
+          report: learnerProducts?.report,
+          coaching: learnerProducts?.coaching,
+        }
+      } catch (error) {
+        const message = error instanceof Error
+          ? error.message
+          : 'Unknown shared-runner canonical continuation failure'
+        await prisma.pipelineRun.update({
+          where: { id: run.id },
+          data: {
+            status: 'failed',
+            errorCode: 'SHARED_RUNNER_CANONICAL_CONTINUATION_FAILED',
+            errorMessage: message,
+          },
+        })
+        throw error
+      }
+    }
+
     try {
       const result = await publishAfterReview(run.id, normalizedInput, task.id, input.reviewerId, input.reason)
       return { pipelineRunId: run.id, status: 'completed', duplicate: false, reviewTaskId: task.id, report: result.report, coaching: result.coaching }
@@ -942,7 +1726,7 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
 
   try {
     const persistedEvidenceCount = await prisma.evidenceCandidate.count({ where: { transcriptId: run.transcript.id } })
-    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne, persistedEvidenceCount)
+    const result = await continueAfterReview(run.id, normalizedInput, run.transcript.id, promptOne, persistedEvidenceCount, sharedResumeOptions)
     const updatedRun = await prisma.pipelineRun.findUnique({ where: { id: run.id }, select: { status: true } })
     const finalStatus = updatedRun?.status || (result.qualityGate.allowed ? 'completed' : 'not_proven')
     if (!result.qualityGate.allowed) {
@@ -955,7 +1739,14 @@ export async function reviewPipelineRun(input: { pipelineRunId: string; decision
     return { pipelineRunId: run.id, status: finalStatus, duplicate: false, report: result.report, coaching: result.coaching }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure after identity review'
-    await prisma.pipelineRun.update({ where: { id: run.id }, data: { status: 'failed', errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED', errorMessage: message } })
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: 'failed',
+        errorCode: 'PIPELINE_REVIEW_CONTINUATION_FAILED',
+        errorMessage: message,
+      },
+    })
     await prisma.reviewTask.update({ where: { id: task.id }, data: { stage: 'processing_approved' } })
     throw error
   }

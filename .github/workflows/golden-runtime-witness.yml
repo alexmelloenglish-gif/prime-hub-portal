@@ -1,0 +1,89 @@
+name: Golden Runtime Witness
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  golden-runtime-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: prime
+          POSTGRES_PASSWORD: prime
+          POSTGRES_DB: prime_runtime_witness
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U prime -d prime_runtime_witness"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_runtime_witness?schema=public
+      DATABASE_URL_UNPOOLED: postgresql://prime:prime@localhost:5432/prime_runtime_witness?schema=public
+      NODE_ENV: test
+      NEXTAUTH_SECRET: runtime-witness-only-not-production
+      NEXTAUTH_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact candidate checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Materialize exact pre-runner disposable baseline
+        run: npx prisma db push --schema scripts/runtime-witness-baseline-schema.prisma --skip-generate
+
+      - name: Register historical baseline migrations in disposable DB
+        shell: bash
+        run: |
+          set -euo pipefail
+          FIRST_INTEGRATED_MIGRATION="20260925013000_add_shared_learning_machine_runner_state"
+          for dir in $(find prisma/migrations -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort); do
+            if [[ "$dir" < "$FIRST_INTEGRATED_MIGRATION" ]]; then
+              npx prisma migrate resolve --applied "$dir"
+            fi
+          done
+
+      - name: Apply integrated post-baseline migrations to disposable Postgres only
+        run: npx prisma migrate deploy
+
+      - name: Verify migration state
+        run: npx prisma migrate status
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Execute Golden runtime witness
+        run: npx --yes tsx@4.20.6 ./scripts/golden-runtime-witness.ts
+
+      - name: Upload persisted witness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-runtime-witness
+          path: artifacts/golden-runtime-witness.json
+          if-no-files-found: warn

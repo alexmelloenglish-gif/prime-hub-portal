@@ -14,6 +14,7 @@ import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.j
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
+import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -899,6 +900,65 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
   }
 }
 
+
+async function mergeCanonicalProjection(student: StudentDashboardData): Promise<StudentDashboardData> {
+  if (!student.studentId) return student
+
+  try {
+    const prisma = getPrismaClient()
+    const [intelligenceRows, portfolioRows] = await Promise.all([
+      prisma.canonicalLearningIntelligenceProjection.findMany({
+        where: {
+          studentId: student.studentId,
+          targetType: 'learning_intelligence',
+          projectionStatus: 'VERIFIED',
+        },
+        orderBy: [{ createdAt: 'asc' }, { projectionId: 'asc' }],
+        select: {
+          canonicalRecordId: true,
+          lessonId: true,
+          scopeType: true,
+          projection: true,
+          createdAt: true,
+          verifiedAt: true,
+        },
+      }),
+      prisma.canonicalLearningRecordProjection.findMany({
+        where: {
+          studentId: student.studentId,
+          targetType: 'portfolio',
+          projectionStatus: 'VERIFIED',
+        },
+        select: { canonicalRecordId: true },
+      }),
+    ])
+
+    const verifiedPortfolioRecordIds = new Set(
+      portfolioRows.map((row) => row.canonicalRecordId),
+    )
+    const fullyVerifiedRows = intelligenceRows.filter((row) =>
+      verifiedPortfolioRecordIds.has(row.canonicalRecordId)
+    )
+
+    if (!fullyVerifiedRows.length) return student
+    return mergeCanonicalLearningIntelligenceRows(student, fullyVerifiedRows)
+  } catch (error) {
+    console.warn('[student-dashboard] Canonical read bridge unavailable; preserving existing bounded sources', {
+      studentId: student.studentId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    })
+    return student
+  }
+}
+
+async function mergeDashboardSources(
+  email: string,
+  student: StudentDashboardData,
+): Promise<StudentDashboardData> {
+  const pipelineMerged = await mergePipelineProjection(email, student)
+  return mergeCanonicalProjection(pipelineMerged)
+}
+
 function parseCanonicalLessons(value: unknown, studentId: string): CanonicalLesson[] {
   if (!Array.isArray(value)) return []
   const lessons: CanonicalLesson[] = []
@@ -966,7 +1026,7 @@ const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
     if (!isFirebaseConfigured) {
       const repositoryStudent = buildRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
+      const mergedStudent = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
       return {
         hasAccess: Boolean(mergedStudent),
         source: mergedStudent ? 'repository' : 'preview',
@@ -990,7 +1050,7 @@ const getStudentDashboardStateCached = cache(
         return {
           hasAccess: true,
           source: 'firestore',
-          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name)),
+          student: await mergeDashboardSources(normalizedEmail, parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name)),
           isPreviewingAnotherStudent: false,
           viewerEmail: email,
         }
@@ -1006,14 +1066,14 @@ const getStudentDashboardStateCached = cache(
         return {
           hasAccess: true,
           source: 'firestore',
-          student: await mergePipelineProjection(normalizedEmail, parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name)),
+          student: await mergeDashboardSources(normalizedEmail, parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name)),
           isPreviewingAnotherStudent: false,
           viewerEmail: email,
         }
       }
 
       const repositoryStudent = buildExplicitRepositoryStudent(normalizedEmail, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(normalizedEmail, repositoryStudent) : null
+      const mergedStudent = repositoryStudent ? await mergeDashboardSources(normalizedEmail, repositoryStudent) : null
       if (mergedStudent) {
         console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
           studentId: mergedStudent.studentId,
@@ -1029,7 +1089,7 @@ const getStudentDashboardStateCached = cache(
       }
     } catch (error) {
       const repositoryStudent = buildExplicitRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergePipelineProjection(email, repositoryStudent) : null
+      const mergedStudent = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
       if (mergedStudent) {
         console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
           studentId: mergedStudent.studentId,
