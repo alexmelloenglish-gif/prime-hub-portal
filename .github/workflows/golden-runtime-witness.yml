@@ -61,14 +61,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          FIRST_INTEGRATED_MIGRATION="20260925013000_add_shared_learning_machine_runner_state"
           for dir in $(find prisma/migrations -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort); do
-            if [ "$dir" = "20260925013000_add_shared_learning_machine_runner_state" ]; then
-              continue
+            if [[ "$dir" < "$FIRST_INTEGRATED_MIGRATION" ]]; then
+              npx prisma migrate resolve --applied "$dir"
             fi
-            npx prisma migrate resolve --applied "$dir"
           done
 
-      - name: Apply repository shared-runner migration to disposable Postgres only
+      - name: Apply integrated post-baseline migrations to disposable Postgres only
         run: npx prisma migrate deploy
 
       - name: Verify migration state
