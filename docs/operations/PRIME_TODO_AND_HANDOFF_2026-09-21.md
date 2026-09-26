@@ -223,3 +223,35 @@ This section supersedes older pre-integration wording for the current finalizati
 
 ### Scope note
 Reconnection/LinkedIn phases remain business-development work, not a blocker for declaring the learning platform technically complete.
+
+---
+
+## 2026-09-26 — Post-Production / Portfolio consolidation handoff
+
+This section supersedes the remaining stale pre-integration queue text above.
+
+### Executed state
+- [x] PR #65 integrated core was merged into `main`; Production release completed and official-domain read-back passed.
+- [x] PR #62 was reconciled onto the post-#65 `main`, its Portfolio workflow was corrected to enforce exact-head checkout/SHA verification, and exact head `a220e395a421f740a7b9c02aef78467db1327b8e` passed:
+  - Student Family Portfolio Supervision;
+  - Student Dashboard Contract;
+  - Golden Runtime Witness;
+  - Coordination Runtime Witness;
+  - Vercel Preview READY.
+- [x] PR #62 merged as `e6ddd7b10d7702720b2d5dbd5b629a5d6ac1bd12`.
+- [x] Post-merge `main@e6ddd7b10d7702720b2d5dbd5b629a5d6ac1bd12` passed Student Family Portfolio Supervision and Student Dashboard Contract; Vercel Production deployment `dpl_DZrmAwNicKxwquJ5cwbkeDjc9gDh` is READY on the official aliases.
+- [x] Component lanes #59/#60/#61/#64 are closed as superseded provenance.
+- [x] PR #63 is closed/merged provenance because its head became reachable through the integrated merge path; do not describe it as an unmerged closure.
+- [x] GitHub currently reports no open pull requests.
+
+### Remaining activation blocker
+- [ ] Production DB migration/read-back remains blocked only by Neon connector authorization failure before database access.
+- [ ] No Production coordination wake/auth target or automatic Learning Machine trigger may be claimed active until the DB pre-read/migrations/post-read and controlled activation witness are completed.
+- [ ] Teacher Authority remains human and candidate-specific.
+
+### Next safe work
+1. On each autonomous run, read Issue #58 and this handoff before deriving work.
+2. Retry read-only Neon Production preflight; if authorization is restored, execute the already-recorded migration → read-back → controlled wake → Teacher Authority witness → idempotency/ACK sequence.
+3. While Neon access remains externally blocked, continue non-conflicting product-completion audits/read-backs from current `main`, including external Portfolio publication witness only when its document-write boundary is explicitly authorized.
+4. Do not reopen superseded component PRs without a concrete regression.
+
