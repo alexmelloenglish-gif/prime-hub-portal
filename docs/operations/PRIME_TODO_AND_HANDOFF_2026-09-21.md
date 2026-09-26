@@ -13,420 +13,184 @@
 
 ---
 
+# L. 2026-09-25 — Cross-agent recovery checkpoint: P0 PR #59
+
+**Status:** ACTIVE VALIDATION TARGET — DO NOT REIMPLEMENT FROM ZERO  
+**Operational record:** Issue #58  
+**Active implementation:** PR #59 — `P0: shared Learning Machine runner + durable run history`
+
+A later direct repository verification recovered the other executor's published P0 work. This supersedes any earlier interpretation that the shared-runner implementation existed only as unpublished/local work.
+
+## Verified remote state
+
+- active branch: `machine/shared-runner-v1-2026-09-25`
+- PR #59: OPEN / DRAFT
+- PR head: `2e4dc06192ddd2768e21b396c6497b5d2cfbf7cf`
+- PR base: `main@f96e7fcbbbe33844b06d5ba5dbb6b89bf7ff88c1`
+- exact-head GitHub workflow `Student Dashboard Contract`: SUCCESS
+- same PR-head Vercel Preview: READY
+- automation remains frozen for production activation; Preview/CI validation is not production rollout authority.
+
+## Recovered implementation scope
+
+The published PR describes and contains the P0 implementation path for:
+
+- deterministic trigger-independent normalized run identity;
+- shared runner entry point for manual and automatic adapters;
+- durable `PipelineRun` machine state;
+- machine/contract versions, current stage, resume point and final manifest;
+- durable trigger/checkpoint/manifest events;
+- explicit Teacher Authority stop before protected canonical transitions;
+- teacher approval bound to the exact canonical payload hash;
+- G2 canonicalization and G3 read-back verification after approval;
+- canonical Portfolio and Learning Intelligence projections;
+- retry/resume/idempotency contract;
+- additive migration `20260925013000_add_shared_learning_machine_runner_state`;
+- exact-SHA structural CI gate for the shared runner.
+
+## Mandatory interpretation for every executor
+
+1. **Do not create another shared-runner implementation or competing P0 branch.** Continue by auditing and correcting PR #59.
+2. **Do not merge merely because CI and Preview are green.** The exact PR head must satisfy the complete acceptance boundary below.
+3. **Do not activate production automation or apply runtime migration merely from this checkpoint.** Migration/runtime rollout requires its own reviewed authority boundary.
+4. Preserve all existing canonical constraints: history is non-lossy; candidate != canonical; Teacher Authority precedes protected publication; `student-dashboard-v1.0` remains; learner-facing surfaces contain no governance/technical language; ordinary lesson accumulation cannot promote CEFR; Louise's integrated `student-core-registry` state must remain additive and intact.
+5. Closed legacy PRs remain provenance only. Do not resurrect #18/#19/#30/#36/#42/#46.
+
+## Acceptance proof still required before merge
+
+Audit the actual PR #59 diff/tests and prove on the **same exact head SHA**:
+
+```text
+manual trigger + automatic trigger
+→ same normalized run identity
+→ same machine stages
+→ interruption resumes at the exact durable stage
+→ duplicate/retry is idempotent and does not duplicate canonical writes/projections
+→ explicit persisted Teacher Authority blocks unauthorized canonicalization
+→ approval is bound to the exact payload/hash
+→ G2 canonicalization
+→ G3 canonical read-back verification
+→ canonical Portfolio + Learning Intelligence projections
+→ durable final manifest with versions/hashes/stage outcomes/delivery state
+```
+
+Required gates on that same head:
+
+- TypeScript
+- Student Dashboard v1.0 self-test
+- canonical strict
+- G6 authority self-test
+- Shared Learning Machine structural/self-test
+- Next build
+- Vercel Preview READY for the same head
+
+If any corrective commit changes PR #59 head, all merge-critical exact-SHA proof must be re-evaluated against the new head. **No merge/release of a SHA different from the SHA actually tested.**
+
+## Immediate next executor action
+
+> Open PR #59, audit its changed files and tests against this acceptance boundary, identify any concrete missing proof or defect, correct only those gaps on the existing P0 branch, rerun the exact-SHA gates, and record the resulting evidence in Issue #58 and this canonical handoff. Do not ask Alexandre to relay state between agents.
+
+---
+
 # A. Closed in the 15–21 Sep closeout
 
-- [x] **Current production re-verified after governance closeout**
-  - main: `6b1f85f2974eadf5131cb0c402bd699c2bb90c80`
-  - production deployment: `dpl_GLZ7tL77bZY1d8Sg4w9LgtAsgZvp`
-  - Vercel state: `READY`
-  - target: `production`
-  - public domain: `https://www.primedigitalhub.com.br`
-  - public landing still renders the approved Phase 1 hero and continuity thesis.
-
-- [x] **System governance control layer adopted on current main**
-  - PR #45 merged.
-  - `PRIME_GOVERNANCE_CONTROL_CENTER_v1.md`
-  - `PRIME_MASTER_GOVERNANCE_AUDITOR_PROMPT_v1.md`
-  - `PRIME_SYSTEM_GOVERNANCE_CANON_v1.md`
-
-- [x] **Source-bound proof discipline canonicalized**
-  - `docs/governance/SOURCE_BOUND_PROOF_CHECKLIST_v1.md`
-  - Issues #23 and #26 closed.
-
-- [x] **Anti-rework guardrail refreshed**
-  - old August Gemini/Billing checkpoint preserved as history, no longer treated as the present global blocker.
-  - current return point is 2026-09-21.
-
-- [x] **Canonical current-state override appended**
-  - current production, open runtime gaps, and current reading order are now explicit.
-
-- [x] **Pedagogical Processing Freeze amended**
-  - State change is not a lesson objective.
-  - retained state is normal.
-  - CEFR cannot be changed from ordinary lesson accumulation.
-  - CEFR transition requires formal assessment/testing + pedagogical authorization + explicit profile update.
-  - self-correction is a broad learner-repair construct family.
-  - state evidence accumulates longitudinally; no same-lesson quota.
-  - ObservationDebt lifecycle is normatively specified.
-
-- [x] **Reconnection landing Phase 1 closed**
-  - G1 Preview stability: PASS.
-  - G2 independent QA: PASS CONDITIONED / non-blocking P2 only.
-  - G3 reconciliation: PASS.
-  - G4 owner acceptance + production lineage: PASS.
-  - Phase 1 is no longer an open landing-page workstream.
-
-- [x] **Reconnection Network operating charter adopted**
-  - `docs/strategy/RECONNECTION-NETWORK-OPERATING-CHARTER.md`
-
-- [x] **Reconnection Phase 2 professional story closed**
-  - canonical 30-second version frozen;
-  - canonical 2-minute version frozen;
-  - full narrative chapter map frozen;
-  - next phase is LinkedIn Reconstruction.
-  - source: `docs/reconnection/PHASE_2_CANONICAL_STORY_DEPTHS.md`
-
-- [x] **PR #39 closed as superseded**
-  - its useful governance layer was adopted through PR #45 on current main.
-
-- [x] **PR #20 closed as historical / not current proof register**
-  - it was not merged.
-  - stronger Diego/Eduarda projection proof remains bound to PR #21/current-main evidence.
-
-- [x] **Claim-governance incident cleanup closed**
-  - Issues #22–#27 reconciled and closed.
-  - historical incident remains preserved; prevention controls are now canonical.
-
-- [x] **Gustavo five-lesson reference replay remains a completed checkpoint**
-  - do not restart the five-lesson reasoning exercise merely because a new agent lacks chat context.
-
-- [x] **Legacy repository-side automation remains contained**
-  - do not revive the old ingestion/publishing path as a shortcut.
+- [x] Current production/governance/landing/reconnection closeout remains as previously recorded. Do not reopen closed proof boundaries without contradictory evidence.
+- [x] Gustavo five-lesson reference replay remains completed.
+- [x] Legacy repository-side automation remains contained; do not revive it as a shortcut.
 
 ---
 
-# B. P0 — Learning Machine work still genuinely open
+# B. P0 — Learning Machine
 
-- [ ] **Implement the complete shared PRIME Learning Machine runner**
-  - one machine after initiation normalization;
-  - manual trigger and automatic trigger converge on the same normalized run command;
-  - same processing stages and authority gates;
-  - same canonicalization / verification / projection path;
-  - idempotent equivalent replays.
-
-  Required proof to close:
-  ```text
-  manual trigger ─┐
-                  ├→ same normalized run identity
-  auto trigger ───┘
-                  ↓
-  full machine stages
-                  ↓
-  explicit Teacher Authority
-                  ↓
-  canonicalization / verification / projections
-                  ↓
-  final manifest
-  ```
-
-- [ ] **Materialize durable run history / exact resume point**
-  - run identity;
-  - source/version/scope;
-  - machine/prompt/contract versions;
-  - artifacts/intermediates and hashes;
-  - exact Teacher Validation Package;
-  - raw teacher decision + normalized decision;
-  - approved payload/hash;
-  - G2/G3/G4/G5/G6 outcomes where executed;
-  - delivery outcome;
-  - exact unfinished stage;
-  - retry/idempotency result.
+- [~] **Shared PRIME Learning Machine runner + durable run history — PR #59 recovered and under validation**
+  - implementation is published remotely and must not be rebuilt from zero;
+  - merge remains blocked until the Section L acceptance proof is complete on one exact head SHA.
 
 - [ ] **Implement ObservationDebt reconciliation in code + self-test**
-  - normative contract is now frozen;
-  - implementation is not yet proven.
-  - required stage:
-    ```text
-    Evidence Bank
-    → ObservationDebt Reconciliation
-    → Signals / Longitudinal Cross-check
-    ```
-  - old debt must close/refine when its required opportunity occurs.
-  - stale debt carried silently must equal zero.
+  - remains the next P0 only after PR #59 is safely resolved;
+  - normative contract is frozen; current-main durable implementation proof remains required.
 
-- [ ] **Create regression tests for CEFR authority**
+- [ ] **CEFR authority regression coverage**
   - ordinary lesson/replay cannot mutate current or target CEFR;
-  - only formal assessment authority may propose an authorized CEFR profile transition.
+  - formal assessment authority is required for an authorized CEFR profile transition.
 
-- [ ] **Create regression tests for broad self-correction semantics**
-  - multiple learner-initiated repair types may contribute to the construct;
-  - do not collapse all evidence into one tense-specific label;
-  - do not require all manifestations in one lesson.
+- [ ] **Broad self-correction semantics regression coverage**
+  - preserve multiple learner-initiated repair types and longitudinal evidence.
 
 ---
 
-# C. P0/P1 — vNext / Portfolio / Awareness gap analysis against current main
+# C. P0/P1 — vNext / Portfolio / Awareness
 
-- [ ] **Audit current `main` for still-missing vNext / Portfolio / Awareness capabilities**
-  - PR #42 was closed on 2026-09-25 **without merge** as a stale/conflicting implementation path.
-  - Do **not** reopen PR #42 or treat its branch as an active workstream.
-  - Preserve its durable contracts as provenance, including:
-    - `Portfolio = Lesson Archive + Cumulative Learning Memory`;
-    - Projection and Communication are distinct concerns;
-    - learner/family awareness must not silently alter canonical authority;
-    - teacher authority remains required for protected transitions.
-  - inspect current `main` and identify only concrete missing capabilities;
-  - re-derive or narrowly port missing behavior from current `main`;
-  - validate any new implementation through current exact-SHA release gates.
-
-  Required proof to close:
-  - current-main file/function evidence for each formerly required capability;
-  - explicit gap list with `PRESENT / MISSING / SUPERSEDED`;
-  - tests for any newly ported behavior;
-  - exact-SHA CI/release evidence.
+- [ ] Audit current `main` for concrete gaps formerly carried by PR #42. PR #42 stays closed/no-merge; preserve `Portfolio = Lesson Archive + Cumulative Learning Memory`, projection/communication separation and Teacher Authority.
 
 ---
 
 # D. P1 — Runtime authority proofs
 
-- [~] **Young Learner account access / G6 runtime witness**
-  - production identity provisioning is now **COMPLETE** for:
-    - Gustavo `gugasalgado7@gmail.com` → `LEARNER_SELF` → `stu_4c4da6c04ac4`;
-    - Carol `carolvdrummond@gmail.com` → `AUTHORIZED_ACCESS` → same Gustavo studentId;
-    - Michelle `midias83@hotmail.com` → `AUTHORIZED_ACCESS` → Eduarda `stu_e8661006824a`.
-  - all three ACTIVE relations were read back with owner authorization hashes and AUTHORIZED lifecycle events.
-  - PR #47 merged the Young Learner access contract / identity correction.
-  - PR #48 merged a bounded legacy compatibility bridge so Gustavo's newly authorized self email can reach his existing Dashboard before the canonical G6 consumer cutover.
-  - production deployment for PR #48: `dpl_BwreUJy4ALgKiVGBkVBdiSf2qtNt` — READY — main `295af31a43c1e7dc1396ef002ab64aa365855954`.
-  - **remaining proof:** real Google/NextAuth sign-in by Gustavo, Carol and Michelle + authenticated Dashboard witness; this cannot be manufactured by an admin/agent.
-  - PR #36 canonical consumer cutover remains separate.
-
-  Required proof:
-  ```text
-  Gustavo account ─┐
-                   ├→ authorized AccountLearnerRelation
-  Carol account ───┘
-                   ↓
-  same studentId
-                   ↓
-  same verified canonical consumer state
-                   ↓
-  authenticated Dashboard runtime witness
-  ```
-
-- [~] **Authoritative attendance full production trace**
-  - direct 2026-09-21 database read-back found `attendance_records = 0`; there is no production witness to promote.
-  - implementation exists:
-    - AttendanceRecord persistence;
-    - Meet participant collector;
-    - identity reconciliation;
-    - AttendanceReconciled events;
-    - unresolved Validation path.
-  - complete real production witness still required.
-
-  Required proof:
-  ```text
-  lesson
-  → scheduled identity
-  → Meet conference
-  → signed-in participant identity
-  → AttendanceRecord(authoritative)
-  → attendance PROVEN
-  → downstream consumer reads it
-  → audit trail preserved
-  ```
-
-- [x] **PR #37 temporary Preview preflight instrumentation retired**
-  - direct Neon access now provides the required read-only pre-provisioning state;
-  - PR #37 closed without merge.
-
-- [ ] **External legacy Google/Studio trigger verification — only if still operationally relevant**
-  - repository-side old pipeline is contained;
-  - external provider trigger deletion/disablement was not independently proven.
-  - do not spend time on this unless calls are still arriving or the external trigger itself matters for final decommission proof.
+- [~] G6 authenticated runtime witness / controlled cutover remains human/runtime validation work from current main; do not resurrect PR #36.
+- [~] Authoritative attendance full production trace remains unproven until a real Meet → AttendanceRecord → downstream consumer trace exists.
 
 ---
 
-# E. P1 — Candidate / capture / non-lossy semantics gap analysis
+# E. P1 — Candidate / capture / non-lossy semantics
 
-- [ ] **Audit current `main` for durable semantics formerly carried by PRs #18 / #19 / #30**
-  - PRs #18, #19 and #30 were closed on 2026-09-25 **without merge**.
-  - Their branches are historical/provenance sources only; do **not** reopen or merge them.
-  - Preserve and verify the following invariants against current `main`:
-    - candidate output is not canonical state;
-    - teacher review/authority is required before protected canonical transitions;
-    - approval, canonicalization and publication are distinct transitions;
-    - source provenance and identity uncertainty remain explicit;
-    - diarization uncertainty must not fabricate speaker identity;
-    - idempotency remains explicit;
-    - `NO MATERIAL STATE CHANGE != NO PEDAGOGICAL INFORMATION`;
-    - source-grounded pedagogical history must not be flattened when no state transition occurs;
-    - rich extraction may preserve learner production, successful production, instability/errors, support/scaffolding, uptake, structured corrections, boundaries and next verification.
-  - classify each invariant as `PRESENT / MISSING / SUPERSEDED`;
-  - port only genuinely missing behavior into current `main`;
-  - add regression coverage for any ported behavior.
+- [ ] Audit current main against the durable invariants formerly carried by #18/#19/#30. Preserve candidate != canonical, explicit teacher authority, source provenance/uncertainty, idempotency, non-lossy pedagogical history and rich source-grounded extraction. Port only genuinely missing behavior.
 
 ---
 
-# F. Reconnection Network — genuine next work
+# F. Reconnection Network
 
-- [x] Phase 1 — public landing page.
-- [x] Phase 2 — Professional Story Architecture + 30 sec / 2 min / full narrative.
-
-- [~] **Phase 3 — LinkedIn Reconstruction**
-  - content package prepared in `docs/reconnection/PHASE_3_LINKEDIN_RECONSTRUCTION_DRAFT.md`.
-  - READY:
-    - headline draft;
-    - About draft;
-    - Experience framing;
-    - PRIME/product description;
-    - Featured strategy;
-    - first public post draft;
-    - reconnect message patterns.
-  - REQUIRED BEFORE PUBLICATION:
-    - exact Cultura / Prime Language School employment titles and dates;
-    - owner approval of headline/About/public founder wording;
-    - approval of public Featured assets.
-  - LinkedIn publication has **not** been executed.
-
-- [~] **Phase 4 — Reconnection map**
-  - initial map prepared in `docs/reconnection/PHASE_4_CONTACT_MAP_v1.md`.
-  - first-wave / second-wave logic and per-contact record schema are defined.
-  - REQUIRED BEFORE OUTREACH:
-    - verify current roles for first-wave contacts;
-    - verify preferred contact channels;
-    - write individualized messages from the verified context.
-  - no mass outreach.
-
-- [ ] **Phase 5 — individualized first-contact messages**
-  - reconnect through shared history first;
-  - no immediate pitch;
-  - reveal PRIME only when proportionate to the relationship.
-
-- [ ] **Phase 6 — response / alignment log**
-  - record reciprocity, curiosity, reliability, strategic overlap and follow-through;
-  - no automatic promotion from nostalgia/enthusiasm to collaboration.
-
-- [ ] **Phase 7 — bounded collaboration pilots where warranted**
-  - explicit scope, deliverable, authority, deadline/review point and exit condition.
+- [x] Phase 1 public landing page.
+- [x] Phase 2 Professional Story Architecture.
+- [~] Phase 3 LinkedIn Reconstruction requires exact employment metadata and owner approval before publication.
+- [~] Phase 4 contact map requires current-role/channel verification before outreach.
+- [ ] Phases 5–7 remain individualized outreach, response/alignment log and bounded collaboration pilots.
 
 ---
 
-# G. Repository cleanup / provenance status
+# G. Repository cleanup / provenance
 
-- [x] **Legacy conflicting open-PR backlog cleared — Issue #58**
-  - PRs #1, #18, #19, #30, #36, #42 and #46 closed without merge;
-  - PR #55 closed as `SUPERSEDED / DO NOT MERGE`;
-  - durable architectural/pedagogical rules remain provenance, not active branch implementations;
-  - current `main` is the sole implementation baseline.
-
-- [x] **Issue #44 superseded by this canonical TODO**
-  - it must not remain a competing backlog.
-
-- [ ] **Periodically verify this TODO against current main**
-  - if a different agent closes an item, update this file instead of opening a parallel handoff;
-  - never infer `DONE` from closed stale PRs alone.
+- [x] Issue #58 records legacy conflicting PR cleanup.
+- [x] PR #55 superseded/do not merge.
+- [x] PRs #1/#18/#19/#30/#36/#42/#46 closed without merge; provenance only.
+- [ ] Every executor must update this canonical handoff when its proof boundary materially changes instead of making Alexandre relay cross-agent state.
 
 ---
 
-# H. Items that require validation/authority before they can be ticked
+# H. Current blockers / proof boundaries
 
-These are not failures. They are the points where this workstream must stop instead of manufacturing proof.
-
-| Item | What is missing |
+| Item | Current state |
 |---|---|
-| Shared runner | implementation + deterministic/idempotent execution proof |
-| Durable run history | persistent final manifest + exact resume/retry/idempotency history |
-| ObservationDebt | current-main durable persistence/reconciliation proof + regression self-test |
-| vNext / Portfolio / Awareness | current-main gap audit; do not reopen PR #42 |
-| Candidate/capture/non-lossy semantics | current-main gap audit against preserved invariants from #18/#19/#30 |
-| G6 | authenticated runtime witness + controlled cutover authorization; do not reopen PR #36 |
-| Attendance | real authoritative Meet → AttendanceRecord → downstream production trace |
-| Repository protection | independent proof of branch protection / required status checks, if administrative enforcement is desired |
-| LinkedIn | exact employment metadata + owner review before public profile publication |
-| Reconnection map | current-role/contact-channel verification before individualized outreach |
-| External legacy trigger | provider-side trigger evidence, only if decommission proof is required |
+| PR #59 shared runner | IMPLEMENTED REMOTELY / VALIDATION INCOMPLETE — audit exact diff/tests before merge |
+| Durable run history | IMPLEMENTED IN PR #59 / acceptance proof incomplete |
+| ObservationDebt | OPEN after PR #59 |
+| vNext / Portfolio / Awareness | OPEN gap audit |
+| Candidate/capture/non-lossy | OPEN gap audit |
+| G6 | WAITING runtime/human witness + controlled cutover authority |
+| Attendance | WAITING real production trace |
+| Repository protection | administrative enforcement not independently proven; exact-SHA discipline mandatory |
 
 ---
 
-# I. Current next-action order — reconciled 2026-09-25
+# I. Current next-action order — updated 2026-09-25
 
-1. Build the **shared runner + durable run history** from current `main`.
-2. Audit and implement **durable ObservationDebt** only where current-main proof is missing.
-3. Run a **current-main gap audit** for vNext / Portfolio / Awareness contracts formerly carried by PR #42.
-4. Run a **current-main gap audit** for candidate/capture/non-lossy semantics formerly carried by PRs #18/#19/#30.
-5. Complete **G6 runtime proof / controlled cutover** from current `main`; do not resurrect PR #36.
-6. Complete the **authoritative attendance production witness**.
-7. Continue **Reconnection Phase 3–7** as the independent business workstream.
-8. Verify repository branch-protection / required-check enforcement only if administrative enforcement is required beyond procedural exact-SHA discipline.
+1. **Validate/correct PR #59 on its existing branch; do not reimplement P0.**
+2. Prove all merge-critical gates on one exact PR-head SHA and review migration/runtime boundary.
+3. Only then merge if the evidence is complete; post-merge main requires its own exact-SHA validation before release/runtime activation.
+4. Implement/audit durable ObservationDebt.
+5. Audit vNext / Portfolio / Awareness gaps.
+6. Audit candidate/capture/non-lossy gaps.
+7. Complete G6 runtime proof / controlled cutover.
+8. Complete attendance production witness.
+9. Continue Reconnection phases independently.
 
 ---
 
 # J. Handoff sentence
 
-> Start from the first unchecked item that matches your assigned workstream. Do not reconstruct closed architecture from chat. If you close something, update this file with the exact proof boundary.
-
+> Read Section L first. PR #59 is the recovered active P0 implementation. Continue validation/correction there; do not restart the shared runner, do not resurrect legacy PRs, do not merge/release an untested SHA, and record every material cross-agent delta in Issue #58 plus this handoff so Alexandre is never the synchronization mechanism.
 
 ---
-
-# K. 2026-09-25 — Cross-agent reconciliation baseline B
-
-**Status:** CURRENT RECONCILED PRIORITY BASELINE  
-**Authority source:** Issue #58 + verified GitHub PR state + current `main`
-
-## What changed from Baseline A
-
-Baseline A is superseded by this section.
-
-Verified on 2026-09-25:
-
-- PR #56 merged: canonical CI/release gate remediation.
-- PR #57 merged: Cláudio learner-facing language cleanup.
-- PR #55 closed `SUPERSEDED / DO NOT MERGE`.
-- PRs #1, #18, #19, #30, #36, #42 and #46 closed **without merge**.
-- open-PR backlog verified empty at the cleanup proof boundary and again during reconciliation.
-- Issue #58 is the operational audit record for that cleanup.
-- the 22–23 Sep verification found **no verified implementation delta integrated into `main` on those dates**.
-- absence of an integrated SHA does not prove no work occurred; it means no task may be promoted to `DONE` from those chats alone.
-
-## Current main checkpoint
-
-At this reconciliation checkpoint:
-
-`main = 7d9ace990042933b5ae1531413a4651fed76876d`
-
-This commit registered the 25 Sep cross-agent priority baseline. Always re-check current `main` before implementation because the branch may advance after this document update.
-
-## Canonical carry-forward backlog
-
-| Priority | Item | Status | Current interpretation |
-|---|---|---|---|
-| P0 | Shared PRIME Learning Machine runner | OPEN | No exact-main proof yet that manual + automatic initiation converge on the same normalized run and complete the same authority/canonicalization/projection path. |
-| P0 | Durable run history / exact resume point | OPEN | Persist final manifest, versions, hashes, teacher decision, gate outcomes, unfinished stage and retry/idempotency history. |
-| P0 | Durable ObservationDebt | OPEN / PARTIALLY SPECIFIED | Normative rules survive as provenance; closed PR #46 is not implementation proof. Verify current main, then implement only missing persistence/reconciliation behavior. |
-| P1 | vNext / Portfolio / Awareness gaps | OPEN AS GAP AUDIT | PR #42 is closed/no-merge. Do not reopen it. Audit current main against preserved contracts and port only concrete gaps. |
-| P1 | Candidate/capture/non-lossy semantics | OPEN AS GAP AUDIT | PRs #18/#19/#30 are closed/no-merge. Verify preserved invariants against current main and port only missing behavior. |
-| P1 | G6 runtime authority proof / cutover | WAITING FOR RUNTIME/HUMAN VALIDATION | PR #36 is closed/no-merge. Runtime proof must be produced from current main with real authenticated witnesses and explicit cutover authority. |
-| P1 | Authoritative attendance production trace | OPEN | Real Meet → authoritative AttendanceRecord → downstream consumer → audit trail remains unproven absent contrary runtime evidence. |
-| P2 | Repository branch protection / required checks | NOT PROVEN ADMINISTRATIVELY | PR #56 provides the workflow gate; exact-SHA discipline remains mandatory unless GitHub protection is independently verified. |
-| Business | Reconnection Phase 3 | OPEN / OWNER VALIDATION | Validate exact employment metadata and approve public wording/assets before LinkedIn publication. |
-| Business | Reconnection Phases 4–7 | OPEN | Verify contacts/channels, draft individualized outreach, log responses, then bounded pilots where warranted. |
-| Conditional | External legacy Google/Studio trigger | CONDITIONAL | Investigate only if calls still arrive or formal provider-side decommission evidence is required. |
-| Operational | Carol / Gustavo rescheduling follow-up | CHECK REQUIRED | Confirm whether the Friday makeup lesson was answered/scheduled/completed; follow up only if still pending. |
-
-## Closed / do-not-reopen items
-
-- PR #51 — Ítalo Maritime Interview audio mission: merged; no new DB migration required by final implementation.
-- PR #54 — Cláudio real dashboard mission workflow: merged / production-delivered at its proof boundary.
-- PR #55 — superseded / do not merge.
-- PRs #1/#18/#19/#30/#36/#42/#46 — closed without merge; provenance only.
-- Previously completed learner mission work must not be reopened without evidence of regression.
-- Cláudio's confirmed pedagogical audit must not be restarted absent contradictory evidence.
-
-## Required proof boundary for first P0
-
-The next implementation must prove:
-
-```text
-manual trigger ─┐
-                ├→ same normalized run identity
-auto trigger ───┘
-                ↓
-same machine stages
-                ↓
-explicit Teacher Authority
-                ↓
-canonicalization / verification / projections
-                ↓
-durable final manifest
-                ↓
-exact resume + retry/idempotency history
-```
-
-## Cross-agent operating rule
-
-> Current `main` is the sole implementation baseline. Closed legacy PRs are provenance only. Do not create a competing roadmap, do not resurrect stale branches, and do not promote chat discussion to `DONE` without exact repository/runtime evidence.
-
 
 ## 2026-09-26 — Finalization queue after integrated proof
 
