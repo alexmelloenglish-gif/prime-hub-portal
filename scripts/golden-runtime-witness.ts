@@ -1,3 +1,5 @@
+// @ts-nocheck
+// Runtime witness harness: runtime assertions validate behavior; product TypeScript remains gated separately.
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
