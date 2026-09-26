@@ -1,0 +1,69 @@
+{
+  "version": "family-portfolio-supervision-v1",
+  "learnerCount": 9,
+  "learners": [
+    {
+      "studentId": "stu_e22a6c379329",
+      "studentName": "Cláudio Bittencourt",
+      "sourceSnapshot": "data/students/claudio-bit-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/claudio-bittencourt-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1Drg6EnGyYF46neAxIaaa_BX2OE4Fb9CErbwRH1bczFc/edit"
+    },
+    {
+      "studentId": "stu_e01adc4e23d0",
+      "studentName": "Diego da Silva Rodrigues",
+      "sourceSnapshot": "data/students/diegodasiro-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/diego-da-silva-rodrigues-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1oLWbN3AZ7i2qFfsZ4e8lrktJOScB6xF1j3JZFMohXTk/edit"
+    },
+    {
+      "studentId": "stu_e8661006824a",
+      "studentName": "Eduarda Coelho Gabriel",
+      "sourceSnapshot": "data/students/eduarda-coelho-gabriel-hotmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/eduarda-coelho-gabriel-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1OFx6WHHq75eww4pU1zjmRDc-cndw7jekUeGRrLi3Dk8/edit"
+    },
+    {
+      "studentId": "stu_4c4da6c04ac4",
+      "studentName": "Gustavo Drummond De Andrade Salgado",
+      "sourceSnapshot": "data/students/carolvdrummond-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/gustavo-drummond-de-andrade-salgado-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1H5a9nmIDW19gVKhmJUQpRZORYsGSPsoqvYf6d6uC9iU/edit"
+    },
+    {
+      "studentId": "stu_fb5b64e3437e",
+      "studentName": "Italo Pires",
+      "sourceSnapshot": "data/students/italo-pires-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/italo-pires-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1OzZZTtTq14oKct45G9yIrSBT7wi1SGD3WKi6Qb9iCvg/edit"
+    },
+    {
+      "studentId": "stu_b5a6b9640498",
+      "studentName": "Laura Maria Galvão Costa Stempniewski",
+      "sourceSnapshot": "data/students/lauramgcstemp-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/laura-maria-galvao-costa-stempniewski-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1oFi0k61KNLEsLkfvzXfUuMUBwR_vk0lnvhqU44ETghY/edit"
+    },
+    {
+      "studentId": "stu_c5930e6e76ae",
+      "studentName": "Louise D. Silva Nogueira",
+      "sourceSnapshot": "data/students/louise-d-silva-nogueira.firestore.json",
+      "output": "docs/student-portfolios/family-edition/louise-d-silva-nogueira-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1CcS585myYIlDaL4_jIgcKiy53ZaTCp_r3AO7choIiN0/edit"
+    },
+    {
+      "studentId": "stu_c1724b66988e",
+      "studentName": "Maria Fernanda Galvão Costa Stempniewski",
+      "sourceSnapshot": "data/students/galvaonanda28-gmail-com.firestore.json",
+      "output": "docs/student-portfolios/family-edition/maria-fernanda-galvao-costa-stempniewski-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1GEd4AZjP2PoSQUNuFucUPxfv1qlwZ-r8DGgMPNpsHsc/edit"
+    },
+    {
+      "studentId": "stu_cce1337c71da",
+      "studentName": "Rafael Copolillo",
+      "sourceSnapshot": "data/students/rafael-copolillo.firestore.json",
+      "output": "docs/student-portfolios/family-edition/rafael-copolillo-family-edition.md",
+      "externalPortfolio": "https://docs.google.com/document/d/1z2pEl13A7gD2ry41WcaGWRL-PM9klWtT7qyYYoW_FBo/edit"
+    }
+  ]
+}
