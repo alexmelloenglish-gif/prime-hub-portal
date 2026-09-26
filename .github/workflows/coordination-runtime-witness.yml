@@ -1,0 +1,85 @@
+name: Coordination Runtime Witness
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coordination-runtime-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: prime
+          POSTGRES_PASSWORD: prime
+          POSTGRES_DB: prime_coordination_witness
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U prime -d prime_coordination_witness"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_coordination_witness?schema=public
+      DATABASE_URL_UNPOOLED: postgresql://prime:prime@localhost:5432/prime_coordination_witness?schema=public
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact candidate checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Materialize isolated coordination schema
+        run: npx prisma db push --skip-generate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Create ephemeral localhost HTTPS certificate
+        run: |
+          mkdir -p .runtime-witness-tls
+          openssl req -x509 -newkey rsa:2048 -nodes \
+            -keyout .runtime-witness-tls/key.pem \
+            -out .runtime-witness-tls/cert.pem \
+            -days 1 \
+            -subj "/CN=127.0.0.1" \
+            -addext "subjectAltName=IP:127.0.0.1"
+
+      - name: Execute active coordination runtime witness
+        env:
+          RUNTIME_WITNESS_CERT: .runtime-witness-tls/cert.pem
+          RUNTIME_WITNESS_KEY: .runtime-witness-tls/key.pem
+          RUNTIME_WITNESS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUNTIME_WITNESS_PR_NUMBER: ${{ github.event.pull_request.number || 65 }}
+        run: npx --yes tsx@4.20.6 ./scripts/coordination-runtime-witness.ts
+
+      - name: Upload persisted coordination witness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coordination-runtime-witness
+          path: artifacts/coordination-runtime-witness.json
+          if-no-files-found: warn

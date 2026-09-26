@@ -33,6 +33,7 @@ function load(relative) {
 const { parseStudentDocument } = load('lib/student-data.ts')
 const { buildDashboardProjection, reconcileAttendanceForProjection, reconcileClassReportsForProjection } = load('lib/canonical-dashboard.ts')
 const { selectActiveVocabulary, selectRecentReports, DASHBOARD_DISPLAY_BUDGET } = load('lib/dashboard-display-budget.ts')
+const { mergeCanonicalLearningIntelligenceRows } = load('lib/canonical-dashboard-bridge.ts')
 
 // Italo remains the original canonical truth witness for the projection mechanism.
 const source = JSON.parse(fs.readFileSync(path.join(root, 'data/students/italo-pires-gmail-com.firestore.json'), 'utf8'))
@@ -100,6 +101,57 @@ assert.deepEqual(
   rafaelSource.grammarOverview.focusPoints.slice(0, 3)
 )
 assert.equal(JSON.stringify(rafaelSource), rafaelBefore, 'Rafael projection must not mutate the source')
+
+
+// Gustavo is the read-bridge witness: only fully verified canonical rows may
+// override current state / priorities / next action or enrich learner memory.
+const gustavoSource = JSON.parse(fs.readFileSync(path.join(root, 'data/students/carolvdrummond-gmail-com.firestore.json'), 'utf8'))
+const gustavoBefore = JSON.stringify(gustavoSource)
+const gustavo = parseStudentDocument(gustavoSource, gustavoSource.studentEmail)
+const bridgedGustavo = mergeCanonicalLearningIntelligenceRows(gustavo, [{
+  canonicalRecordId: 'golden-gustavo-canonical-record',
+  lessonId: 'gustavo-golden-lesson',
+  scopeType: 'longitudinal',
+  projection: {
+    currentState: {
+      level: 'CEFR A1 — progressing toward A2',
+      targetLevel: 'CEFR A2',
+      learningFocus: 'Retrieve Past Simple language with less support and preserve first-attempt evidence.',
+    },
+    priorities: {
+      priorities: [
+        'Use did + base form consistently in meaningful questions.',
+        'Retrieve irregular past forms before receiving a model.',
+      ],
+    },
+    nextAction: {
+      text: 'Golden retrieval check — Tell one real past story, ask two did-questions and retry one answer independently.',
+    },
+    teacherInsight: {
+      statement: 'First-attempt evidence should remain separate from corrected final output.',
+    },
+    validatedEvidence: [
+      { statement: 'Gustavo repaired a past short answer and reused past forms in personal sentences.' },
+    ],
+    vocabulary: [
+      { term: 'retrieval', meaning: 'remembering and producing language again' },
+    ],
+    grammarCorrections: [
+      { item: 'Did you rode?', correction: 'Did you ride?' },
+    ],
+  },
+}])
+assert.equal(bridgedGustavo.currentLevel, 'CEFR A1 — progressing toward A2')
+assert.equal(bridgedGustavo.targetLevel, 'CEFR A2')
+assert.equal(bridgedGustavo.focus, 'Retrieve Past Simple language with less support and preserve first-attempt evidence.')
+assert.equal(bridgedGustavo.canonicalProjection.priorities.length, 2)
+assert.equal(bridgedGustavo.canonicalProjection.priorities[0].status, 'teacher-validated')
+assert.equal(bridgedGustavo.canonicalProjection.nextAction.title, 'Golden retrieval check')
+assert.equal(bridgedGustavo.canonicalProjection.nextAction.authorizationStatus, 'teacher-validated')
+assert.equal(bridgedGustavo.vocabularyBank.some((item) => item.term === 'retrieval'), true)
+assert.equal(bridgedGustavo.grammarOverview.focusPoints.includes('Did you rode? → Did you ride?'), true)
+assert.equal(bridgedGustavo.teacherFeedback.some((item) => item.id === 'canonical-feedback-golden-gustavo-canonical-record'), true)
+assert.equal(JSON.stringify(gustavoSource), gustavoBefore, 'Canonical read bridge must not mutate the repository source')
 
 // Run the same mechanism for every authorized repository profile.
 let profiles = 0

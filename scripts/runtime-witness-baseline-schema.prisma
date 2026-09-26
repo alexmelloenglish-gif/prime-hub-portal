@@ -1,3 +1,7 @@
+// Runtime-witness disposable DB baseline.
+// Exact source: PR #59 base f96e7fcbbbe33844b06d5ba5dbb6b89bf7ff88c1.
+// This file is test-only and must never be used for Production migration.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -158,13 +162,6 @@ model PipelineRun {
   studentEmail             String
   lessonId                 String
   status                   String              @default("received")
-  executionMode            String              @default("legacy")
-  normalizedRunIdentity    String?             @unique
-  machineVersion           String?
-  machineContractVersion   String?
-  currentStage             String?
-  resumePoint              String?
-  finalManifest            Json?
   promptOneSchemaVersion   String?
   promptOneArtifact        Json?
   promptThreeSchemaVersion String?
@@ -185,7 +182,6 @@ model PipelineRun {
   @@unique([transcriptId, attemptNumber])
   @@index([studentEmail, createdAt])
   @@index([status])
-  @@index([executionMode, status])
   @@map("pipeline_runs")
 }
 
@@ -599,39 +595,4 @@ model CanonicalLearningIntelligenceProjection {
   @@index([studentId, targetType])
   @@index([projectionStatus])
   @@map("canonical_learning_intelligence_projections")
-}
-
-model AgentCoordinationEvent {
-  id                String   @id @default(uuid())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  workstreamId      String
-  senderRole        String
-  targetRole        String
-  eventType         String
-  repo              String
-  issueNumber       Int?
-  prNumber          Int?
-  sha               String?
-  githubCommentUrl  String?
-  sourceDeliveryId  String
-  requiresAck       Boolean  @default(true)
-  ackStatus         String   @default("PENDING")
-  acknowledgedBy    String?
-  acknowledgedAt    DateTime?
-  claimedBy         String?
-  claimedAt         DateTime?
-  leaseExpiresAt    DateTime?
-  dispatchAttempts  Int      @default(0)
-  lastDispatchAt    DateTime?
-  lastDispatchError String?  @db.Text
-  idempotencyKey    String   @unique
-  payloadJson       Json?
-
-  @@index([workstreamId, createdAt])
-  @@index([targetRole, ackStatus, createdAt])
-  @@index([targetRole, ackStatus, leaseExpiresAt, createdAt])
-  @@index([repo, prNumber, sha])
-  @@index([repo, issueNumber, createdAt])
-  @@map("agent_coordination_events")
 }
