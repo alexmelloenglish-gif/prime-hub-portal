@@ -255,3 +255,42 @@ This section supersedes the remaining stale pre-integration queue text above.
 3. While Neon access remains externally blocked, continue non-conflicting product-completion audits/read-backs from current `main`, including external Portfolio publication witness only when its document-write boundary is explicitly authorized.
 4. Do not reopen superseded component PRs without a concrete regression.
 
+
+
+---
+
+## 2026-09-27 — Cross-agent execution discipline / handoff contract
+
+This section records the operating standard required for all executors working on PRIME.
+
+### Required executor loop
+1. **Evidence first** — reconcile current GitHub/runtime evidence before explaining state.
+2. **Own the assigned lane** — do not wait for Alexandre to relay state between agents.
+3. **Act before reporting** when the next step is safe and already authorized.
+4. **Follow blockers through correction and rerun**; a failed test is an input to execution, not a stopping condition.
+5. **Close the loop** with exact SHA / workflow / persisted runtime evidence.
+6. **Persist the handoff** in Issue #58 and this canonical handoff whenever the proof boundary materially changes.
+7. **Escalate only genuine human boundaries**: irreversible Production activation, explicit Teacher Authority, release/merge authority where separately required, or an external blocker that cannot be resolved safely by the executor.
+
+### Attribution discipline
+- Never attribute a decision, prohibition, delay, interruption, or instruction to Alexandre unless it is traceable to an actual message or authoritative record.
+- Separate **observed fact**, **repository/runtime proof**, and **inference**.
+- Do not convert a previous summary, compressed context, or stale handoff sentence into a user-authored instruction without verifying its source.
+- If authorship of a GitHub comment cannot be distinguished between agent instances because they share the same GitHub account, say so explicitly.
+
+### Meaning of “proceed”
+When Alexandre says **proceed / continue**, treat that as an execution command for the owned safe lane, not as permission to describe future execution. Continue tool-backed work in that execution until:
+- the owned acceptance boundary passes, or
+- a genuine external/human decision boundary is reached.
+
+### Reporting standard
+Prefer:
+`PASS @ exact SHA / workflow run / persisted record`
+or
+`BLOCKED at exact stage → correction applied / narrow external blocker identified`
+
+Avoid:
+`I am continuing`, `I will keep working`, or other intention-only status language when no tool-backed execution remains in the current turn.
+
+### Current cross-agent synchronization rule
+Issue #58 remains the durable coordination record. This handoff remains the canonical queue/state summary. Alexandre must not be used as the synchronization mechanism between executors.
