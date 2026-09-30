@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { extractGoogleDocsTranscript } from '../lib/drive-reconciliation.ts'
+import { extractGoogleDocsTranscript } from '../lib/google-docs-transcript-extraction.ts'
 
 function paragraph(text) {
   return {
