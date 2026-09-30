@@ -535,92 +535,126 @@ export async function listCoachingProposals(limit = 100) {
   })
 }
 
-export type LearnerSubmissionReviewItem =
-  | {
-      id: string
-      kind: 'audio'
-      pipelineRunId: string
-      studentId: string | null
-      studentEmail: string | null
-      actionId: string | null
-      durationSeconds: number | null
-      authorityStatus: string | null
-      createdAt: string
-      needsTeacherReview: boolean
-    }
-  | {
-      id: string
-      kind: 'self_perception'
-      pipelineRunId: string
-      studentId: string | null
-      journeyId: string | null
-      answers: Record<string, string>
-      ratingsAreSelfPerceptionNotProficiency: boolean
-      createdAt: string
-      needsTeacherReview: false
-    }
+export type LearnerSubmissionReviewItem = {
+  id: string
+  kind: 'audio'
+  pipelineRunId: string
+  studentId: string | null
+  studentEmail: string | null
+  actionId: string | null
+  durationSeconds: number | null
+  authorityStatus: string | null
+  createdAt: string
+  needsTeacherReview: boolean
+  reviewedAt: string | null
+  reviewerId: string | null
+}
 
 export async function listLearnerSubmissions(limit = 100): Promise<LearnerSubmissionReviewItem[]> {
   const prisma = getPrismaClient()
   const events = await prisma.pipelineEvent.findMany({
     where: {
-      eventType: {
-        in: ['learner_audio_submitted', 'LEARNER_SELF_ASSESSMENT_SUBMITTED'],
-      },
+      eventType: 'learner_audio_submitted',
+      aggregateType: 'learner_action_submission',
     },
     orderBy: { createdAt: 'desc' },
     take: Math.min(Math.max(limit, 1), 200),
   })
 
-  return events.flatMap((event): LearnerSubmissionReviewItem[] => {
+  const reviewEvents = events.length
+    ? await prisma.pipelineEvent.findMany({
+        where: {
+          eventType: 'LearnerSubmissionTeacherReviewed',
+          pipelineRunId: { in: events.map((event) => event.pipelineRunId) },
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+    : []
+
+  const reviewBySubmission = new Map<string, (typeof reviewEvents)[number]>()
+  for (const review of reviewEvents) {
+    const payload = asRecord(review.payload)
+    const submissionEventId = asString(payload.submissionEventId)
+    if (submissionEventId && !reviewBySubmission.has(submissionEventId)) {
+      reviewBySubmission.set(submissionEventId, review)
+    }
+  }
+
+  return events.map((event): LearnerSubmissionReviewItem => {
     const payload = asRecord(event.payload)
+    const review = reviewBySubmission.get(event.id)
+    const reviewPayload = review ? asRecord(review.payload) : {}
 
-    if (
-      event.eventType === 'learner_audio_submitted' &&
-      event.aggregateType === 'learner_action_submission'
-    ) {
-      return [{
-        id: event.id,
-        kind: 'audio',
-        pipelineRunId: event.pipelineRunId,
-        studentId: asString(payload.studentId),
-        studentEmail: asString(payload.studentEmail),
-        actionId: asString(payload.actionId),
-        durationSeconds:
-          typeof payload.durationSeconds === 'number' && Number.isFinite(payload.durationSeconds)
-            ? payload.durationSeconds
-            : null,
-        authorityStatus: asString(payload.authorityStatus),
-        createdAt: event.createdAt.toISOString(),
-        needsTeacherReview: payload.authorityStatus === 'learner_submission_pending_teacher_review',
-      }]
+    return {
+      id: event.id,
+      kind: 'audio',
+      pipelineRunId: event.pipelineRunId,
+      studentId: asString(payload.studentId),
+      studentEmail: asString(payload.studentEmail),
+      actionId: asString(payload.actionId),
+      durationSeconds:
+        typeof payload.durationSeconds === 'number' && Number.isFinite(payload.durationSeconds)
+          ? payload.durationSeconds
+          : null,
+      authorityStatus: asString(payload.authorityStatus),
+      createdAt: event.createdAt.toISOString(),
+      needsTeacherReview:
+        payload.authorityStatus === 'learner_submission_pending_teacher_review' && !review,
+      reviewedAt: review?.createdAt.toISOString() || null,
+      reviewerId: asString(reviewPayload.reviewerId),
     }
-
-    if (
-      event.eventType === 'LEARNER_SELF_ASSESSMENT_SUBMITTED' &&
-      event.aggregateType === 'learner_self_perception'
-    ) {
-      const rawAnswers = asRecord(payload.answers)
-      const answers = Object.fromEntries(
-        Object.entries(rawAnswers).filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
-      )
-
-      return [{
-        id: event.id,
-        kind: 'self_perception',
-        pipelineRunId: event.pipelineRunId,
-        studentId: asString(payload.studentId),
-        journeyId: asString(payload.journeyId),
-        answers,
-        ratingsAreSelfPerceptionNotProficiency:
-          payload.ratingsAreSelfPerceptionNotProficiency === true,
-        createdAt: event.createdAt.toISOString(),
-        needsTeacherReview: false,
-      }]
-    }
-
-    return []
   })
+}
+
+export async function recordLearnerSubmissionReview(input: {
+  submissionEventId: string
+  reviewerId: string
+  reviewerRole: string
+}) {
+  const prisma = getPrismaClient()
+  const submission = await prisma.pipelineEvent.findUnique({
+    where: { id: input.submissionEventId },
+  })
+
+  if (
+    !submission ||
+    submission.eventType !== 'learner_audio_submitted' ||
+    submission.aggregateType !== 'learner_action_submission'
+  ) {
+    throw new Error('Learner audio submission not found')
+  }
+
+  const existing = await prisma.pipelineEvent.findFirst({
+    where: {
+      pipelineRunId: submission.pipelineRunId,
+      aggregateType: submission.aggregateType,
+      aggregateId: submission.aggregateId,
+      eventType: 'LearnerSubmissionTeacherReviewed',
+    },
+  })
+  if (existing) return { eventId: existing.id, alreadyReviewed: true }
+
+  const review = await prisma.pipelineEvent.create({
+    data: {
+      pipelineRunId: submission.pipelineRunId,
+      eventType: 'LearnerSubmissionTeacherReviewed',
+      aggregateType: submission.aggregateType,
+      aggregateId: submission.aggregateId,
+      payload: {
+        submissionEventId: submission.id,
+        reviewerId: input.reviewerId,
+        reviewerRole: input.reviewerRole,
+        decision: 'reviewed',
+        authorityStatus: 'learner_submission_reviewed_not_validated_evidence',
+        canonicalEvidenceCreated: false,
+        teacherAuthorityConsumed: false,
+        learningStateChanged: false,
+      },
+    },
+    select: { id: true },
+  })
+
+  return { eventId: review.id, alreadyReviewed: false }
 }
 
 export async function listPipelineAuditEvents(limit = 150) {

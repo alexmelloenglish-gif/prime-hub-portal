@@ -4,7 +4,11 @@ import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 import { authOptions } from '@/lib/auth'
 import { isAdminUser } from '@/lib/student-data'
-import { recordEvidenceReviewDecision, type EvidenceReviewDecision } from '@/lib/teacher-intelligence'
+import {
+  recordEvidenceReviewDecision,
+  recordLearnerSubmissionReview,
+  type EvidenceReviewDecision,
+} from '@/lib/teacher-intelligence'
 
 const allowedDecisions = new Set<EvidenceReviewDecision>(['accept', 'reject', 'return', 'block'])
 
@@ -28,4 +32,23 @@ export async function reviewEvidenceCandidateAction(formData: FormData) {
   revalidatePath('/dashboard/admin/intelligence')
   revalidatePath('/dashboard/admin/intelligence/review')
   revalidatePath('/dashboard/admin/intelligence/lessons')
+}
+
+
+export async function reviewLearnerSubmissionAction(formData: FormData) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user || !isAdminUser(session.user)) throw new Error('Administrator access required')
+
+  const submissionEventId = String(formData.get('submissionEventId') || '').trim()
+  if (!submissionEventId) throw new Error('Learner submission event ID is required')
+
+  await recordLearnerSubmissionReview({
+    submissionEventId,
+    reviewerId: session.user.email || session.user.id || 'admin',
+    reviewerRole: session.user.role || 'admin',
+  })
+
+  revalidatePath('/dashboard/admin/intelligence')
+  revalidatePath('/dashboard/admin/intelligence/review')
+  revalidatePath('/dashboard/admin/intelligence/audit')
 }
