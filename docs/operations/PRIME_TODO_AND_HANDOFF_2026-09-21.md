@@ -820,3 +820,29 @@ Write back the exact PipelineRun ID, ValidationTask ID, quality-gate result and 
 - Gustavo 29/09 is pending human authority in the portal.
 - Louise 28/09 still requires the authenticated manual shared-run execution.
 
+
+
+---
+
+## 2026-09-30 — Lesson Intelligence failed-attempt UI cleanup — PR #75
+
+### Scope
+User review identified the Cláudio failed test-attempt detail surface as too technical and repetitive for normal Teacher Intelligence use.
+
+PR #75 changes only `app/dashboard/admin/intelligence/lessons/[runId]/page.tsx`:
+- failed attempts with no pedagogical output now present one concise explanation and state that no teacher action is required;
+- the repeated nine-stage authority grid is removed from the normal workspace surface;
+- normal summary is reduced to Source / Evidence / Teacher review / Learner-facing output;
+- empty Evidence / Review / Report / AI sections are hidden;
+- explicit synthetic/test markers in persisted source metadata produce a `Test artifact` badge;
+- PipelineRun IDs, lesson IDs, source IDs, timestamps, errors, AI provenance, portfolio payload and persisted events remain available under collapsed `Technical trace / audit`.
+
+This is presentation-only. No learner state, canonical state, Teacher Authority, DB data, or automation-freeze state changes.
+
+### Validation checkpoint
+Code SHA `c672d0ba41df15de6207473000f839c635778b85`:
+- Student Dashboard Contract `36666687973`: SUCCESS, including TypeScript and Next build;
+- Golden Runtime Witness `36666687959`: SUCCESS;
+- Coordination Runtime Witness `36666688131`: SUCCESS.
+
+The first Vercel Preview for that SHA failed with `BUILD_UTILS_SPAWN_1` even though the exact-SHA repository Next build passed. A new branch head / Preview must be reconciled before release; do not treat the Vercel failure as a code failure or the UI cleanup as Production-complete yet.
