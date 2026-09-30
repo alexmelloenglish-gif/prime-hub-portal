@@ -9,9 +9,9 @@
   "teacherName": "Alexandre Mello",
   "program": "English Learning — School Support & Fluency Development",
   "classFrequency": "Weekly / Semanal",
-  "currentLevel": "CEFR A1 — progressing toward A2",
+  "currentLevel": "CEFR A1",
   "targetLevel": "CEFR A2",
-  "focus": "Using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and use English for school content when relevant.",
+  "focus": "Using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and consolidate did/didn't + base verb while using English for school content when relevant.",
   "attendanceRate": "6 attended lessons",
   "attendanceLabel": "Consistency: 5 of 5 completed lessons — consistent",
   "manageSpace": [
@@ -569,8 +569,8 @@
   "teacherFeedback": [
     {
       "id": "feedback-journey-en",
-      "title": "Your first five-lesson journey",
-      "body": "Over these five lessons, Gustavo has been using English increasingly to talk about things that belong to his own world — holidays, school, sports, games and experiences. Talking about things that happened naturally brought past language into conversation. Those forms have returned several times: sometimes with a model or clue, sometimes through retrieval, and on 15 September through a clear self-correction. English was also used as a tool for Science. One week later, some of that language returned easily and some needed another pass. The important story is not simply what was right or wrong: it is that Gustavo is using, revisiting, noticing and reconnecting language over time."
+      "title": "Your first six-lesson journey",
+      "body": "Across these six lessons, Gustavo has been using English increasingly to talk about things that belong to his own world — holidays, school, sports, games and experiences. Past language has returned repeatedly in meaningful contexts. On 15 September there was a clear self-correction; on 29 September he used Simple Past in affirmative answers, short answers, questions and a short retell, and repaired several present/past forms after a cue. English has also continued to work as a tool for school content. The important story is not simply what was right or wrong: it is that Gustavo is using, revisiting, noticing and reconnecting language over time while some forms, especially did/didn't + base verb, still need consolidation."
     },
     {
       "id": "feedback-journey-pt",
@@ -579,15 +579,15 @@
     }
   ],
   "cumulativeImpact": {
-    "title": "Learning Journey — First 5 Lessons",
-    "summary": "Gustavo moved from reactivating English through personal conversation to repeatedly using past meaning in new contexts, preparing school content through English, retrieving part of that content after a week and beginning to notice and repair some of his own language. The journey is still in progress: repeated practice, support, reconstruction and consolidation are part of the movement, not evidence of failure.",
+    "title": "Learning Journey — First 6 Lessons",
+    "summary": "Across six attended lessons, Gustavo moved from reactivating English through personal conversation to repeatedly using past meaning in new contexts, preparing school content through English, retrieving language after time gaps and repairing some present/past forms after cues. On 29 September, Simple Past became more productive across affirmative answers, short answers, questions and short retelling, while did/didn't + base verb remained an active priority.",
     "evidence": [
-      "5/5 completed lessons confirmed: 18 Aug, 25 Aug, 01 Sep, 08 Sep and 15 Sep 2026.",
+      "6 attended lessons confirmed: 18 Aug, 25 Aug, 01 Sep, 08 Sep, 15 Sep and 29 Sep 2026.",
       "Past meaning returned across personal conversation, school review and follow-up tasks rather than appearing only once.",
       "15 Sep: self-correction from “I don't” to “No, I didn't” after a past question.",
-      "15 Sep: went and drank reused in personal sentences.",
-      "Science vocabulary and concepts showed mixed retrieval after one week: some remained available and some needed another pass.",
-      "No CEFR level change is claimed from these five lessons alone."
+      "29 Sep: productive “Yes, I did”, “I ate...”, “Yesterday I went to school” and a short past retell.",
+      "29 Sep: several present/past forms were repaired after a cue, while “I didn't went to school” showed that did/didn't + base verb still needs consolidation.",
+      "No CEFR level movement beyond teacher-confirmed CEFR A1 is claimed from these six lessons."
     ]
   },
   "lessonRecords": [],
