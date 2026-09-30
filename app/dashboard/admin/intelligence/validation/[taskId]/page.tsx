@@ -14,6 +14,72 @@ import {
 
 export const dynamic = 'force-dynamic'
 
+
+type RecordLike = Record<string, unknown>
+
+function asRecord(value: unknown): RecordLike {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as RecordLike)
+    : {}
+}
+
+function asText(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+function asTextArray(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim()))
+    : []
+}
+
+function authoritySummary(value: unknown) {
+  const root = asRecord(value)
+  const payload = asRecord(root.pedagogicalPayload)
+  const learnerState = asRecord(payload.learnerStateChange)
+  const priorityChange = asRecord(payload.priorityChange)
+  const nextAction = asRecord(payload.nextAction)
+  const teacherInsight = asRecord(payload.teacherInsight)
+
+  const evidence = Array.isArray(payload.validatedEvidence)
+    ? payload.validatedEvidence.map(asRecord)
+    : []
+  const signals = Array.isArray(payload.learningSignals)
+    ? payload.learningSignals.map(asRecord)
+    : []
+
+  return {
+    level: asText(learnerState.level),
+    targetLevel: asText(learnerState.targetLevel),
+    learningFocus: asText(learnerState.learningFocus),
+    levelDecision: asText(learnerState.levelDecision),
+    priorities: asTextArray(priorityChange.priorities),
+    nextAction: asText(nextAction.text),
+    teacherInsight: asText(teacherInsight.statement),
+    nextVerification: asText(payload.nextVerification),
+    evidence: evidence.map((item) => ({
+      statement: asText(item.statement),
+      sourceSpan: asText(item.sourceSpan),
+    })).filter((item) => item.statement),
+    boundaries: asTextArray(payload.evidenceBoundaries),
+    signals: signals.map((item) => asText(item.statement)).filter((item): item is string => Boolean(item)),
+  }
+}
+
+function evidenceSummary(value: unknown) {
+  const evidence = asRecord(value)
+  return {
+    sourceTabTitle: asText(evidence.sourceTabTitle),
+    sourceTabId: asText(evidence.sourceTabId),
+    notesExcluded: evidence.notesExcludedFromEvidence === true,
+    previousLevel: asText(evidence.previousLevel),
+    correctedLevel: asText(evidence.correctedLevel),
+    correctionType: asText(evidence.correctionType),
+    boundary: asText(evidence.boundary) || asText(evidence.candidateBoundary) || asText(evidence.baselineBoundary),
+  }
+}
+
+
 async function executeG2RuntimeProof(formData: FormData) {
   'use server'
 
@@ -225,25 +291,184 @@ export default async function ValidationTaskPage({
         <p className="mt-2 text-slate-600">{task.description}</p>
       </header>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="font-bold text-slate-950">Evidence supplied to the validator</h2>
-        <pre className="mt-4 max-h-96 overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
-          {JSON.stringify(task.evidence, null, 2)}
-        </pre>
-      </section>
+      {task.type === 'canonical_learning_record_authority' ? (() => {
+        const summary = authoritySummary(task.suggestedValue)
+        const source = evidenceSummary(task.evidence)
 
-      {task.type === 'canonical_learning_record_authority' ? (
-        <section className="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-6 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Exact authority payload</div>
-          <h2 className="mt-1 font-bold text-slate-950">This is the content this decision will authorize</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Approval applies only to this preserved suggestedValue. It does not create a Canonical Learning Record, publish a projection, or change the learner dashboard by itself.
-          </p>
-          <pre className="mt-4 max-h-[32rem] overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
-            {JSON.stringify(task.suggestedValue, null, 2)}
+        return (
+          <>
+            <section className="rounded-[28px] border border-indigo-200 bg-gradient-to-br from-indigo-50 to-white p-6 shadow-sm">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-700">Teacher review</p>
+                  <h2 className="mt-1 text-2xl font-bold text-slate-950">What this decision means</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                    Review the pedagogical change in plain language first. The exact preserved payload remains available below for audit.
+                  </p>
+                </div>
+                <span className="rounded-full border border-indigo-200 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                  {task.status === 'pending' ? 'Waiting for your decision' : `Decision: ${task.status}`}
+                </span>
+              </div>
+
+              {(summary.level || summary.targetLevel || summary.learningFocus) ? (
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                  {summary.level ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Current level</p>
+                      <p className="mt-2 text-lg font-bold text-slate-950">{summary.level}</p>
+                    </div>
+                  ) : null}
+                  {summary.targetLevel ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Target</p>
+                      <p className="mt-2 text-lg font-bold text-slate-950">{summary.targetLevel}</p>
+                    </div>
+                  ) : null}
+                  {summary.levelDecision ? (
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Level decision</p>
+                      <p className="mt-2 text-lg font-bold text-slate-950">{summary.levelDecision.replace(/_/g, ' ')}</p>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {summary.learningFocus ? (
+                <div className="mt-4 rounded-2xl border border-indigo-100 bg-white p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-indigo-700">Learning focus</p>
+                  <p className="mt-2 text-sm leading-7 text-slate-700">{summary.learningFocus}</p>
+                </div>
+              ) : null}
+
+              {source.previousLevel && source.correctedLevel ? (
+                <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-800">Correction requested</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-amber-950">
+                    <span className="rounded-lg bg-white px-3 py-2 line-through opacity-70">{source.previousLevel}</span>
+                    <span aria-hidden="true">→</span>
+                    <span className="rounded-lg bg-white px-3 py-2 font-bold">{source.correctedLevel}</span>
+                  </div>
+                  {source.boundary ? <p className="mt-3 text-xs leading-5 text-amber-900/80">{source.boundary}</p> : null}
+                </div>
+              ) : null}
+            </section>
+
+            <section className="grid gap-4 xl:grid-cols-2">
+              <article className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Why this is proposed</p>
+                <h2 className="mt-1 text-xl font-bold text-slate-950">Teacher interpretation</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-700">
+                  {summary.teacherInsight || 'No separate teacher interpretation was preserved for this decision.'}
+                </p>
+
+                {summary.signals.length ? (
+                  <div className="mt-5 space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Learning signals</p>
+                    {summary.signals.map((signal, index) => (
+                      <div key={index} className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm leading-6 text-slate-700">
+                        {signal}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+
+              <article className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">What comes next</p>
+                <h2 className="mt-1 text-xl font-bold text-slate-950">Teaching priorities</h2>
+                {summary.priorities.length ? (
+                  <ol className="mt-4 space-y-3">
+                    {summary.priorities.map((priority, index) => (
+                      <li key={index} className="flex gap-3 text-sm leading-6 text-slate-700">
+                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-bold text-indigo-700">
+                          {index + 1}
+                        </span>
+                        <span>{priority}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : <p className="mt-3 text-sm text-slate-600">No priority changes were included.</p>}
+
+                {summary.nextAction ? (
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-800">Next teaching action</p>
+                    <p className="mt-2 text-sm leading-6 text-emerald-950">{summary.nextAction}</p>
+                  </div>
+                ) : null}
+              </article>
+            </section>
+
+            <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lesson evidence</p>
+                  <h2 className="mt-1 text-xl font-bold text-slate-950">What supports this proposal</h2>
+                </div>
+                {source.sourceTabTitle ? (
+                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800">
+                    {source.sourceTabTitle} only{source.notesExcluded ? ' · notes excluded' : ''}
+                  </span>
+                ) : null}
+              </div>
+
+              {summary.evidence.length ? (
+                <div className="mt-5 grid gap-3 lg:grid-cols-2">
+                  {summary.evidence.map((item, index) => (
+                    <article key={index} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-sm leading-6 text-slate-800">{item.statement}</p>
+                      {item.sourceSpan ? (
+                        <p className="mt-3 rounded-lg bg-white px-3 py-2 text-xs leading-5 text-slate-500">
+                          Example from the lesson: {item.sourceSpan}
+                        </p>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              ) : <p className="mt-4 text-sm text-slate-600">No lesson-evidence summary was preserved.</p>}
+
+              {summary.boundaries.length ? (
+                <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-800">Evidence limits</p>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-amber-950">
+                    {summary.boundaries.map((boundary, index) => <li key={index}>• {boundary}</li>)}
+                  </ul>
+                </div>
+              ) : null}
+            </section>
+
+            <details className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+                Technical details and preserved authority payload
+              </summary>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                These fields are preserved for audit, exact replay and provenance. You normally do not need to read them to make the pedagogical decision.
+              </p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Source / provenance</p>
+                  <pre className="max-h-80 overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
+                    {JSON.stringify(task.evidence, null, 2)}
+                  </pre>
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Exact authority payload</p>
+                  <pre className="max-h-[32rem] overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
+                    {JSON.stringify(task.suggestedValue, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </details>
+          </>
+        )
+      })() : (
+        <details className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" open>
+          <summary className="cursor-pointer font-bold text-slate-950">Evidence supplied to the validator</summary>
+          <pre className="mt-4 max-h-96 overflow-auto rounded-xl bg-slate-950 p-4 text-xs leading-5 text-slate-100">
+            {JSON.stringify(task.evidence, null, 2)}
           </pre>
-        </section>
-      ) : null}
+        </details>
+      )}
 
       {existingG3Verification && existingG3Verification.verificationStatus === 'PASS' && !proofParams.g3Proof ? (
         <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
