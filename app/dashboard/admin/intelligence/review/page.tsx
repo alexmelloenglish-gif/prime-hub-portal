@@ -3,8 +3,30 @@ import { ClipboardCheck, ExternalLink } from 'lucide-react'
 import { ReviewQueueActions } from '@/app/dashboard/admin/review/review-queue-actions'
 import { IntelligenceStatusBadge } from '@/components/teacher/intelligence-status-badge'
 import { listPendingReviewTasks } from '@/lib/pipeline/run'
-import { listEvidenceReviewQueue } from '@/lib/teacher-intelligence'
+import { listEvidenceReviewQueue, listLearnerSubmissions } from '@/lib/teacher-intelligence'
 import { reviewEvidenceCandidateAction } from './actions'
+
+const checkpointLabels: Record<string, string> = {
+  advice: 'Giving advice',
+  health: 'Health language',
+  'now-past': 'Present vs past',
+  digestion: 'Digestion',
+  nutrients: 'Nutrients',
+  reflexive: 'Reflexive pronouns',
+  'past-story': 'Past story',
+  'past-words': 'Past vocabulary',
+  'past-answer': 'Past answers',
+  superlative: 'Superlatives',
+  'past-negative': 'Past negatives',
+  'past-question': 'Past questions',
+  'self-correction': 'Self-correction',
+}
+
+function humanizeCheckpointRating(value: string) {
+  if (value === 'VERY_WELL') return 'Very well'
+  if (value === 'WITH_HELP') return 'With help'
+  return value.replace(/_/g, ' ').toLowerCase()
+}
 
 function provenanceSummary(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return 'NOT PROVEN'
@@ -15,11 +37,13 @@ function provenanceSummary(value: unknown) {
 }
 
 export default async function TeacherEvidenceReviewPage() {
-  const [items, pipelineTasks] = await Promise.all([
+  const [items, pipelineTasks, learnerSubmissions] = await Promise.all([
     listEvidenceReviewQueue(100),
     listPendingReviewTasks(),
+    listLearnerSubmissions(100),
   ])
-  const totalPending = items.length + pipelineTasks.length
+  const learnerSubmissionsPending = learnerSubmissions.filter((item) => item.needsTeacherReview).length
+  const totalPending = items.length + pipelineTasks.length + learnerSubmissionsPending
 
   return (
     <section className="space-y-5">
@@ -33,6 +57,89 @@ export default async function TeacherEvidenceReviewPage() {
           <IntelligenceStatusBadge label={`${totalPending} pending`} state={totalPending ? 'NEEDS_REVIEW' : 'PRESENT'} />
         </div>
       </div>
+
+      <section aria-labelledby="learner-submissions-heading" className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-3 px-1">
+          <div>
+            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner submissions</p>
+            <h3 id="learner-submissions-heading" className="mt-1 text-lg font-semibold text-white">What students submitted</h3>
+            <p className="mt-1 max-w-3xl text-xs leading-5 text-prime-cream/45">
+              Audio missions and learner check-ins are shown here for teacher review. A learner submission is not automatically validated learning evidence.
+            </p>
+          </div>
+          <span className="text-xs text-prime-cream/45">{learnerSubmissions.length} submitted · {learnerSubmissionsPending} awaiting teacher review</span>
+        </div>
+
+        {learnerSubmissions.length ? (
+          <div className="grid gap-4 xl:grid-cols-2">
+            {learnerSubmissions.map((submission) => (
+              <article key={submission.id} className="glass-card p-5">
+                {submission.kind === 'audio' ? (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Audio mission</p>
+                        <h4 className="mt-1 text-lg font-semibold text-white">{submission.studentEmail || submission.studentId || 'Learner submission'}</h4>
+                        <p className="mt-1 text-xs text-prime-cream/45">{submission.actionId || 'Audio response'} · {submission.durationSeconds ?? '—'}s</p>
+                      </div>
+                      <IntelligenceStatusBadge
+                        label={submission.needsTeacherReview ? 'Needs review' : 'Submitted'}
+                        state={submission.needsTeacherReview ? 'NEEDS_REVIEW' : 'PRESENT'}
+                      />
+                    </div>
+
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-prime-cream/45">Listen to submission</p>
+                      <audio
+                        controls
+                        preload="metadata"
+                        src={`/api/dashboard/action/audio/${submission.id}`}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <p className="mt-3 text-xs leading-5 text-prime-cream/45">
+                      Status: {submission.authorityStatus || 'submitted'}. Listening does not promote this response to teacher-validated evidence.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner checkpoint</p>
+                        <h4 className="mt-1 text-lg font-semibold text-white">Gustavo · self-perception check-in</h4>
+                        <p className="mt-1 text-xs text-prime-cream/45">{submission.journeyId || submission.studentId || 'Learner check-in'}</p>
+                      </div>
+                      <IntelligenceStatusBadge label="Self-perception" state="PRESENT" />
+                    </div>
+
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {Object.entries(submission.answers).map(([key, value]) => (
+                        <div key={key} className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                          <p className="text-xs text-prime-cream/45">{checkpointLabels[key] || key.replace(/-/g, ' ')}</p>
+                          <p className="mt-1 text-sm font-semibold text-white">{humanizeCheckpointRating(value)}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="mt-4 text-xs leading-5 text-amber-100/80">
+                      This is the learner&apos;s own perception of performance. It must not be treated as proficiency evidence or a CEFR decision.
+                    </p>
+                  </>
+                )}
+
+                <p className="mt-4 text-[11px] text-prime-cream/35">
+                  Submitted {new Date(submission.createdAt).toLocaleString('en-GB')} · event {submission.id}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="glass-card flex items-center gap-3 p-5 text-sm text-prime-cream/60">
+            <ClipboardCheck className="h-5 w-5" aria-hidden="true" /> No learner submissions found.
+          </div>
+        )}
+      </section>
 
       <section aria-labelledby="pipeline-review-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
