@@ -562,3 +562,36 @@ Do not use the automatic Drive reconciler for the two new lessons until PR #70 e
 - Use only the verified `Transcrição` tab with explicit source-tab provenance for any interim manual evidence.
 - Never use `Observações`, `Quick notes`, or `Full notes` as pedagogical transcript evidence.
 - After legitimate evidence reconciliation, prepare the candidate packet and stop at Alexandre's candidate-specific `APPROVE / EDIT / REJECT` decision.
+
+
+---
+
+## 2026-09-30 — PR #70 transcript-only source-integrity gate RELEASED / PRODUCTION PASS
+
+### Exact release proof
+- PR #70 validated head `fca1ec5a2ded223b7e958e240a87b4c3abd858c9`.
+- Exact-head PR gates PASS:
+  - Student Dashboard Contract `36660486619`;
+  - Golden Runtime Witness `36660486636`;
+  - Coordination Runtime Witness `36660486641`.
+- Same-head Vercel Preview `dpl_BBf9TNmSPZcocqi2UqNrxi2jhQp2`: READY.
+- PR #70 marked ready and merged with expected-head protection.
+- Merge SHA: `a995ad3cf92beedd08f21864edc1dee36aacdf12`.
+- Post-merge push Student Dashboard Contract `36661711154`: SUCCESS on exact merge SHA.
+- Vercel Production `dpl_9GLC3aZMXx73Np72xK8fYdGaZ6nS`: READY on exact merge SHA with official domains.
+- Post-release Vercel runtime-error scan: no errors in the selected window.
+
+### Gustavo 2026-09-29 transcript-only proof
+Google Doc `1F3Oe87eEUgTLOO9d7MupI_C5mU-5U-ESUr_gQYC0Gks` was read through the tab-aware Docs API.
+Observed tabs:
+- `Observações` — `t.piyr7rigwkbd`;
+- `Transcrição` — `t.ororffpf4ito`.
+
+Only `Transcrição` was selected for pedagogical evidence. The selected transcript body contained 31,090 characters and ended at 00:56:26. `Observações` was excluded from evidence.
+
+### Safety / next boundary
+- `PIPELINE_AUTOMATION_FROZEN = true` remains active.
+- automatic ingest remains OFF.
+- no Teacher Authority was consumed by this release.
+- no Gustavo canonical learner-state mutation occurred.
+- next action: reconcile the existing Gustavo canonical state/evidence against the transcript-only 2026-09-29 source, prepare the candidate/evidence packet, then stop for Alexandre's explicit candidate-specific `APPROVE / EDIT / REJECT` Teacher Authority decision.
