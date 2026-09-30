@@ -450,10 +450,12 @@ Teacher Authority remains a separate human boundary and is not implied by this i
 - final PR head `f4ddc6e8a9292269577f947941f7ca1b89d98018` differs only by this canonical handoff write-back and produced Vercel Preview `dpl_4H4asg5axL7Y6wFPJdqoFaDKyWsS`: READY.
 - PR #69 merged successfully.
 - merge SHA: `71e11428e7cbb5110fc5fc8d6af973eb9136596c`.
-- Vercel created Production deployment `dpl_3Qjme9s63ArNmXBQoKtBAKLJPYzK` for that exact merge SHA; the deployment was still BUILDING at the moment this write-back was committed and requires final READY read-back.
+- Vercel Production deployment `dpl_3Qjme9s63ArNmXBQoKtBAKLJPYzK` for exact merge SHA `71e11428e7cbb5110fc5fc8d6af973eb9136596c`: READY and assigned to the official domains.
 - `PIPELINE_AUTOMATION_FROZEN = true` remains unchanged.
 - no coordination secret was committed or configured through Git.
 - no Teacher Authority or learner canonical mutation occurred.
+- subsequent documentation-only main `f00bd461eaad39321d2b387ff029e5c994dd27c3` deployed as `dpl_8z4ZjUHiRVdHNwdrEukmU87E2KFm`: READY on the official domains.
+- Production route read-back: GET `https://www.primedigitalhub.com.br/api/coordination/wake` returned HTTP 405 with `x-matched-path: /api/coordination/wake`, proving the POST-only receiver is present on Production.
 
 ### Remaining blocker after receiver implementation
 The repository/runtime wake-target **implementation gap is closed**: a guarded receiver now exists in `main`. The remaining gap is configuration authority/capability, not code.
