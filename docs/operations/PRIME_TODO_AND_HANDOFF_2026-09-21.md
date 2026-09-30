@@ -379,3 +379,63 @@ Required loop:
 
 `act → prove → persist in #58 + canonical handoff → continue until a genuine stop boundary`
 
+
+
+---
+
+## 2026-09-29 — Production coordination wake receiver remediation lane
+
+### Reconciled baseline before mutation
+- current `main` at lane creation: `6fb8714ff4c21a70847dc07ecc18dac5095c3ce6`;
+- Vercel Production deployment `dpl_82Y56G7nTKAdgwVM8JLcnxpfNatn`: READY on that exact SHA;
+- Production DB migration gate remains recorded PASS from the prior persisted Production read-back;
+- a fresh Neon read-back in this executor is currently unavailable because the Neon connector returns authorization error `HTTP 404: The request could not be authorized due to an internal error`;
+- `PIPELINE_AUTOMATION_FROZEN = true`;
+- automatic Learning Machine ingestion remains OFF;
+- no candidate-specific Teacher Authority has been consumed.
+
+### Executed in the owned blocker-remediation lane
+A new lane was created from exact current main:
+
+- branch: `infra/production-coordination-wake-receiver-2026-09-29`;
+- PR: #69 — `Infra: guarded Production coordination wake witness`.
+
+The lane adds a narrowly scoped Production-capable receiver:
+
+`POST /api/coordination/wake`
+
+The receiver:
+- remains inert unless `PRIME_AGENT_WAKE_SECRET` is configured;
+- validates the wake secret with timing-safe equality;
+- reads the exact persisted coordination event before any ACK;
+- accepts only target role `validator`, event `VALIDATION_REQUESTED`, repository `alexmelloenglish-gif/prime-hub-portal`, Issue #58 evidence, workstream prefix `production-activation:wake-witness:`, and marker `production-coordination-witness-v1`;
+- requires the event SHA and `expectedSha` to equal the executing Vercel `VERCEL_GIT_COMMIT_SHA`;
+- writes only the ACK for that same durable coordination event;
+- does not authorize Teacher Authority, learner/canonical mutation, pipeline ingest, merge/release, or automatic trigger activation.
+
+The Phase 2 self-test was extended to cover the receiver guardrails and reject mismatched SHA / invalid witness marker / deployment-SHA mismatch.
+
+### Intended Production target after exact-head validation
+```json
+{"validator":"https://www.primedigitalhub.com.br/api/coordination/wake"}
+```
+
+### Remaining runtime boundary
+The currently connected Vercel tool surface exposes project/deployment/log reads and deploy operations but no environment-variable write primitive. This executor runtime also has no authenticated Vercel CLI/token. Therefore the following values are **not yet configured by this lane**:
+
+- `PRIME_AGENT_BUS_SECRET`;
+- `PRIME_AGENT_WAKE_URLS_JSON`;
+- `PRIME_AGENT_WAKE_SECRET`.
+
+No secret may be committed to Git as a workaround.
+
+### Exact next action
+1. validate PR #69 on one final exact head SHA with the relevant GitHub gates + same-SHA Vercel Preview;
+2. if the lane is released to Production, prove the receiver is present but inert before secrets are configured;
+3. obtain a writable Vercel environment configuration path and set only the three coordination values above;
+4. keep automatic ingest frozen;
+5. execute one controlled Production coordination event → dispatch → guarded receiver → ACK/read-back witness;
+6. prepare Gustavo's candidate/evidence packet;
+7. stop at the candidate-specific Teacher Authority decision for Alexandre's explicit approve/edit/reject.
+
+Teacher Authority remains a separate human boundary and is not implied by this infrastructure work.
