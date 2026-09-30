@@ -37,7 +37,7 @@ export default async function TeacherLessonsPage({
             {requestedStudent ? `Lessons for ${requestedStudent}` : 'Learner lessons'}
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[#60718d]">
-            Each lesson appears once. If the system retried the same lesson, those technical attempts are kept inside an expandable processing history instead of appearing as extra lessons.
+            This workspace shows lesson processing that produced pedagogical evidence, review work or learner-facing output. Failed technical-only attempts from older processing remain preserved in Audit and are intentionally kept out of this lesson list.
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-[#f8fbff] px-3 py-2 text-xs font-semibold text-[#60718d]">
