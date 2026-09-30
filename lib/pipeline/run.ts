@@ -1766,11 +1766,35 @@ export function parseTranscriptPayload(body: unknown): LessonTranscriptInput {
   const sourceFileId = asOptionalString(metadata?.sourceFileId)
   const sourceMimeType = asOptionalString(metadata?.sourceMimeType)
   const triageStatus = asOptionalString(metadata?.triageStatus)
+  const ingestionMode = asOptionalString(metadata?.ingestionMode)
+  const sourceExtractionMode = asOptionalString(metadata?.sourceExtractionMode)
+  const sourceTabId = asOptionalString(metadata?.sourceTabId)
+  const sourceTabTitle = asOptionalString(metadata?.sourceTabTitle)
+  const notesExcludedFromEvidence = metadata?.notesExcludedFromEvidence === true
   const carriesDriveProvenance = Boolean(sourceFileId || sourceMimeType || triageStatus)
   if (source === 'google_meet' && carriesDriveProvenance) {
     if (!sourceFileId) throw new Error('metadata.sourceFileId is required for Drive-origin Google Meet ingestion')
     if (sourceMimeType !== 'application/vnd.google-apps.document') throw new Error('Only Google Docs transcripts may enter the Drive-origin ingestion path')
     if (triageStatus !== 'usable_transcript') throw new Error('Only triageStatus=usable_transcript may enter the Drive-origin ingestion path')
+
+    if (ingestionMode === 'drive-reconciliation-cron-v2') {
+      if (sourceExtractionMode !== 'google_docs_transcript_tab_v1' && sourceExtractionMode !== 'google_docs_legacy_single_body_v1') {
+        throw new Error('Drive reconciliation v2 requires an explicit transcript extraction mode')
+      }
+      if (sourceExtractionMode === 'google_docs_transcript_tab_v1') {
+        if (!sourceTabId) throw new Error('Tabbed Google Docs ingestion requires metadata.sourceTabId')
+        const normalizedSourceTabTitle = sourceTabTitle
+          ?.normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim()
+        if (!normalizedSourceTabTitle || !['transcript', 'transcricao'].includes(normalizedSourceTabTitle)) {
+          throw new Error('Tabbed Google Docs ingestion requires a Transcript/Transcrição source tab')
+        }
+        if (!notesExcludedFromEvidence) throw new Error('Tabbed Google Docs ingestion must prove notes were excluded from evidence')
+      }
+    }
   }
   return {
     lessonId,

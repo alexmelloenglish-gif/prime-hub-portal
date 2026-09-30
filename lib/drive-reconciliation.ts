@@ -3,6 +3,7 @@ import { ExternalAccountClient } from 'google-auth-library'
 import { getVercelOidcToken } from '@vercel/oidc'
 import studentRegistry from '@/data/students/student-core-registry.json'
 import { getPrismaClient } from '@/lib/prisma'
+import { extractGoogleDocsTranscript, type GoogleDocsTranscriptExtraction } from '@/lib/google-docs-transcript-extraction'
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3'
 const DOCS_API = 'https://docs.googleapis.com/v1'
@@ -245,40 +246,6 @@ async function listDriveTranscriptsRecursively(auth: ReturnType<typeof getDriveA
   return documents
 }
 
-type GoogleDocsStructuralElement = {
-  textRun?: { content?: string }
-  paragraph?: { elements?: GoogleDocsStructuralElement[] }
-  table?: { tableRows?: Array<{ tableCells?: Array<{ content?: GoogleDocsStructuralElement[] }> }> }
-}
-
-function extractDocsElements(elements: GoogleDocsStructuralElement[] | undefined): string {
-  if (!elements) return ''
-  return elements.map((element) => {
-    if (element.textRun?.content) return element.textRun.content
-    if (element.paragraph?.elements) return extractDocsElements(element.paragraph.elements)
-    if (element.table?.tableRows) {
-      return element.table.tableRows
-        .flatMap((row) => row.tableCells || [])
-        .map((cell) => extractDocsElements(cell.content))
-        .join('')
-    }
-    return ''
-  }).join('')
-}
-
-function extractGoogleDocsText(document: unknown): string {
-  if (!document || typeof document !== 'object' || Array.isArray(document)) return ''
-  const root = document as {
-    body?: { content?: GoogleDocsStructuralElement[] }
-    tabs?: Array<{ documentTab?: { body?: { content?: GoogleDocsStructuralElement[] } } }>
-  }
-  const tabBodies = (root.tabs || [])
-    .map((tab) => extractDocsElements(tab.documentTab?.body?.content))
-    .filter(Boolean)
-  if (tabBodies.length) return tabBodies.join('\n\n')
-  return extractDocsElements(root.body?.content)
-}
-
 async function moveToProcessed(auth: ReturnType<typeof getDriveAuth>, file: DriveFile): Promise<void> {
   const currentParents = (file.parents || []).filter((parentId) => parentId !== PROCESSED_FOLDER_ID)
   const params = new URLSearchParams({
@@ -300,24 +267,34 @@ async function moveToProcessed(auth: ReturnType<typeof getDriveAuth>, file: Driv
   if (!response.ok) throw new Error(`drive_move_processed_http_${response.status}`)
 }
 
-async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: string): Promise<string> {
+async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: string): Promise<GoogleDocsTranscriptExtraction> {
   const authHeaders = await auth.getRequestHeaders()
   const headers = new Headers(authHeaders)
   const docsUrl = `${DOCS_API}/documents/${encodeURIComponent(fileId)}?includeTabsContent=true`
   const docsResponse = await fetch(docsUrl, { headers, cache: 'no-store' })
   if (docsResponse.ok) {
     const document = await docsResponse.json()
-    const tabText = extractGoogleDocsText(document)
-    if (tabText.trim()) return tabText
+    const extraction = extractGoogleDocsTranscript(document)
+    if (extraction.text.trim()) return extraction
   }
 
   const exportUrl = `${DRIVE_API}/files/${encodeURIComponent(fileId)}/export?mimeType=text%2Fplain`
   const exportResponse = await fetch(exportUrl, { headers, cache: 'no-store' })
   if (!exportResponse.ok) throw new Error(`drive_export_http_${exportResponse.status}`)
-  return exportResponse.text()
+  return {
+    text: await exportResponse.text(),
+    extractionMode: 'google_docs_legacy_single_body_v1',
+    sourceTabId: null,
+    sourceTabTitle: null,
+  }
 }
 
-function buildPayload(file: DriveFile, transcript: string, triage: TriageResult) {
+function buildPayload(
+  file: DriveFile,
+  transcript: string,
+  triage: TriageResult,
+  extraction: GoogleDocsTranscriptExtraction,
+) {
   if (!triage.student) throw new Error('identity_not_resolved')
   const student = triage.student
   const sourceHash = sha256(transcript)
@@ -351,7 +328,11 @@ function buildPayload(file: DriveFile, transcript: string, triage: TriageResult)
       sourceHash,
       driveModifiedTime: file.modifiedTime || null,
       driveCreatedTime: file.createdTime || null,
-      ingestionMode: 'drive-reconciliation-cron',
+      ingestionMode: 'drive-reconciliation-cron-v2',
+      sourceExtractionMode: extraction.extractionMode,
+      sourceTabId: extraction.sourceTabId,
+      sourceTabTitle: extraction.sourceTabTitle,
+      notesExcludedFromEvidence: extraction.extractionMode === 'google_docs_transcript_tab_v1',
       triageStatus: triage.status,
       identityVerified: true,
       identityMatches: triage.identityMatches,
@@ -393,15 +374,16 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
     if (result.sourceReads >= MAX_SOURCE_READS_PER_RUN) break
     result.sourceReads += 1
 
-    let transcript: string
+    let extraction: GoogleDocsTranscriptExtraction
     try {
-      transcript = await exportGoogleDoc(auth, file.id)
+      extraction = await exportGoogleDoc(auth, file.id)
     } catch (error) {
       result.quarantined += 1
       console.warn(JSON.stringify({ event: 'drive_source_read_failed', fileRef: safeFileRef(file.id), error: sanitizeError(error) }))
       continue
     }
 
+    const transcript = extraction.text
     const triage = classifyTranscript(file, transcript)
     if (triage.status !== 'usable_transcript') {
       result.quarantined += 1
@@ -409,7 +391,7 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
       continue
     }
 
-    const payload = buildPayload(file, transcript, triage)
+    const payload = buildPayload(file, transcript, triage, extraction)
     const ingestSecret = process.env.PRIME_PIPELINE_INGEST_SECRET
     if (!ingestSecret) throw new Error('ingest_secret_not_configured')
 
