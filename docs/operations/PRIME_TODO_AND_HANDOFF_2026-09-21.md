@@ -294,3 +294,28 @@ Avoid:
 
 ### Current cross-agent synchronization rule
 Issue #58 remains the durable coordination record. This handoff remains the canonical queue/state summary. Alexandre must not be used as the synchronization mechanism between executors.
+
+---
+
+## 2026-09-29 — Production DB activation boundary crossed
+
+### Completed
+- [x] Neon Production read-only authorization restored for project `holy-block-04720208`, branch `br-cold-cloud-anwml3lu`.
+- [x] Applied and recorded the three validated additive migrations:
+  - `20260925013000_add_shared_learning_machine_runner_state`
+  - `20260925162500_add_agent_coordination_bus_phase1`
+  - `20260925213000_add_agent_coordination_bus_phase2_active`
+- [x] Post-read confirms final shared-runner columns on `pipeline_runs` and Phase 2 claim/lease/dispatch columns on `agent_coordination_events`.
+- [x] Existing 24 PipelineRun rows preserved.
+- [x] Vercel Production remains READY on `main@d68203b58aaac5b89ac98a04968308f1f75b02cb`.
+- [x] No new Vercel runtime errors observed in the immediate post-migration window.
+
+### Remaining protected/runtime boundary
+- [ ] Configure a real Production coordination wake target and auth secrets.
+- [ ] Execute one real candidate-specific Teacher Authority Production witness with durable run/canonical/projection/dashboard/coordination ACK read-back.
+- [ ] Only after that witness passes, remove the hard `PIPELINE_AUTOMATION_FROZEN` guard and enable the intended automatic transcript trigger.
+- [ ] Immediately verify idempotency and rollback/freeze after first automatic run.
+
+### Current blocker
+No real Production wake target URL is preserved in the repository, and the currently connected Vercel surface does not expose environment-variable writes. No authenticated Vercel CLI/token is available in this executor runtime. This is now the only infrastructure blocker before the controlled Production witness; Teacher Authority itself remains human and candidate-specific.
+
