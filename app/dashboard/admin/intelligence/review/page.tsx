@@ -30,7 +30,9 @@ export default async function TeacherEvidenceReviewPage() {
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-prime-cream/45">Teacher review</p>
             <h2 className="mt-1 text-xl font-semibold text-white">Items waiting for a human decision</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-prime-cream/60">Review access, publication and lesson evidence only when a teacher or administrator decision is actually needed.</p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-prime-cream/60">
+              This workspace shows only items that actually require a teacher or administrator action.
+            </p>
           </div>
           <IntelligenceStatusBadge label={`${totalPending} pending`} state={totalPending ? 'NEEDS_REVIEW' : 'PRESENT'} />
         </div>
@@ -40,93 +42,78 @@ export default async function TeacherEvidenceReviewPage() {
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
             <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner submissions</p>
-            <h3 id="learner-submissions-heading" className="mt-1 text-lg font-semibold text-white">What students submitted</h3>
+            <h3 id="learner-submissions-heading" className="mt-1 text-lg font-semibold text-white">Audio missions requiring review</h3>
             <p className="mt-1 max-w-3xl text-xs leading-5 text-prime-cream/45">
-              Audio missions that require a teacher action are shown here. Learner self-perception check-ins stay out of Review and remain available only in the technical Audit history.
+              Learner audio can be listened to and marked as reviewed here. Self-perception check-ins are not review tasks and remain outside this workspace.
             </p>
           </div>
-          <span className="text-xs text-prime-cream/45">{learnerSubmissions.length} submitted · {learnerSubmissionsPending} awaiting teacher review</span>
+          <span className="text-xs text-prime-cream/45">
+            {learnerSubmissions.length} audio submission{learnerSubmissions.length === 1 ? '' : 's'} · {learnerSubmissionsPending} awaiting review
+          </span>
         </div>
 
         {learnerSubmissions.length ? (
           <div className="grid gap-4 xl:grid-cols-2">
             {learnerSubmissions.map((submission) => (
               <article id={`submission-${submission.id}`} key={submission.id} className="glass-card scroll-mt-6 p-5">
-
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Audio mission</p>
-                        <h4 className="mt-1 text-lg font-semibold text-white">{submission.studentEmail || submission.studentId || 'Learner submission'}</h4>
-                        <p className="mt-1 text-xs text-prime-cream/45">{submission.actionId || 'Audio response'} · {submission.durationSeconds ?? '—'}s</p>
-                      </div>
-                      <IntelligenceStatusBadge
-                        label={submission.needsTeacherReview ? 'Needs review' : 'Submitted'}
-                        state={submission.needsTeacherReview ? 'NEEDS_REVIEW' : 'PRESENT'}
-                      />
-                    </div>
-
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
-                      <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-prime-cream/45">Listen to submission</p>
-                      <audio
-                        controls
-                        preload="metadata"
-                        src={`/api/dashboard/action/audio/${submission.id}`}
-                        className="w-full"
-                      />
-                      <a
-                        href={`/api/dashboard/action/audio/${submission.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 inline-flex items-center gap-1 rounded-lg border border-blue-300/30 bg-blue-300/10 px-3 py-2 text-xs font-semibold text-blue-100 hover:bg-blue-300/20"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                        Open audio
-                      </a>
-                    </div>
-
-                    <p className="mt-3 text-xs leading-5 text-prime-cream/45">
-                      Status: {submission.needsTeacherReview ? 'Awaiting teacher review' : 'Reviewed by teacher'}. Listening does not promote this response to teacher-validated evidence.
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Audio mission</p>
+                    <h4 className="mt-1 text-lg font-semibold text-white">
+                      {submission.studentEmail || submission.studentId || 'Learner submission'}
+                    </h4>
+                    <p className="mt-1 text-xs text-prime-cream/45">
+                      {submission.actionId || 'Audio response'} · {submission.durationSeconds ?? '—'}s
                     </p>
+                  </div>
+                  <IntelligenceStatusBadge
+                    label={submission.needsTeacherReview ? 'Needs review' : 'Reviewed'}
+                    state={submission.needsTeacherReview ? 'NEEDS_REVIEW' : 'PRESENT'}
+                  />
+                </div>
 
-                    {submission.needsTeacherReview ? (
-                      <form action={reviewLearnerSubmissionAction} className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
-                        <input type="hidden" name="submissionEventId" value={submission.id} />
-                        <p className="text-xs leading-5 text-prime-cream/60">
-                          Marking this submission as reviewed closes the teacher-review task only. It does not create canonical evidence, change CEFR, or update the learner&apos;s learning state.
-                        </p>
-                        <button
-                          type="submit"
-                          className="mt-3 rounded-xl border border-blue-300/35 bg-blue-300/15 px-3 py-2 text-xs font-semibold text-blue-100 hover:bg-blue-300/25"
-                        >
-                          Mark as reviewed
-                        </button>
-                      </form>
-    
-                  </>
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-prime-cream/45">Listen to submission</p>
+                  <audio
+                    controls
+                    preload="metadata"
+                    src={`/api/dashboard/action/audio/${submission.id}`}
+                    className="w-full"
+                  />
+                  <a
+                    href={`/api/dashboard/action/audio/${submission.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 rounded-lg border border-sky-300/30 bg-sky-300/10 px-3 py-2 text-xs font-semibold text-sky-100 hover:bg-sky-300/20"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                    Open audio
+                  </a>
+                </div>
+
+                <p className="mt-3 text-xs leading-5 text-prime-cream/45">
+                  Listening does not promote this response to teacher-confirmed evidence.
+                </p>
+
+                {submission.needsTeacherReview ? (
+                  <form action={reviewLearnerSubmissionAction} className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <input type="hidden" name="submissionEventId" value={submission.id} />
+                    <p className="text-xs leading-5 text-prime-cream/60">
+                      Marking this submission as reviewed closes the submission-review task only. It does not create canonical evidence, change CEFR, consume Teacher Authority, or update the learner&apos;s learning state.
+                    </p>
+                    <button
+                      type="submit"
+                      className="mt-3 rounded-xl border border-sky-300/35 bg-sky-300/15 px-3 py-2 text-xs font-semibold text-sky-100 hover:bg-sky-300/25"
+                    >
+                      Mark as reviewed
+                    </button>
+                  </form>
                 ) : (
-                  <>
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner checkpoint</p>
-                        <h4 className="mt-1 text-lg font-semibold text-white">Gustavo · self-perception check-in</h4>
-                        <p className="mt-1 text-xs text-prime-cream/45">{submission.journeyId || submission.studentId || 'Learner check-in'}</p>
-                      </div>
-                      <IntelligenceStatusBadge label="Learner self-perception" state="SELF_PERCEPTION" />
-                    </div>
-
-                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                      {Object.entries(submission.answers).map(([key, value]) => (
-                        <div key={key} className="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
-                          <p className="text-xs text-prime-cream/45">{checkpointLabels[key] || key.replace(/-/g, ' ')}</p>
-                          <p className="mt-1 text-sm font-semibold text-white">{humanizeCheckpointRating(value)}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs font-semibold leading-5 text-amber-950 shadow-sm">
-                      This is the learner&apos;s own perception of performance. It must not be treated as proficiency evidence or a CEFR decision.
-                    </p>
-                  </>
+                  <div className="mt-4 rounded-xl border border-sky-300/30 bg-sky-300/10 px-3 py-3 text-xs font-semibold leading-5 text-sky-100">
+                    Reviewed by {submission.reviewerId || 'teacher'}
+                    {submission.reviewedAt ? <> · {new Date(submission.reviewedAt).toLocaleString('en-GB')}</> : null}.
+                    This remains a learner submission, not teacher-confirmed learning evidence.
+                  </div>
                 )}
 
                 <p className="mt-4 text-[11px] text-prime-cream/35">
@@ -137,7 +124,7 @@ export default async function TeacherEvidenceReviewPage() {
           </div>
         ) : (
           <div className="glass-card flex items-center gap-3 p-5 text-sm text-prime-cream/60">
-            <ClipboardCheck className="h-5 w-5" aria-hidden="true" /> No learner submissions found.
+            <ClipboardCheck className="h-5 w-5" aria-hidden="true" /> No learner audio submissions require review.
           </div>
         )}
       </section>
