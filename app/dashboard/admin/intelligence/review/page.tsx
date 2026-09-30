@@ -73,7 +73,7 @@ export default async function TeacherEvidenceReviewPage() {
         {learnerSubmissions.length ? (
           <div className="grid gap-4 xl:grid-cols-2">
             {learnerSubmissions.map((submission) => (
-              <article key={submission.id} className="glass-card p-5">
+              <article id={`submission-${submission.id}`} key={submission.id} className="glass-card scroll-mt-6 p-5">
                 {submission.kind === 'audio' ? (
                   <>
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -122,7 +122,7 @@ export default async function TeacherEvidenceReviewPage() {
                       ))}
                     </div>
 
-                    <p className="mt-4 text-xs leading-5 text-amber-100/80">
+                    <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs font-semibold leading-5 text-amber-950 shadow-sm">
                       This is the learner&apos;s own perception of performance. It must not be treated as proficiency evidence or a CEFR decision.
                     </p>
                   </>
