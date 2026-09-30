@@ -937,3 +937,48 @@ Attendance remains `4 attended lessons`. No attendance fact, learner state, CEFR
 Vercel is currently rate-limited. No deployment for `2eb8a824...` was created at this checkpoint. Treat this as a deployment-capacity boundary, not a code/test failure.
 
 Issue #58 mirror: `5904398260`.
+
+
+---
+
+## 2026-09-30 — Teacher Review actionable + canonical status colors — PR #84 MERGED / DEPLOYMENT BLOCKED
+
+### Exact validation
+PR #84 validated head `90ebf3120a8bc28c168e3223be62dafdf87266a7`:
+- Student Dashboard Contract `36671498979`: SUCCESS;
+- Golden Runtime Witness `36671499022`: SUCCESS;
+- Coordination Runtime Witness `36671498900`: SUCCESS.
+
+Merge SHA: `142e16c77cf266b60d26a68bed22bcf778da148c`.
+
+### Teacher Review
+- learner self-perception check-ins no longer belong to the normal Review workspace;
+- Review lists actionable learner audio submissions;
+- learner audio route supports byte ranges / HTTP 206 for robust playback;
+- native player + `Open audio` fallback are exposed;
+- pending audio exposes `Mark as reviewed`;
+- review persists `LearnerSubmissionTeacherReviewed`;
+- review event explicitly records `canonicalEvidenceCreated=false`, `teacherAuthorityConsumed=false`, `learningStateChanged=false`.
+
+Production logs before release proved Cláudio event `cmubrtn7k000010kt6eluc82u` is physically retrievable (repeated HTTP 200 responses from its audio endpoint). The observed defect was playback/streaming UX, not missing audio storage.
+
+### Canonical status color contract
+- Teacher Confirmed = BLUE;
+- Teacher Edited & Confirmed = BLUE;
+- Teacher Note = violet;
+- Learner Self-Perception = purple;
+- Not Confirmed = amber;
+- Not Observed = slate;
+- Not Applicable = violet;
+- Insufficient Evidence = orange;
+- Not Available = neutral gray.
+
+Operational PASS/VERIFIED remains green and is not pedagogical authority. Build self-tests protect this distinction.
+
+### Deployment boundary
+Vercel is deployment-rate-limited. No deployment for `142e16c7...` exists at this checkpoint. Code is merged and exact-head CI passed; Production publication remains blocked by deployment capacity.
+
+### Explicit unresolved DB deletion
+User requested physical deletion of `cmunm6w2q0000qmga9tr30zqr` (Gustavo self-perception checkpoint submitted 30 Sep 2026 04:37:55). Direct Neon access returned the connector's internal authorization HTTP 404. The event has NOT been claimed deleted. Its physical deletion remains an explicit Production DB-access task. The Review UI no longer surfaces self-perception checkpoints regardless.
+
+Issue #58 mirror: `5904443837`.
