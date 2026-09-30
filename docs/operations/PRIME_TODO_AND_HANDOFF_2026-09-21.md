@@ -899,3 +899,41 @@ PR #80 preserved the red Portal button footprint but removed the requested Prime
 **Operational result: PASS.**
 
 Issue #58 final mirror comment: `5904060706`.
+
+
+---
+
+## 2026-09-30 — RECENT / Attended Lessons layout correction — PR #85 MERGED
+
+### Root cause
+The learner-facing RECENT / Attended Lessons block was using `projection.recentLessons`, whose RECENT membership is a temporal-memory classification, as if it meant "latest attended lessons".
+
+Louise has four confirmed attended lessons (02 Mar, 22 Apr, 01 Jun, 20 Jul 2026), but only 20 Jul falls inside the temporal RECENT window. The UI therefore rendered one card and left empty visual space despite three additional confirmed attended lessons.
+
+### Fix
+PR #85:
+- validated head `3b469ee9fb9add7c9a22a1a4c68d6c43d42974b3`;
+- Student Dashboard Contract `36671245958`: SUCCESS;
+- Golden Runtime Witness `36671245992`: SUCCESS;
+- Coordination Runtime Witness `36671245956`: SUCCESS;
+- merge SHA `2eb8a824253c74c649e989fe3002aedcadad140c`.
+
+The learner-facing block now:
+- preserves canonical RECENT/MEMORY classification;
+- starts with canonically RECENT attended lessons;
+- fills remaining card slots with the newest confirmed attended MEMORY lessons;
+- accepts only `status === 'present'`;
+- uses a 4-card display budget for the two-column grid.
+
+Expected Louise order:
+1. July 20, 2026
+2. June 1, 2026
+3. April 22, 2026
+4. March 2, 2026
+
+Attendance remains `4 attended lessons`. No attendance fact, learner state, CEFR or Teacher Authority changed.
+
+### Deployment boundary
+Vercel is currently rate-limited. No deployment for `2eb8a824...` was created at this checkpoint. Treat this as a deployment-capacity boundary, not a code/test failure.
+
+Issue #58 mirror: `5904398260`.
