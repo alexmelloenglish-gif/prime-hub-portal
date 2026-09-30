@@ -19,7 +19,20 @@ export default async function TeacherAuditPage() {
             <div><p className="font-semibold text-white">{event.eventType}</p><p className="mt-1 text-xs text-prime-cream/45">{event.aggregateType} · {event.aggregateId}</p></div>
             <time className="text-xs text-prime-cream/40">{new Date(event.createdAt).toLocaleString('en-GB')}</time>
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2"><Link href={`/dashboard/admin/intelligence/lessons/${event.pipelineRunId}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">Run {event.pipelineRunId}</Link></div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {event.aggregateType === 'learner_action_submission' || event.aggregateType === 'learner_self_perception' ? (
+              <Link
+                href={`/dashboard/admin/intelligence/review#submission-${event.id}`}
+                className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-300/20"
+              >
+                Open learner submission in Review
+              </Link>
+            ) : (
+              <Link href={`/dashboard/admin/intelligence/lessons/${event.pipelineRunId}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">
+                Run {event.pipelineRunId}
+              </Link>
+            )}
+          </div>
           <details className="mt-3"><summary className="cursor-pointer text-xs font-medium text-prime-cream/55">Event payload</summary><pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-white/10 bg-black/25 p-3 text-xs leading-5 text-prime-cream/60">{JSON.stringify(event.payload, null, 2)}</pre></details>
         </article>
       ))}</div> : <div className="glass-card flex items-center gap-3 p-5 text-sm text-prime-cream/60"><FileClock className="h-5 w-5" aria-hidden="true" /> No historical system events found.</div>}
