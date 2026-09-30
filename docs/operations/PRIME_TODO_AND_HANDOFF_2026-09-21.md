@@ -899,3 +899,42 @@ PR #80 preserved the red Portal button footprint but removed the requested Prime
 **Operational result: PASS.**
 
 Issue #58 final mirror comment: `5904060706`.
+
+
+---
+
+## 2026-09-30 — PR #83 Gustavo six-lesson dashboard — LOCAL VALIDATION
+
+### Exact candidate
+- Branch: `fix/gustavo-dashboard-six-lessons-2026-09-30`
+- Exact SHA: `0d9c28fd11d0bcc8f46fd6378e16df176526b1ee`
+- PR: #83 — `Sync Gustavo dashboard to six attended lessons`
+
+### Corrective change
+- Corrected the stale Golden Runtime Witness expectation from `CEFR A1 — progressing toward A2` to the canonical current-level label `CEFR A1`.
+- No Gustavo learner data was rewritten by this corrective commit.
+
+### Local proof boundary
+- `npm ci`: PASS; repository lockfile dependencies installed under Node 22.
+- `npm run student-dashboard:self-test`: PASS, exit 0.
+  - Student Dashboard presentation contract: PASS.
+  - Canonical dashboard projection: PASS.
+  - Canonical student consistency audit: PASS for 10 registry students and 10 repository profiles.
+  - Student Dashboard regression contract: PASS.
+- Golden Runtime Witness: PASS on a disposable local PostgreSQL 16 database, reproducing the CI baseline/migration/witness sequence.
+  - pipeline run remained `awaiting_teacher_authority`;
+  - canonical G2/G3/G4/G5 proof completed in the disposable witness;
+  - replay remained idempotent: 1 pipeline run, 1 canonical record, 1 G3, 1 G4, 1 G5 and 1 class report before and after replay;
+  - `productionTouched=false` in the witness result;
+  - no repository witness artifact retained.
+- Gustavo data invariants preserved: 6 attended lessons, current CEFR A1, target CEFR A2.
+
+### Remote/provider boundary
+- Vercel Preview for SHA `0d9c28f` reached READY: deployment `dpl_BL1x8zvg1zLpi6V53icC6c4VX2gJ`.
+- At the time of this entry, GitHub Actions had not attached Golden/Coordination/Student Dashboard/Family Portfolio checks to this exact SHA; the local results above are not a substitute for exact-SHA CI.
+
+### Safety
+- No Production DB or migration was touched; PostgreSQL was local and disposable only.
+- `PIPELINE_AUTOMATION_FROZEN` remains unchanged and automatic ingest remains OFF.
+- The synthetic authority step inside the disposable Golden Witness is test fixture behavior only; it does not grant or infer Production Teacher Authority.
+- No learner-facing canonical state, CEFR state, or production publication was changed by the witness run.
