@@ -734,3 +734,89 @@ The structural OAuth/login remediation is released, but the final Gustavo witnes
 The account-specific interactive witness remains OPEN until the real learner account signs in successfully.
 
 No learner canonical state, Teacher Authority, AccountLearnerRelation, or `PIPELINE_AUTOMATION_FROZEN` state was changed by this lane.
+
+---
+
+## 2026-09-30 — Official Teacher Intelligence authority bridge — PR #71 RELEASED
+
+### Exact release proof
+- PR #71: `Bridge shared runner to Teacher Intelligence Validation`.
+- Final validated head: `b5e3877229c0c8f010825bf7a76cca6d2e7e6616`.
+- Exact-head gates:
+  - Coordination Runtime Witness `36663963089`: SUCCESS;
+  - Golden Runtime Witness `36663963041`: SUCCESS;
+  - Student Dashboard Contract `36663963060`: SUCCESS after rerun of an environmental `next/font` loader failure; the rerun passed all gates including Next build.
+- Exact-head Vercel Preview `dpl_ChkzUQYpg9sLgQcSMZP2ZmhMa3a9`: READY.
+- Merge SHA: `1ea279fcb017a5be83c3880a36ade0c8f916959c`.
+- Production deployment `dpl_58wRxoUgbyjEZa95FbEJKTK3D5Cq`: READY on the merge SHA.
+
+### Released authority behavior
+For Shared Learning Machine executions:
+- candidate generation now materializes a real pending `ValidationTask` of type `canonical_learning_record_authority`;
+- the exact canonical authority draft is preserved in `suggestedValue`;
+- evidence/provenance and deterministic payload hash are preserved with the task;
+- the machine stops at `awaiting_teacher_authority`;
+- no shared-runner publication `ReviewTask` is exposed as a second pedagogical authority surface;
+- legacy ReviewTask behavior remains isolated to the legacy path;
+- approval remains human-only in Teacher Intelligence Validation;
+- G5 is no longer hard-coded to a historical Gustavo witness and follows approved ValidationTask → G2 provenance → G3 PASS lineage.
+
+The Golden Runtime Witness proves:
+`shared run → ValidationTask pending → human approval witness → G2 → G3 → G4 → G5`,
+with idempotency and without automatically publishing the legacy Class Report.
+
+### Admin/teacher navigation
+When an admin/teacher previews a learner dashboard, explicit `Teacher Intelligence` and `Admin` navigation remains visible. These controls remain absent for ordinary student accounts.
+
+### Gustavo 2026-09-29 — now in official Validation
+The previously frozen candidate has been materialized in Production as:
+- ValidationTask: `validation_gustavo_20260929_e0b4aaf9`;
+- status: `pending`;
+- type: `canonical_learning_record_authority`;
+- external candidate hash: `e0b4aaf9e2931de1ae4a2d298d287dfdb8454de7a2f65279b3d55b1073adbbec`;
+- learner: `stu_4c4da6c04ac4`;
+- lesson: `lesson_5f1ce76890f1ceea`;
+- source document: `1F3Oe87eEUgTLOO9d7MupI_C5mU-5U-ESUr_gQYC0Gks`;
+- evidence source only: `Transcrição` / `t.ororffpf4ito`;
+- excluded: `Observações` / `t.piyr7rigwkbd`;
+- previous CLR: `cmu6jv29k0001bf8kt45pl9ht`;
+- reviewerId: NULL;
+- reviewedAt: NULL;
+- decision: NULL.
+
+This means Gustavo must now be reviewed in:
+`/dashboard/admin/intelligence/validation/validation_gustavo_20260929_e0b4aaf9`
+
+No Teacher Authority, canonicalization or learner-facing publication has been performed for this candidate.
+
+### Louise 2026-09-28 — next exact action
+The earlier Issue #58 packet remains the source packet, but its old request for a `ReviewTask ID` is superseded by PR #71.
+
+Use the authenticated administrator route:
+`POST /api/admin/learning-machine/run`
+
+with the already-verified Louise transcript-only packet:
+- studentId `stu_c5930e6e76ae`;
+- studentEmail `louise_nogueira@hotmail.com`;
+- lessonId `lesson_3c63fdc6a11f5639`;
+- source document `1oMzBTVirvTvS9nNVFUeT8ZcHmWLemnJmSjUR8hLeYe4`;
+- source tab `Transcript` / `t.5o5y0svtjbdt`;
+- `sourceExtractionMode=google_docs_transcript_tab_v1`;
+- `notesExcludedFromEvidence=true`.
+
+Required result:
+1. one Shared Learning Machine PipelineRun;
+2. one pending official `ValidationTask`;
+3. run status/resume point `awaiting_teacher_authority`;
+4. no approval;
+5. no canonicalization;
+6. no learner-facing publication.
+
+Write back the exact PipelineRun ID, ValidationTask ID, quality-gate result and transcript provenance to Issue #58 + this handoff.
+
+### Safety state
+- `PIPELINE_AUTOMATION_FROZEN = true` remains active.
+- automatic ingest remains OFF.
+- Gustavo 29/09 is pending human authority in the portal.
+- Louise 28/09 still requires the authenticated manual shared-run execution.
+
