@@ -982,3 +982,125 @@ Vercel is deployment-rate-limited. No deployment for `142e16c7...` exists at thi
 User requested physical deletion of `cmunm6w2q0000qmga9tr30zqr` (Gustavo self-perception checkpoint submitted 30 Sep 2026 04:37:55). Direct Neon access returned the connector's internal authorization HTTP 404. The event has NOT been claimed deleted. Its physical deletion remains an explicit Production DB-access task. The Review UI no longer surfaces self-perception checkpoints regardless.
 
 Issue #58 mirror: `5904443837`.
+
+
+---
+
+## HANDOFF CONSOLIDADO — 2026-09-30 — CURRENT STATE
+
+This handoff supersedes stale intermediate notes about PR #84 / branch `fix/teacher-review-workflow-2026-09-30`.
+
+### 1) Current main
+- `main`: `a47658055139b8efcf86db9d36e3e11295e2bcbc`
+- message: `docs: record teacher review and status color merge`
+
+### 2) Louise — Attended Lessons layout — MERGED + PRODUCTION READY
+PR #85:
+- validated head: `3b469ee9fb9add7c9a22a1a4c68d6c43d42974b3`;
+- Student Dashboard Contract `36671245958`: SUCCESS;
+- Golden Runtime Witness `36671245992`: SUCCESS;
+- Coordination Runtime Witness `36671245956`: SUCCESS;
+- merge SHA: `2eb8a824253c74c649e989fe3002aedcadad140c`;
+- Production deployment carrying this fix: `dpl_3pGrncfpVvLTeEUMbyvwL8muAQQq` — READY on `a8c81140d8b4b4d577d2c93b64b7fba659becbcc`.
+
+Behavior:
+- learner-facing RECENT / Attended Lessons starts with canonically RECENT attended lessons;
+- remaining slots are filled with newest confirmed attended MEMORY lessons;
+- only `status === 'present'` is eligible;
+- display budget = 4 cards;
+- Louise expected visible order: 20 Jul 2026, 01 Jun 2026, 22 Apr 2026, 02 Mar 2026;
+- canonical RECENT/MEMORY classification itself remains unchanged.
+
+### 3) Teacher Review + Cláudio audio + canonical status colors — MERGED, NOT YET PRODUCTION-PROVEN
+PR #84:
+- final validated head: `90ebf3120a8bc28c168e3223be62dafdf87266a7`;
+- Student Dashboard Contract `36671498979`: SUCCESS;
+- Golden Runtime Witness `36671499022`: SUCCESS;
+- Coordination Runtime Witness `36671498900`: SUCCESS;
+- merge SHA: `142e16c77cf266b60d26a68bed22bcf778da148c`.
+
+Merged behavior:
+- learner self-perception checkpoints are removed from normal Review;
+- Review lists actionable learner audio submissions only;
+- audio endpoint supports HTTP byte ranges / `206 Partial Content`;
+- native player + `Open audio` fallback are exposed;
+- pending audio exposes `Mark as reviewed`;
+- review persists `LearnerSubmissionTeacherReviewed`;
+- review event records `canonicalEvidenceCreated=false`, `teacherAuthorityConsumed=false`, `learningStateChanged=false`;
+- Cláudio event `cmubrtn7k000010kt6eluc82u` was proven retrievable before this fix by repeated HTTP 200 responses.
+
+Canonical status colors:
+- Teacher Confirmed = BLUE;
+- Teacher Edited & Confirmed = BLUE;
+- Teacher Note = violet;
+- Learner Self-Perception = purple;
+- Not Confirmed = amber;
+- Not Observed = slate;
+- Not Applicable = violet;
+- Insufficient Evidence = orange;
+- Not Available = neutral gray;
+- technical PASS/VERIFIED remains green and does not imply Teacher Authority.
+
+Deployment boundary:
+- do NOT call PR #84 Production PASS yet;
+- the most recently proven Production READY SHA carrying #85 is `a8c81140...`;
+- verify a Production deployment containing `142e16c7...` or a descendant before claiming live review/audio/color behavior.
+
+### 4) Gustavo — six attended lessons — OPEN / BLOCKED BY STALE GOLDEN WITNESS
+PR #83:
+- state: OPEN / DRAFT;
+- head: `fff280d6f4941249b27d2c5f65b7b95fa92e3e47`;
+- currently not mergeable against current main; must be reconciled before merge;
+- Student Dashboard Contract: SUCCESS;
+- Student Family Portfolio Supervision: SUCCESS;
+- Coordination Runtime Witness: SUCCESS;
+- Golden Runtime Witness: FAILED because it still expected stale level text.
+
+Exact witness failure:
+- actual: `CEFR A1`;
+- expected: `CEFR A1 — progressing toward A2`.
+
+This is a stale witness assertion, not evidence that the approved Gustavo state is wrong.
+
+Intended Gustavo learner-facing state:
+- 6 attended lessons: 18 Aug, 25 Aug, 01 Sep, 08 Sep, 15 Sep, 29 Sep 2026;
+- 6 class reports;
+- current level: `CEFR A1`;
+- target: `CEFR A2`;
+- no additional CEFR movement claimed from 29 Sep;
+- family-edition generator and generated family portfolio already updated to six lessons in PR #83.
+
+Required next action:
+1. reconcile PR #83 onto current main without dropping #84/#85;
+2. update only the stale Golden Runtime Witness expectation to `CEFR A1`;
+3. rerun Student Dashboard Contract + Golden Runtime Witness + Coordination Runtime Witness + Family Portfolio Supervision;
+4. merge only if all pass;
+5. Production-verify exact descendant SHA.
+
+### 5) Gustavo checkpoint 30/09 — PHYSICAL DELETE STILL OPEN
+Explicit delete requested:
+- event `cmunm6w2q0000qmga9tr30zqr`;
+- submitted 30/09/2026 04:37:55;
+- learner self-perception checkpoint.
+
+Current status:
+- NOT claimed deleted;
+- direct Neon read/delete attempt failed because the Neon connector returned its internal authorization HTTP 404;
+- PR #84 removes self-perception checkpoints from normal Teacher Review regardless;
+- physical deletion remains an explicit Production DB-access task;
+- preserve the earlier 29/09 event `cmumneuxc0000kmwj1ydsndvn` unless separately instructed.
+
+### 6) Safety / governance boundaries
+- `PIPELINE_AUTOMATION_FROZEN=true` remains required;
+- do not infer Teacher Authority from technical review, audio listening, coordination witness or system PASS;
+- do not broadly delete historical PipelineRun/PipelineEvent records;
+- delete only the explicitly requested Gustavo event once exact DB access is available;
+- every material delta must continue to be persisted in BOTH Issue #58 and this canonical handoff.
+
+### Next execution order
+1. Verify first Production deployment containing PR #84 merge `142e16c7...`; test Cláudio audio Range/206, Open audio and Mark as reviewed live.
+2. Reconcile/fix PR #83 stale Golden Runtime Witness; rerun all exact-head gates; merge and Production-verify Gustavo six-lesson dashboard.
+3. With valid Production DB access, delete only event `cmunm6w2q0000qmga9tr30zqr`, read back absence, and prove `cmumneuxc0000kmwj1ydsndvn` remains.
+4. Keep automatic ingest frozen throughout unless a separate authorized activation gate is satisfied.
+
+Issue #58 consolidated mirror: `5904640216`.
