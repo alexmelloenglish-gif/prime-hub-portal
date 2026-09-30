@@ -40,12 +40,18 @@ const portugueseTabbedDoc = {
 }
 
 const english = extractGoogleDocsTranscript(englishTabbedDoc)
-assert.equal(english, 'Louise Nogueira: real transcript evidence')
-assert.doesNotMatch(english, /NOTE ONLY|SUMMARY ONLY/)
+assert.equal(english.text, 'Louise Nogueira: real transcript evidence')
+assert.equal(english.extractionMode, 'google_docs_transcript_tab_v1')
+assert.equal(english.sourceTabId, 'transcript')
+assert.equal(english.sourceTabTitle, 'Transcript')
+assert.doesNotMatch(english.text, /NOTE ONLY|SUMMARY ONLY/)
 
 const portuguese = extractGoogleDocsTranscript(portugueseTabbedDoc)
-assert.equal(portuguese, 'Gustavo: evidencia real da transcrição')
-assert.doesNotMatch(portuguese, /RESUMO/)
+assert.equal(portuguese.text, 'Gustavo: evidencia real da transcrição')
+assert.equal(portuguese.extractionMode, 'google_docs_transcript_tab_v1')
+assert.equal(portuguese.sourceTabId, 'transcript')
+assert.equal(portuguese.sourceTabTitle, 'Transcrição')
+assert.doesNotMatch(portuguese.text, /RESUMO/)
 
 assert.throws(
   () => extractGoogleDocsTranscript({
@@ -73,9 +79,10 @@ assert.throws(
   /drive_transcript_tab_ambiguous/,
 )
 
-assert.equal(
-  extractGoogleDocsTranscript({ body: { content: [paragraph('legacy transcript body')] } }),
-  'legacy transcript body',
-)
+const legacy = extractGoogleDocsTranscript({ body: { content: [paragraph('legacy transcript body')] } })
+assert.equal(legacy.text, 'legacy transcript body')
+assert.equal(legacy.extractionMode, 'google_docs_legacy_single_body_v1')
+assert.equal(legacy.sourceTabId, null)
+assert.equal(legacy.sourceTabTitle, null)
 
 console.log('Drive transcript-tab-only self-test: PASS')
