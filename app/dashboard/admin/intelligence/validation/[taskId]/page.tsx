@@ -156,7 +156,7 @@ async function decideValidation(formData: FormData) {
     })
   }
 
-  redirect('/dashboard/admin/intelligence/validation')
+  redirect(`/dashboard/admin/intelligence/validation/${taskId}`)
 }
 
 export default async function ValidationTaskPage({
