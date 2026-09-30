@@ -1783,7 +1783,13 @@ export function parseTranscriptPayload(body: unknown): LessonTranscriptInput {
       }
       if (sourceExtractionMode === 'google_docs_transcript_tab_v1') {
         if (!sourceTabId) throw new Error('Tabbed Google Docs ingestion requires metadata.sourceTabId')
-        if (!sourceTabTitle || !['transcript', 'transcricao'].includes(normalizeForMatch(sourceTabTitle))) {
+        const normalizedSourceTabTitle = sourceTabTitle
+          ?.normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim()
+        if (!normalizedSourceTabTitle || !['transcript', 'transcricao'].includes(normalizedSourceTabTitle)) {
           throw new Error('Tabbed Google Docs ingestion requires a Transcript/Transcrição source tab')
         }
         if (!notesExcludedFromEvidence) throw new Error('Tabbed Google Docs ingestion must prove notes were excluded from evidence')
