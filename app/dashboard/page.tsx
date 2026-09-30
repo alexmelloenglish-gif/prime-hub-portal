@@ -135,11 +135,28 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
 
   const recentIds = new Set(projection.recentLessons.map((lesson) => lesson.lessonId))
-  const recentAttendance = reconciledAttendance.filter(
-    (entry) =>
-      recentIds.has(canonicalLessonId(entry) ?? entry.id) ||
-      projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id)
+  const projectedRecentAttendance = reconciledAttendance
+    .filter(
+      (entry) =>
+        entry.status === 'present' &&
+        (recentIds.has(canonicalLessonId(entry) ?? entry.id) ||
+          projection.recentLessons.some((lesson) => lesson.sourceDocumentId === entry.id))
+    )
+    .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))
+
+  // RECENT is a temporal-memory classification, while this section promises the
+  // learner their latest attended lessons. If fewer than the display budget are
+  // classified RECENT, fill the remaining cards with the newest confirmed
+  // attended lessons from MEMORY instead of leaving empty layout space.
+  const recentAttendanceKeys = new Set(
+    projectedRecentAttendance.map((entry) => canonicalLessonId(entry) ?? entry.id)
   )
+  const recentAttendance = [
+    ...projectedRecentAttendance,
+    ...[...attendedLessons]
+      .reverse()
+      .filter((entry) => !recentAttendanceKeys.has(canonicalLessonId(entry) ?? entry.id)),
+  ].slice(0, DASHBOARD_DISPLAY_BUDGET.recentLessons)
   const allReports = dedupeByDateAndTitle(reconcileClassReportsForProjection(student.classReports))
     .filter((report) => report.status === 'published' || report.contentStatus === 'published')
     .sort((a, b) => (dateTimestamp(b.date) ?? 0) - (dateTimestamp(a.date) ?? 0))

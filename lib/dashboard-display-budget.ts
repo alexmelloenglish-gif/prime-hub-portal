@@ -2,7 +2,7 @@ import type { ClassReportEntry, TeacherFeedbackEntry, VocabularyEntry } from '@/
 
 export const DASHBOARD_DISPLAY_BUDGET = {
   priorities: 3,
-  recentLessons: 3,
+  recentLessons: 4,
   recentReports: 3,
   reportFocusItems: 3,
   reportVocabularyItems: 5,
