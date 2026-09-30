@@ -50,7 +50,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
               className="h-auto w-40 sm:w-52"
             />
             <div className="rounded-full border border-blue-200 bg-white/90 px-4 py-2 text-xs font-bold text-[#0b2c5c] shadow-sm">
-              5 aulas • 5 adventures ⭐
+              {attended.length} aulas • {attended.length} adventures ⭐
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export function YoungLearnerJourneyDashboard({ student, publicMode = false }: Pr
           <div className="flex items-center gap-3">
             <CalendarDays className="h-6 w-6 text-cyan-200" />
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-200">5 LESSONS • 5 CHAPTERS</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-200">{attended.length} LESSONS • {attended.length} CHAPTERS</p>
               <h2 className="text-2xl font-black">Sua história até aqui</h2>
             </div>
           </div>
