@@ -6,28 +6,6 @@ import { listPendingReviewTasks } from '@/lib/pipeline/run'
 import { listEvidenceReviewQueue, listLearnerSubmissions } from '@/lib/teacher-intelligence'
 import { reviewEvidenceCandidateAction, reviewLearnerSubmissionAction } from './actions'
 
-const checkpointLabels: Record<string, string> = {
-  advice: 'Giving advice',
-  health: 'Health language',
-  'now-past': 'Present vs past',
-  digestion: 'Digestion',
-  nutrients: 'Nutrients',
-  reflexive: 'Reflexive pronouns',
-  'past-story': 'Past story',
-  'past-words': 'Past vocabulary',
-  'past-answer': 'Past answers',
-  superlative: 'Superlatives',
-  'past-negative': 'Past negatives',
-  'past-question': 'Past questions',
-  'self-correction': 'Self-correction',
-}
-
-function humanizeCheckpointRating(value: string) {
-  if (value === 'VERY_WELL') return 'Very well'
-  if (value === 'WITH_HELP') return 'With help'
-  return value.replace(/_/g, ' ').toLowerCase()
-}
-
 function provenanceSummary(value: unknown) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return 'NOT PROVEN'
   const record = value as Record<string, unknown>
@@ -64,7 +42,7 @@ export default async function TeacherEvidenceReviewPage() {
             <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner submissions</p>
             <h3 id="learner-submissions-heading" className="mt-1 text-lg font-semibold text-white">What students submitted</h3>
             <p className="mt-1 max-w-3xl text-xs leading-5 text-prime-cream/45">
-              Audio missions and learner check-ins are shown here for teacher review. A learner submission is not automatically validated learning evidence.
+              Audio missions that require a teacher action are shown here. Learner self-perception check-ins stay out of Review and remain available only in the technical Audit history.
             </p>
           </div>
           <span className="text-xs text-prime-cream/45">{learnerSubmissions.length} submitted · {learnerSubmissionsPending} awaiting teacher review</span>
@@ -74,8 +52,7 @@ export default async function TeacherEvidenceReviewPage() {
           <div className="grid gap-4 xl:grid-cols-2">
             {learnerSubmissions.map((submission) => (
               <article id={`submission-${submission.id}`} key={submission.id} className="glass-card scroll-mt-6 p-5">
-                {submission.kind === 'audio' ? (
-                  <>
+
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Audio mission</p>
@@ -96,6 +73,15 @@ export default async function TeacherEvidenceReviewPage() {
                         src={`/api/dashboard/action/audio/${submission.id}`}
                         className="w-full"
                       />
+                      <a
+                        href={`/api/dashboard/action/audio/${submission.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-1 rounded-lg border border-blue-300/30 bg-blue-300/10 px-3 py-2 text-xs font-semibold text-blue-100 hover:bg-blue-300/20"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                        Open audio
+                      </a>
                     </div>
 
                     <p className="mt-3 text-xs leading-5 text-prime-cream/45">
@@ -115,13 +101,7 @@ export default async function TeacherEvidenceReviewPage() {
                           Mark as reviewed
                         </button>
                       </form>
-                    ) : (
-                      <div className="mt-4 rounded-xl border border-blue-300/30 bg-blue-300/10 px-3 py-3 text-xs font-semibold leading-5 text-blue-100">
-                        Reviewed by {submission.reviewerId || 'teacher'}
-                        {submission.reviewedAt ? <> · {new Date(submission.reviewedAt).toLocaleString('en-GB')}</> : null}.
-                        This remains a learner submission, not teacher-confirmed learning evidence.
-                      </div>
-                    )}
+    
                   </>
                 ) : (
                   <>
