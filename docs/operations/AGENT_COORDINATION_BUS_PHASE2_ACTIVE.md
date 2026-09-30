@@ -102,3 +102,34 @@ A real active-coordination witness requires:
 4. one successful claim;
 5. wake or worker execution;
 6. ACK/read-back proving the same event was consumed exactly once.
+
+
+## Controlled Production witness receiver
+
+Current-main activation work may use:
+
+`POST /api/coordination/wake`
+
+This route is **not** a general agent executor. It exists only as the narrow receiver for the first controlled Production coordination witness and remains inert unless `PRIME_AGENT_WAKE_SECRET` is configured.
+
+The receiver accepts only a persisted coordination event that simultaneously proves:
+- target role `validator`;
+- event type `VALIDATION_REQUESTED`;
+- repository `alexmelloenglish-gif/prime-hub-portal`;
+- Issue #58 evidence pointer;
+- workstream prefix `production-activation:wake-witness:`;
+- payload marker `production-coordination-witness-v1`;
+- `expectedSha` equal to the executing Vercel `VERCEL_GIT_COMMIT_SHA`;
+- event SHA equal to that same executing deployment SHA.
+
+The wake secret is compared with a timing-safe equality check. The receiver reads the persisted coordination event before acknowledging it, rejects payload/event mismatches, and writes only the coordination ACK for the same event. It does **not** authorize Teacher Authority, learner/canonical state mutation, merge/release, pipeline ingest, or automatic trigger activation.
+
+Intended Production mapping after secret/config authorization:
+
+```json
+{
+  "validator": "https://www.primedigitalhub.com.br/api/coordination/wake"
+}
+```
+
+Repository presence of the route is not activation. Production requires the Vercel environment values and a deployed exact-SHA witness before this boundary is considered passed.
