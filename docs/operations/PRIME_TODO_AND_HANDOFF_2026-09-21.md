@@ -319,3 +319,63 @@ Issue #58 remains the durable coordination record. This handoff remains the cano
 ### Current blocker
 No real Production wake target URL is preserved in the repository, and the currently connected Vercel surface does not expose environment-variable writes. No authenticated Vercel CLI/token is available in this executor runtime. This is now the only infrastructure blocker before the controlled Production witness; Teacher Authority itself remains human and candidate-specific.
 
+---
+
+## 2026-09-29 — Standing cross-agent handoff write-back rule
+
+### Alexandre's standing instruction
+Every executor must treat this file plus Issue #58 as the shared execution state.
+
+Before execution:
+1. read Issue #58;
+2. read this canonical handoff;
+3. reconcile both against current repository/runtime evidence.
+
+After every material execution delta, update BOTH:
+- Issue #58; and
+- this canonical handoff.
+
+Do not leave material execution state only in chat, a PR comment, or Issue #58.
+
+A material delta includes migrations, runtime witnesses, blockers, exact SHA/deployment changes, automation state, wake/auth configuration, Teacher Authority boundaries, superseded lanes, freeze/rollback state, and any change to the next execution queue.
+
+### Required handoff payload
+Record:
+- exact current state;
+- what was actually executed;
+- exact SHA / deployment / DB target / workflow evidence;
+- what is now proven;
+- what remains open;
+- exact next action;
+- explicit human/Teacher Authority boundary if present.
+
+### Current inherited state
+- current `main`: `65c8c5a939e7f325676575b22904780281ef67b6`;
+- Vercel Production `dpl_2yxNvDXSzA1TqC4jUYKSKPbQWiLk`: READY on that exact SHA;
+- Neon Production migration gate: PASS;
+- the three validated migrations are applied and durably recorded;
+- post-read confirms final shared-runner + coordination Phase 2 schema;
+- 24 historical PipelineRun rows preserved;
+- no immediate post-migration Vercel runtime errors observed;
+- no real Production wake target configured yet;
+- `PIPELINE_AUTOMATION_FROZEN = true`;
+- automatic Learning Machine ingestion remains OFF;
+- no candidate-specific Teacher Authority has been consumed.
+
+### Current execution queue
+1. obtain/provision a real Production wake target/runtime;
+2. obtain a writable Vercel env/config channel;
+3. configure `PRIME_AGENT_BUS_SECRET`, `PRIME_AGENT_WAKE_URLS_JSON`, `PRIME_AGENT_WAKE_SECRET`;
+4. keep automatic ingest frozen and run one controlled Production coordination witness;
+5. prepare the Gustavo candidate/evidence packet;
+6. stop at the candidate-specific Teacher Authority decision for Alexandre's explicit approve/edit/reject;
+7. after genuine Teacher Authority, prove durable run, bound approval, canonical record, G3/G4/G5 projections, dashboard/Next Action, coordination ACK and idempotent retry;
+8. only after the complete witness passes, remove the hard ingest freeze and verify the first automatic run plus rollback/freeze behavior.
+
+### Execution discipline
+Acknowledge instructions, then execute. Do not treat acknowledgement, planning, or "proceeding" language as completion.
+
+Required loop:
+
+`act → prove → persist in #58 + canonical handoff → continue until a genuine stop boundary`
+
