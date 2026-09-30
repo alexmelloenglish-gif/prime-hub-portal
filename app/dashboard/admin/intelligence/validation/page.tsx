@@ -1,27 +1,11 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { AlertTriangle, CheckCircle2, Clock3, ShieldCheck } from 'lucide-react'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
-import { prepareCanonicalAuthorityValidationTask } from '@/lib/canonical-authority-review'
-import { listTeacherDecisionPackages } from '@/lib/teacher-decision-packages'
+import studentRegistry from '@/data/students/student-core-registry.json'
 
 export const dynamic = 'force-dynamic'
-
-async function prepareCanonicalAuthorityReview(formData: FormData) {
-  'use server'
-
-  const session = await getServerSession(authOptions)
-  const role = session?.user?.role
-  if (!session?.user || (role !== 'admin' && role !== 'teacher')) return
-
-  const packageId = String(formData.get('packageId') || '').trim()
-  if (!packageId) return
-
-  const task = await prepareCanonicalAuthorityValidationTask(packageId)
-  redirect(`/dashboard/admin/intelligence/validation/${task.id}`)
-}
 
 export default async function TeacherValidationPage() {
   const session = await getServerSession(authOptions)
@@ -37,8 +21,7 @@ export default async function TeacherValidationPage() {
   }
 
   const prisma = getPrismaClient()
-  const teacherPackages = listTeacherDecisionPackages()
-  const [pendingRaw, recentResolvedRaw, canonicalAuthorityTasks] = await Promise.all([
+  const [pendingRaw, recentResolvedRaw, canonicalRecords] = await Promise.all([
     prisma.validationTask.findMany({
       where: { status: 'pending' },
       orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
@@ -49,18 +32,30 @@ export default async function TeacherValidationPage() {
       orderBy: { updatedAt: 'desc' },
       take: 25,
     }),
-    prisma.validationTask.findMany({
-      where: {
-        type: 'canonical_learning_record_authority',
-        entityType: 'TeacherDecisionPackage',
+    prisma.canonicalLearningRecord.findMany({
+      orderBy: [{ canonicalizedAt: 'desc' }, { canonicalVersion: 'desc' }],
+      select: {
+        canonicalRecordId: true,
+        canonicalVersion: true,
+        teacherDecisionId: true,
+        studentId: true,
+        studentEmail: true,
+        pedagogicalPayload: true,
+        canonicalizedAt: true,
       },
-      orderBy: { createdAt: 'desc' },
     }),
   ])
   const pending = pendingRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
   const recentResolved = recentResolvedRaw.filter((task) => !task.studentEmail?.toLowerCase().endsWith('@invalid.test'))
-  const canonicalTaskByPackageId = new Map(
-    canonicalAuthorityTasks.map((task) => [task.entityId, task]),
+  const studentNameById = new Map(
+    studentRegistry.students.map((student) => [student.studentId, student.studentName]),
+  )
+  const latestCanonicalByStudent = new Map<string, (typeof canonicalRecords)[number]>()
+  for (const record of canonicalRecords) {
+    if (!latestCanonicalByStudent.has(record.studentId)) latestCanonicalByStudent.set(record.studentId, record)
+  }
+  const reviewedLearners = [...latestCanonicalByStudent.values()].filter(
+    (record) => !record.studentEmail?.toLowerCase().endsWith('@invalid.test'),
   )
 
   return (
@@ -68,7 +63,7 @@ export default async function TeacherValidationPage() {
       <header>
         <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
           <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          Teacher Intelligence · Review
+          Teacher Intelligence · Validation
         </div>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Teacher decisions and exceptions</h1>
         <p className="mt-2 max-w-3xl text-slate-600">
@@ -91,55 +86,59 @@ export default async function TeacherValidationPage() {
         </div>
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
           <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-reviewed learners</div>
-          <div className="mt-2 text-3xl font-bold text-emerald-950">{teacherPackages.length}</div>
+          <div className="mt-2 text-3xl font-bold text-emerald-950">{reviewedLearners.length}</div>
         </div>
       </section>
 
-      {teacherPackages.length ? (
+      {reviewedLearners.length ? (
         <section className="rounded-2xl border border-emerald-200 bg-white shadow-sm">
           <div className="border-b border-emerald-100 px-5 py-4">
             <h2 className="font-bold text-slate-950">Reviewed learning updates</h2>
             <p className="mt-1 text-sm text-slate-500">Learning-state and next-step updates that have already been reviewed by the teacher.</p>
           </div>
           <div className="divide-y divide-slate-100">
-            {teacherPackages.map((pkg) => (
-              <article key={pkg.packageId} className="px-5 py-5">
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher reviewed</div>
-                    <h3 className="mt-1 font-semibold text-slate-950">{pkg.studentName}</h3>
-                    <p className="mt-1 text-sm text-slate-600">Current learning focus and next action reviewed; CEFR level unchanged.</p>
-                    <div className="mt-2 text-xs text-slate-500">{pkg.teacher.name} · {pkg.decisionDate} · {pkg.sourceLessons.length} reviewed lessons</div>
-                  </div>
-                  <div className="flex shrink-0 flex-wrap gap-2">
-                    <Link
-                      href={`/dashboard/admin/intelligence/students/${encodeURIComponent(pkg.studentId)}`}
-                      className="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
-                    >
-                      Open learning package
-                    </Link>
-                    {canonicalTaskByPackageId.get(pkg.packageId) ? (
+            {reviewedLearners.map((record) => {
+              const payload =
+                record.pedagogicalPayload && typeof record.pedagogicalPayload === 'object' && !Array.isArray(record.pedagogicalPayload)
+                  ? record.pedagogicalPayload as Record<string, unknown>
+                  : {}
+              const learnerState =
+                payload.learnerStateChange && typeof payload.learnerStateChange === 'object' && !Array.isArray(payload.learnerStateChange)
+                  ? payload.learnerStateChange as Record<string, unknown>
+                  : {}
+              const level = typeof learnerState.level === 'string' ? learnerState.level : null
+              const targetLevel = typeof learnerState.targetLevel === 'string' ? learnerState.targetLevel : null
+              const learningFocus = typeof learnerState.learningFocus === 'string' ? learnerState.learningFocus : null
+
+              return (
+                <article key={record.studentId} className="px-5 py-5">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher reviewed</div>
+                      <h3 className="mt-1 font-semibold text-slate-950">{studentNameById.get(record.studentId) || record.studentEmail}</h3>
+                      <p className="mt-1 text-sm text-slate-600">{learningFocus || 'Teacher-authorized learning state is canonical.'}</p>
+                      <div className="mt-2 text-xs text-slate-500">
+                        {[level, targetLevel ? `target ${targetLevel}` : null, `canonical v${record.canonicalVersion}`, new Date(record.canonicalizedAt).toLocaleString('en-GB')].filter(Boolean).join(' · ')}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap gap-2">
                       <Link
-                        href={`/dashboard/admin/intelligence/validation/${canonicalTaskByPackageId.get(pkg.packageId)!.id}`}
+                        href={`/dashboard/admin/intelligence/students/${encodeURIComponent(record.studentId)}`}
+                        className="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+                      >
+                        Open learning package
+                      </Link>
+                      <Link
+                        href={`/dashboard/admin/intelligence/validation/${encodeURIComponent(record.teacherDecisionId)}`}
                         className="inline-flex items-center justify-center rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800 hover:bg-indigo-100"
                       >
                         Open canonical review
                       </Link>
-                    ) : (
-                      <form action={prepareCanonicalAuthorityReview}>
-                        <input type="hidden" name="packageId" value={pkg.packageId} />
-                        <button
-                          type="submit"
-                          className="inline-flex items-center justify-center rounded-xl border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-800 hover:bg-indigo-100"
-                        >
-                          Prepare canonical authority review
-                        </button>
-                      </form>
-                    )}
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            })}
           </div>
         </section>
       ) : null}
