@@ -497,3 +497,21 @@ Neither new lesson had entered PRIME/Neon at the time of this audit.
 ### Gate
 Do not use the automatic Drive reconciler for the two new lessons until PR #70 exact head is validated and deployed. If a controlled manual ingestion is used earlier, only the verified transcript-tab text may be submitted, with explicit source-tab provenance.
 
+## 2026-09-30 — Production coordination configuration write-back
+
+### Material delta completed
+- `main` was reconciled at `4946b1b0668e7d0aee8a06bd9c56447988a87cc9` before this delta.
+- Vercel project `prime-hub-portal` / team `prime-digital-hun-dasboard` was verified.
+- The following variables are configured in **Production only**:
+  - `PRIME_AGENT_BUS_SECRET` — sensitive secret configured; value intentionally omitted.
+  - `PRIME_AGENT_WAKE_URLS_JSON` — exact validator URL mapping configured.
+  - `PRIME_AGENT_WAKE_SECRET` — separate sensitive secret configured; value intentionally omitted.
+- Secret values were not committed to Git and are not recorded in Issue #58 or this handoff.
+- Redeploy `dpl_6qEjCdL9zJSxQiTVJcVr5iFzVU5t` was created from exact SHA `4946b1b0668e7d0aee8a06bd9c56447988a87cc9`; it was `BUILDING` at this write-back boundary.
+- Pre-witness runtime error read: no runtime errors in the preceding 30-minute window.
+- `PIPELINE_AUTOMATION_FROZEN = true` remains unchanged; automatic ingest remains OFF; no Teacher Authority or learner mutation occurred.
+
+### Next action and human boundary
+- Commit and deploy this exact handoff write-back SHA.
+- After the new deployment is `READY`, execute exactly one harmless Production coordination witness through event creation → durable ledger → claim/lease → dispatcher → real wake receiver → ACK → Neon read-back.
+- Then prepare Gustavo's evidence packet and stop for Alexandre's explicit candidate-specific `APPROVE / EDIT / REJECT` Teacher Authority decision.
