@@ -820,3 +820,33 @@ Write back the exact PipelineRun ID, ValidationTask ID, quality-gate result and 
 - Gustavo 29/09 is pending human authority in the portal.
 - Louise 28/09 still requires the authenticated manual shared-run execution.
 
+
+
+---
+
+## 2026-09-30 — Teacher Intelligence legacy-noise / navigation remediation — PR #79
+
+### User-visible defects addressed
+- `Pedagogical command center` navigation could land on a 404.
+- learner submission audit records were treated as lesson-run navigation even though they are teacher-review submissions, not lesson PipelineRuns.
+- failed technical-only legacy processing polluted Lessons/Cockpit.
+- Gustavo self-perception caution copy had insufficient contrast.
+
+### Reconciled implementation
+PR #79 is based on current main `392753dc4ac56e03518e6edeacabee8c934ac812` after PR #78 and supersedes PRs #75/#77.
+
+Changes:
+- filter technical-only failed runs from pedagogical Lessons/Cockpit only when there is no Evidence Candidate, ReviewTask, ClassReportProjection, signal/insight proposal or Portfolio apply;
+- preserve all such runs/events in Audit;
+- simplify failed lesson trace and keep IDs/errors/provenance/events behind collapsed `Technical trace / audit`;
+- make the Teacher Intelligence command-center identity explicitly link to `/dashboard/admin/intelligence`;
+- add compatibility route `/dashboard/admin/intelligence/cockpit` redirecting to the valid root;
+- route `learner_action_submission` and `learner_self_perception` Audit items to anchored learner submissions in Review;
+- render the learner self-perception disclaimer in a high-contrast amber notice;
+- update the Teacher Intelligence regression self-test to protect the new behavior.
+
+### Safety
+No DB deletion, learner/canonical mutation, Teacher Authority change, or automation-freeze change.
+
+### Release boundary
+Do not call Production PASS until the final PR #79 exact head passes CI + Vercel Preview and the merged exact SHA is READY in Production.
