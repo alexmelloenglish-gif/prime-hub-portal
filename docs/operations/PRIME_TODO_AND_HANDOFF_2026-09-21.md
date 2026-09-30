@@ -1112,3 +1112,35 @@ Current status:
 4. Keep automatic ingest frozen throughout unless a separate authorized activation gate is satisfied.
 
 Issue #58 consolidated mirror: `5904640216`.
+
+
+---
+
+## 2026-09-30 — Production release boundary closed for code SHA 56d3e69
+
+### Production proof
+- Code SHA proven in Production: `56d3e69872cbc7aa078a25fcdbe8a7a49495892f`.
+- Vercel deployment: `dpl_Bsu7MsggUHtWQ5i1Kjx2HJJhcWX5`.
+- Deployment state: `READY`.
+- Production aliases verified: `www.primedigitalhub.com.br`, `primedigitalhub.com.br` (redirects to `www`), plus the project aliases.
+- Vercel build read-back cloned `main` at commit `56d3e69`, completed Next production build, and deployed outputs successfully.
+- GitHub exact-SHA checks passed: build, deploy/report-build-status, and Student Dashboard Contract.
+
+### Public smoke tests proven
+- Gustavo journey served successfully from the exact deployment.
+- Dashboard/portfolio content shows `6 attended lessons`, `CEFR A1`, and direction toward `CEFR A2`.
+- Journey presentation labels show `6 aulas • 6 adventures` and `6 LESSONS • 6 CHAPTERS`.
+- The six lesson chapters are present, including the 29 September lesson.
+- Cláudio public journey returned HTTP 200.
+- Production runtime read-back during the smoke window returned only HTTP 200 and expected HTTP 307 redirects; no 5xx cluster was observed.
+
+### Authenticated smoke-test boundary
+- Teacher Review audio Range/206, player/Open audio, and Mark as reviewed persistence were **not claimed**: My Browser had no current Chrome window because the operator was using the Manus phone app (`browser:No current window`).
+- Therefore no authenticated review action was executed, no canonical evidence was created, and no Teacher Authority was consumed by this execution.
+- Louise authenticated dashboard RECENT/Attended Lessons was not claimed for the same reason; source-level contract and public read-back remain separate evidence, not a runtime PASS.
+
+### Governance invariants
+- `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged.
+- No automatic ingestion was unfrozen.
+- No CEFR, canonical state, pedagogical history, database migration, or Teacher Authority state was changed.
+- Remaining blocker: authenticated Production smoke test requires an active browser window/session; this is not a Vercel deployment blocker.
