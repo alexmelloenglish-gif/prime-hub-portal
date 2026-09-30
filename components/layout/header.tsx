@@ -40,14 +40,10 @@ export function Header({ portalHref }: HeaderProps) {
             href={portalHref}
             className={cn(
               buttonVariants(),
-              'h-auto min-h-11 rounded-full border border-prime-red bg-prime-red px-3.5 py-2 text-sm font-semibold text-white shadow-[0_10px_26px_rgba(213,0,0,0.20)] hover:border-[#b80000] hover:bg-[#b80000] hover:text-white sm:px-4'
+              'rounded-full border border-prime-red bg-prime-red px-4 text-sm font-semibold text-white shadow-[0_10px_26px_rgba(213,0,0,0.20)] hover:border-[#b80000] hover:bg-[#b80000] hover:text-white sm:px-5'
             )}
             aria-label="Acessar Portal do aluno"
           >
-            <BrandLogo
-              variant="mark"
-              className="mr-2 h-7 w-7 rounded-full bg-white p-0.5"
-            />
             <span className="sm:hidden">Portal</span>
             <span className="hidden sm:inline">Portal do aluno</span>
           </Link>
