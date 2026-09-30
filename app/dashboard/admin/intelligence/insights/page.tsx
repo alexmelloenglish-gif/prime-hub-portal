@@ -22,7 +22,7 @@ export default async function TeacherInsightsPage() {
             <article key={insight.id} className="glass-card p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Suggested interpretation</p>
-                <IntelligenceStatusBadge label={insight.isOfficial ? 'Teacher reviewed' : 'Needs teacher review'} state={insight.isOfficial ? 'PRESENT' : 'NEEDS_REVIEW'} />
+                <IntelligenceStatusBadge label={insight.isOfficial ? 'Teacher confirmed' : 'Needs teacher review'} state={insight.isOfficial ? 'TEACHER_CONFIRMED' : 'NEEDS_REVIEW'} />
               </div>
               <p className="mt-4 text-sm leading-6 text-prime-cream/85">{insight.text}</p>
               <p className="mt-3 text-xs text-prime-cream/45">
