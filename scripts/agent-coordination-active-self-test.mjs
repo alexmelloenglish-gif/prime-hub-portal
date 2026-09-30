@@ -7,6 +7,10 @@ import {
   resolveAgentWakeTarget,
 } from '../lib/agent-coordination/active-contract.ts'
 import { deliverCoordinationWake } from '../lib/agent-coordination/dispatch-core.ts'
+import {
+  PRODUCTION_WITNESS_KIND,
+  validateProductionWitnessWake,
+} from '../lib/agent-coordination/production-witness.ts'
 
 const now = new Date('2026-09-25T21:30:00.000Z')
 assert.equal(normalizeCoordinationLeaseSeconds(undefined), 300)
@@ -132,10 +136,77 @@ assert.equal(failed.status, 'failed')
 assert.equal(released, 1)
 assert.equal(lastReleaseError, 'WAKE_HTTP_503')
 
+const deployedSha = '6fb8714ff4c21a70847dc07ecc18dac5095c3ce6'
+const productionWitnessEvent = {
+  id: 'evt-production-witness',
+  workstreamId: 'production-activation:wake-witness:2026-09-29',
+  senderRole: 'production-activation-controller',
+  targetRole: 'validator',
+  eventType: 'VALIDATION_REQUESTED',
+  repo: 'alexmelloenglish-gif/prime-hub-portal',
+  issueNumber: 58,
+  prNumber: null,
+  sha: deployedSha,
+  githubCommentUrl: 'https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-1',
+  payloadJson: {
+    witnessKind: PRODUCTION_WITNESS_KIND,
+    expectedSha: deployedSha,
+  },
+}
+const productionWitnessBody = {
+  coordinationEventId: productionWitnessEvent.id,
+  workstreamId: productionWitnessEvent.workstreamId,
+  senderRole: productionWitnessEvent.senderRole,
+  targetRole: productionWitnessEvent.targetRole,
+  eventType: productionWitnessEvent.eventType,
+  repo: productionWitnessEvent.repo,
+  issueNumber: productionWitnessEvent.issueNumber,
+  prNumber: productionWitnessEvent.prNumber,
+  sha: productionWitnessEvent.sha,
+  githubCommentUrl: productionWitnessEvent.githubCommentUrl,
+  payload: productionWitnessEvent.payloadJson,
+}
+assert.equal(
+  validateProductionWitnessWake({
+    body: productionWitnessBody,
+    event: productionWitnessEvent,
+    deployedSha,
+  }).coordinationEventId,
+  productionWitnessEvent.id,
+)
+assert.throws(
+  () => validateProductionWitnessWake({
+    body: { ...productionWitnessBody, sha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
+    event: productionWitnessEvent,
+    deployedSha,
+  }),
+  /Wake SHA does not match persisted event/,
+)
+assert.throws(
+  () => validateProductionWitnessWake({
+    body: productionWitnessBody,
+    event: {
+      ...productionWitnessEvent,
+      payloadJson: { witnessKind: 'not-a-production-witness', expectedSha: deployedSha },
+    },
+    deployedSha,
+  }),
+  /marker is missing or invalid/,
+)
+assert.throws(
+  () => validateProductionWitnessWake({
+    body: productionWitnessBody,
+    event: productionWitnessEvent,
+    deployedSha: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  }),
+  /must equal the executing Vercel deployment SHA/,
+)
+
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
 const store = readFileSync('lib/agent-coordination/store.ts', 'utf8')
 const dispatchRoute = readFileSync('app/api/coordination/dispatch/route.ts', 'utf8')
 const claimRoute = readFileSync('app/api/coordination/events/claim/route.ts', 'utf8')
+const wakeRoute = readFileSync('app/api/coordination/wake/route.ts', 'utf8')
 
 assert.match(schema, /claimedBy\s+String\?/)
 assert.match(schema, /leaseExpiresAt\s+DateTime\?/)
@@ -144,5 +215,9 @@ assert.match(store, /updateMany\(\{[\s\S]*ackStatus: 'PENDING'[\s\S]*leaseExpire
 assert.match(store, /dispatchAttempts: \{ increment: 1 \}/)
 assert.match(dispatchRoute, /dispatchNextAgentCoordinationEvent/)
 assert.match(claimRoute, /claimNextAgentCoordinationEvent/)
+assert.match(wakeRoute, /PRIME_AGENT_WAKE_SECRET/)
+assert.match(wakeRoute, /VERCEL_GIT_COMMIT_SHA/)
+assert.match(wakeRoute, /validateProductionWitnessWake/)
+assert.match(wakeRoute, /acknowledgeAgentCoordinationEvent/)
 
 console.log('Agent Coordination Bus Phase 2 active self-test: PASS')
