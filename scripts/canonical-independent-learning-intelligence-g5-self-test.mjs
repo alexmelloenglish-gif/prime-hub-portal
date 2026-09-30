@@ -29,7 +29,9 @@ assert(proof.includes('canonicalRecordId: provenance.canonicalRecordId'), 'G5 co
 assert(proof.includes('targetType: CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_TARGET'), 'G5 count must include targetType')
 assert(proof.includes('projectionVersion: CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_VERSION'), 'G5 count must include projectionVersion')
 assert(proof.includes('compositeCount !== 1'), 'G5 proof must require composite count 1')
-assert(proof.includes("GUSTAVO_CANONICAL_RECORD_ID = 'cmu6jv29k0001bf8kt45pl9ht'"), 'G5 runtime witness must be limited to Gustavo')
+assert(proof.includes("where: { teacherDecisionId: task.id }"), 'G5 proof must resolve canonical lineage from the approved ValidationTask')
+assert(proof.includes('G5 requires the existing G2 canonicalization provenance'), 'G5 must fail closed when G2 provenance is absent')
+assert(!proof.includes('GUSTAVO_CANONICAL_RECORD_ID'), 'G5 must not be hard-coded to a single learner or historical witness')
 assert(schema.includes('@@unique([canonicalRecordId, targetType, projectionVersion])'), 'G5 schema must enforce composite uniqueness')
 
 console.log('G5 Canonical Learning Intelligence Projection structural self-test: PASS')

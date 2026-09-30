@@ -340,6 +340,7 @@ export type PipelineResult = {
   status: string
   duplicate: boolean
   reviewTaskId?: string
+  validationTaskId?: string
   nextReviewStage?: string
   report?: ClassReportOutput
   coaching?: CoachingGuidanceOutput

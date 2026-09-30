@@ -33,7 +33,9 @@ export function Sidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const previewStudentEmail = searchParams.get('studentEmail')
   const activeSection = searchParams.get('section')
   const isStudentPreview = Boolean(previewStudentEmail)
-  const menuItems = isAdmin && !isStudentPreview
+  // Admin/teacher navigation must remain available while previewing a learner.
+  // Student accounts never receive these items because isAdmin is false.
+  const menuItems = isAdmin
     ? [
         ...baseMenuItems,
         { label: 'Teacher Intelligence', href: '/dashboard/admin/intelligence', icon: BrainCircuit },

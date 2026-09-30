@@ -20,6 +20,7 @@ import {
 import {
   canonicalAuthorityPayloadHashForPipelineRun,
   executeCanonicalContinuation,
+  preparePipelineCanonicalAuthorityValidationTask,
 } from '@/lib/learning-machine/canonical-continuation'
 import type {
   CoachingGuidanceOutput,
@@ -174,6 +175,7 @@ type ContinuationResult = {
   report?: ClassReportOutput
   coaching?: CoachingGuidanceOutput
   qualityGate: QualityGateAssessment
+  validationTaskId?: string
 }
 
 async function persistQualityGateRejection(runId: string, stage: string, assessment: QualityGateAssessment) {
@@ -526,29 +528,36 @@ async function continueAfterReview(
     create: { pipelineRunId: runId, studentEmail: normalizedInput.studentEmail, studentId: coaching.student_id, teacherId: coaching.teacher_id, content: coaching, recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, sourceReferences: coaching.source_references as unknown as Prisma.InputJsonValue, documentStatus: coaching.documentStatus, implementationStatus: coaching.implementationStatus },
   })
 
-  // Shared-runner mode always stops for explicit Teacher Authority.
-  // Legacy mode preserves its historical exception-only publication review.
-  const requiresPublicationReview =
-    Boolean(executionOptions) || shouldRequirePublicationReview(coaching)
-  if (requiresPublicationReview) {
+  // Shared-runner mode materializes the official Teacher Intelligence
+  // ValidationTask and stops there. Legacy mode preserves its historical
+  // exception-only ReviewTask publication gate.
+  if (executionOptions) {
+    const validationTask = await preparePipelineCanonicalAuthorityValidationTask(runId)
+    await prisma.pipelineEvent.createMany({ data: [
+      { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, validationTaskId: validationTask.id } },
+      { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_teacher_authority', validationTaskId: validationTask.id } },
+      { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview, validationTaskId: validationTask.id } },
+    ], skipDuplicates: true })
+    await checkpointLearningMachine({
+      pipelineRunId: runId,
+      stage: 'awaiting_teacher_authority',
+      status: 'awaiting_teacher_authority',
+      resumePoint: 'awaiting_teacher_authority',
+      payload: {
+        validationTaskId: validationTask.id,
+        normalizedRunIdentity: executionOptions.normalizedRunIdentity,
+      },
+    })
+    return { report, coaching, qualityGate: reportGate, validationTaskId: validationTask.id }
+  }
+
+  if (shouldRequirePublicationReview(coaching)) {
     const publicationTask = await createReviewTask(runId, normalizedInput, 'publication_review_required')
     await prisma.pipelineEvent.createMany({ data: [
       { pipelineRunId: runId, eventType: 'ClassReportProjectionDrafted', aggregateType: 'ClassReportProjection', aggregateId: normalizedInput.lessonId, payload: { documentStatus: report.documentStatus, requiresHumanReview: true, publicationReviewTaskId: publicationTask.id } },
       { pipelineRunId: runId, eventType: 'PortfolioProjectionPatchProposed', aggregateType: 'PortfolioProjection', aggregateId: normalizedInput.studentEmail, payload: { operationCount: patch.operations.length, patchId: patch.patch_id, operationKey: patch.operation_key, applyStatus: 'pending_publication_review' } },
       { pipelineRunId: runId, eventType: 'AIRecommendationGenerated', aggregateType: 'CoachingGuidance', aggregateId: runId, payload: { recommendationStatus: coaching.recommendationStatus, isPedagogicalDecision: coaching.is_pedagogical_decision, requiresHumanReview: coaching.requiresHumanReview } },
     ], skipDuplicates: true })
-    if (executionOptions) {
-      await checkpointLearningMachine({
-        pipelineRunId: runId,
-        stage: 'awaiting_teacher_authority',
-        status: 'awaiting_publication_review',
-        resumePoint: 'awaiting_teacher_authority',
-        payload: {
-          reviewTaskId: publicationTask.id,
-          normalizedRunIdentity: executionOptions.normalizedRunIdentity,
-        },
-      })
-    }
     return { report, coaching, qualityGate: reportGate }
   }
 
@@ -842,6 +851,26 @@ export async function processLessonTranscript(
     }
   }
 
+  if (existing?.status === 'awaiting_teacher_authority') {
+    await recordSharedTriggerIfNeeded(existing.id, executionOptions)
+    const task = await prisma.validationTask.findUnique({
+      where: {
+        type_entityType_entityId: {
+          type: 'canonical_learning_record_authority',
+          entityType: 'PipelineRun',
+          entityId: existing.id,
+        },
+      },
+    })
+    return {
+      pipelineRunId: existing.id,
+      status: existing.status,
+      duplicate: true,
+      validationTaskId: task?.id,
+      nextReviewStage: 'teacher_authority_validation',
+    }
+  }
+
   if (existing?.status === 'awaiting_publication_review') {
     await recordSharedTriggerIfNeeded(existing.id, executionOptions)
     const task = await prisma.reviewTask.findFirst({
@@ -1117,6 +1146,17 @@ export async function processLessonTranscript(
           pipelineRunId: run.id,
           status: 'not_proven',
           duplicate: false,
+          report: result.report,
+          coaching: result.coaching,
+        }
+      }
+      if (finalStatus === 'awaiting_teacher_authority') {
+        return {
+          pipelineRunId: run.id,
+          status: finalStatus,
+          duplicate: false,
+          validationTaskId: result.validationTaskId,
+          nextReviewStage: 'teacher_authority_validation',
           report: result.report,
           coaching: result.coaching,
         }

@@ -6,9 +6,6 @@ import {
 } from '@/lib/canonical-learning-intelligence-projection'
 import { getPrismaClient } from '@/lib/prisma'
 
-const GUSTAVO_CANONICAL_RECORD_ID = 'cmu6jv29k0001bf8kt45pl9ht'
-const GUSTAVO_STUDENT_ID = 'stu_4c4da6c04ac4'
-
 export async function runG5RuntimeProof(taskId: string) {
   const prisma = getPrismaClient()
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
@@ -21,8 +18,11 @@ export async function runG5RuntimeProof(taskId: string) {
     where: { teacherDecisionId: task.id },
     orderBy: { createdAt: 'desc' },
   })
-  if (!provenance || provenance.canonicalRecordId !== GUSTAVO_CANONICAL_RECORD_ID || provenance.studentId !== GUSTAVO_STUDENT_ID) {
-    throw new CanonicalizationError('AUTHORITY_NOT_FOUND', 'G5 runtime proof is intentionally limited to the frozen Gustavo witness')
+  if (!provenance) {
+    throw new CanonicalizationError(
+      'AUTHORITY_NOT_FOUND',
+      'G5 requires the existing G2 canonicalization provenance; G5 never creates canonical state',
+    )
   }
 
   const g3 = await prisma.canonicalLearningRecordVerification.findFirst({

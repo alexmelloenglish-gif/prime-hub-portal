@@ -166,6 +166,119 @@ export async function canonicalAuthorityPayloadHashForPipelineRun(
   }
 }
 
+function jsonValue(value: unknown): Prisma.InputJsonValue {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue
+}
+
+export async function preparePipelineCanonicalAuthorityValidationTask(
+  pipelineRunId: string,
+) {
+  const prisma = getPrismaClient()
+  const run = await prisma.pipelineRun.findUnique({
+    where: { id: pipelineRunId },
+    include: {
+      transcript: true,
+      evidenceCandidates: { select: { id: true }, orderBy: { createdAt: 'asc' } },
+    },
+  })
+  if (!run?.transcript) throw new Error('Shared runner pipeline run or transcript was not found')
+
+  const { draft, hash: authorityPayloadHash } =
+    await canonicalAuthorityPayloadHashForPipelineRun(pipelineRunId)
+
+  const existing = await prisma.validationTask.findUnique({
+    where: {
+      type_entityType_entityId: {
+        type: 'canonical_learning_record_authority',
+        entityType: 'PipelineRun',
+        entityId: pipelineRunId,
+      },
+    },
+  })
+
+  if (existing) {
+    if (existing.suggestedValue) {
+      const existingHash = canonicalAuthorityDraftHash(
+        JSON.parse(JSON.stringify(existing.suggestedValue)) as CanonicalAuthorityDraft,
+      )
+      if (existingHash !== authorityPayloadHash) {
+        throw new Error('Existing ValidationTask payload differs from the current shared-runner authority draft')
+      }
+    }
+    return existing
+  }
+
+  const metadata = pipelineInputMetadata(run.transcript.metadata)
+  const studentName = text(metadata.studentName) || run.studentEmail
+  const sourceTabId = text(metadata.sourceTabId)
+  const sourceTabTitle = text(metadata.sourceTabTitle)
+  const sourceExtractionMode = text(metadata.sourceExtractionMode)
+  const notesExcludedFromEvidence = metadata.notesExcludedFromEvidence === true
+
+  const task = await prisma.validationTask.create({
+    data: {
+      type: 'canonical_learning_record_authority',
+      entityType: 'PipelineRun',
+      entityId: pipelineRunId,
+      status: 'pending',
+      priority: 200,
+      studentEmail: run.studentEmail.toLowerCase(),
+      lessonId: run.lessonId,
+      title: `Learning state review — ${studentName}`,
+      description:
+        'Review the exact lesson-derived authority payload before it may become canonical. Approval is human-only and applies only to the preserved suggestedValue.',
+      evidence: {
+        pipelineRunId,
+        transcriptId: run.transcript.id,
+        sourceFileId: run.transcript.sourceFileId,
+        source: run.transcript.source,
+        lessonId: run.lessonId,
+        studentId: draft.studentId,
+        studentEmail: run.studentEmail.toLowerCase(),
+        evidenceCandidateIds: run.evidenceCandidates.map((candidate) => candidate.id),
+        authorityPayloadHash,
+        sourceTabId,
+        sourceTabTitle,
+        sourceExtractionMode,
+        notesExcludedFromEvidence,
+        teacherAuthorityBoundary:
+          'Pending human teacher/admin decision in Teacher Intelligence Validation. No canonicalization or learner-facing publication is authorized yet.',
+      },
+      suggestedValue: jsonValue(draft),
+    },
+  })
+
+  await prisma.pipelineEvent.upsert({
+    where: {
+      pipelineRunId_eventType_aggregateId: {
+        pipelineRunId,
+        eventType: 'TeacherAuthorityValidationRequested',
+        aggregateId: task.id,
+      },
+    },
+    update: {
+      payload: {
+        validationTaskId: task.id,
+        authorityPayloadHash,
+        authorityStatus: 'pending_teacher_validation',
+      },
+    },
+    create: {
+      pipelineRunId,
+      eventType: 'TeacherAuthorityValidationRequested',
+      aggregateType: 'ValidationTask',
+      aggregateId: task.id,
+      payload: {
+        validationTaskId: task.id,
+        authorityPayloadHash,
+        authorityStatus: 'pending_teacher_validation',
+      },
+    },
+  })
+
+  return task
+}
+
 async function resolveReviewer(reviewerRef: string) {
   const prisma = getPrismaClient()
   const normalized = reviewerRef.trim()

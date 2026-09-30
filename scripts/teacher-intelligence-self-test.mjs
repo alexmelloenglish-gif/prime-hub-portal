@@ -28,6 +28,8 @@ const allTeacherSource = Object.values(source).join('\n')
 const gustavoPackage = JSON.parse(source.gustavoPackage)
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
+assert.match(source.sidebar, /const menuItems = isAdmin/, 'Admin navigation must depend on admin authority, not learner-preview state')
+assert.doesNotMatch(source.sidebar, /isAdmin && !isStudentPreview/, 'Learner preview must not hide Teacher Intelligence/Admin from the admin viewer')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
 assert.match(source.reviewPage, /listPendingReviewTasks/, 'Teacher Review Queue must reuse existing Pipeline ReviewTask workflow')
 assert.match(source.reviewPage, /ReviewQueueActions/, 'Teacher Review Queue must render existing Pipeline ReviewTask controls')
