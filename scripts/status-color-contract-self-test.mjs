@@ -32,7 +32,7 @@ const expected = {
 }
 
 for (const [state, family] of Object.entries(expected)) {
-  const pattern = new RegExp(state + String.raw`:[\\s\\S]*?light:\\s*'[^']*` + family)
+  const pattern = new RegExp(state + String.raw`:[\s\S]*?light:\s*'[^']*` + family)
   assert.match(statusContract, pattern, `${state} must use the canonical ${family} family`)
 }
 
