@@ -1144,3 +1144,36 @@ Issue #58 consolidated mirror: `5904640216`.
 - No automatic ingestion was unfrozen.
 - No CEFR, canonical state, pedagogical history, database migration, or Teacher Authority state was changed.
 - Remaining blocker: authenticated Production smoke test requires an active browser window/session; this is not a Vercel deployment blocker.
+
+
+---
+
+## 2026-09-30 — Authenticated Production smoke test completed
+
+Production target remained the already verified `READY` deployment `dpl_FULGb5jLPgmAevLQZibvLirHqd6s`, serving code SHA `ef2ddf3c40e9195b63cbb5e37e0d9d6cc4c90da9`.
+
+### Cláudio / Teacher Review
+
+- Authenticated route tested: `/dashboard/admin/intelligence/review`.
+- Initial state: one pending learner audio submission for `claudio.bit@gmail.com`, event `cmubrtn7k000010kt6eluc82u`.
+- `Open audio` control was exercised successfully from the live review card.
+- `Mark as reviewed` was executed once. The live UI changed from `1 PENDING` / `1 awaiting review` to `0 PENDING` / `0 awaiting review`, showing `REVIEWED` and `Reviewed by alexandre@primedigitalhub.com.br`.
+- After a page reload, the reviewed state persisted.
+- Runtime UI explicitly states this remains a learner submission, not teacher-confirmed learning evidence; it does not create canonical evidence, change CEFR, consume Teacher Authority or update learner learning state.
+- PASS: authenticated review action and persisted reviewed state.
+- PASS: non-authoritative boundary as represented by the live runtime state.
+- NOT independently proven: raw HTTP `206`/`Content-Range` headers. The browser MCP exposed the audio element and Open audio interaction but did not expose network response headers; no claim of direct 206 instrumentation is made.
+
+### Louise
+
+- Authenticated route tested: `/dashboard?studentEmail=louise_nogueira%40hotmail.com` using Admin preview.
+- PASS: dashboard loaded for Louise with `4 attended lessons`, current `B1`, target `B2`.
+- PASS: `RECENT` section renders `Attended Lessons` with four dated attended lessons (20 July, 1 June, 22 April and 2 March 2026).
+- PASS: `MEMORY` / `Learner Memory` and learning-history reports remain separate from RECENT.
+- No learner data or pedagogical state was edited.
+
+### Remaining boundary
+
+- No new deployment was made; the authenticated tests ran against the already verified Production SHA/deployment above.
+- Direct network-level proof of Range `206` remains the only unproven sub-check because the connected browser interface does not expose response headers. All other requested authenticated read/action checks above have runtime evidence.
+- `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged; no ingestion, CEFR, canonical state, history, Teacher Authority or database migration was altered.
