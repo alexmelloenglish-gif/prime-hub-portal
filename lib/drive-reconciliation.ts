@@ -266,16 +266,51 @@ function extractDocsElements(elements: GoogleDocsStructuralElement[] | undefined
   }).join('')
 }
 
-function extractGoogleDocsText(document: unknown): string {
+type GoogleDocsTab = {
+  title?: string
+  tabId?: string
+  tabProperties?: { title?: string; tabId?: string }
+  documentTab?: { body?: { content?: GoogleDocsStructuralElement[] } }
+  childTabs?: GoogleDocsTab[]
+}
+
+function flattenGoogleDocsTabs(tabs: GoogleDocsTab[] | undefined): GoogleDocsTab[] {
+  if (!tabs) return []
+  return tabs.flatMap((tab) => [tab, ...flattenGoogleDocsTabs(tab.childTabs)])
+}
+
+function isTranscriptTabTitle(title: string | undefined): boolean {
+  const normalized = normalizeForMatch(title || '')
+  return normalized === 'transcript' || normalized === 'transcricao'
+}
+
+export function extractGoogleDocsTranscript(document: unknown): string {
   if (!document || typeof document !== 'object' || Array.isArray(document)) return ''
   const root = document as {
     body?: { content?: GoogleDocsStructuralElement[] }
-    tabs?: Array<{ documentTab?: { body?: { content?: GoogleDocsStructuralElement[] } } }>
+    tabs?: GoogleDocsTab[]
   }
-  const tabBodies = (root.tabs || [])
-    .map((tab) => extractDocsElements(tab.documentTab?.body?.content))
-    .filter(Boolean)
-  if (tabBodies.length) return tabBodies.join('\n\n')
+
+  const tabs = flattenGoogleDocsTabs(root.tabs)
+  if (tabs.length) {
+    const transcriptTabs = tabs.filter((tab) =>
+      isTranscriptTabTitle(tab.tabProperties?.title || tab.title)
+    )
+
+    if (transcriptTabs.length !== 1) {
+      throw new Error(
+        transcriptTabs.length === 0
+          ? 'drive_transcript_tab_missing'
+          : 'drive_transcript_tab_ambiguous'
+      )
+    }
+
+    const transcript = extractDocsElements(transcriptTabs[0].documentTab?.body?.content)
+    if (!transcript.trim()) throw new Error('drive_transcript_tab_empty')
+    return transcript
+  }
+
+  // Legacy single-body Google Docs remain supported.
   return extractDocsElements(root.body?.content)
 }
 
@@ -307,8 +342,8 @@ async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: st
   const docsResponse = await fetch(docsUrl, { headers, cache: 'no-store' })
   if (docsResponse.ok) {
     const document = await docsResponse.json()
-    const tabText = extractGoogleDocsText(document)
-    if (tabText.trim()) return tabText
+    const transcriptText = extractGoogleDocsTranscript(document)
+    if (transcriptText.trim()) return transcriptText
   }
 
   const exportUrl = `${DRIVE_API}/files/${encodeURIComponent(fileId)}/export?mimeType=text%2Fplain`
