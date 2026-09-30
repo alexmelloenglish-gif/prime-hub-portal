@@ -595,3 +595,80 @@ Only `Transcrição` was selected for pedagogical evidence. The selected transcr
 - no Teacher Authority was consumed by this release.
 - no Gustavo canonical learner-state mutation occurred.
 - next action: reconcile the existing Gustavo canonical state/evidence against the transcript-only 2026-09-29 source, prepare the candidate/evidence packet, then stop for Alexandre's explicit candidate-specific `APPROVE / EDIT / REJECT` Teacher Authority decision.
+
+
+---
+
+## 2026-09-30 — Gustavo 2026-09-29 candidate/evidence packet — TEACHER AUTHORITY REQUIRED
+
+**Authority status:** CANDIDATE / NOT CANONICAL.
+
+**Candidate payload SHA-256:** `e0b4aaf9e2931de1ae4a2d298d287dfdb8454de7a2f65279b3d55b1073adbbec`
+
+### Identity / source
+- learner: Gustavo Drummond De Andrade Salgado;
+- existing `studentId`: `stu_4c4da6c04ac4`; do not create a new learner;
+- lesson date: 2026-09-29;
+- attendance candidate: attended;
+- Google Meet Doc: `1F3Oe87eEUgTLOO9d7MupI_C5mU-5U-ESUr_gQYC0Gks`;
+- evidence tab only: `Transcrição` / `t.ororffpf4ito`;
+- extraction: `google_docs_transcript_tab_v1`;
+- `notesExcludedFromEvidence=true`;
+- transcript read-back: 31,090 characters; 00:56:26;
+- `Observações` / `t.piyr7rigwkbd` excluded from pedagogical evidence.
+
+### Previous canonical baseline used
+Canonical Portfolio v1.1 is updated through five attended lessons (18 Aug–15 Sep 2026) and records:
+- CEFR A1 — progressing toward A2;
+- target A2;
+- current priorities: present/past short answers, Simple Past foundations, complete answers, vocabulary retrieval and functional school/personal English;
+- independence must be distinguished as Independent → One clue → Model.
+
+A fresh Neon read-back was attempted for this candidate-preparation step but the connected Neon surface returned its intermittent internal authorization error (HTTP 404). This is recorded as a connector-read limitation only; no database mutation was attempted. The candidate therefore uses the versioned student registry + canonical Portfolio + verified transcript-only source.
+
+### Proposed current-state update
+> Simple Past retrieval is becoming more productive across affirmative forms, short answers and question formation. Gustavo can repair several present/past errors after a cue and retrieve forms such as `went`, `ate` and `had`, while `did/didn't + base verb` remains inconsistent (`I didn't went` still appeared). Complete personal answers and short retelling are emerging, but independence varies by task. Maintain CEFR A1 — progressing toward A2; target A2.
+
+### Evidence supporting the candidate
+- affirmative past retrieval: `I ate ...`, `Yesterday I went to school`, `He ate barbecue and ice cream`;
+- past questions: `Did you go to the mall?`; repair `Do you watch TV yesterday?` → `Did you watch TV yesterday?`;
+- short answer: `Yes, I did` appears productively;
+- active instability remains: `I didn't went to school` appeared;
+- responsive repairs after cue include:
+  - `Yesterday I go to school` → `Yesterday I went to school`;
+  - `Do you watch TV yesterday?` → `Did you watch TV yesterday?`;
+  - `I go at home at five` → `I went home at five`;
+- therefore broad independent self-correction is **not** promoted; the supported claim is responsive repair after a cue;
+- irregular retrieval is mixed; `went`, `ate`, `had`, `saw` were accessible with varying support.
+
+### Candidate cumulative updates
+Grammar:
+- present/past short answers — maintain + consolidate;
+- Simple Past affirmative — strengthening;
+- `did/didn't + base verb` — active priority, not mastered;
+- Did + subject + base verb questions — emerging with repair;
+- self-correction — responsive repair after cue only;
+- should / reflexives / superlatives — practised with support; no mastery claim.
+
+Vocabulary / school support:
+- provisional sea-life set observed for the upcoming school-English assessment: `fish`, `whale`, `shark`, `starfish`, `octopus`, `squid`;
+- reinforced past forms: `went`, `ate`, `had`, `saw`;
+- learner read an upcoming-assessment scope including `sea life`, `must`, `can't`, `don't`, and answering questions about text;
+- the actual assessment material was not captured, so do not over-specify or promote this scope beyond provisional school support.
+
+### Proposed next priorities
+1. Mix Do/Did questions unpredictably and record Independent → One clue → Model.
+2. Consolidate `did/didn't + base verb` across affirmative/negative/question contrasts.
+3. Retrieve frequent irregulars without immediate model: go/went, eat/ate, see/saw, have/had, drink/drank, ride/rode, buy/bought, swim/swam.
+4. Produce 4–6 complete personal past sentences and one short retell.
+5. Review the upcoming school-English assessment only after the actual material is received.
+
+### Protected stop boundary
+No canonicalization, Portfolio mutation, learner-facing publication, CEFR change, or automatic-ingest unfreeze is authorized by this candidate.
+
+Alexandre must decide on this exact candidate:
+- **APPROVE** — authorize this exact candidate payload/hash;
+- **EDIT** — specify changes; a new candidate/hash must be generated;
+- **REJECT** — preserve the source evidence without promoting this candidate to canonical state.
+
+`PIPELINE_AUTOMATION_FROZEN = true` remains active until the later protected activation sequence is explicitly satisfied.
