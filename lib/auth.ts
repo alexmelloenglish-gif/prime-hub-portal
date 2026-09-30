@@ -37,15 +37,13 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
           clientId: process.env.GOOGLE_CLIENT_ID ?? '',
           clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+          // End-user portal authentication must request only identity scopes.
+          // Google Meet attendance is an operational organizer integration handled
+          // separately by meet-attendance-collector; students must not be asked to
+          // authorize Meet access just to open their learning dashboard.
           authorization: {
             params: {
-              scope: [
-                'openid',
-                'email',
-                'profile',
-                'https://www.googleapis.com/auth/meetings.space.readonly',
-              ].join(' '),
-              access_type: 'offline',
+              scope: ['openid', 'email', 'profile'].join(' '),
             },
           },
         }),
