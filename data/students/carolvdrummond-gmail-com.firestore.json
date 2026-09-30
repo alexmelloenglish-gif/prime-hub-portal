@@ -13,7 +13,7 @@
   "targetLevel": "CEFR A2",
   "focus": "Using English to talk about real experiences, tell past stories, distinguish now from past, build complete answers, retrieve useful language, and consolidate did/didn't + base verb while using English for school content when relevant.",
   "attendanceRate": "6 attended lessons",
-  "attendanceLabel": "Consistency: 5 of 5 completed lessons — consistent",
+  "attendanceLabel": "Consistency: 6 of 6 completed lessons — consistent",
   "manageSpace": [
     {
       "id": "portfolio",
@@ -89,55 +89,48 @@
       }
     },
     "whatChanged": {
-      "title": "Past language became more productive across six lessons",
-      "summary": "Across six attended lessons, Gustavo repeatedly used English to talk about his own world and school content. On 29 September, Simple Past appeared in affirmative answers, short answers, questions and a short retelling. Several present/past forms were repaired after a cue, while did/didn't + base verb remained inconsistent. This supports continued development and responsive repair, not a claim of independent mastery.",
+      "title": "Past English is working across more kinds of communication",
+      "summary": "Across six attended lessons, Gustavo has used past-time English to talk about his own experiences, answer and ask questions, retell information and repair several present/past mismatches. On 29 September, this appeared across personal speaking, short answers, questions and a short retell. Some forms were produced without a direct language model and others became more accurate after a clue. The clearest precision priority remains did/didn't + base verb.",
       "changeType": "learner-progress",
-      "evidence": "Lessons 1–6: recurring past-language use in personal contexts; 15 Sep self-correction “I don't” → “No, I didn't”; 29 Sep productive “Yes, I did”, “I ate...”, “Yesterday I went to school” and short retelling; continued instability in “I didn't went to school”.",
+      "evidence": "Lessons 1–6 show recurring past-language use in meaningful contexts. Lesson 5 included “I don't” → “No, I didn't”. Lesson 6 added learner-generated forms such as “I played volleyball...”, “Did you go to the mall?”, “Yes, I did”, “I ate...”, “Where did you go?”, “Did you play?” and “He ate barbecue and ice cream”, alongside both self-initiated and cue-supported repair. “I didn't went to school” remains direct evidence that did/didn't + base verb is not yet consistent.",
       "status": "teacher-validated"
     },
     "priorities": [
       {
         "id": "priority-past-stories",
         "title": "Tell real stories about the past",
-        "why": "Past forms become more meaningful when they help Gustavo talk about his own experiences rather than exist only as a grammar exercise.",
-        "evidence": "Across Lessons 1, 3 and 5, personal experiences naturally brought past language back into use.",
+        "why": "Past English is already appearing in meaningful communication. The next step is making that language more reliable across a complete story without interrupting the first attempt.",
+        "evidence": "Across the six lessons, Gustavo has used past forms to talk about trips, school, food and other parts of his own life. Lesson 6 broadened this to statements, questions, short answers and retelling.",
         "status": "teacher-validated"
       },
       {
         "id": "priority-now-past",
-        "title": "Listen for NOW vs PAST",
-        "why": "Choosing between Do...? and Did...? depends first on noticing the time meaning of the question.",
-        "evidence": "Lesson 5 showed present answers were more accessible while past answers varied between independent production and supported retrieval.",
+        "title": "Notice NOW vs PAST while speaking",
+        "why": "Gustavo can often recover the correct time form and has shown real self-monitoring. More spontaneous mixed present/past questions will help that noticing become more consistent.",
+        "evidence": "Lesson 5 showed the self-correction “I don't” → “No, I didn't”. Lesson 6 added several repairs, including Do→Did and go→went patterns, with a mix of self-initiated and cue-supported correction.",
         "status": "teacher-validated"
       },
       {
-        "id": "priority-retrieval",
-        "title": "Try to retrieve before receiving help",
-        "why": "A clue or model can support learning, but the next useful evidence comes from seeing what returns when Gustavo tries first.",
-        "evidence": "Science and general-English tasks across Lessons 4–5 showed a mix of independent recall and supported reconstruction.",
-        "status": "teacher-validated"
-      },
-      {
-        "id": "priority-awareness",
-        "title": "Become a learning detective",
-        "why": "Gustavo is beginning to notice his own language. Brief reflection can help him recognize what he used, what he corrected and what he wants to try again.",
-        "evidence": "Lesson 5 self-correction provides a concrete starting point for learner self-awareness.",
+        "id": "priority-did-base",
+        "title": "Make did / didn't + base verb more automatic",
+        "why": "This is now a precise form-level priority inside an otherwise increasingly productive past-time system.",
+        "evidence": "Gustavo can recover the base-form rule in several tasks, but “I didn't went to school” still appeared on 29 September.",
         "status": "teacher-validated"
       }
     ],
     "nextAction": {
-      "id": "journey-check-in-and-past-story",
+      "id": "school-assessment-revision-and-past-story",
       "authorizationStatus": "teacher-validated",
       "destination": "https://meet.google.com/imu-dfuo-stc",
-      "outcome": "Compare Gustavo's own perception of what feels easy, possible with help or still needing study with fresh performance evidence from selected tasks.",
-      "title": "My English Journey Check-In + a new real story",
-      "description": "Start with a short self-awareness check-in about the language explored in these six lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.",
-      "evidence": "The six attended lessons through 29 September now provide the longitudinal basis for the next teacher-confirmed action.",
+      "outcome": "Prepare Gustavo for the upcoming school-English assessment while preserving a short first-attempt window to observe how past-time language and self-correction now work with less interruption.",
+      "title": "School-English Revision + One New Past Story",
+      "description": "Start with a 60–90 second personal past story with no correction during the first attempt. Briefly mix Do/Did and did/didn't + base-form questions, then prioritize the upcoming school assessment content: sea life, must, can't, don't and question comprehension.",
+      "evidence": "The learner self-check-in is already persisted. Lesson 6 broadened past-time use across statements, questions, short answers, retelling and repair, while the school assessment was identified as the immediate practical priority.",
       "status": "teacher-validated"
     },
     "schedule": {
       "status": "scheduled",
-      "label": "Regular Tuesday lesson cycle continues; the next lesson should build from the six attended lessons through 29 September and the learner self-perception checkpoint."
+      "label": "Regular Tuesday lesson cycle continues. The next lesson prioritizes the upcoming school-English assessment and includes one short first-attempt past-story check."
     }
   },
   "progressTracker": [
@@ -145,42 +138,42 @@
       "id": "real-life-speaking",
       "title": "Real-life speaking / Falar sobre a própria vida",
       "status": "Strong",
-      "insight": "Gustavo participates willingly and uses English to talk about holidays, school, sports, games, family and other parts of his own world.",
+      "insight": "Gustavo participates willingly and uses English to talk about his own experiences, school, games, food, family and other parts of his world. Meaningful communication is a clear strength.",
       "accent": "green"
     },
     {
       "id": "past-stories",
       "title": "Past stories / Contar o que aconteceu",
       "status": "Improving",
-      "insight": "Past forms have returned across several lessons. Sometimes they come independently; sometimes a clue or model is still useful.",
+      "insight": "Past English is becoming genuinely usable. Across the six lessons Gustavo has produced personal past statements, questions, short answers and a short retell. Some forms come independently and others become more accurate after a clue.",
       "accent": "blue"
     },
     {
       "id": "now-vs-past",
       "title": "Now or past? / Entender Do e Did",
       "status": "Improving",
-      "insight": "Present answers are more accessible. Past answers are becoming more available, but consistency still varies.",
+      "insight": "Gustavo increasingly notices whether a message is about now or the past and can repair several Do/Did and present/past mismatches. The next step is greater consistency while speaking spontaneously.",
       "accent": "yellow"
     },
     {
       "id": "self-correction",
       "title": "Noticing & self-correction / Perceber e tentar de novo",
       "status": "Improving",
-      "insight": "On 15 September, Gustavo noticed that “I don't” did not match a past question and changed it to “No, I didn't”.",
+      "insight": "Self-monitoring is now a real longitudinal pattern. Gustavo has corrected some forms on his own and has also used small cues effectively. This is positive evidence of a skill becoming more reliable.",
       "accent": "green"
     },
     {
       "id": "retrieval",
       "title": "Remembering & retrieving / Lembrar e recuperar",
       "status": "Improving",
-      "insight": "Some Science language was still available after one week; other ideas benefited from another encounter. Both are useful evidence for what to revisit.",
+      "insight": "Retrieval varies by item and context. Several past forms are available in meaningful production, while some vocabulary or forms still benefit from another encounter or a clue.",
       "accent": "blue"
     },
     {
       "id": "academic-english",
       "title": "English for learning / Inglês para aprender outras coisas",
       "status": "Improving",
-      "insight": "Gustavo used English to work with nutrients and digestion, showing that English can function as a tool for learning, not only as the lesson subject.",
+      "insight": "Gustavo has used English to work with Science and school-assessment content, showing that English can function as a tool for learning as well as the lesson subject.",
       "accent": "green"
     }
   ],
@@ -225,7 +218,7 @@
       "date": "September 29, 2026",
       "status": "present",
       "title": "Past stories, Do/Did and school-English support",
-      "summary": "Used Simple Past in personal answers and short retelling, repaired present/past forms after cues, retrieved irregular past forms and reviewed school-English language while preparing for an upcoming assessment."
+      "summary": "Used past-time English across personal answers, questions, short answers and a short retell; showed both independent production and useful self-correction, while did/didn't + base verb remained an active precision priority. The lesson also identified the upcoming school-English assessment content."
     }
   ],
   "classReports": [
@@ -374,7 +367,7 @@
       "id": "class-report-6",
       "date": "29 September 2026",
       "title": "Class Report - 29 Sep 2026",
-      "summary": "Gustavo used Simple Past in affirmative answers, short answers, questions and a short retelling. He repaired several present/past errors after cues and retrieved irregular forms including went, ate, had and saw, while did/didn't + base verb remained inconsistent.",
+      "summary": "Gustavo used past-time English across personal statements, short answers, questions and a short retelling. Several forms were produced without a direct language model, while other present/past forms became more accurate after a clue. did/didn't + base verb remained inconsistent, making it a precise next priority rather than evidence that Past Simple is unavailable.",
       "focus": [
         "Simple Past retrieval",
         "Do / Did",
@@ -395,7 +388,7 @@
         "octopus",
         "squid"
       ],
-      "teacherInsight": "Transfer points — Evidence: Gustavo produced forms such as “Yes, I did”, “I ate ...”, “Yesterday I went to school” and “He ate barbecue and ice cream”. After cues, he repaired forms such as “Do you watch TV yesterday?” → “Did you watch TV yesterday?” and “I go at home at five” → “I went home at five”. Boundary: “I didn't went to school” still appeared, so did/didn't + base verb remains an active priority and broad independent self-correction is not claimed. Next verification: Mix present/past questions unpredictably, retrieve frequent irregular verbs before modelling and ask for a short personal past retell.",
+      "teacherInsight": "Transfer points — Evidence: Gustavo used past language across several communicative functions, including “I played volleyball...”, “Did you go to the mall?”, “Yes, I did”, “I ate...”, “Where did you go?”, “Did you play?” and “He ate barbecue and ice cream”. He also showed both self-initiated and cue-supported repair. Interpretation: Past-time language is increasingly usable in communication, and self-monitoring is becoming a genuine longitudinal pattern. Boundary: reliability still varies by form and condition; “I didn't went to school” shows that did/didn't + base verb remains an active precision priority. Next verification: Begin with one uninterrupted personal past story, record autonomous versus cue-supported repair separately, then move into the upcoming school-English assessment revision.",
       "status": "published",
       "contentStatus": "published"
     }
@@ -580,13 +573,14 @@
   ],
   "cumulativeImpact": {
     "title": "Learning Journey — First 6 Lessons",
-    "summary": "Across six attended lessons, Gustavo moved from reactivating English through personal conversation to repeatedly using past meaning in new contexts, preparing school content through English, retrieving language after time gaps and repairing some present/past forms after cues. On 29 September, Simple Past became more productive across affirmative answers, short answers, questions and short retelling, while did/didn't + base verb remained an active priority.",
+    "summary": "Across six attended lessons, Gustavo has moved from reactivating English through personal conversation to using past-time language across a wider range of real functions: telling, answering, questioning, retelling and repairing. He has also used English to work with school content. The important story is not one isolated verb or one correction: it is that past meaning is becoming increasingly usable while some precision, especially did/didn't + base verb, is still becoming reliable.",
     "evidence": [
       "6 attended lessons confirmed: 18 Aug, 25 Aug, 01 Sep, 08 Sep, 15 Sep and 29 Sep 2026.",
-      "Past meaning returned across personal conversation, school review and follow-up tasks rather than appearing only once.",
+      "Past meaning returned repeatedly across personal conversation, school review and follow-up tasks rather than appearing only once.",
       "15 Sep: self-correction from “I don't” to “No, I didn't” after a past question.",
-      "29 Sep: productive “Yes, I did”, “I ate...”, “Yesterday I went to school” and a short past retell.",
-      "29 Sep: several present/past forms were repaired after a cue, while “I didn't went to school” showed that did/didn't + base verb still needs consolidation.",
+      "29 Sep: past English appeared across personal statements, questions, short answers and retelling, including “I played volleyball...”, “Did you go to the mall?”, “Yes, I did”, “I ate...”, “Where did you go?” and “He ate barbecue and ice cream”.",
+      "29 Sep: both self-initiated and cue-supported repair were observed; “I didn't went to school” still showed that did/didn't + base verb needs consolidation.",
+      "The learner self-check-in is already persisted as learner self-perception evidence and is not treated as a proficiency score.",
       "No CEFR level movement beyond teacher-confirmed CEFR A1 is claimed from these six lessons."
     ]
   },
@@ -596,8 +590,8 @@
     "Gustavo Drummond De Andrade Salgado",
     "Gustavo Salgado Drummond de Andrade"
   ],
-  "notes": "Family-facing canonical dashboard profile updated for the first five-lesson journey through 15 Sep 2026. Preserve all five class reports as learning history. Movement is not reduced to state change: consolidation, retrieval, reconstruction, attempts and self-correction remain meaningful evidence.",
-  "dashboardExperience": "young-learner",
+  "notes": "Canonical shared student dashboard updated through six attended lessons (18 Aug–29 Sep 2026). The former Young Learner journey remains historical/supporting material; the authenticated learner dashboard now uses the shared canonical NOW / RECENT / MEMORY presentation. Learning movement, retrieval, transfer and self-correction remain visible without forcing artificial state changes.",
+  "dashboardExperience": "standard",
   "journeyExperience": {
     "familyViewPath": "/journey/gustavo-5-lessons-7q4m9",
     "learnerCheckInPath": "/journey/gustavo-5-lessons-7q4m9/check-in",
