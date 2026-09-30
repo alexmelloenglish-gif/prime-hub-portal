@@ -71,7 +71,7 @@ export function ReviewQueueActions({ initialTasks }: { initialTasks: ReviewTaskI
     return (
       <div className="glass-card p-8 text-center">
         <p className="text-lg font-medium text-white">No pending system reviews.</p>
-        <p className="mt-2 text-sm leading-6 text-prime-cream/65">Nothing is waiting for a manual identity, publication or processing decision.</p>
+        <p className="mt-2 text-sm leading-6 text-white/90">Nothing is waiting for a manual identity, publication or processing decision.</p>
         {message ? <p className="mt-4 text-sm text-emerald-200">{message}</p> : null}
       </div>
     )
