@@ -110,7 +110,7 @@ export default async function TeacherEvidenceReviewPage() {
                         <h4 className="mt-1 text-lg font-semibold text-white">Gustavo · self-perception check-in</h4>
                         <p className="mt-1 text-xs text-prime-cream/45">{submission.journeyId || submission.studentId || 'Learner check-in'}</p>
                       </div>
-                      <IntelligenceStatusBadge label="Self-perception" state="PRESENT" />
+                      <IntelligenceStatusBadge label="Learner self-perception" state="SELF_PERCEPTION" />
                     </div>
 
                     <div className="mt-4 grid gap-2 sm:grid-cols-2">
