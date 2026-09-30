@@ -672,3 +672,26 @@ Alexandre must decide on this exact candidate:
 - **REJECT** — preserve the source evidence without promoting this candidate to canonical state.
 
 `PIPELINE_AUTOMATION_FROZEN = true` remains active until the later protected activation sequence is explicitly satisfied.
+
+
+---
+
+## 2026-09-30 — Student login + public Portal entry remediation — PR #72
+
+### Diagnosis
+Gustavo's learner/account authorization is present and the repository dashboard resolver explicitly maps `gugasalgado7@gmail.com` to existing learner `stu_4c4da6c04ac4`. The blocking risk is upstream of learner resolution: ordinary Google portal sign-in was requesting `https://www.googleapis.com/auth/meetings.space.readonly` from every user.
+
+That Meet permission belongs to the operational organizer attendance integration, not learner identity authentication. `lib/meet-attendance-collector.ts` already resolves its credential independently via `GOOGLE_MEET_ACCESS_TOKEN` or the configured organizer Google Account.
+
+Production runtime inspection showed live NextAuth endpoints with no server-side 5xx in the inspected window (`/api/auth/providers 200`, `/api/auth/signin/google 200`, Google callback 302 observed). A successful end-to-end Gustavo witness was never previously proven; the 2026-09-21 provisioning record explicitly left interactive sign-in/dashboard rendering open.
+
+### Narrow remediation
+Draft PR #72, head `fb9add5edecda57683ee37cd713e45dddda46ec6`:
+- end-user Google sign-in now requests identity scopes only: `openid email profile`;
+- removes learner-facing Meet scope and offline-token request;
+- leaves Meet attendance organizer integration untouched;
+- public `Portal do aluno` entry is Prime red and includes the Prime mark;
+- no Teacher Intelligence code, learner state, canonical state, DB data, or automation-freeze state changed.
+
+### Proof boundary
+Repository/Preview gates must pass before merge. After Production release, the real learner account `gugasalgado7@gmail.com` must perform the interactive Google sign-in witness. No agent/admin simulation can prove that final account-specific boundary.
