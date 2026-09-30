@@ -527,7 +527,7 @@ const dashboardStudent = mergeCanonicalLearningIntelligenceRows(
   fullyVerifiedRows,
 )
 assert.equal(dashboardStudent.studentId, STUDENT_ID)
-assert.equal(dashboardStudent.currentLevel, 'CEFR A1 — progressing toward A2')
+assert.equal(dashboardStudent.currentLevel, 'CEFR A1')
 assert.ok(dashboardStudent.canonicalProjection.priorities.length > 0)
 assert.equal(dashboardStudent.canonicalProjection.nextAction?.title, 'Golden retrieval check')
 assert.equal(dashboardStudent.canonicalProjection.nextAction?.authorizationStatus, 'teacher-validated')

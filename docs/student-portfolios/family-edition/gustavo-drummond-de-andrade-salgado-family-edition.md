@@ -11,15 +11,15 @@
 
 ### Resumo para o aluno e a família
 
-Este portfólio reúne 5 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem. Neste ciclo, em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana. Próximo passo: My English Journey Check-In + a new real story.
+Este portfólio reúne 6 aulas com relatórios completos e a memória de aprendizagem atualmente confirmada. O foco atual é Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e consolidar did/didn’t + verbo base, percebendo melhor o próprio processo de aprendizagem. Neste ciclo, em seis aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Em 29 de setembro, produziu respostas, perguntas e um pequeno relato no passado, corrigindo várias formas depois de uma pista; did/didn’t + verbo base continua como prioridade. Próximo passo: My English Journey Check-In + a new real story.
 
 ## 2. Your Learning Snapshot
 
-- **Nível atual:** CEFR A1 — progressing toward A2
+- **Nível atual:** CEFR A1
 - **Objetivo de nível:** CEFR A2
 - **Frequência de aulas:** Twice a week
-- **Foco atual:** Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.
-- **Presença registrada:** 5/5 confirmed
+- **Foco atual:** Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e consolidar did/didn’t + verbo base, percebendo melhor o próprio processo de aprendizagem.
+- **Presença registrada:** 6 attended lessons
 
 ## 3. Quick Access
 
@@ -28,7 +28,7 @@ Este portfólio reúne 5 aulas com relatórios completos e a memória de aprendi
 
 ## 4. Estado atual de aprendizagem / Current Learning State
 
-Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.
+Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e consolidar did/didn’t + verbo base, percebendo melhor o próprio processo de aprendizagem.
 
 ## 5. Forças e evidências / Strengths & Evidence
 
@@ -39,7 +39,7 @@ Usar inglês para contar experiências reais, diferenciar presente e passado, co
 
 ## 6. Padrões de aprendizagem / Learning Patterns
 
-Em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana.
+Em seis aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Em 29 de setembro, produziu respostas, perguntas e um pequeno relato no passado, corrigindo várias formas depois de uma pista; did/didn’t + verbo base continua como prioridade.
 
 ## 7. Prioridade pedagógica atual / Current Pedagogical Priority
 
@@ -54,13 +54,13 @@ Em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos 
 
 **My English Journey Check-In + a new real story**
 
-Start with a short self-awareness check-in about the language explored in these five lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.
+Start with a short self-awareness check-in about the language explored in these six lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.
 
 **Resultado esperado:** Compare Gustavo's own perception of what feels easy, possible with help or still needing study with fresh performance evidence from selected tasks.
 
 ## 9. Memória pedagógica e próximo ciclo / Learning Memory & Next Cycle
 
-A trajetória mostra uso, retomada, reconstrução e autocorreção. Nem tudo precisa estar dominado de forma independente para que exista aprendizagem significativa; o próximo ciclo continua observando o que retorna sozinho e o que ainda precisa de apoio.
+A trajetória de seis aulas mostra uso, retomada, reconstrução, recuperação e crescente percepção sobre o próprio inglês. O próximo ciclo continua observando o que retorna de forma independente, o que melhora com uma pista e o que ainda precisa de apoio.
 
 ## 10. Leitura para a família / Family Guide
 
@@ -75,6 +75,7 @@ Este portfólio mostra apenas informações confirmadas e úteis para acompanhar
 | September 1, 2026 | School English exam review | present |
 | September 8, 2026 | Science Exam Intensive Review — Food, Nutrients & Digestion | present |
 | September 15, 2026 | Science recall, present/past answers and personal past sentences | present |
+| September 29, 2026 | Past stories, Do/Did and school-English support | present |
 
 ## 12. Progress Tracker
 
@@ -135,7 +136,7 @@ The aim is not to collect grammar labels. These language patterns matter because
 
 ## 16. Teacher Feedback & Growth Priorities
 
-- **Your first five-lesson journey:** Over these five lessons, Gustavo has been using English increasingly to talk about things that belong to his own world — holidays, school, sports, games and experiences. Talking about things that happened naturally brought past language into conversation. Those forms have returned several times: sometimes with a model or clue, sometimes through retrieval, and on 15 September through a clear self-correction. English was also used as a tool for Science. One week later, some of that language returned easily and some needed another pass. The important story is not simply what was right or wrong: it is that Gustavo is using, revisiting, noticing and reconnecting language over time.
+- **Your first six-lesson journey:** Across these six lessons, Gustavo has been using English increasingly to talk about things that belong to his own world — holidays, school, sports, games and experiences. Past language has returned repeatedly in meaningful contexts. On 15 September there was a clear self-correction; on 29 September he used Simple Past in affirmative answers, short answers, questions and a short retell, and repaired several present/past forms after a cue. English has also continued to work as a tool for school content. The important story is not simply what was right or wrong: it is that Gustavo is using, revisiting, noticing and reconnecting language over time while some forms, especially did/didn't + base verb, still need consolidation.
 - **Leitura pedagógica da jornada:** Aprender não acontece em linha reta. Uma aula pode apresentar algo novo, fortalecer algo antigo, revelar um erro útil, recuperar uma ideia depois de alguns dias ou ajudar o aluno a perceber melhor o próprio inglês. O próximo ciclo vai preservar essa lógica: cada aula terá uma direção, sem exigir uma 'mudança de estado' artificial. Queremos que Gustavo se torne também um observador da própria aprendizagem — percebendo o que já consegue fazer, o que consegue tentar com ajuda e o que ainda quer estudar mais.
 
 ## 17. Class Reports
@@ -175,11 +176,18 @@ Returned to general English after the Science review. Gustavo checked Science me
 **Linguagem trabalhada:** went • drank • did • didn't • large intestine
 **Leitura do professor:** Transfer points — Evidence: After “Did you go...?”, Gustavo first answered “I don't” and then changed it to “No, I didn't”. He also reused went and drank in personal sentences and recalled part of the Science language after one week. Interpretation: Past meaning is returning across contexts and there is emerging evidence of self-monitoring while speaking. Boundary: One self-correction does not establish mastery, and Science recall varied between independent retrieval and reconstruction with support. Next verification: Invite a new real past story, contrast Do/Did, let Gustavo attempt retrieval before help, and use a short learner-awareness check-in.
 
+### Aula 6 — 29 September 2026
+**Tema:** Class Report - 29 Sep 2026
+Gustavo used Simple Past in affirmative answers, short answers, questions and a short retelling. He repaired several present/past errors after cues and retrieved irregular forms including went, ate, had and saw, while did/didn't + base verb remained inconsistent.
+**Foco da aula:** Simple Past retrieval • Do / Did • Past questions and short answers • Irregular past forms • Short retelling • School-English assessment support
+**Linguagem trabalhada:** went • ate • had • saw • fish • whale • shark • starfish • octopus • squid
+**Leitura do professor:** Transfer points — Evidence: Gustavo produced forms such as “Yes, I did”, “I ate ...”, “Yesterday I went to school” and “He ate barbecue and ice cream”. After cues, he repaired forms such as “Do you watch TV yesterday?” → “Did you watch TV yesterday?” and “I go at home at five” → “I went home at five”. Boundary: “I didn't went to school” still appeared, so did/didn't + base verb remains an active priority and broad independent self-correction is not claimed. Next verification: Mix present/past questions unpredictably, retrieve frequent irregular verbs before modelling and ask for a short personal past retell.
+
 ## 18. Recommended Next Steps
 
 **My English Journey Check-In + a new real story**
 
-Start with a short self-awareness check-in about the language explored in these five lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.
+Start with a short self-awareness check-in about the language explored in these six lessons. Then invite Gustavo to tell a new past story, listen for Do/Did, retrieve key language before help and notice one thing he can now see about his own English.
 
 **Resultado esperado:** Compare Gustavo's own perception of what feels easy, possible with help or still needing study with fresh performance evidence from selected tasks.
 

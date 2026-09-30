@@ -1046,21 +1046,25 @@ Deployment boundary:
 - the most recently proven Production READY SHA carrying #85 is `a8c81140...`;
 - verify a Production deployment containing `142e16c7...` or a descendant before claiming live review/audio/color behavior.
 
-### 4) Gustavo — six attended lessons — OPEN / BLOCKED BY STALE GOLDEN WITNESS
+### 4) Gustavo — six attended lessons — OPEN / MERGE RECONCILIATION IN PROGRESS
 PR #83:
 - state: OPEN / DRAFT;
-- head: `fff280d6f4941249b27d2c5f65b7b95fa92e3e47`;
-- currently not mergeable against current main; must be reconciled before merge;
-- Student Dashboard Contract: SUCCESS;
-- Student Family Portfolio Supervision: SUCCESS;
-- Coordination Runtime Witness: SUCCESS;
-- Golden Runtime Witness: FAILED because it still expected stale level text.
+- pre-reconciliation remote head: `ad59a92200eee93653e0c32b5ad3702fd39ec8fd`;
+- local merge-resolution commit: `1e75687bd4489243456f04b605920cf3e80cda60` (parents `ad59a92` and current `main`);
+- the remote PR branch remains at `ad59a92` until this resolution is pushed;
+- the stale Golden Runtime Witness expectation was corrected in `0d9c28fd...` from `CEFR A1 — progressing toward A2` to `CEFR A1`;
+- local Student Dashboard Contract after merge resolution: PASS;
+- local TypeScript gate after merge resolution: PASS, exit 0;
+- local Golden Runtime Witness: PASS on disposable PostgreSQL, with replay idempotency and `productionTouched=false`;
+- conflict resolution preserved both Louise and Gustavo assertions and retained the current-main PR #85 handoff section;
+- exact-head GitHub Actions for the post-handoff SHA remain pending/not attached;
+- Vercel remains a provider-capacity boundary for the post-handoff SHA and is not application evidence.
 
-Exact witness failure:
+The original witness failure was stale text only:
 - actual: `CEFR A1`;
 - expected: `CEFR A1 — progressing toward A2`.
 
-This is a stale witness assertion, not evidence that the approved Gustavo state is wrong.
+This was not evidence that the approved Gustavo state was wrong. The local merge resolution preserves the Louise and Gustavo dashboard assertions and keeps the current main handoff sections.
 
 Intended Gustavo learner-facing state:
 - 6 attended lessons: 18 Aug, 25 Aug, 01 Sep, 08 Sep, 15 Sep, 29 Sep 2026;
@@ -1071,11 +1075,12 @@ Intended Gustavo learner-facing state:
 - family-edition generator and generated family portfolio already updated to six lessons in PR #83.
 
 Required next action:
-1. reconcile PR #83 onto current main without dropping #84/#85;
-2. update only the stale Golden Runtime Witness expectation to `CEFR A1`;
-3. rerun Student Dashboard Contract + Golden Runtime Witness + Coordination Runtime Witness + Family Portfolio Supervision;
-4. merge only if all pass;
-5. Production-verify exact descendant SHA.
+1. finish the local merge resolution without dropping #84/#85 or either learner contract;
+2. run `git diff --check`, Student Dashboard Contract, TypeScript/build and relevant witness gates on the final merge SHA;
+3. publish only after confirming fast-forward safety;
+4. rerun exact-head CI and validate the matching Vercel Preview when provider capacity permits;
+5. merge only if all required gates pass;
+6. Production-verify the exact descendant SHA.
 
 ### 5) Gustavo checkpoint 30/09 — PHYSICAL DELETE STILL OPEN
 Explicit delete requested:
