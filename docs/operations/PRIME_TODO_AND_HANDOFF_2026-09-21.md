@@ -466,3 +466,34 @@ The connected Vercel surface available to this executor still exposes no environ
 - `PRIME_AGENT_WAKE_SECRET`.
 
 Do not bypass this by committing secrets or weakening the receiver. Once a writable Vercel configuration path is available, configure only those values, keep automatic ingest frozen, and execute the controlled event → dispatch → wake → ACK/read-back witness before advancing to Gustavo's candidate/Teacher Authority boundary.
+
+---
+
+## 2026-09-29 — Gemini transcript-tab source-integrity gate
+
+### Defect found
+Modern Gemini Meet Google Docs contain notes and transcript in separate tabs. The production Drive reconciler was concatenating every tab body, which could mix `Quick notes` / `Full notes` / `Observações` into transcript evidence.
+
+### Correct invariant
+For tabbed Gemini Meet Docs, lesson source evidence must come exclusively from exactly one tab titled `Transcript` or `Transcrição`.
+
+### Remediation in progress
+Draft PR #70, current head `fca1ec5a2ded223b7e958e240a87b4c3abd858c9`, implements:
+- transcript-tab-only extraction;
+- quarantine when the transcript tab is missing or ambiguous;
+- persisted `sourceExtractionMode`, `sourceTabId`, `sourceTabTitle`, `notesExcludedFromEvidence`;
+- backend rejection of Drive reconciliation v2 payloads that do not prove transcript-tab provenance;
+- a build-gated regression self-test using the observed English and Portuguese Gemini tab structures.
+
+### New lessons held clean
+- Louise — 2026-09-28 — transcript tab `t.5o5y0svtjbdt` — 47,222 chars — 00:57:13.
+- Gustavo — 2026-09-29 — transcript tab `t.ororffpf4ito` — 30,985 chars — 00:56:26.
+
+Neither new lesson had entered PRIME/Neon at the time of this audit.
+
+### Historical follow-up
+10 transcript rows currently exist in Production; 3 contain obvious Gemini notes markers and require provenance/backfill review (Laura, Rafael, historical Gustavo).
+
+### Gate
+Do not use the automatic Drive reconciler for the two new lessons until PR #70 exact head is validated and deployed. If a controlled manual ingestion is used earlier, only the verified transcript-tab text may be submitted, with explicit source-tab provenance.
+
