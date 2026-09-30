@@ -515,3 +515,50 @@ Do not use the automatic Drive reconciler for the two new lessons until PR #70 e
 - Commit and deploy this exact handoff write-back SHA.
 - After the new deployment is `READY`, execute exactly one harmless Production coordination witness through event creation → durable ledger → claim/lease → dispatcher → real wake receiver → ACK → Neon read-back.
 - Then prepare Gustavo's evidence packet and stop for Alexandre's explicit candidate-specific `APPROVE / EDIT / REJECT` Teacher Authority decision.
+
+---
+## 2026-09-30 — Controlled Production coordination witness PASS
+
+### Exact execution and durable proof
+- Witness deployment: `dpl_5Nb6ijMTFjdAHwMt7sV35oYiCxmx`.
+- Witness SHA: `aa6b9502bf5186991c9197cad5fb5e380e0dbb10`.
+- Production coordination event: `fea6fa70-4c90-45b0-8eeb-c71526489fbd`.
+- Creation returned `duplicate=false`, then dispatcher claimed the event and returned `status=dispatched` with one dispatch attempt.
+- Neon Production read-back target: project `holy-block-04720208`, branch `br-cold-cloud-anwml3lu`, database `neondb`.
+- Durable read-back proves `ackStatus=ACKNOWLEDGED`, `acknowledgedBy=production-witness-validator`, `acknowledgedAt` populated, cleared claim/lease fields, `dispatchAttempts=1`, `lastDispatchError=NULL`, exact event SHA equal to the witness deployment SHA, and exactly one idempotency identity with zero pending duplicates.
+- Witness payload contained only `witnessKind=production-coordination-witness-v1` and matching `expectedSha`; no learner or pedagogical payload was sent.
+- Neon confirms `pipeline_runs=24` and `pipeline_runs_since_witness=0`.
+- Post-witness Vercel runtime error aggregation: no errors in the selected window.
+- Official receiver route remains POST-only and present (`HTTP 405`, `x-matched-path: /api/coordination/wake`).
+
+### Freeze and next boundary
+- `PIPELINE_AUTOMATION_FROZEN = true` remains active.
+- Automatic Learning Machine/Drive ingestion remains OFF.
+- No Teacher Authority, learner mutation, canonicalization, or learner-facing publication occurred.
+- New source-integrity gate: reconcile PR #70 (`Fix Drive reconciliation to ingest transcript tab only`) before any automatic ingestion of Gustavo's 2026-09-29 Gemini lesson. If a manual candidate path is used before PR #70 Production release, use only the verified `Transcrição` tab and preserve explicit source-tab provenance; never use `Observações` as pedagogical evidence.
+- After legitimate evidence reconciliation, prepare Gustavo's candidate packet and stop at Alexandre's explicit candidate-specific `APPROVE / EDIT / REJECT` decision.
+
+---
+## 2026-09-30 — Formal closure: Production coordination witness COMPLETE
+
+**Status: PASS / CLOSED.** This section supersedes earlier in-progress configuration notes for the witness lane.
+
+- Exact event: `fea6fa70-4c90-45b0-8eeb-c71526489fbd`.
+- Durable state: `ACKNOWLEDGED`.
+- `acknowledgedBy=production-witness-validator`.
+- `acknowledgedAt=2026-09-30T02:43:21.780Z`.
+- Claim and lease cleared: `claimedBy=NULL`, `claimedAt=NULL`, `leaseExpiresAt=NULL`.
+- `dispatchAttempts=1`; `lastDispatchError=NULL`.
+- Idempotency read-back: exactly one durable identity and zero pending duplicates.
+- Exact witness deployment: `dpl_5Nb6ijMTFjdAHwMt7sV35oYiCxmx`, `READY`.
+- Exact witness SHA: `aa6b9502bf5186991c9197cad5fb5e380e0dbb10`.
+- Post-witness Vercel runtime error scan: no errors in the selected window.
+- Neon read-back: `pipeline_runs=24`, `pipeline_runs_since_witness=0`.
+- Witness payload contained no learner data and caused no learner PipelineRun, canonical learner mutation, Teacher Authority record, or learner-facing publication.
+- `PIPELINE_AUTOMATION_FROZEN = true` remains active; automatic ingest remains OFF.
+
+### Protected next boundary
+- Reconcile PR #70 transcript-only source integrity before any automatic Drive ingestion of Gustavo's 2026-09-29 lesson.
+- Use only the verified `Transcrição` tab with explicit source-tab provenance for any interim manual evidence.
+- Never use `Observações`, `Quick notes`, or `Full notes` as pedagogical transcript evidence.
+- After legitimate evidence reconciliation, prepare the candidate packet and stop at Alexandre's candidate-specific `APPROVE / EDIT / REJECT` decision.
