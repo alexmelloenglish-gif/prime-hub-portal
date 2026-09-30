@@ -68,7 +68,7 @@ export default async function TeacherValidationPage() {
       <header>
         <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700">
           <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-          Teacher Intelligence · Review
+          Teacher Intelligence · Validation
         </div>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Teacher decisions and exceptions</h1>
         <p className="mt-2 max-w-3xl text-slate-600">
