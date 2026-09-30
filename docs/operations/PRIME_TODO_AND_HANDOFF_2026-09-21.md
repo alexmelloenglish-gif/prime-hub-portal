@@ -991,8 +991,8 @@ Issue #58 mirror: `5904443837`.
 This handoff supersedes stale intermediate notes about PR #84 / branch `fix/teacher-review-workflow-2026-09-30`.
 
 ### 1) Current main
-- `main`: `a47658055139b8efcf86db9d36e3e11295e2bcbc`
-- message: `docs: record teacher review and status color merge`
+- `main`: `c3ee9ca80bc747f106d3ae4df05ed36fc13bec66`
+- message: `Merge PR #83: Gustavo six-lesson dashboard`
 
 ### 2) Louise — Attended Lessons layout — MERGED + PRODUCTION READY
 PR #85:
@@ -1046,19 +1046,20 @@ Deployment boundary:
 - the most recently proven Production READY SHA carrying #85 is `a8c81140...`;
 - verify a Production deployment containing `142e16c7...` or a descendant before claiming live review/audio/color behavior.
 
-### 4) Gustavo — six attended lessons — OPEN / MERGE RECONCILIATION IN PROGRESS
+### 4) Gustavo — six attended lessons — MERGED / GATES PASSED
 PR #83:
-- state: OPEN / DRAFT;
-- pre-reconciliation remote head: `ad59a92200eee93653e0c32b5ad3702fd39ec8fd`;
-- local merge-resolution commit: `1e75687bd4489243456f04b605920cf3e80cda60` (parents `ad59a92` and current `main`);
-- the remote PR branch remains at `ad59a92` until this resolution is pushed;
+- state: MERGED;
+- validated exact head: `8c309c19ee6aa1dcf9d616cde067ad4ba0d4f13d`;
+- merge SHA: `c3ee9ca80bc747f106d3ae4df05ed36fc13bec66`;
+- merged into `main` at `2026-09-30T06:32:50Z`;
 - the stale Golden Runtime Witness expectation was corrected in `0d9c28fd...` from `CEFR A1 — progressing toward A2` to `CEFR A1`;
-- local Student Dashboard Contract after merge resolution: PASS;
-- local TypeScript gate after merge resolution: PASS, exit 0;
-- local Golden Runtime Witness: PASS on disposable PostgreSQL, with replay idempotency and `productionTouched=false`;
-- conflict resolution preserved both Louise and Gustavo assertions and retained the current-main PR #85 handoff section;
-- exact-head GitHub Actions for the post-handoff SHA remain pending/not attached;
-- Vercel remains a provider-capacity boundary for the post-handoff SHA and is not application evidence.
+- exact-head GitHub Actions: all required gates PASS;
+  - Coordination Runtime Witness `36674618398`: SUCCESS;
+  - Golden Runtime Witness `36674618435`: SUCCESS;
+  - Student Dashboard Contract `36674618340`: SUCCESS;
+  - Student Family Portfolio Supervision `36674618370`: SUCCESS;
+- Vercel Preview Comments: SUCCESS, while the Vercel deployment status remained rate-limited/failed and is not application-test evidence;
+- merge conflict resolution preserved both Louise and Gustavo assertions and retained the current-main PR #85 handoff section.
 
 The original witness failure was stale text only:
 - actual: `CEFR A1`;
@@ -1074,13 +1075,15 @@ Intended Gustavo learner-facing state:
 - no additional CEFR movement claimed from 29 Sep;
 - family-edition generator and generated family portfolio already updated to six lessons in PR #83.
 
-Required next action:
-1. finish the local merge resolution without dropping #84/#85 or either learner contract;
-2. run `git diff --check`, Student Dashboard Contract, TypeScript/build and relevant witness gates on the final merge SHA;
-3. publish only after confirming fast-forward safety;
-4. rerun exact-head CI and validate the matching Vercel Preview when provider capacity permits;
-5. merge only if all required gates pass;
-6. Production-verify the exact descendant SHA.
+Completed actions:
+1. reconciled PR #83 onto current main without dropping #84/#85 or either learner contract;
+2. resolved the stale Golden Runtime Witness assertion to `CEFR A1`;
+3. passed Student Dashboard, Golden Runtime, Coordination Runtime and Family Portfolio gates on the exact head;
+4. merged PR #83 into main at `c3ee9ca...`.
+
+Remaining release boundary:
+- Production deployment/read-back for the descendant SHA is still not claimed because the Vercel deployment status was rate-limited/failed;
+- this does not reopen the completed code-review and exact-head CI tasks.
 
 ### 5) Gustavo checkpoint 30/09 — PHYSICAL DELETE STILL OPEN
 Explicit delete requested:
@@ -1104,7 +1107,7 @@ Current status:
 
 ### Next execution order
 1. Verify first Production deployment containing PR #84 merge `142e16c7...`; test Cláudio audio Range/206, Open audio and Mark as reviewed live.
-2. Reconcile/fix PR #83 stale Golden Runtime Witness; rerun all exact-head gates; merge and Production-verify Gustavo six-lesson dashboard.
+2. Production-verify the exact descendant SHA carrying merged PR #83 when Vercel deployment capacity permits.
 3. With valid Production DB access, delete only event `cmunm6w2q0000qmga9tr30zqr`, read back absence, and prove `cmumneuxc0000kmwj1ydsndvn` remains.
 4. Keep automatic ingest frozen throughout unless a separate authorized activation gate is satisfied.
 
