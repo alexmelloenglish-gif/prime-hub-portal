@@ -102,9 +102,9 @@ const FAMILY_COPY_OVERRIDES = {
     memory: 'O próximo ciclo usa temas de alto interesse, especialmente mergulho e tecnologia, para tornar respostas longas mais organizadas, precisas e independentes.',
   },
   stu_4c4da6c04ac4: {
-    focus: 'Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e perceber melhor o próprio processo de aprendizagem.',
-    change: 'Em cinco aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Também recuperou parte do vocabulário de Ciências depois de uma semana.',
-    memory: 'A trajetória mostra uso, retomada, reconstrução e autocorreção. Nem tudo precisa estar dominado de forma independente para que exista aprendizagem significativa; o próximo ciclo continua observando o que retorna sozinho e o que ainda precisa de apoio.',
+    focus: 'Usar inglês para contar experiências reais, diferenciar presente e passado, construir respostas completas, recuperar linguagem útil e consolidar did/didn’t + verbo base, percebendo melhor o próprio processo de aprendizagem.',
+    change: 'Em seis aulas, Gustavo voltou várias vezes ao inglês do passado em contextos pessoais. Em 15 de setembro, percebeu que “I don’t” não combinava com uma pergunta no passado e corrigiu para “No, I didn’t”. Em 29 de setembro, produziu respostas, perguntas e um pequeno relato no passado, corrigindo várias formas depois de uma pista; did/didn’t + verbo base continua como prioridade.',
+    memory: 'A trajetória de seis aulas mostra uso, retomada, reconstrução, recuperação e crescente percepção sobre o próprio inglês. O próximo ciclo continua observando o que retorna de forma independente, o que melhora com uma pista e o que ainda precisa de apoio.',
   },
 }
 
