@@ -547,6 +547,8 @@ export type LearnerSubmissionReviewItem =
       authorityStatus: string | null
       createdAt: string
       needsTeacherReview: boolean
+      reviewedAt: string | null
+      reviewerId: string | null
     }
   | {
       id: string
@@ -572,6 +574,28 @@ export async function listLearnerSubmissions(limit = 100): Promise<LearnerSubmis
     take: Math.min(Math.max(limit, 1), 200),
   })
 
+  const audioEvents = events.filter(
+    (event) => event.eventType === 'learner_audio_submitted' && event.aggregateType === 'learner_action_submission',
+  )
+  const reviewEvents = audioEvents.length
+    ? await prisma.pipelineEvent.findMany({
+        where: {
+          eventType: 'LearnerSubmissionTeacherReviewed',
+          pipelineRunId: { in: audioEvents.map((event) => event.pipelineRunId) },
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+    : []
+
+  const reviewBySubmission = new Map<string, (typeof reviewEvents)[number]>()
+  for (const review of reviewEvents) {
+    const payload = asRecord(review.payload)
+    const submissionEventId = asString(payload.submissionEventId)
+    if (submissionEventId && !reviewBySubmission.has(submissionEventId)) {
+      reviewBySubmission.set(submissionEventId, review)
+    }
+  }
+
   return events.flatMap((event): LearnerSubmissionReviewItem[] => {
     const payload = asRecord(event.payload)
 
@@ -579,6 +603,8 @@ export async function listLearnerSubmissions(limit = 100): Promise<LearnerSubmis
       event.eventType === 'learner_audio_submitted' &&
       event.aggregateType === 'learner_action_submission'
     ) {
+      const review = reviewBySubmission.get(event.id)
+      const reviewPayload = review ? asRecord(review.payload) : {}
       return [{
         id: event.id,
         kind: 'audio',
@@ -592,7 +618,10 @@ export async function listLearnerSubmissions(limit = 100): Promise<LearnerSubmis
             : null,
         authorityStatus: asString(payload.authorityStatus),
         createdAt: event.createdAt.toISOString(),
-        needsTeacherReview: payload.authorityStatus === 'learner_submission_pending_teacher_review',
+        needsTeacherReview:
+          payload.authorityStatus === 'learner_submission_pending_teacher_review' && !review,
+        reviewedAt: review?.createdAt.toISOString() || null,
+        reviewerId: asString(reviewPayload.reviewerId),
       }]
     }
 
@@ -621,6 +650,57 @@ export async function listLearnerSubmissions(limit = 100): Promise<LearnerSubmis
 
     return []
   })
+}
+
+export async function recordLearnerSubmissionReview(input: {
+  submissionEventId: string
+  reviewerId: string
+  reviewerRole: string
+}) {
+  const prisma = getPrismaClient()
+  const submission = await prisma.pipelineEvent.findUnique({
+    where: { id: input.submissionEventId },
+  })
+
+  if (
+    !submission ||
+    submission.eventType !== 'learner_audio_submitted' ||
+    submission.aggregateType !== 'learner_action_submission'
+  ) {
+    throw new Error('Learner audio submission not found')
+  }
+
+  const existing = await prisma.pipelineEvent.findFirst({
+    where: {
+      pipelineRunId: submission.pipelineRunId,
+      aggregateType: submission.aggregateType,
+      aggregateId: submission.aggregateId,
+      eventType: 'LearnerSubmissionTeacherReviewed',
+    },
+  })
+  if (existing) return { eventId: existing.id, alreadyReviewed: true }
+
+  const review = await prisma.pipelineEvent.create({
+    data: {
+      pipelineRunId: submission.pipelineRunId,
+      eventType: 'LearnerSubmissionTeacherReviewed',
+      aggregateType: submission.aggregateType,
+      aggregateId: submission.aggregateId,
+      payload: {
+        submissionEventId: submission.id,
+        reviewerId: input.reviewerId,
+        reviewerRole: input.reviewerRole,
+        decision: 'reviewed',
+        authorityStatus: 'learner_submission_reviewed_not_validated_evidence',
+        canonicalEvidenceCreated: false,
+        teacherAuthorityConsumed: false,
+        learningStateChanged: false,
+      },
+    },
+    select: { id: true },
+  })
+
+  return { eventId: review.id, alreadyReviewed: false }
 }
 
 export async function listPipelineAuditEvents(limit = 150) {
