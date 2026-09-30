@@ -313,11 +313,22 @@ delete process.env.FIREBASE_PROJECT_ID
 delete process.env.FIREBASE_CLIENT_EMAIL
 delete process.env.FIREBASE_PRIVATE_KEY
 
-const [{ executeSharedLearningMachine }, { reviewPipelineRun }, { getPrismaClient }, { mergeCanonicalLearningIntelligenceRows }] = await Promise.all([
+const [
+  { executeSharedLearningMachine },
+  { getPrismaClient },
+  { mergeCanonicalLearningIntelligenceRows },
+  { runG2RuntimeProof },
+  { runG3RuntimeProof },
+  { runG4RuntimeProof },
+  { runG5RuntimeProof },
+] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
-  import('../lib/pipeline/run.ts'),
   import('../lib/prisma.ts'),
   import('../lib/canonical-dashboard-bridge.ts'),
+  import('../lib/g2-runtime-proof.ts'),
+  import('../lib/g3-runtime-proof.ts'),
+  import('../lib/g4-runtime-proof.ts'),
+  import('../lib/g5-runtime-proof.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -367,8 +378,8 @@ const first = await executeSharedLearningMachine({
 })
 
 assert.equal(first.duplicate, false)
-assert.equal(first.status, 'awaiting_publication_review')
-assert.ok(first.reviewTaskId, 'Shared machine must create a publication Teacher Authority task')
+assert.equal(first.status, 'awaiting_teacher_authority')
+assert.ok(first.validationTaskId, 'Shared machine must create an official ValidationTask')
 
 const runBeforeApproval = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
@@ -377,48 +388,58 @@ const runBeforeApproval = await prisma.pipelineRun.findUnique({
 assert.ok(runBeforeApproval)
 assert.equal(runBeforeApproval.executionMode, 'shared_learning_machine')
 assert.equal(runBeforeApproval.resumePoint, 'awaiting_teacher_authority')
-assert.equal(runBeforeApproval.reviewTasks.length, 1)
+assert.equal(runBeforeApproval.reviewTasks.length, 0, 'Shared runner must not expose a duplicate ReviewTask authority surface')
 
-const approval = await reviewPipelineRun({
-  pipelineRunId: first.pipelineRunId,
-  decision: 'approved',
-  reason: 'Golden runtime witness: explicit isolated Teacher Authority approval.',
-  reviewerId: teacher.id,
+const authorityTaskBeforeApproval = await prisma.validationTask.findUnique({
+  where: { id: first.validationTaskId },
 })
-assert.equal(approval.status, 'completed')
+assert.ok(authorityTaskBeforeApproval)
+assert.equal(authorityTaskBeforeApproval.type, 'canonical_learning_record_authority')
+assert.equal(authorityTaskBeforeApproval.entityType, 'PipelineRun')
+assert.equal(authorityTaskBeforeApproval.entityId, first.pipelineRunId)
+assert.equal(authorityTaskBeforeApproval.status, 'pending')
+assert.ok(authorityTaskBeforeApproval.suggestedValue)
+assert.ok(authorityTaskBeforeApproval.evidence && typeof authorityTaskBeforeApproval.evidence === 'object')
+assert.ok(authorityTaskBeforeApproval.evidence.authorityPayloadHash)
+
+const reviewedAt = new Date(FIXED_TIME)
+const authorityTask = await prisma.validationTask.update({
+  where: { id: authorityTaskBeforeApproval.id },
+  data: {
+    status: 'approved',
+    decision: 'approved',
+    reviewerId: teacher.id,
+    reviewedAt,
+    reason: 'Golden runtime witness: explicit isolated Teacher Intelligence authority approval.',
+  },
+})
+assert.equal(authorityTask.reviewerId, teacher.id)
+assert.equal(authorityTask.status, 'approved')
+assert.equal(authorityTask.decision, 'approved')
+assert.ok(authorityTask.reviewedAt)
+
+const g2 = await runG2RuntimeProof(authorityTask.id)
+assert.equal(g2.replay.idempotentReplay, true)
+assert.equal(g2.atomicity.noPartialState, true)
+
+const g3 = await runG3RuntimeProof(authorityTask.id)
+assert.equal(g3.status, 'PASS')
+
+const g4 = await runG4RuntimeProof(authorityTask.id)
+assert.equal(g4.projectionStatus, 'VERIFIED')
+
+const g5 = await runG5RuntimeProof(authorityTask.id)
+assert.equal(g5.projectionStatus, 'VERIFIED')
 
 const run = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
-  include: {
-    reviewTasks: true,
-    transcript: true,
-  },
+  include: { reviewTasks: true, transcript: true },
 })
 assert.ok(run)
-assert.equal(run.status, 'completed')
-assert.equal(run.authorityStatus, 'teacher_authorized')
-assert.ok(run.completedAt)
-assert.ok(run.finalManifest)
-
-const authorityTask = run.reviewTasks.find((item) => item.id === first.reviewTaskId)
-assert.ok(authorityTask)
-assert.equal(authorityTask.decision, 'approved')
-assert.equal(authorityTask.stage, 'completed')
-assert.equal(authorityTask.reviewerId, teacher.id)
-assert.ok(authorityTask.reviewedAt)
-
-const authorityEvent = await prisma.pipelineEvent.findUnique({
-  where: {
-    pipelineRunId_eventType_aggregateId: {
-      pipelineRunId: run.id,
-      eventType: 'PublicationReviewApproved',
-      aggregateId: authorityTask.id,
-    },
-  },
-})
-assert.ok(authorityEvent)
-assert.ok(authorityEvent.payload && typeof authorityEvent.payload === 'object')
-assert.ok(authorityEvent.payload.canonicalAuthorityPayloadHash)
+assert.equal(run.status, 'awaiting_teacher_authority')
+assert.equal(run.authorityStatus, 'non_authoritative')
+assert.equal(run.completedAt, null)
+assert.equal(run.reviewTasks.length, 0)
 
 const canonicalRecords = await prisma.canonicalLearningRecord.findMany({
   where: { pipelineRunId: run.id },
@@ -426,6 +447,7 @@ const canonicalRecords = await prisma.canonicalLearningRecord.findMany({
 })
 assert.equal(canonicalRecords.length, 1)
 const canonical = canonicalRecords[0]
+assert.equal(canonical.teacherDecisionId, authorityTask.id)
 
 const g3Rows = await prisma.canonicalLearningRecordVerification.findMany({
   where: { expectedCanonicalRecordId: canonical.canonicalRecordId },
@@ -449,25 +471,13 @@ const classReports = await prisma.classReportProjection.findMany({
   where: { pipelineRunId: run.id },
 })
 assert.equal(classReports.length, 1)
-assert.equal(classReports[0].documentStatus, 'published')
-assert.equal(classReports[0].implementationStatus, 'proven')
+assert.equal(classReports[0].documentStatus, 'draft')
+assert.equal(classReports[0].implementationStatus, 'not_proven')
 
-const portfolio = await prisma.portfolioProjection.findUnique({
-  where: {
-    studentEmail_projectionKey: {
-      studentEmail: STUDENT_EMAIL,
-      projectionKey: 'student-dashboard',
-    },
-  },
-})
-assert.ok(portfolio)
-
-const publicationEvent = await prisma.pipelineEvent.findFirst({
+const publicationEvents = await prisma.pipelineEvent.findMany({
   where: { pipelineRunId: run.id, eventType: 'ClassReportProjectionPublished' },
-  orderBy: { createdAt: 'asc' },
 })
-assert.ok(publicationEvent)
-assert.ok(publicationEvent.createdAt.getTime() <= run.completedAt.getTime())
+assert.equal(publicationEvents.length, 0, 'Canonical authority must not auto-publish the legacy Class Report')
 
 const baseStudent = JSON.parse(
   fs.readFileSync(
@@ -582,14 +592,14 @@ const evidence = {
     status: run.status,
     resumePoint: run.resumePoint,
     authorityStatus: run.authorityStatus,
-    completedAt: run.completedAt.toISOString(),
+    completedAt: run.completedAt,
     finalManifest: run.finalManifest,
   },
   teacherAuthority: {
-    reviewTaskId: authorityTask.id,
+    validationTaskId: authorityTask.id,
     reviewerId: authorityTask.reviewerId,
     reviewedAt: authorityTask.reviewedAt?.toISOString(),
-    approvalHash: authorityEvent.payload.canonicalAuthorityPayloadHash,
+    approvalHash: authorityTask.evidence.authorityPayloadHash,
   },
   canonical: {
     canonicalRecordId: canonical.canonicalRecordId,
@@ -602,8 +612,9 @@ const evidence = {
   learnerProducts: {
     classReportId: classReports[0].reportId,
     classReportStatus: classReports[0].documentStatus,
-    portfolioProjectionVersion: portfolio.version,
-    publicationBeforeCompletion: publicationEvent.createdAt.getTime() <= run.completedAt.getTime(),
+    canonicalPortfolioProjectionId: g4Rows[0].projectionId,
+    canonicalLearningIntelligenceProjectionId: g5Rows[0].projectionId,
+    legacyPublicationCount: publicationEvents.length,
   },
   dashboard: {
     currentLevel: dashboardStudent.currentLevel,
