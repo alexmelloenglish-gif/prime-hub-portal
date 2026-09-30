@@ -108,7 +108,6 @@ export default async function TeacherLearnerDecisionPage({
       : null
   const latestSourceDocumentId = latestSourceDocument ? asText(latestSourceDocument.sourceRef) : null
 
-  const legacySourceLessons = legacyPackage?.sourceLessons || []
   const repositoryReports = repositoryHistory?.classReports || []
   const repositoryLessonDates = new Set(
     repositoryReports.map((report) => normalizedDateKey(report.date)).filter(Boolean),
