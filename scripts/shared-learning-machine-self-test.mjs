@@ -55,7 +55,18 @@ assert.match(history, /resumePoint/)
 
 assert.match(
   pipeline,
-  /Boolean\(executionOptions\) \|\| shouldRequirePublicationReview\(coaching\)/,
+  /preparePipelineCanonicalAuthorityValidationTask\(runId\)/,
+  'Shared runner must materialize the official Teacher Intelligence ValidationTask',
+)
+assert.match(
+  pipeline,
+  /status: 'awaiting_teacher_authority'/,
+  'Shared runner must stop at the explicit Teacher Authority boundary',
+)
+assert.match(
+  pipeline,
+  /validationTaskId: validationTask\.id/,
+  'Shared-run checkpoint must preserve the official ValidationTask identity',
 )
 assert.match(pipeline, /canonicalAuthorityPayloadHash/)
 assert.match(pipeline, /executeCanonicalContinuation/)
@@ -76,6 +87,11 @@ assert.match(canonical, /projectCanonicalLearningIntelligence/)
 assert.match(canonical, /persistLearningMachineManifest/)
 assert.match(canonical, /verified\.status !== 'PASS'/)
 assert.match(canonical, /projectionStatus !== 'VERIFIED'/)
+assert.match(canonical, /preparePipelineCanonicalAuthorityValidationTask/)
+assert.match(canonical, /entityType: 'PipelineRun'/)
+assert.match(canonical, /authorityPayloadHash/)
+assert.match(canonical, /suggestedValue: jsonValue\(draft\)/)
+assert.match(canonical, /TeacherAuthorityValidationRequested/)
 assert.match(canonical, /assertPersistedPublicationAuthority/)
 assert.match(canonical, /communicationProjection/)
 assert.match(canonical, /canonicalResumeStagesFrom\(run\.resumePoint\)/)
