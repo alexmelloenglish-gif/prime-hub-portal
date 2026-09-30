@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import studentRegistry from '@/data/students/student-core-registry.json'
 import { getPrismaClient } from '@/lib/prisma'
+import { getStudentData } from '@/lib/student-data'
 import { getTeacherDecisionPackageByStudent } from '@/lib/teacher-decision-packages'
 
 type JsonRecord = Record<string, unknown>
@@ -34,6 +35,14 @@ function asTextArray(value: unknown) {
 function canonicalDate(scopeKey: string | null | undefined, fallback: Date) {
   const match = scopeKey?.match(/(20\d{2}-\d{2}-\d{2})/)
   return match?.[1] || fallback.toISOString().slice(0, 10)
+}
+
+function normalizedDateKey(value: string | null | undefined) {
+  if (!value) return null
+  const direct = value.match(/(20\d{2})-(\d{2})-(\d{2})/)
+  if (direct) return `${direct[1]}-${direct[2]}-${direct[3]}`
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? value.trim().toLowerCase() : parsed.toISOString().slice(0, 10)
 }
 
 export default async function TeacherLearnerDecisionPage({
@@ -63,6 +72,8 @@ export default async function TeacherLearnerDecisionPage({
     legacyPackage?.studentEmail ||
     latestCanonical?.studentEmail ||
     ''
+
+  const repositoryHistory = studentEmail ? await getStudentData(studentEmail) : null
 
   const canonicalPayload = asRecord(latestCanonical?.pedagogicalPayload)
   const canonicalState = asRecord(canonicalPayload.learnerStateChange)
@@ -97,12 +108,27 @@ export default async function TeacherLearnerDecisionPage({
       : null
   const latestSourceDocumentId = latestSourceDocument ? asText(latestSourceDocument.sourceRef) : null
 
-  const historicalLessons = legacyPackage?.sourceLessons || []
+  const repositoryReports = repositoryHistory?.classReports || []
+  const repositoryLessonDates = new Set(
+    repositoryReports.map((report) => normalizedDateKey(report.date)).filter(Boolean),
+  )
+  const latestCanonicalDateKey = normalizedDateKey(canonicalLessonDate)
   const latestLessonAlreadyHistorical = Boolean(
-    latestSourceDocumentId && historicalLessons.some((lesson) => lesson.sourceDocumentId === latestSourceDocumentId),
+    latestCanonicalDateKey && repositoryLessonDates.has(latestCanonicalDateKey),
   )
   const totalReviewedLessons =
-    historicalLessons.length + (latestCanonical && latestSourceDocumentId && !latestLessonAlreadyHistorical ? 1 : 0)
+    repositoryReports.length + (latestCanonical && latestSourceDocumentId && !latestLessonAlreadyHistorical ? 1 : 0)
+
+  const legacyV2ReportDates = new Set(
+    (legacyPackage?.classReportsV2 || []).map((report) => normalizedDateKey(report.date)).filter(Boolean),
+  )
+  const supplementalRepositoryReports = repositoryReports.filter((report) => {
+    const key = normalizedDateKey(report.date)
+    if (!key) return false
+    if (legacyV2ReportDates.has(key)) return false
+    if (latestCanonicalDateKey && key === latestCanonicalDateKey) return false
+    return true
+  })
 
   return (
     <section className="space-y-5">
@@ -198,18 +224,23 @@ export default async function TeacherLearnerDecisionPage({
         <p className="mt-3 max-w-4xl text-sm leading-7 text-[#526783]">The system can organize lesson evidence and suggest patterns, while the teacher remains responsible for meaningful changes to learning focus, priorities and next actions.</p>
       </section>
 
-      {(historicalLessons.length || latestSourceDocumentId) ? (
+      {(repositoryReports.length || latestSourceDocumentId) ? (
         <section className="space-y-3">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7184a1]">Lesson evidence</p>
             <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">{totalReviewedLessons} teacher-reviewed lesson source{totalReviewedLessons === 1 ? '' : 's'}</h2>
+            <p className="mt-2 max-w-3xl text-xs leading-5 text-[#7184a1]">
+              Historical lessons come from the preserved teacher-authorized longitudinal portfolio. The latest approved CLR is added separately when it represents a newer lesson.
+            </p>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            {historicalLessons.map((lesson) => (
-              <article key={lesson.sourceDocumentId} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <p className="text-sm font-bold text-[#0a235c]">{lesson.date}</p>
-                <p className="mt-2 text-xs leading-5 text-[#60718d]">Original lesson source reviewed</p>
-                <span className="mt-3 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-800">source reviewed</span>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+            {repositoryReports.map((report, index) => (
+              <article key={`${report.date}-${index}`} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <p className="text-sm font-bold text-[#0a235c]">{report.date}</p>
+                <p className="mt-2 text-xs leading-5 text-[#60718d]">{report.summary}</p>
+                <span className="mt-3 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-emerald-800">
+                  preserved teacher history
+                </span>
               </article>
             ))}
             {latestCanonical && latestSourceDocumentId && !latestLessonAlreadyHistorical ? (
@@ -223,11 +254,11 @@ export default async function TeacherLearnerDecisionPage({
         </section>
       ) : null}
 
-      {legacyPackage?.classReportsV2.length ? (
+      {(legacyPackage?.classReportsV2.length || supplementalRepositoryReports.length) ? (
         <section className="space-y-4">
           <div className="flex items-center gap-2"><FileText className="h-5 w-5 text-indigo-600" aria-hidden="true" /><div><p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">Historical lesson reports</p><h2 className="text-2xl font-bold text-[#0a235c]">Evidence → Pattern → Teacher interpretation → Next check</h2></div></div>
           <div className="space-y-4">
-            {legacyPackage.classReportsV2.map((report) => (
+            {(legacyPackage?.classReportsV2 || []).map((report) => (
               <article key={report.date} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600">{report.date}</p><h3 className="mt-1 text-xl font-bold text-[#0a235c]">{report.title}</h3></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">Teacher reviewed</span></div>
                 <div className="mt-5 grid gap-4 xl:grid-cols-2">
@@ -236,6 +267,30 @@ export default async function TeacherLearnerDecisionPage({
                   <div className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4"><p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-700">Teacher interpretation</p><p className="mt-3 text-sm leading-6 text-slate-700">{report.interpretation}</p></div>
                   <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4"><p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-700">Limits</p><p className="mt-3 text-sm leading-6 text-slate-700">{report.boundary}</p><p className="mt-4 border-t border-amber-200 pt-3 text-xs leading-5 text-slate-600"><strong>Check next:</strong> {report.nextVerification}</p></div>
                 </div>
+              </article>
+            ))}
+            {supplementalRepositoryReports.map((report) => (
+              <article key={`portfolio-${report.date}`} className="rounded-[24px] border border-emerald-200 bg-emerald-50/30 p-5 shadow-sm">
+                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">{report.date}</p>
+                    <h3 className="mt-1 text-xl font-bold text-[#0a235c]">Preserved longitudinal lesson</h3>
+                  </div>
+                  <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-800">Teacher-validated portfolio</span>
+                </div>
+                <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                  <div className="rounded-2xl border border-sky-100 bg-white p-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">Lesson summary</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-700">{report.summary}</p>
+                  </div>
+                  <div className="rounded-2xl border border-indigo-100 bg-white p-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-700">Focus preserved</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-700">{report.grammarFocus}</p>
+                  </div>
+                </div>
+                <p className="mt-4 text-xs leading-5 text-[#7184a1]">
+                  This lesson is preserved in the authorized longitudinal portfolio. Its original blind-run runtime record is not present in the current Neon database, so the UI does not fabricate a PipelineRun ID.
+                </p>
               </article>
             ))}
           </div>
