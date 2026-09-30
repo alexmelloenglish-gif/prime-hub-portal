@@ -439,3 +439,28 @@ No secret may be committed to Git as a workaround.
 7. stop at the candidate-specific Teacher Authority decision for Alexandre's explicit approve/edit/reject.
 
 Teacher Authority remains a separate human boundary and is not implied by this infrastructure work.
+
+
+### Release/read-back update — PR #69
+- PR #69 exact code-bearing head `49a8a279a5bcb280dafaff099a7d1f5bb17539e2` passed all four relevant pull-request gates:
+  - Student Dashboard Contract — SUCCESS (run `36659193849`);
+  - Golden Runtime Witness — SUCCESS (run `36659193775`);
+  - Coordination Runtime Witness — SUCCESS (run `36659193800`);
+  - Agent Coordination Bus — SUCCESS (run `36659193776`), including exact-SHA checkout, Phase 1 self-test, Phase 2 active self-test with the new Production witness guards, Prisma validation and TypeScript.
+- final PR head `f4ddc6e8a9292269577f947941f7ca1b89d98018` differs only by this canonical handoff write-back and produced Vercel Preview `dpl_4H4asg5axL7Y6wFPJdqoFaDKyWsS`: READY.
+- PR #69 merged successfully.
+- merge SHA: `71e11428e7cbb5110fc5fc8d6af973eb9136596c`.
+- Vercel created Production deployment `dpl_3Qjme9s63ArNmXBQoKtBAKLJPYzK` for that exact merge SHA; the deployment was still BUILDING at the moment this write-back was committed and requires final READY read-back.
+- `PIPELINE_AUTOMATION_FROZEN = true` remains unchanged.
+- no coordination secret was committed or configured through Git.
+- no Teacher Authority or learner canonical mutation occurred.
+
+### Remaining blocker after receiver implementation
+The repository/runtime wake-target **implementation gap is closed**: a guarded receiver now exists in `main`. The remaining gap is configuration authority/capability, not code.
+
+The connected Vercel surface available to this executor still exposes no environment-variable write action, and this executor has no authenticated Vercel CLI/token. Therefore the three Production coordination values remain unconfigured from this runtime:
+- `PRIME_AGENT_BUS_SECRET`;
+- `PRIME_AGENT_WAKE_URLS_JSON={"validator":"https://www.primedigitalhub.com.br/api/coordination/wake"}`;
+- `PRIME_AGENT_WAKE_SECRET`.
+
+Do not bypass this by committing secrets or weakening the receiver. Once a writable Vercel configuration path is available, configure only those values, keep automatic ingest frozen, and execute the controlled event → dispatch → wake → ACK/read-back witness before advancing to Gustavo's candidate/Teacher Authority boundary.
