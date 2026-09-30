@@ -1050,10 +1050,13 @@ Deployment boundary:
 PR #83:
 - state: OPEN / DRAFT;
 - pre-reconciliation remote head: `ad59a92200eee93653e0c32b5ad3702fd39ec8fd`;
-- local merge of current `main` into the PR branch is in progress; no final merge-resolution SHA exists yet;
+- local merge-resolution commit: `1e75687bd4489243456f04b605920cf3e80cda60` (parents `ad59a92` and current `main`);
+- the remote PR branch remains at `ad59a92` until this resolution is pushed;
 - the stale Golden Runtime Witness expectation was corrected in `0d9c28fd...` from `CEFR A1 — progressing toward A2` to `CEFR A1`;
-- local Student Dashboard Contract: PASS;
+- local Student Dashboard Contract after merge resolution: PASS;
+- local TypeScript gate after merge resolution: PASS, exit 0;
 - local Golden Runtime Witness: PASS on disposable PostgreSQL, with replay idempotency and `productionTouched=false`;
+- conflict resolution preserved both Louise and Gustavo assertions and retained the current-main PR #85 handoff section;
 - exact-head GitHub Actions for the post-handoff SHA remain pending/not attached;
 - Vercel remains a provider-capacity boundary for the post-handoff SHA and is not application evidence.
 
