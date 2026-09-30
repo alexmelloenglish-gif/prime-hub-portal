@@ -284,7 +284,14 @@ function isTranscriptTabTitle(title: string | undefined): boolean {
   return normalized === 'transcript' || normalized === 'transcricao'
 }
 
-export function extractGoogleDocsTranscript(document: unknown): string {
+export type GoogleDocsTranscriptExtraction = {
+  text: string
+  extractionMode: 'google_docs_transcript_tab_v1' | 'google_docs_legacy_single_body_v1'
+  sourceTabId: string | null
+  sourceTabTitle: string | null
+}
+
+export function extractGoogleDocsTranscript(document: unknown): GoogleDocsTranscriptExtraction {
   if (!document || typeof document !== 'object' || Array.isArray(document)) return ''
   const root = document as {
     body?: { content?: GoogleDocsStructuralElement[] }
@@ -305,13 +312,25 @@ export function extractGoogleDocsTranscript(document: unknown): string {
       )
     }
 
-    const transcript = extractDocsElements(transcriptTabs[0].documentTab?.body?.content)
+    const transcriptTab = transcriptTabs[0]
+    const transcript = extractDocsElements(transcriptTab.documentTab?.body?.content)
     if (!transcript.trim()) throw new Error('drive_transcript_tab_empty')
-    return transcript
+    return {
+      text: transcript,
+      extractionMode: 'google_docs_transcript_tab_v1',
+      sourceTabId: transcriptTab.tabProperties?.tabId || transcriptTab.tabId || null,
+      sourceTabTitle: transcriptTab.tabProperties?.title || transcriptTab.title || null,
+    }
   }
 
-  // Legacy single-body Google Docs remain supported.
-  return extractDocsElements(root.body?.content)
+  // Legacy single-body Google Docs remain supported, but are explicitly marked
+  // so the backend can distinguish them from modern tabbed Meet documents.
+  return {
+    text: extractDocsElements(root.body?.content),
+    extractionMode: 'google_docs_legacy_single_body_v1',
+    sourceTabId: null,
+    sourceTabTitle: null,
+  }
 }
 
 async function moveToProcessed(auth: ReturnType<typeof getDriveAuth>, file: DriveFile): Promise<void> {
@@ -335,24 +354,34 @@ async function moveToProcessed(auth: ReturnType<typeof getDriveAuth>, file: Driv
   if (!response.ok) throw new Error(`drive_move_processed_http_${response.status}`)
 }
 
-async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: string): Promise<string> {
+async function exportGoogleDoc(auth: ReturnType<typeof getDriveAuth>, fileId: string): Promise<GoogleDocsTranscriptExtraction> {
   const authHeaders = await auth.getRequestHeaders()
   const headers = new Headers(authHeaders)
   const docsUrl = `${DOCS_API}/documents/${encodeURIComponent(fileId)}?includeTabsContent=true`
   const docsResponse = await fetch(docsUrl, { headers, cache: 'no-store' })
   if (docsResponse.ok) {
     const document = await docsResponse.json()
-    const transcriptText = extractGoogleDocsTranscript(document)
-    if (transcriptText.trim()) return transcriptText
+    const extraction = extractGoogleDocsTranscript(document)
+    if (extraction.text.trim()) return extraction
   }
 
   const exportUrl = `${DRIVE_API}/files/${encodeURIComponent(fileId)}/export?mimeType=text%2Fplain`
   const exportResponse = await fetch(exportUrl, { headers, cache: 'no-store' })
   if (!exportResponse.ok) throw new Error(`drive_export_http_${exportResponse.status}`)
-  return exportResponse.text()
+  return {
+    text: await exportResponse.text(),
+    extractionMode: 'google_docs_legacy_single_body_v1',
+    sourceTabId: null,
+    sourceTabTitle: null,
+  }
 }
 
-function buildPayload(file: DriveFile, transcript: string, triage: TriageResult) {
+function buildPayload(
+  file: DriveFile,
+  transcript: string,
+  triage: TriageResult,
+  extraction: GoogleDocsTranscriptExtraction,
+) {
   if (!triage.student) throw new Error('identity_not_resolved')
   const student = triage.student
   const sourceHash = sha256(transcript)
@@ -386,7 +415,11 @@ function buildPayload(file: DriveFile, transcript: string, triage: TriageResult)
       sourceHash,
       driveModifiedTime: file.modifiedTime || null,
       driveCreatedTime: file.createdTime || null,
-      ingestionMode: 'drive-reconciliation-cron',
+      ingestionMode: 'drive-reconciliation-cron-v2',
+      sourceExtractionMode: extraction.extractionMode,
+      sourceTabId: extraction.sourceTabId,
+      sourceTabTitle: extraction.sourceTabTitle,
+      notesExcludedFromEvidence: extraction.extractionMode === 'google_docs_transcript_tab_v1',
       triageStatus: triage.status,
       identityVerified: true,
       identityMatches: triage.identityMatches,
@@ -428,15 +461,16 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
     if (result.sourceReads >= MAX_SOURCE_READS_PER_RUN) break
     result.sourceReads += 1
 
-    let transcript: string
+    let extraction: GoogleDocsTranscriptExtraction
     try {
-      transcript = await exportGoogleDoc(auth, file.id)
+      extraction = await exportGoogleDoc(auth, file.id)
     } catch (error) {
       result.quarantined += 1
       console.warn(JSON.stringify({ event: 'drive_source_read_failed', fileRef: safeFileRef(file.id), error: sanitizeError(error) }))
       continue
     }
 
+    const transcript = extraction.text
     const triage = classifyTranscript(file, transcript)
     if (triage.status !== 'usable_transcript') {
       result.quarantined += 1
@@ -444,7 +478,7 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
       continue
     }
 
-    const payload = buildPayload(file, transcript, triage)
+    const payload = buildPayload(file, transcript, triage, extraction)
     const ingestSecret = process.env.PRIME_PIPELINE_INGEST_SECRET
     if (!ingestSecret) throw new Error('ingest_secret_not_configured')
 
