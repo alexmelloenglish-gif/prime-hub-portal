@@ -44,6 +44,10 @@ export function Header({ portalHref }: HeaderProps) {
             )}
             aria-label="Acessar Portal do aluno"
           >
+            <BrandLogo
+              variant="mark"
+              className="mr-1.5 h-5 w-5 rounded-full bg-white p-[1px]"
+            />
             <span className="sm:hidden">Portal</span>
             <span className="hidden sm:inline">Portal do aluno</span>
           </Link>
