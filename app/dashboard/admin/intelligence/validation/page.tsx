@@ -55,7 +55,7 @@ export default async function TeacherValidationPage() {
     if (!latestCanonicalByStudent.has(record.studentId)) latestCanonicalByStudent.set(record.studentId, record)
   }
   const reviewedLearners = [...latestCanonicalByStudent.values()].filter(
-    (record) => !record.studentEmail.toLowerCase().endsWith('@invalid.test'),
+    (record) => !record.studentEmail?.toLowerCase().endsWith('@invalid.test'),
   )
 
   return (
