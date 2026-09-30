@@ -23,8 +23,14 @@ export default async function TeacherIntelligenceLayout({ children }: { children
               <BrainCircuit className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#6073a2]">Pedagogical command center</p>
-              <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-[#0a235c] md:text-4xl">Teacher Intelligence</h1>
+              <Link
+                href="/dashboard/admin/intelligence"
+                className="group inline-block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                aria-label="Open Teacher Intelligence command center"
+              >
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#6073a2] group-hover:text-indigo-700">Pedagogical command center</p>
+                <h1 className="mt-1 text-3xl font-bold tracking-[-0.03em] text-[#0a235c] group-hover:text-[#263c86] md:text-4xl">Teacher Intelligence</h1>
+              </Link>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-[#49617f] md:text-base">
                 A teacher-first workspace for reviewing learners, lesson evidence and the next teaching priorities.
               </p>
