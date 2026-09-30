@@ -41,13 +41,13 @@ export default async function TeacherEvidenceReviewPage() {
       <section aria-labelledby="learner-submissions-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Learner submissions</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-prime-cream/75">Learner submissions</p>
             <h3 id="learner-submissions-heading" className="mt-1 text-lg font-semibold text-white">Audio missions requiring review</h3>
-            <p className="mt-1 max-w-3xl text-xs leading-5 text-prime-cream/45">
+            <p className="mt-1 max-w-3xl text-xs leading-5 text-prime-cream/75">
               Learner audio can be listened to and marked as reviewed here. Self-perception check-ins are not review tasks and remain outside this workspace.
             </p>
           </div>
-          <span className="text-xs text-prime-cream/45">
+          <span className="text-xs font-medium text-prime-cream/75">
             {learnerSubmissions.length} audio submission{learnerSubmissions.length === 1 ? '' : 's'} · {learnerSubmissionsPending} awaiting review
           </span>
         </div>
@@ -58,11 +58,11 @@ export default async function TeacherEvidenceReviewPage() {
               <article id={`submission-${submission.id}`} key={submission.id} className="glass-card scroll-mt-6 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Audio mission</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-prime-cream/75">Audio mission</p>
                     <h4 className="mt-1 text-lg font-semibold text-white">
                       {submission.studentEmail || submission.studentId || 'Learner submission'}
                     </h4>
-                    <p className="mt-1 text-xs text-prime-cream/45">
+                    <p className="mt-1 text-xs text-prime-cream/70">
                       {submission.actionId || 'Audio response'} · {submission.durationSeconds ?? '—'}s
                     </p>
                   </div>
@@ -91,7 +91,7 @@ export default async function TeacherEvidenceReviewPage() {
                   </a>
                 </div>
 
-                <p className="mt-3 text-xs leading-5 text-prime-cream/45">
+                <p className="mt-3 text-xs leading-5 text-prime-cream/75">
                   Listening does not promote this response to teacher-confirmed evidence.
                 </p>
 
@@ -116,7 +116,7 @@ export default async function TeacherEvidenceReviewPage() {
                   </div>
                 )}
 
-                <p className="mt-4 text-[11px] text-prime-cream/35">
+                <p className="mt-4 text-[11px] text-prime-cream/65">
                   Submitted {new Date(submission.createdAt).toLocaleString('en-GB')} · event {submission.id}
                 </p>
               </article>
@@ -132,10 +132,10 @@ export default async function TeacherEvidenceReviewPage() {
       <section aria-labelledby="pipeline-review-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">System checks</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-prime-cream/75">System checks</p>
             <h3 id="pipeline-review-heading" className="mt-1 text-lg font-semibold text-white">Access and publication checks</h3>
           </div>
-          <span className="text-xs text-prime-cream/45">{pipelineTasks.length} pending</span>
+          <span className="text-xs font-medium text-prime-cream/75">{pipelineTasks.length} pending</span>
         </div>
         <ReviewQueueActions initialTasks={pipelineTasks} />
       </section>
@@ -143,10 +143,10 @@ export default async function TeacherEvidenceReviewPage() {
       <section aria-labelledby="evidence-review-heading" className="space-y-3">
         <div className="flex flex-wrap items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-xs uppercase tracking-[0.16em] text-prime-cream/40">Lesson evidence</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-prime-cream/75">Lesson evidence</p>
             <h3 id="evidence-review-heading" className="mt-1 text-lg font-semibold text-white">Evidence for teacher review</h3>
           </div>
-          <span className="text-xs text-prime-cream/45">{items.length} pending</span>
+          <span className="text-xs font-medium text-prime-cream/75">{items.length} pending</span>
         </div>
 
         {items.length ? (
