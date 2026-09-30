@@ -148,41 +148,61 @@ export async function listTeacherLessons(limit = 50, studentEmail?: string): Pro
   for (const signal of signals) signalCount.set(signal.pipelineRunId, (signalCount.get(signal.pipelineRunId) || 0) + 1)
   for (const insight of insights) insightCount.set(insight.pipelineRunId, (insightCount.get(insight.pipelineRunId) || 0) + 1)
 
-  return runs.map((run) => {
-    const evidence = run.transcript?.evidence || []
-    const evidenceNeedsReview = evidence.filter((item) => item.requiresReview).length
-    const report = reportByRun.get(run.id)
-    const pendingReview = run.reviewTasks.find((task) => !task.decision)
-    const aiProven = hasValidGeminiProvenance(run.promptOneArtifact)
-    const aiStatus: VerificationState = run.errorCode?.startsWith('GEMINI_')
-      ? 'FAILED'
-      : aiProven
-        ? 'VERIFIED'
-        : 'NOT_PROVEN'
+  return runs
+    .map((run) => {
+      const evidence = run.transcript?.evidence || []
+      const evidenceNeedsReview = evidence.filter((item) => item.requiresReview).length
+      const report = reportByRun.get(run.id)
+      const pendingReview = run.reviewTasks.find((task) => !task.decision)
+      const signalProposalCount = signalCount.get(run.id) || 0
+      const insightProposalCount = insightCount.get(run.id) || 0
+      const aiProven = hasValidGeminiProvenance(run.promptOneArtifact)
+      const aiStatus: VerificationState = run.errorCode?.startsWith('GEMINI_')
+        ? 'FAILED'
+        : aiProven
+          ? 'VERIFIED'
+          : 'NOT_PROVEN'
 
-    return {
-      pipelineRunId: run.id,
-      studentEmail: run.studentEmail,
-      lessonId: run.lessonId,
-      technicalStatus: run.status,
-      cognitiveStatus: aiProven && evidence.length > 0 ? 'EVIDENCE_BEARING' : 'NOT_PROVEN',
-      source: run.transcript?.source || 'unknown',
-      sourceFileId: run.transcript?.sourceFileId || null,
-      transcriptId: run.transcript?.id || null,
-      lessonDate: (run.transcript?.effectiveAt || run.transcript?.recordedAt)?.toISOString() || null,
-      processedAt: run.createdAt.toISOString(),
-      completedAt: run.completedAt?.toISOString() || null,
-      aiStatus,
-      evidenceCount: evidence.length,
-      evidenceNeedsReview,
-      reviewStatus: pendingReview?.stage || (evidenceNeedsReview ? 'evidence_review_required' : 'no_pending_review'),
-      reportStatus: report ? `${report.documentStatus}/${report.implementationStatus}` : 'no_report',
-      projectionStatus: run.portfolioApplyStatus || 'not_applied',
-      signalProposalCount: signalCount.get(run.id) || 0,
-      insightProposalCount: insightCount.get(run.id) || 0,
-      errorCode: run.errorCode,
-    }
-  })
+      const technicalOnlyFailure =
+        run.status === 'failed' &&
+        evidence.length === 0 &&
+        run.reviewTasks.length === 0 &&
+        !report &&
+        signalProposalCount === 0 &&
+        insightProposalCount === 0 &&
+        (!run.portfolioApplyStatus || run.portfolioApplyStatus === 'not_applied')
+
+      return {
+        technicalOnlyFailure,
+        summary: {
+          pipelineRunId: run.id,
+          studentEmail: run.studentEmail,
+          lessonId: run.lessonId,
+          technicalStatus: run.status,
+          cognitiveStatus: aiProven && evidence.length > 0 ? 'EVIDENCE_BEARING' as const : 'NOT_PROVEN' as const,
+          source: run.transcript?.source || 'unknown',
+          sourceFileId: run.transcript?.sourceFileId || null,
+          transcriptId: run.transcript?.id || null,
+          lessonDate: (run.transcript?.effectiveAt || run.transcript?.recordedAt)?.toISOString() || null,
+          processedAt: run.createdAt.toISOString(),
+          completedAt: run.completedAt?.toISOString() || null,
+          aiStatus,
+          evidenceCount: evidence.length,
+          evidenceNeedsReview,
+          reviewStatus: pendingReview?.stage || (evidenceNeedsReview ? 'evidence_review_required' : 'no_pending_review'),
+          reportStatus: report ? `${report.documentStatus}/${report.implementationStatus}` : 'no_report',
+          projectionStatus: run.portfolioApplyStatus || 'not_applied',
+          signalProposalCount,
+          insightProposalCount,
+          errorCode: run.errorCode,
+        },
+      }
+    })
+    // Lessons is a pedagogical workspace, not a dump of failed machine attempts.
+    // Preserve technical-only failures in PipelineRun/PipelineEvent for Audit,
+    // but keep them out of lesson history and the Teacher Intelligence cockpit.
+    .filter((item) => !item.technicalOnlyFailure)
+    .map((item) => item.summary)
 }
 
 export async function getTeacherCommandCenter(): Promise<TeacherCommandCenter> {
