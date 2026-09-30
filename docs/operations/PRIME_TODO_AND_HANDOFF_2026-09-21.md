@@ -695,3 +695,42 @@ Draft PR #72, head `fb9add5edecda57683ee37cd713e45dddda46ec6`:
 
 ### Proof boundary
 Repository/Preview gates must pass before merge. After Production release, the real learner account `gugasalgado7@gmail.com` must perform the interactive Google sign-in witness. No agent/admin simulation can prove that final account-specific boundary.
+
+
+---
+
+## 2026-09-30 — Student login / Portal entry remediation — RELEASED
+
+### Exact release proof
+- PR #72 final validated head: `a93c3c5490040e3dfabfd057e2d71805dff8ac24`.
+- Exact-head gates PASS:
+  - Student Dashboard Contract `36663962437`;
+  - Golden Runtime Witness `36663962465`;
+  - Coordination Runtime Witness `36663962422`.
+- Exact-head Preview `dpl_3d15CktorwWt2L9rivL9fdottGjn`: READY.
+- PR #72 merge SHA: `0916b97c5228fe281aaad14f1e0ec4ada104107f`.
+- Vercel Production `dpl_14ar2XoP1tFzUjE3HgW7vtmK13Nc`: READY on exact merge SHA with official aliases.
+
+### Released behavior
+- learner/end-user Google sign-in requests only `openid email profile`;
+- ordinary learner login no longer requests `meetings.space.readonly` or offline-token access;
+- Meet attendance remains a separate organizer credential/integration;
+- public `Portal do aluno` is Prime red and includes the Prime mark.
+
+### Production read-back
+- public root: HTTP 200 and rendered control contains Prime red styling + `/brand/prime-digital-hub-mark-transparent.png`;
+- `/login`: HTTP 200;
+- `/api/auth/providers`: HTTP 200 with Google provider and official callback;
+- Production-only error/fatal scan after release: no errors observed.
+
+### Concurrent Teacher Intelligence work
+PR #71 subsequently merged on top of the PR #72 merge. At release reconciliation, current `main` was `1ea279fcb017a5be83c3880a36ade0c8f916959c`, with PR #72 merge `0916b97...` as parent, so the student login/Portal remediation is retained while the Validation bridge proceeds.
+
+### Remaining account-specific witness
+The structural OAuth/login remediation is released, but the final Gustavo witness cannot be simulated by an agent:
+
+`gugasalgado7@gmail.com → Google sign-in → NextAuth session → Account/Learner resolution → stu_4c4da6c04ac4 → learner dashboard renders`.
+
+The account-specific interactive witness remains OPEN until the real learner account signs in successfully.
+
+No learner canonical state, Teacher Authority, AccountLearnerRelation, or `PIPELINE_AUTOMATION_FROZEN` state was changed by this lane.
