@@ -850,3 +850,52 @@ No DB deletion, learner/canonical mutation, Teacher Authority change, or automat
 
 ### Release boundary
 Do not call Production PASS until the final PR #79 exact head passes CI + Vercel Preview and the merged exact SHA is READY in Production.
+
+
+---
+
+## 2026-09-30 — Teacher Intelligence cleanup / navigation / portal mark — FINAL PRODUCTION PASS
+
+### Teacher Intelligence cleanup / navigation
+Final functional PR: **#79**.
+
+- validated final PR head: `0e216272b24f59a9fd2d1b3dde1a891d46b49e7b`;
+- exact-head Student Dashboard Contract / Golden Runtime Witness / Coordination Runtime Witness: SUCCESS;
+- merge SHA: `880d4869e1f339e8ee7267a06015646dfc59a538`.
+
+PR #80 then advanced main to `601949e91d6bd71bed20adc8d5a3fc9964905a52`, whose direct parent is `880d4869...`, preserving the #79 changes. Production `dpl_GDJP69maFCnShPooEMVgifZHjD4F` reached READY on `601949e...`; post-push Student Dashboard Contract `36668515532` completed SUCCESS.
+
+Verified behavior:
+- failed technical-only legacy runs stay out of pedagogical Lessons/Cockpit only when they have no Evidence Candidates, ReviewTasks, report, signal/insight proposals or Portfolio apply;
+- those historical runs/events remain preserved in Audit;
+- failed lesson detail is concise and full provenance remains behind collapsed `Technical trace / audit`;
+- Teacher Intelligence command-center identity explicitly routes to `/dashboard/admin/intelligence`;
+- compatibility route `/dashboard/admin/intelligence/cockpit` redirects to the valid root;
+- Production read-back of the compatibility path returned HTTP 200/login rather than 404;
+- Audit learner submissions (`learner_action_submission`, `learner_self_perception`) deep-link to anchored items in Review rather than synthetic lesson-run detail;
+- Review learner-submission cards expose matching `submission-<eventId>` anchors;
+- Gustavo learner self-perception caution uses high-contrast amber styling (`border-amber-200 bg-amber-50 ... text-amber-950`).
+
+### Prime Portal button mark
+PR #80 preserved the red Portal button footprint but removed the requested Prime mark. Follow-up PR **#81** restored only that mark.
+
+- PR #81 exact head: `3e70d79cafc53fac711629b3b229ad451fc886ec`;
+- exact-head Student Dashboard Contract / Golden Runtime Witness / Coordination Runtime Witness: SUCCESS;
+- merge SHA / code-release main: `db12a8fd893f73cde4407c5f5ac07e3b3bee9bd6`;
+- post-merge Student Dashboard Contract `36668844880`: SUCCESS;
+- Vercel Production `dpl_38NoJjxwtKUwNyas92tMuqQj7enV`: READY on exact SHA `db12a8fd...`;
+- official aliases include `www.primedigitalhub.com.br` and `primedigitalhub.com.br`;
+- Production HTML read-back proves the red `Portal do aluno` contains `/brand/prime-digital-hub-mark-transparent.png` with alt `Prime Digital Hub mark`;
+- Production error/fatal scan during the release window returned no errors.
+
+### Safety / authority
+- no PipelineRun/PipelineEvent deletion;
+- no learner learning-state mutation;
+- no canonical learning-state mutation;
+- no Teacher Authority consumed;
+- no account/learner relation mutation;
+- `PIPELINE_AUTOMATION_FROZEN` unchanged.
+
+**Operational result: PASS.**
+
+Issue #58 final mirror comment: `5904060706`.
