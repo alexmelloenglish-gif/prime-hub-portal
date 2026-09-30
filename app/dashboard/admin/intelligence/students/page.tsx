@@ -30,9 +30,9 @@ export default async function TeacherStudentsPage() {
                     <p className="mt-1 text-sm text-prime-cream/55">{student.studentEmail}</p>
                   </div>
                   {decisionPackage ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2.5 py-1 text-xs font-semibold text-emerald-100">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-300/35 bg-blue-300/15 px-2.5 py-1 text-xs font-semibold text-blue-100">
                       <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                      Teacher reviewed
+                      Teacher confirmed
                     </span>
                   ) : null}
                 </div>
@@ -51,16 +51,16 @@ export default async function TeacherStudentsPage() {
                 </div>
 
                 {decisionPackage ? (
-                  <div className="mt-4 rounded-xl border border-emerald-300/25 bg-emerald-300/10 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/80">Reviewed learning update</p>
+                  <div className="mt-4 rounded-xl border border-blue-300/30 bg-blue-300/10 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-100/90">Teacher-confirmed learning update</p>
                     <p className="mt-1 text-xs leading-5 text-prime-cream/65">A teacher-reviewed learning state, priority and next-step package is available for this learner.</p>
                   </div>
                 ) : null}
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {decisionPackage ? (
-                    <Link href={`/dashboard/admin/intelligence/students/${encodeURIComponent(decisionPackage.studentId)}`} className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-2 text-xs font-semibold text-emerald-100 hover:bg-emerald-300/20">
-                      Open reviewed learning package
+                    <Link href={`/dashboard/admin/intelligence/students/${encodeURIComponent(decisionPackage.studentId)}`} className="rounded-lg border border-blue-300/30 bg-blue-300/10 px-2.5 py-2 text-xs font-semibold text-blue-100 hover:bg-blue-300/20">
+                      Open teacher-confirmed learning package
                     </Link>
                   ) : null}
                   <Link href={`/dashboard?studentEmail=${encodeURIComponent(student.studentEmail)}`} className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white hover:bg-white/10">

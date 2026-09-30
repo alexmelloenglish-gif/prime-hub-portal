@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight, Route } from 'lucide-react'
 import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-data'
+import { pedagogicalAuthorityStatusClass } from '@/lib/status-color-contract'
 
 const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
   'teacher-validated': 'Teacher confirmed',
@@ -10,10 +11,10 @@ const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
 }
 
 const evidenceStatusClasses: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': 'border-emerald-300 bg-emerald-100 text-emerald-900',
-  'portfolio-confirmed': 'border-blue-300 bg-blue-100 text-blue-900',
-  qualified: 'border-amber-300 bg-amber-100 text-amber-900',
-  'not-available': 'border-slate-300 bg-slate-100 text-slate-700',
+  'teacher-validated': pedagogicalAuthorityStatusClass('TEACHER_CONFIRMED'),
+  'portfolio-confirmed': pedagogicalAuthorityStatusClass('TEACHER_CONFIRMED'),
+  qualified: pedagogicalAuthorityStatusClass('TEACHER_NOTE'),
+  'not-available': pedagogicalAuthorityStatusClass('NOT_AVAILABLE'),
 }
 
 function isExternalLink(href: string) {

@@ -84,17 +84,17 @@ export default async function TeacherValidationPage() {
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-600"><CheckCircle2 className="h-4 w-4" aria-hidden="true" /> Recently resolved</div>
           <div className="mt-2 text-3xl font-bold text-slate-950">{recentResolved.length}</div>
         </div>
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-semibold text-emerald-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-reviewed learners</div>
-          <div className="mt-2 text-3xl font-bold text-emerald-950">{reviewedLearners.length}</div>
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+          <div className="flex items-center gap-2 text-sm font-semibold text-blue-800"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher-confirmed learners</div>
+          <div className="mt-2 text-3xl font-bold text-blue-950">{reviewedLearners.length}</div>
         </div>
       </section>
 
       {reviewedLearners.length ? (
-        <section className="rounded-2xl border border-emerald-200 bg-white shadow-sm">
-          <div className="border-b border-emerald-100 px-5 py-4">
-            <h2 className="font-bold text-slate-950">Reviewed learning updates</h2>
-            <p className="mt-1 text-sm text-slate-500">Learning-state and next-step updates that have already been reviewed by the teacher.</p>
+        <section className="rounded-2xl border border-blue-200 bg-white shadow-sm">
+          <div className="border-b border-blue-100 px-5 py-4">
+            <h2 className="font-bold text-slate-950">Teacher-confirmed learning updates</h2>
+            <p className="mt-1 text-sm text-slate-500">Learning-state and next-step updates that have already been confirmed by the teacher.</p>
           </div>
           <div className="divide-y divide-slate-100">
             {reviewedLearners.map((record) => {
@@ -114,7 +114,7 @@ export default async function TeacherValidationPage() {
                 <article key={record.studentId} className="px-5 py-5">
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher reviewed</div>
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-700"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Teacher confirmed</div>
                       <h3 className="mt-1 font-semibold text-slate-950">{studentNameById.get(record.studentId) || record.studentEmail}</h3>
                       <p className="mt-1 text-sm text-slate-600">{learningFocus || 'Teacher-authorized learning state is canonical.'}</p>
                       <div className="mt-2 text-xs text-slate-500">
@@ -124,7 +124,7 @@ export default async function TeacherValidationPage() {
                     <div className="flex shrink-0 flex-wrap gap-2">
                       <Link
                         href={`/dashboard/admin/intelligence/students/${encodeURIComponent(record.studentId)}`}
-                        className="inline-flex items-center justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+                        className="inline-flex items-center justify-center rounded-xl border border-blue-300 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-blue-100"
                       >
                         Open learning package
                       </Link>
