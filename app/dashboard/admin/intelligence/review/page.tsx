@@ -4,7 +4,7 @@ import { ReviewQueueActions } from '@/app/dashboard/admin/review/review-queue-ac
 import { IntelligenceStatusBadge } from '@/components/teacher/intelligence-status-badge'
 import { listPendingReviewTasks } from '@/lib/pipeline/run'
 import { listEvidenceReviewQueue, listLearnerSubmissions } from '@/lib/teacher-intelligence'
-import { reviewEvidenceCandidateAction } from './actions'
+import { reviewEvidenceCandidateAction, reviewLearnerSubmissionAction } from './actions'
 
 const checkpointLabels: Record<string, string> = {
   advice: 'Giving advice',
@@ -99,8 +99,29 @@ export default async function TeacherEvidenceReviewPage() {
                     </div>
 
                     <p className="mt-3 text-xs leading-5 text-prime-cream/45">
-                      Status: {submission.authorityStatus || 'submitted'}. Listening does not promote this response to teacher-validated evidence.
+                      Status: {submission.needsTeacherReview ? 'Awaiting teacher review' : 'Reviewed by teacher'}. Listening does not promote this response to teacher-validated evidence.
                     </p>
+
+                    {submission.needsTeacherReview ? (
+                      <form action={reviewLearnerSubmissionAction} className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+                        <input type="hidden" name="submissionEventId" value={submission.id} />
+                        <p className="text-xs leading-5 text-prime-cream/60">
+                          Marking this submission as reviewed closes the teacher-review task only. It does not create canonical evidence, change CEFR, or update the learner&apos;s learning state.
+                        </p>
+                        <button
+                          type="submit"
+                          className="mt-3 rounded-xl border border-blue-300/35 bg-blue-300/15 px-3 py-2 text-xs font-semibold text-blue-100 hover:bg-blue-300/25"
+                        >
+                          Mark as reviewed
+                        </button>
+                      </form>
+                    ) : (
+                      <div className="mt-4 rounded-xl border border-blue-300/30 bg-blue-300/10 px-3 py-3 text-xs font-semibold leading-5 text-blue-100">
+                        Reviewed by {submission.reviewerId || 'teacher'}
+                        {submission.reviewedAt ? <> · {new Date(submission.reviewedAt).toLocaleString('en-GB')}</> : null}.
+                        This remains a learner submission, not teacher-confirmed learning evidence.
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
