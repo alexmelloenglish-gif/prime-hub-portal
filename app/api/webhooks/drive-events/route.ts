@@ -1,9 +1,11 @@
 import { OAuth2Client } from 'google-auth-library'
 import { NextResponse } from 'next/server'
+import { reconcileDriveTranscripts } from '@/lib/drive-reconciliation'
 import { PIPELINE_AUTOMATION_FROZEN } from '@/lib/pipeline-freeze'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const maxDuration = 300
 
 const authClient = new OAuth2Client()
 
@@ -48,5 +50,19 @@ export async function POST(request: Request) {
     return new NextResponse(null, { status: 204 })
   }
 
-  return NextResponse.json({ error: 'Drive event processing is unavailable.' }, { status: 503 })
+  try {
+    const result = await reconcileDriveTranscripts()
+    console.log(JSON.stringify({
+      event: 'drive_event_reconciliation_completed',
+      submitted: result.submitted,
+      duplicates: result.duplicates,
+      quarantined: result.quarantined,
+      scanned: result.scanned,
+    }))
+    return NextResponse.json({ ok: true, trigger: 'drive_event', reconciliation: result })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'drive_event_reconciliation_failed'
+    console.error(JSON.stringify({ event: 'drive_event_reconciliation_failed', error: message }))
+    return NextResponse.json({ error: 'Drive reconciliation failed.' }, { status: 503 })
+  }
 }
