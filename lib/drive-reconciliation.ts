@@ -347,6 +347,68 @@ function sanitizeError(error: unknown): string {
   return 'unknown_error'
 }
 
+export type DriveTranscriptSourceQueueItem = {
+  sourceFileId: string
+  name: string
+  modifiedAt: string | null
+  createdAt: string | null
+  sourceUrl: string | null
+  state: 'not_ingested' | 'failed' | 'ingested'
+  transcriptId: string | null
+  latestRunId: string | null
+  latestRunStatus: string | null
+  studentEmail: string | null
+  lessonId: string | null
+}
+
+export async function listDriveTranscriptSourceQueue(limit = 30): Promise<DriveTranscriptSourceQueueItem[]> {
+  const auth = getDriveAuth()
+  const files = await listDriveTranscriptsRecursively(auth, GOOGLE_MEET_ROOT_FOLDER_ID)
+  const selected = files.slice(0, Math.min(Math.max(limit, 1), 100))
+  if (!selected.length) return []
+
+  const prisma = getPrismaClient()
+  const existing = await prisma.transcript.findMany({
+    where: { sourceFileId: { in: selected.map((file) => file.id) } },
+    select: {
+      id: true,
+      sourceFileId: true,
+      studentEmail: true,
+      lessonId: true,
+      pipelineRuns: {
+        orderBy: { attemptNumber: 'desc' },
+        take: 1,
+        select: { id: true, status: true },
+      },
+    },
+  })
+  const existingBySource = new Map(existing.map((item) => [item.sourceFileId, item]))
+
+  return selected.map((file) => {
+    const transcript = existingBySource.get(file.id)
+    const latestRun = transcript?.pipelineRuns[0]
+    const state: DriveTranscriptSourceQueueItem['state'] = !transcript
+      ? 'not_ingested'
+      : latestRun?.status === 'failed'
+        ? 'failed'
+        : 'ingested'
+
+    return {
+      sourceFileId: file.id,
+      name: file.name,
+      modifiedAt: file.modifiedTime || null,
+      createdAt: file.createdTime || null,
+      sourceUrl: file.webViewLink || null,
+      state,
+      transcriptId: transcript?.id || null,
+      latestRunId: latestRun?.id || null,
+      latestRunStatus: latestRun?.status || null,
+      studentEmail: transcript?.studentEmail || null,
+      lessonId: transcript?.lessonId || null,
+    }
+  })
+}
+
 export async function prepareDriveTranscriptPayload(
   sourceFileId: string,
   options: { ingestionMode?: string } = {},

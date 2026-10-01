@@ -5,6 +5,7 @@ import {
   ClipboardCheck,
   FileText,
   GraduationCap,
+  Cpu,
   Lightbulb,
   Sparkles,
   Users,
@@ -102,6 +103,13 @@ export default async function TeacherIntelligenceHomePage() {
               >
                 <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
                 Review items
+              </Link>
+              <Link
+                href="/dashboard/admin/intelligence/machine"
+                className="inline-flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800 transition hover:border-blue-200 hover:bg-blue-100"
+              >
+                <Cpu className="h-4 w-4" aria-hidden="true" />
+                Learning Machine
               </Link>
             </div>
           </div>
