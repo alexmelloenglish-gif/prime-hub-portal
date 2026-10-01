@@ -119,7 +119,7 @@ export type LearningNarrativeDraft = {
   requiresTeacherReview: true
   validation?: NarrativeValidation
   generationProvenance?: {
-    provider: 'gemini'
+    provider: string
     model?: string
     promptVersion: string
     requestId?: string
