@@ -16,6 +16,10 @@ const files = {
   gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
+  machineInbox: 'app/dashboard/admin/intelligence/machine/page.tsx',
+  machineAction: 'app/dashboard/admin/intelligence/machine/actions.ts',
+  machineSource: 'lib/drive-reconciliation.ts',
+  home: 'app/dashboard/admin/intelligence/page.tsx',
   actions: 'app/dashboard/admin/intelligence/actions/page.tsx',
   sidebar: 'components/layout/sidebar.tsx',
 }
@@ -28,6 +32,15 @@ const allTeacherSource = Object.values(source).join('\n')
 const gustavoPackage = JSON.parse(source.gustavoPackage)
 
 assert.match(source.sidebar, /\/dashboard\/admin\/intelligence/, 'Teacher Intelligence must be reachable from the admin navigation')
+assert.match(source.home, /\/dashboard\/admin\/intelligence\/machine/, 'Teacher Intelligence must expose the Learning Machine inbox')
+assert.match(source.machineInbox, /Real transcript sources waiting for PRIME/, 'Machine inbox must present real Drive sources as the processing entry point')
+assert.match(source.machineInbox, /form action=\{processDriveTranscriptSource\}/, 'Machine inbox must expose a real Process action rather than pasted transcript assembly')
+assert.match(source.machineAction, /prepareDriveTranscriptPayload/, 'Manual Process must acquire the canonical Drive source through the shared source adapter')
+assert.match(source.machineAction, /executeSharedLearningMachine/, 'Manual Process must invoke the shared Learning Machine')
+assert.match(source.machineAction, /triggerOrigin: 'manual'/, 'Manual Process must differ from automation only by trigger origin')
+assert.match(source.machineAction, /isAdminUser\(session\.user\)/, 'Manual Process must require administrator authority')
+assert.match(source.machineSource, /listDriveTranscriptSourceQueue/, 'Machine inbox must enumerate canonical Drive intake sources')
+assert.match(source.machineSource, /sourceFileId: \{ in: selected\.map/, 'Drive intake queue must reconcile sources against persisted transcript lineage')
 assert.match(source.sidebar, /const menuItems = isAdmin/, 'Admin navigation must depend on admin authority, not learner-preview state')
 assert.doesNotMatch(source.sidebar, /isAdmin && !isStudentPreview/, 'Learner preview must not hide Teacher Intelligence/Admin from the admin viewer')
 assert.match(source.reviewAction, /isAdminUser\(session\.user\)/, 'Evidence review must preserve the existing authorization boundary')
