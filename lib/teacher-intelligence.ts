@@ -745,9 +745,9 @@ export async function getTeacherLessonTrace(pipelineRunId: string) {
       id: run.transcript?.id,
     },
     {
-      key: 'gemini',
-      label: 'GEMINI PROVENANCE',
-      state: run.errorCode?.startsWith('GEMINI_') ? 'FAILED' : aiProvenanceValid ? 'VERIFIED' : 'NOT_PROVEN',
+      key: 'model',
+      label: 'MODEL PROVENANCE',
+      state: (run.errorCode?.startsWith('GEMINI_') || run.errorCode === 'MODEL_PROVIDER_FAILED') ? 'FAILED' : aiProvenanceValid ? 'VERIFIED' : 'NOT_PROVEN',
       id: asString(provenance.requestId),
     },
     {
