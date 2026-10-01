@@ -294,6 +294,7 @@ function buildPayload(
   transcript: string,
   triage: TriageResult,
   extraction: GoogleDocsTranscriptExtraction,
+  ingestionMode = 'drive-reconciliation-cron-v2',
 ) {
   if (!triage.student) throw new Error('identity_not_resolved')
   const student = triage.student
@@ -328,7 +329,7 @@ function buildPayload(
       sourceHash,
       driveModifiedTime: file.modifiedTime || null,
       driveCreatedTime: file.createdTime || null,
-      ingestionMode: 'drive-reconciliation-cron-v2',
+      ingestionMode,
       sourceExtractionMode: extraction.extractionMode,
       sourceTabId: extraction.sourceTabId,
       sourceTabTitle: extraction.sourceTabTitle,
@@ -344,6 +345,34 @@ function buildPayload(
 function sanitizeError(error: unknown): string {
   if (error instanceof Error) return error.message.replace(/[^a-zA-Z0-9_ -]/g, '').slice(0, 80) || 'unknown_error'
   return 'unknown_error'
+}
+
+export async function prepareDriveTranscriptPayload(
+  sourceFileId: string,
+  options: { ingestionMode?: string } = {},
+) {
+  const normalizedSourceFileId = sourceFileId.trim()
+  if (!normalizedSourceFileId) throw new Error('source_file_id_required')
+
+  const auth = getDriveAuth()
+  const files = await listDriveTranscriptsRecursively(auth, GOOGLE_MEET_ROOT_FOLDER_ID)
+  const file = files.find((candidate) => candidate.id === normalizedSourceFileId)
+  if (!file) throw new Error('drive_source_not_in_canonical_folder')
+
+  const extraction = await exportGoogleDoc(auth, file.id)
+  const transcript = extraction.text
+  const triage = classifyTranscript(file, transcript)
+  if (triage.status !== 'usable_transcript') {
+    throw new Error(`drive_transcript_${triage.status}`)
+  }
+
+  return buildPayload(
+    file,
+    transcript,
+    triage,
+    extraction,
+    options.ingestionMode || 'manual-drive-source-v1',
+  )
 }
 
 export async function reconcileDriveTranscripts(): Promise<ReconciliationResult> {
