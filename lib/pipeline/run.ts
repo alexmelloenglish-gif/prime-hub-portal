@@ -640,7 +640,7 @@ async function publishAfterReview(
     ...report,
     documentStatus: 'published',
     contentStatus: 'validated',
-    generationStatus: 'gemini_generated',
+    generationStatus: report.generationStatus || 'model_generated',
     implementationStatus: 'proven',
   }
   if (projection.documentStatus !== 'published') {
