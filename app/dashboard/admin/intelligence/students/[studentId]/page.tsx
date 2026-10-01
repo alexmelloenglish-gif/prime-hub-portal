@@ -59,6 +59,9 @@ export default async function TeacherLearnerDecisionPage({
     where: { studentId },
     orderBy: [{ canonicalVersion: 'desc' }, { canonicalizedAt: 'desc' }],
   })
+  const latestCanonicalMachineLinked = Boolean(
+    latestCanonical?.pipelineRunId && latestCanonical?.transcriptId,
+  )
 
   if (!registryStudent && !legacyPackage && !latestCanonical) notFound()
 
@@ -155,6 +158,13 @@ export default async function TeacherLearnerDecisionPage({
                   ? `${legacyPackage.teacher.name} · ${legacyPackage.decisionDate}`
                   : 'Teacher-reviewed state'}
             </p>
+            {latestCanonical ? (
+              <p className="mt-2 text-xs font-semibold">
+                {latestCanonicalMachineLinked
+                  ? 'Machine-linked canonical lineage'
+                  : 'Historical/backfill authority · no Machine run lineage'}
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -171,9 +181,16 @@ export default async function TeacherLearnerDecisionPage({
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">Latest teacher-validated update</p>
               <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">{canonicalLessonDate || 'Latest lesson'}</h2>
             </div>
-            <span className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-bold text-emerald-800">
-              Canonical v{latestCanonical.canonicalVersion}
-            </span>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-bold text-blue-800">
+                Canonical v{latestCanonical.canonicalVersion}
+              </span>
+              <span className={latestCanonicalMachineLinked
+                ? 'rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800'
+                : 'rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-900'}>
+                {latestCanonicalMachineLinked ? 'Machine linked' : 'Historical/backfill lineage'}
+              </span>
+            </div>
           </div>
           <p className="mt-3 text-sm leading-7 text-[#526783]">
             {asText(canonicalInsight.statement) || latestFocus}
@@ -214,7 +231,24 @@ export default async function TeacherLearnerDecisionPage({
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-[#60718d]">
             <span>Decision: {latestCanonical.teacherDecisionId}</span>
             {latestSourceDocumentId ? <span>· source reviewed</span> : null}
+            {latestCanonical.pipelineRunId ? <span>· run {latestCanonical.pipelineRunId}</span> : null}
+            {latestCanonical.transcriptId ? <span>· transcript {latestCanonical.transcriptId}</span> : null}
           </div>
+          {!latestCanonicalMachineLinked ? (
+            <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">Lineage classification</p>
+              <p className="mt-2 text-sm leading-6 text-amber-950">
+                This is valid teacher-authorized learning state, but it is not evidence that the shared Learning Machine produced the candidate end to end. No PipelineRun/transcript lineage is attached to this canonical record.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-800">Lineage classification</p>
+              <p className="mt-2 text-sm leading-6 text-emerald-950">
+                This canonical update is linked to the persisted transcript and shared Learning Machine run that produced its teacher-review candidate.
+              </p>
+            </div>
+          )}
         </section>
       ) : null}
 
