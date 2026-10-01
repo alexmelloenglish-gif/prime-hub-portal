@@ -213,6 +213,8 @@ assert.deepEqual(stageCounters, {
 const pipeline = readFileSync('lib/pipeline/run.ts', 'utf8')
 const canonical = readFileSync('lib/learning-machine/canonical-continuation.ts', 'utf8')
 const automaticRoute = readFileSync('app/api/pipeline/ingest/route.ts', 'utf8')
+const driveEventRoute = readFileSync('app/api/webhooks/drive-events/route.ts', 'utf8')
+const driveCronRoute = readFileSync('app/api/cron/drive-transcripts/route.ts', 'utf8')
 const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
 const driveReconciliation = readFileSync('lib/drive-reconciliation.ts', 'utf8')
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
@@ -281,6 +283,36 @@ assert.match(
   automaticRoute,
   /PIPELINE_AUTOMATION_FROZEN/,
   'Automatic ingestion must remain frozen until production activation is authorized',
+)
+assert.match(
+  driveEventRoute,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Drive event trigger must preserve the automatic-ingest freeze',
+)
+assert.match(
+  driveEventRoute,
+  /reconcileDriveTranscripts\(\)/,
+  'Unfrozen Drive events must invoke the canonical reconciliation worker',
+)
+assert.match(
+  driveCronRoute,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Scheduled reconciliation must preserve the automatic-ingest freeze',
+)
+assert.match(
+  driveCronRoute,
+  /reconcileDriveTranscripts\(\)/,
+  'Unfrozen scheduled reconciliation must invoke the same canonical reconciliation worker',
+)
+assert.doesNotMatch(
+  driveEventRoute,
+  /Drive event processing is unavailable/,
+  'Drive event trigger must not terminate at the old unavailable placeholder',
+)
+assert.doesNotMatch(
+  driveCronRoute,
+  /Drive reconciliation is unavailable/,
+  'Scheduled reconciliation must not terminate at the old unavailable placeholder',
 )
 assert.doesNotMatch(
   manualRoute,
