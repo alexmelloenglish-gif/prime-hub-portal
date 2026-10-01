@@ -99,7 +99,7 @@ function providerConfig(id: ProviderId): ProviderConfig {
       kind: 'openai-compatible',
       apiKey: process.env.PERPLEXITY_API_KEY,
       model: process.env.PRIME_PERPLEXITY_MODEL,
-      baseUrl: process.env.PRIME_PERPLEXITY_BASE_URL || 'https://api.perplexity.ai',
+      baseUrl: process.env.PRIME_PERPLEXITY_BASE_URL || 'https://api.perplexity.ai/router/v1',
     }
   }
   return {
