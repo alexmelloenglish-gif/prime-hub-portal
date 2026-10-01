@@ -1,8 +1,5 @@
-import { randomUUID } from 'node:crypto'
-
 import type {
   ClassReportOutput,
-  GenerationProvenance,
   CoachingGuidanceOutput,
   LessonTranscriptInput,
   PortfolioPatchOutput,
@@ -12,6 +9,9 @@ import type {
 import type { LearningNarrativeDraft, NarrativeInput } from '../narrative/contracts.ts'
 import { NARRATIVE_SYSTEM_PROMPT, NARRATIVE_OUTPUT_CONTRACT } from '../narrative/prompts.ts'
 import { prepareNarrativeInput, validateNarrativeDraft } from '../narrative/engine.ts'
+import { generateStructuredJson, ModelGenerationError } from './model-provider'
+
+export { ModelGenerationError } from './model-provider'
 
 const CANONICAL_CONTRACT = `
 PROMPT 1 OFFICIAL — AI LESSON EXTRACTION AND PROPOSAL — LOCKED
@@ -81,59 +81,6 @@ function promptVersionForStage(stage: string): string {
   } as Record<string, string>)[stage] || stage
 }
 
-export class GeminiGenerationError extends Error {
-  readonly provider = 'gemini'
-  readonly stage: string
-  readonly code: 'missing_credential' | 'http_error' | 'empty_response' | 'invalid_json' | 'validation_failed'
-  readonly httpStatus?: number
-  readonly model?: string
-  readonly requestId?: string
-  readonly promptVersion: string
-  readonly startedAt: string
-  readonly completedAt: string
-  readonly artifactId?: string
-
-  constructor(
-    stage: string,
-    code: GeminiGenerationError['code'],
-    message: string,
-    httpStatus?: number,
-    context?: Partial<GenerationProvenance>,
-  ) {
-    super(message)
-    this.name = 'GeminiGenerationError'
-    this.stage = stage
-    this.code = code
-    this.httpStatus = httpStatus
-    this.model = context?.model
-    this.requestId = context?.requestId
-    this.promptVersion = context?.promptVersion || promptVersionForStage(stage)
-    this.startedAt = context?.startedAt || new Date().toISOString()
-    this.completedAt = context?.completedAt || new Date().toISOString()
-    this.artifactId = context?.artifactId
-  }
-}
-
-function parseJsonCandidate(content: string): unknown | null {
-  const normalized = content
-    .trim()
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim()
-  try {
-    return JSON.parse(normalized)
-  } catch {
-    const firstObject = normalized.indexOf('{')
-    const lastObject = normalized.lastIndexOf('}')
-    if (firstObject < 0 || lastObject <= firstObject) return null
-    try {
-      return JSON.parse(normalized.slice(firstObject, lastObject + 1))
-    } catch {
-      return null
-    }
-  }
-}
-
 async function invokeJson<T>(
   stage: string,
   system: string,
@@ -142,83 +89,14 @@ async function invokeJson<T>(
   draftFallback?: T,
 ): Promise<T> {
   // Draft fallbacks remain available for explicit offline/test callers only.
-  // Production never returns this value: every Gemini failure throws below.
+  // Production generation always uses the configured provider pool.
   void draftFallback
-  const startedAt = new Date().toISOString()
-  const requestId = `gemini-${randomUUID()}`
-  const promptVersion = promptVersionForStage(stage)
-  const artifactId = `artifact-${stage}-${requestId}`
-  const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY
-  const model = process.env.PRIME_PIPELINE_MODEL || 'gemini-3.7-flash'
-  const errorContext = (responseStatus?: number): Partial<GenerationProvenance> => ({
-    model,
-    requestId,
-    promptVersion,
-    responseStatus,
-    startedAt,
-    completedAt: new Date().toISOString(),
-    artifactId,
-    validationStatus: 'invalid',
+  return generateStructuredJson<T>({
+    stage,
+    promptVersion: promptVersionForStage(stage),
+    system,
+    userContent: buildRequest('', input, contract),
   })
-  if (!apiKey) {
-    throw new GeminiGenerationError(stage, 'missing_credential', 'Gemini credential is not configured', undefined, errorContext())
-  }
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ role: 'user', parts: [{ text: buildRequest('', input, contract) }] }],
-        generationConfig: {
-          temperature: 0.1,
-          responseMimeType: 'application/json',
-        },
-      }),
-      cache: 'no-store',
-    },
-  )
-  if (!response.ok) {
-    const context = errorContext(response.status)
-    console.warn(JSON.stringify({ event: 'gemini_generation_failed', provider: 'gemini', stage, model, requestId, status: response.status }))
-    throw new GeminiGenerationError(stage, 'http_error', `Gemini request failed with HTTP ${response.status}`, response.status, context)
-  }
-  const payload = (await response.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
-  }
-  const content = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim()
-  if (!content) {
-    const context = errorContext(response.status)
-    console.warn(JSON.stringify({ event: 'gemini_generation_empty', provider: 'gemini', stage, model, requestId }))
-    throw new GeminiGenerationError(stage, 'empty_response', 'Gemini returned no candidate content', response.status, context)
-  }
-  const parsed = parseJsonCandidate(content)
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    const context = errorContext(response.status)
-    console.warn(JSON.stringify({ event: 'gemini_generation_invalid_json', provider: 'gemini', stage, model, requestId }))
-    throw new GeminiGenerationError(stage, 'invalid_json', 'Gemini returned invalid JSON', response.status, context)
-  }
-  const generationProvenance: GenerationProvenance = {
-    provider: 'gemini',
-    model,
-    requestId,
-    promptVersion,
-    responseStatus: response.status,
-    startedAt,
-    completedAt: new Date().toISOString(),
-    artifactId,
-    validationStatus: 'valid',
-  }
-  return {
-    ...(parsed as Record<string, unknown>),
-    generationStatus: 'gemini_generated',
-    generationProvenance,
-  } as T
 }
 
 function fallbackPromptOne(input: LessonTranscriptInput, transcriptId: string): PromptOneOutput {
@@ -311,13 +189,19 @@ export async function runNarrativeSynthesis(input: NarrativeInput): Promise<Lear
   }
   const validation = validateNarrativeDraft(draft, preparedInput)
   if (!validation.passed) {
-    throw new GeminiGenerationError(
-      'prompt-5',
-      'validation_failed',
-      `Narrative grounding validation failed: ${validation.errors.join(' ')}`,
-      undefined,
-      draft.generationProvenance,
-    )
+    throw new ModelGenerationError({
+      stage: 'prompt-5',
+      code: 'all_providers_failed',
+      message: `Narrative grounding validation failed: ${validation.errors.join(' ')}`,
+      promptVersion: promptVersionForStage('prompt-5'),
+      startedAt: draft.generationProvenance?.startedAt || new Date().toISOString(),
+      artifactId: draft.generationProvenance?.artifactId || `artifact-prompt-5-validation`,
+      attempts: draft.generationProvenance?.attempts || [],
+      provider: draft.generationProvenance?.provider,
+      model: draft.generationProvenance?.model,
+      requestId: draft.generationProvenance?.requestId,
+      httpStatus: draft.generationProvenance?.responseStatus,
+    })
   }
   return {
     ...draft,

@@ -116,13 +116,14 @@ export function attachGenerationProvenance(
   return {
     ...draft,
     generationProvenance: {
-      provider: 'gemini',
+      provider: provenance.provider,
       model: provenance.model,
       promptVersion: NARRATIVE_PROMPT_VERSION,
       requestId: provenance.requestId,
       startedAt: provenance.startedAt,
       completedAt: provenance.completedAt,
       artifactId: provenance.artifactId,
+      attempts: provenance.attempts,
     },
   }
 }
