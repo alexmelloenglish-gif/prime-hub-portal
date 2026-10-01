@@ -123,9 +123,20 @@ export type LearningNarrativeDraft = {
     model?: string
     promptVersion: string
     requestId?: string
+    responseStatus?: number
     startedAt: string
     completedAt: string
     artifactId?: string
+    attempts?: Array<{
+      provider: string
+      model?: string
+      requestId: string
+      responseStatus?: number
+      startedAt: string
+      completedAt: string
+      outcome: 'success' | 'failed' | 'skipped'
+      errorCode?: string
+    }>
   }
 }
 
