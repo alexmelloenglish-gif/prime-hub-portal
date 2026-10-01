@@ -86,8 +86,9 @@ assert.match(source.lessonTrace, /Technical trace \/ audit/, 'Full failed-attemp
 assert.match(source.intelligence, /technicalOnlyFailure/, 'Teacher lesson listing must classify technical-only failed runs')
 assert.match(source.intelligence, /filter\(\(item\) => !item\.technicalOnlyFailure\)/, 'Technical-only failed runs must stay out of the pedagogical Lessons/Cockpit surfaces')
 assert.match(source.lessonsPage, /remain preserved in Audit/, 'Lessons UI must explain where filtered technical-only failures remain available')
-assert.match(source.intelligence, /GEMINI PROVENANCE/, 'Runtime trace must expose Gemini provenance')
-assert.doesNotMatch(allTeacherSource, /OPENAI|openai|chat\/completions/, 'Teacher Intelligence must not introduce a second AI provider path')
+assert.match(source.intelligence, /MODEL PROVENANCE/, 'Runtime trace must expose provider-neutral model provenance')
+assert.match(source.intelligence, /hasValidModelProvenance/, 'Teacher Intelligence must validate provenance by PRIME contract rather than one provider name')
+assert.doesNotMatch(allTeacherSource, /api\.openai\.com|api\.perplexity\.ai|generativelanguage\.googleapis\.com/, 'Teacher Intelligence must not call model providers directly')
 assert.doesNotMatch(allTeacherSource, /canonicalEvidenceCreated:\s*true/, 'Teacher Intelligence must not claim canonical Evidence creation')
 
 console.log('Teacher Intelligence static regression self-test: PASS')
