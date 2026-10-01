@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { executeSharedLearningMachine } from '@/lib/learning-machine/shared-runner'
+import { prepareDriveTranscriptPayload } from '@/lib/drive-reconciliation'
 import { parseTranscriptPayload } from '@/lib/pipeline/run'
 import { isAdminUser } from '@/lib/student-data'
 
@@ -19,8 +20,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = await request.json()
-    const transcript = parseTranscriptPayload(body)
+    const body = await request.json() as Record<string, unknown>
+    const sourceFileId = typeof body.sourceFileId === 'string' ? body.sourceFileId.trim() : ''
+    const transcript = sourceFileId
+      ? await prepareDriveTranscriptPayload(sourceFileId, { ingestionMode: 'manual-drive-source-v1' })
+      : parseTranscriptPayload(body)
     const result = await executeSharedLearningMachine({
       triggerOrigin: 'manual',
       requestedBy: session.user.email || session.user.id || 'admin',
