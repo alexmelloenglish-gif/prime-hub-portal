@@ -98,8 +98,19 @@ export type TeacherInsightProposalOutput = {
   author_type: 'ai'
 }
 
+export type GenerationProviderAttempt = {
+  provider: string
+  model?: string
+  requestId: string
+  responseStatus?: number
+  startedAt: string
+  completedAt: string
+  outcome: 'success' | 'failed' | 'skipped'
+  errorCode?: string
+}
+
 export type GenerationProvenance = {
-  provider: 'gemini' | 'fallback'
+  provider: string
   model?: string
   requestId?: string
   promptVersion: string
@@ -109,10 +120,11 @@ export type GenerationProvenance = {
   artifactId?: string
   validationStatus: 'valid' | 'invalid' | 'not_proven'
   errorCode?: string
+  attempts?: GenerationProviderAttempt[]
 }
 
 export type PromptOneOutput = {
-  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationStatus?: 'model_generated' | 'gemini_generated' | 'fallback' | 'not_proven'
   generationProvenance?: GenerationProvenance
   schema_version: 'phase-b-prompt-1.v3'
   artifact_status: 'draft'
@@ -210,7 +222,7 @@ export type PromptTwoInput = {
 }
 
 export type ClassReportOutput = {
-  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationStatus?: 'model_generated' | 'gemini_generated' | 'fallback' | 'not_proven'
   generationProvenance?: GenerationProvenance
   reportId: string
   lessonId: string
@@ -258,7 +270,7 @@ export type ExcludedProjectionOperation = {
 }
 
 export type PortfolioPatchOutput = {
-  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationStatus?: 'model_generated' | 'gemini_generated' | 'fallback' | 'not_proven'
   generationProvenance?: GenerationProvenance
   patch_schema_version: 'portfolio-projection-patch.v3'
   patch_id: string
@@ -308,7 +320,7 @@ export type CoachingProposedAction = {
 }
 
 export type CoachingGuidanceOutput = {
-  generationStatus?: 'gemini_generated' | 'fallback' | 'not_proven'
+  generationStatus?: 'model_generated' | 'gemini_generated' | 'fallback' | 'not_proven'
   generationProvenance?: GenerationProvenance
   coaching_guidance_id: string
   student_id: string
