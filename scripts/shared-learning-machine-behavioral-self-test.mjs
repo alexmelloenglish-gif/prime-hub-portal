@@ -214,6 +214,7 @@ const pipeline = readFileSync('lib/pipeline/run.ts', 'utf8')
 const canonical = readFileSync('lib/learning-machine/canonical-continuation.ts', 'utf8')
 const automaticRoute = readFileSync('app/api/pipeline/ingest/route.ts', 'utf8')
 const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
+const driveReconciliation = readFileSync('lib/drive-reconciliation.ts', 'utf8')
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
 const migration = readFileSync(
@@ -285,6 +286,21 @@ assert.doesNotMatch(
   manualRoute,
   /PIPELINE_AUTOMATION_FROZEN/,
   'Explicit administrator-triggered execution must remain usable while automation is frozen',
+)
+assert.match(
+  manualRoute,
+  /prepareDriveTranscriptPayload\(sourceFileId/,
+  'Manual execution must be able to acquire the canonical Drive source by sourceFileId instead of requiring pasted transcript content',
+)
+assert.match(
+  driveReconciliation,
+  /drive_source_not_in_canonical_folder/,
+  'Manual Drive acquisition must fail closed when the source is outside the canonical monitored folder',
+)
+assert.match(
+  driveReconciliation,
+  /manual-drive-source-v1/,
+  'Manual Drive acquisition must persist a distinct trigger/acquisition provenance mode while using the same Learning Machine',
 )
 assert.doesNotMatch(
   retryRoute,
