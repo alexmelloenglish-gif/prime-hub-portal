@@ -36,10 +36,10 @@ function getPromptOneProvenance(promptOneArtifact: unknown) {
   return asRecord(artifact.generationProvenance)
 }
 
-function hasValidGeminiProvenance(promptOneArtifact: unknown) {
+function hasValidModelProvenance(promptOneArtifact: unknown) {
   const provenance = getPromptOneProvenance(promptOneArtifact)
   return (
-    provenance.provider === 'gemini' &&
+    Boolean(asString(provenance.provider)) &&
     provenance.validationStatus === 'valid' &&
     Boolean(asString(provenance.model)) &&
     Boolean(asString(provenance.requestId)) &&
@@ -156,8 +156,8 @@ export async function listTeacherLessons(limit = 50, studentEmail?: string): Pro
       const pendingReview = run.reviewTasks.find((task) => !task.decision)
       const signalProposalCount = signalCount.get(run.id) || 0
       const insightProposalCount = insightCount.get(run.id) || 0
-      const aiProven = hasValidGeminiProvenance(run.promptOneArtifact)
-      const aiStatus: VerificationState = run.errorCode?.startsWith('GEMINI_')
+      const aiProven = hasValidModelProvenance(run.promptOneArtifact)
+      const aiStatus: VerificationState = (run.errorCode?.startsWith('GEMINI_') || run.errorCode === 'MODEL_PROVIDER_FAILED')
         ? 'FAILED'
         : aiProven
           ? 'VERIFIED'
@@ -496,7 +496,7 @@ export async function listCoachingProposals(limit = 100) {
       referenceTypes.has('Evidence') ||
       referenceTypes.has('LearningSignal') ||
       referenceTypes.has('TeacherInsight')
-    const hasValidAiProvenance = Boolean(run && hasValidGeminiProvenance(run.promptOneArtifact))
+    const hasValidAiProvenance = Boolean(run && hasValidModelProvenance(run.promptOneArtifact))
     const hasPersistedEvidence = Boolean(run?.evidenceCandidates.length)
     const sourceFileId = run?.transcript?.sourceFileId || null
     const coveredSourceIds = authoritySourcesByStudent.get(row.studentEmail.toLowerCase())
@@ -728,7 +728,7 @@ export async function getTeacherLessonTrace(pipelineRunId: string) {
   })
 
   const hasPromptOne = Boolean(run.promptOneArtifact)
-  const aiProvenanceValid = hasValidGeminiProvenance(run.promptOneArtifact)
+  const aiProvenanceValid = hasValidModelProvenance(run.promptOneArtifact)
   const qualityRejected = events.some((event) => event.eventType === 'QualityGateRejected')
   const stages: Array<{ key: string; label: string; state: VerificationState; id?: string | null; details?: string }> = [
     {
