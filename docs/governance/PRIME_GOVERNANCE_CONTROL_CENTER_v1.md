@@ -56,3 +56,19 @@ No implementation without process visibility.
 - machine-readable authority registry;
 - proof-package generator;
 - drift detector between canon, code and deployment.
+
+## Execution closure control — 2026-10-05
+
+The governance reading order now includes:
+- `../operations/PRIME_EXECUTION_CLOSURE_LEDGER.md`
+
+Mandatory status semantics:
+- implementation is not closure;
+- merge is not deployment;
+- deployment READY is not runtime proof;
+- runtime-affecting tasks close only after their required runtime/read-back witness;
+- failures/retries remain attached to the same stable work item;
+- every material execution delta must be persisted to Issue #58 + canonical handoff + execution closure ledger.
+
+This rule exists to prevent thought/decision/implementation drift and parallel rework between autonomous executors.
+
