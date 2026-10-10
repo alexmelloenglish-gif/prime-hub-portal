@@ -184,3 +184,46 @@ RECONNECTION STORY DERIVATIVES + LINKEDIN
 ```
 
 **Do not start over. Pick the next unchecked item in the canonical TODO and close it against an explicit proof boundary.**
+
+---
+
+## 11. CURRENT OVERRIDE — 2026-10-05
+
+Older current-state sections in this file are preserved as historical evidence only.
+
+### Current baseline
+
+```text
+main = 5aa12d28a2783c76483918cc10a7b569a1380b92
+Production = dpl_2mjpkFoE6KXd1Ur67tayN7rwvUir / READY
+PR #87 = merged/released
+PR #89 = merged/released
+PR #91 = merged/released
+PR #93 = merged/released
+```
+
+Do not re-investigate those implementation questions from zero.
+
+### What is genuinely still open
+
+```text
+PR #90 provider pool = OPEN
+PR #68 coordination proof lane = OPEN / disposition requires evidence
+PIPELINE_AUTOMATION_FROZEN = still preserved
+full shared-Machine Production trace after PR #93 = NOT DURABLY PROVEN
+automatic-ingest activation = NOT PROVEN
+external Portfolio publication/read-back = open where external witness is absent
+```
+
+### Mandatory anti-rework control
+
+Before creating a new branch or implementation for any of the above, read:
+1. Issue #58;
+2. `docs/operations/PRIME_EXECUTION_CLOSURE_LEDGER.md`;
+3. the canonical handoff;
+4. current GitHub/Vercel evidence.
+
+A failure is not permission to create a replacement architecture. Repair/rerun the same owned lane unless new contradictory evidence requires reopening the design.
+
+Do not treat READY as CLOSED. Use the proof chain in the execution closure ledger.
+

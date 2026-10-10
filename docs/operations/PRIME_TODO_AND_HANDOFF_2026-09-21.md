@@ -1177,3 +1177,41 @@ Production target remained the already verified `READY` deployment `dpl_FULGb5jL
 - No new deployment was made; the authenticated tests ran against the already verified Production SHA/deployment above.
 - Direct network-level proof of Range `206` remains the only unproven sub-check because the connected browser interface does not expose response headers. All other requested authenticated read/action checks above have runtime evidence.
 - `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged; no ingestion, CEFR, canonical state, history, Teacher Authority or database migration was altered.
+
+---
+
+## 2026-10-05 — Execution closure reconciliation
+
+**Supersedes stale return-point wording above for current execution status.**
+
+### Verified current baseline
+- `main = 5aa12d28a2783c76483918cc10a7b569a1380b92`
+- Production deployment `dpl_2mjpkFoE6KXd1Ur67tayN7rwvUir` = READY
+- PR #93 is merged/released and wires Drive event + scheduled reconciliation to the canonical reconciliation worker.
+- PR #91 is merged/released and exposes Machine lineage truth in Teacher Intelligence.
+- PR #89 is merged/released and adds the canonical Learning Machine inbox.
+- PR #87 is merged/released and provides manual canonical Drive-source execution into the shared Machine.
+
+### Still open / must not be inferred closed
+- `PIPELINE_AUTOMATION_FROZEN` remains intentionally preserved by PR #93; automatic ingestion is therefore not proven active.
+- No post-PR-#93 durable Issue #58 witness currently proves a complete shared-Machine Production trace. Treat end-to-end runtime completion as OPEN until persisted source→PipelineRun→Teacher Authority→CLR→projection/final-manifest read-back exists.
+- PR #90 (interchangeable model provider pool) remains open and requires exact-head reconciliation through CI/Preview/merge/Production/runtime proof.
+- PR #68 remains open and must be explicitly reconciled against later coordination proof; close as superseded only with concrete evidence or finish the remaining gap.
+- External Portfolio publication/read-back remains a separate proof boundary wherever repository-side implementation exists without external document witness.
+
+### New closure discipline
+Use `docs/operations/PRIME_EXECUTION_CLOSURE_LEDGER.md` as the required execution-state companion to Issue #58 and this handoff.
+
+Do not use DONE / CLOSED / RESOLVED for a runtime-affecting task unless the required implementation → CI → Preview → merge → Production → runtime/read-back chain is persisted.
+
+Failed attempts remain children of the same task and must be repaired/rerun rather than spawning parallel histories.
+
+### Immediate queue
+1. Reconcile PR #68 disposition.
+2. Audit/repair PR #90 to one exact validated head.
+3. Produce one trustworthy shared-Machine runtime trace from a genuine canonical Drive source, respecting Teacher Authority and the freeze.
+4. Only after that trace passes, separately decide and prove automatic-ingest activation + first-run idempotency/rollback.
+5. Reconcile canonical records, Teacher Intelligence, dashboards and Portfolio links learner-by-learner from persisted lineage.
+
+**Synchronization rule:** every material delta must update Issue #58 + this handoff + the execution closure ledger. Alexandre is not the cross-agent synchronization mechanism.
+

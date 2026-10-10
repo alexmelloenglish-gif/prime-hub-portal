@@ -551,3 +551,67 @@ ObservationDebt belongs to machine uncertainty management. It must be reconciled
 8. runtime/deployment evidence when the task requires it
 
 **STATUS: CURRENT CANONICAL RETURN POINT — 2026-09-21.**
+
+---
+
+# 18. CURRENT OVERRIDE — 2026-10-05
+
+This section supersedes all older dated CURRENT STOP POINT / CURRENT OVERRIDE sections when determining present execution state.
+
+## Verified repository / Production
+
+```text
+repository = alexmelloenglish-gif/prime-hub-portal
+main = 5aa12d28a2783c76483918cc10a7b569a1380b92
+production deployment = dpl_2mjpkFoE6KXd1Ur67tayN7rwvUir
+production state = READY
+production change = PR #93 / Drive triggers wired to canonical reconciliation
+official aliases include www.primedigitalhub.com.br + primedigitalhub.com.br
+```
+
+## Integrated since the stale September return point
+
+- PR #87 — manual canonical Drive source → shared Learning Machine — MERGED / RELEASED.
+- PR #89 — Teacher Intelligence canonical Learning Machine inbox — MERGED / RELEASED.
+- PR #91 — Teacher Intelligence Machine-lineage truth — MERGED / RELEASED.
+- PR #93 — Drive event + scheduled reconciliation wired to canonical worker — MERGED / RELEASED.
+- Gustavo shared canonical six-lesson dashboard work from PR #86 remains in Production history.
+
+## Current protected boundary
+
+PR #93 did **not** remove `PIPELINE_AUTOMATION_FROZEN`.
+
+Therefore:
+
+```text
+DRIVE TRIGGERS WIRED = TRUE
+AUTOMATIC LEARNING MACHINE INGESTION ACTIVE = NOT PROVEN / FROZEN
+END-TO-END SHARED MACHINE PRODUCTION TRACE = NOT YET DURABLY PROVEN AFTER PR #93
+```
+
+The last durable Issue #58 operating-contract inventory before PR #93 recorded zero shared-runner PipelineRuns in Production and required a trustworthy genuine-source Machine trace. No later Issue #58 write-back currently closes that proof boundary.
+
+## Current open lanes
+
+- PR #90 — interchangeable model-provider pool — OPEN; historical Preview failures exist, later Preview recovered, but exact-head closure through merge/Production/runtime proof remains open.
+- PR #68 — coordination wake/ACK runtime-proof lane — OPEN; reconcile against later coordination evidence and either close as superseded with proof or finish a concrete remaining gap.
+- Shared-Machine runtime witness from a genuine canonical Drive source — OPEN.
+- Automatic-ingest activation + first automatic run/idempotency/rollback witness — OPEN and must remain separate from trigger wiring.
+- External Portfolio publication/read-back — OPEN wherever repository-side support exists without external document proof.
+- Learner-by-learner lineage reconciliation across Teacher Intelligence → CLR → dashboard/Portfolio projection — OPEN where not already proven.
+
+## Canonical execution-state source
+
+Read `docs/operations/PRIME_EXECUTION_CLOSURE_LEDGER.md` immediately after this file and Issue #58.
+
+The closure invariant is:
+
+```text
+IMPLEMENTED != MERGED
+MERGED != DEPLOYED
+DEPLOYED/READY != RUNTIME VERIFIED
+NO REQUIRED READ-BACK = NOT CLOSED
+```
+
+**STATUS: CURRENT CANONICAL RETURN POINT — 2026-10-05.**
+
