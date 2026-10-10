@@ -1,21 +1,10 @@
 import Link from 'next/link'
 import { ArrowRight, Route } from 'lucide-react'
 import type { ProjectionEvidenceStatus, ProjectionField } from '@/lib/student-data'
-import { pedagogicalAuthorityStatusClass } from '@/lib/status-color-contract'
-
-const evidenceStatusLabels: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': 'Teacher confirmed',
-  'portfolio-confirmed': 'Teacher confirmed',
-  qualified: 'Teacher note',
-  'not-available': 'Not available',
-}
-
-const evidenceStatusClasses: Record<ProjectionEvidenceStatus, string> = {
-  'teacher-validated': pedagogicalAuthorityStatusClass('TEACHER_CONFIRMED'),
-  'portfolio-confirmed': pedagogicalAuthorityStatusClass('TEACHER_CONFIRMED'),
-  qualified: pedagogicalAuthorityStatusClass('TEACHER_NOTE'),
-  'not-available': pedagogicalAuthorityStatusClass('NOT_AVAILABLE'),
-}
+import {
+  learnerFacingNextAction,
+  learnerFacingText,
+} from '@/lib/student-facing-language-policy'
 
 function isExternalLink(href: string) {
   return href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:')
@@ -27,19 +16,21 @@ function compactText(value: string, max = 150) {
 }
 
 export function EvidenceStatus({ status }: { status: ProjectionEvidenceStatus }) {
+  if (status !== 'not-available') return null
+
   return (
-    <span className={`inline-flex shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${evidenceStatusClasses[status]}`}>
-      {evidenceStatusLabels[status]}
+    <span className="inline-flex shrink-0 rounded-full border border-slate-300 bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-700">
+      Not available
     </span>
   )
 }
 
 export function CurrentStateCard({ label, field }: { label: string; field: ProjectionField }) {
-  const value = field.value ?? 'Not yet established'
+  const value = learnerFacingText(field.value, 'Not yet established')
   const compact = compactText(value)
 
   return (
-    <article className="flex min-h-[190px] flex-col rounded-2xl border border-slate-300 bg-white p-5 shadow-sm ring-1 ring-slate-100">
+    <article className="flex min-h-[150px] flex-col rounded-2xl border border-slate-300 bg-white p-5 shadow-sm ring-1 ring-slate-100">
       <div className="flex min-h-8 items-start justify-between gap-3">
         <p className="pt-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-600">{label}</p>
         <EvidenceStatus status={field.status} />
@@ -47,7 +38,7 @@ export function CurrentStateCard({ label, field }: { label: string; field: Proje
       <p className="mt-4 break-words text-lg font-bold leading-7 text-[#0a235c]">{compact.visible}</p>
       {compact.overflow ? (
         <details className="mt-2 text-xs leading-5 text-slate-700">
-          <summary className="cursor-pointer font-semibold text-blue-700">View full statement</summary>
+          <summary className="cursor-pointer font-semibold text-blue-700">Read more</summary>
           <p className="mt-2">{value}</p>
         </details>
       ) : null}
@@ -56,8 +47,8 @@ export function CurrentStateCard({ label, field }: { label: string; field: Proje
 }
 
 export function DevelopmentTrajectory({ current, target }: { current?: ProjectionField; target?: ProjectionField }) {
-  const currentValue = current?.value ?? 'Current level not yet established'
-  const targetValue = target?.value ?? 'Target not yet validated'
+  const currentValue = learnerFacingText(current?.value, 'Current level not yet established')
+  const targetValue = learnerFacingText(target?.value, 'Target not yet established')
 
   return (
     <section aria-label="Development trajectory" className="rounded-[24px] border border-indigo-200 bg-indigo-50/70 p-5 shadow-sm">
@@ -93,8 +84,13 @@ export function NextActionCard({
   evidence?: string | null
   destination?: string | null
 }) {
-  const href = destination ?? '#next-action'
-  const actionLabel = destination?.includes('calendar.app.google') ? 'Book next support lesson' : 'Open next step'
+  const safeAction = learnerFacingNextAction({ title, description, destination })
+  const href = safeAction.destination ?? '#next-action'
+  const actionLabel = safeAction.destination?.includes('calendar.app.google')
+    ? 'Book next lesson'
+    : safeAction.destination?.includes('meet.google.com')
+      ? 'Join class'
+      : 'Open activity'
   const cta = (
     <span className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#0a235c] shadow-sm transition hover:bg-blue-50 sm:w-auto">
       <ArrowRight className="h-4 w-4" /> {actionLabel}
@@ -108,8 +104,8 @@ export function NextActionCard({
           <div className="flex items-center gap-3"><Route className="h-5 w-5 text-blue-300" /><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-200">Next step</p></div>
           {title ? (
             <>
-              <h3 className="mt-3 text-2xl font-bold leading-tight">{title}</h3>
-              {description ? <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{description}</p> : null}
+              <h3 className="mt-3 text-2xl font-bold leading-tight">{safeAction.title}</h3>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-blue-50">{safeAction.description}</p>
             </>
           ) : (
             <h3 className="mt-3 text-xl font-semibold">Your next step will appear here when it is ready.</h3>
@@ -132,7 +128,7 @@ export function AttendanceSummary({ lessons, scheduleLabel }: { lessons: Attenda
       <p className="mt-2 text-sm leading-6 text-slate-700">Only lessons actually completed with the student present are included.</p>
       {latest ? <p className="mt-4 text-xs font-semibold text-emerald-900">Latest attended: {latest.date}</p> : <p className="mt-4 text-xs text-slate-600">No attended lessons recorded yet.</p>}
       {lessons.length ? <details className="mt-3"><summary className="cursor-pointer text-xs font-bold text-emerald-800">View attended dates</summary><div className="mt-3 flex flex-wrap gap-2">{lessons.map((lesson) => <span key={lesson.id} className="rounded-full border border-emerald-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-emerald-900">{lesson.date}</span>)}</div></details> : null}
-      {scheduleLabel ? <p className="mt-4 border-t border-emerald-200 pt-3 text-xs leading-5 text-slate-600">Schedule: {scheduleLabel}</p> : null}
+      {scheduleLabel ? <p className="mt-4 border-t border-emerald-200 pt-3 text-xs leading-5 text-slate-600">Schedule: {learnerFacingText(scheduleLabel, 'Your lesson schedule is available from PRIME.')}</p> : null}
     </aside>
   )
 }

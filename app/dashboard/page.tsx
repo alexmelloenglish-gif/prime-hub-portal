@@ -11,7 +11,6 @@ import {
   AttendanceSummary,
   CurrentStateCard,
   DevelopmentTrajectory,
-  EvidenceStatus,
   NextActionCard,
 } from '@/components/dashboard/student-dashboard-primitives'
 import { ProgressStateBadge } from '@/components/dashboard/progress-state-badge'
@@ -26,6 +25,7 @@ import {
   selectCurrentFeedback,
 } from '@/lib/dashboard-display-budget'
 import { normalizeProgressState } from '@/lib/progress-states'
+import { learnerFacingText } from '@/lib/student-facing-language-policy'
 import {
   getStudentDashboardState,
   isAdminUser,
@@ -56,7 +56,8 @@ function dedupeByDateAndTitle<T extends { date: string; title: string; id: strin
 
 function reportLearningNotes(value: string) {
   if (!value.startsWith('Transfer points —')) {
-    return value ? { noticed: value, next: null } : { noticed: null, next: null }
+    const noticed = learnerFacingText(value)
+    return noticed ? { noticed } : { noticed: null }
   }
 
   const body = value.slice('Transfer points —'.length).trim()
@@ -77,11 +78,14 @@ function reportLearningNotes(value: string) {
     if (content) parts[label] = content
   }
 
-  const noticed = [parts.Evidence, parts.Interpretation, parts.Boundary].filter(Boolean).join(' ')
-  return {
-    noticed: noticed || null,
-    next: parts['Next verification'] || null,
-  }
+  const noticed = learnerFacingText(
+    [parts.Evidence, parts.Interpretation].filter(Boolean).join(' '),
+  )
+  return { noticed: noticed || null }
+}
+
+function learnerReportTitle(value: string) {
+  return learnerFacingText(value, 'Lesson').replace(/^Class Report\s*[-–—]\s*/i, '')
 }
 
 type DashboardPageProps = {
@@ -204,10 +208,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <section className="space-y-4">
         <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">NOW</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Current State</h3></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {current.level ? <CurrentStateCard label="Current level" field={current.level} /> : null}
-          {current.targetLevel ? <CurrentStateCard label="Target level" field={current.targetLevel} /> : null}
-          {current.objective ? <CurrentStateCard label="Objective" field={current.objective} /> : null}
-          {current.focus ? <CurrentStateCard label="Learning focus" field={current.focus} /> : null}
+          {current.level ? <CurrentStateCard label="Your English now" field={current.level} /> : null}
+          {current.targetLevel ? <CurrentStateCard label="Where you're heading" field={current.targetLevel} /> : null}
+          {current.objective ? <CurrentStateCard label="Your goal" field={current.objective} /> : null}
+          {current.focus ? <CurrentStateCard label="Focus now" field={current.focus} /> : null}
         </div>
         <DevelopmentTrajectory current={current.level} target={current.targetLevel} />
       </section>
@@ -215,11 +219,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <section className="grid gap-5 xl:grid-cols-2">
         {showWhatChanged ? (
           <article className="rounded-[24px] border border-blue-300 bg-blue-50 p-5 shadow-sm ring-1 ring-blue-100">
-            <div className="flex items-start justify-between gap-3"><Sparkles className="h-5 w-5 text-blue-700" />{whatChanged?.status ? <EvidenceStatus status={whatChanged.status} /> : null}</div>
+            <div className="flex items-start gap-3"><Sparkles className="h-5 w-5 text-blue-700" /></div>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-blue-700">What changed</p>
-            <h3 className="mt-1 text-xl font-bold leading-7 text-[#0a235c]">{whatChanged?.title}</h3>
-            {whatChanged?.summary ? <p className="mt-3 text-sm leading-7 text-slate-700">{whatChanged.summary}</p> : null}
-            {whatChanged?.evidence ? <p className="mt-4 border-t border-blue-200 pt-3 text-xs leading-5 text-slate-600">Why this changed: {whatChanged.evidence}</p> : null}
+            <h3 className="mt-1 text-xl font-bold leading-7 text-[#0a235c]">{learnerFacingText(whatChanged?.title, 'A new learning pattern is taking shape')}</h3>
+            {whatChanged?.summary ? <p className="mt-3 text-sm leading-7 text-slate-700">{learnerFacingText(whatChanged.summary)}</p> : null}
           </article>
         ) : null}
 
@@ -228,22 +231,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="mt-5 space-y-3">
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
-              return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{item.title}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{item.why}</p></div></div></div>
-            }) : <p className="text-sm text-slate-600">No validated current priority is available yet.</p>}
+              return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{learnerFacingText(item.title, 'Learning priority')}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{learnerFacingText(item.why, 'Keep building this skill in your next lessons.')}</p></div></div></div>
+            }) : <p className="text-sm text-slate-600">Your current priorities will appear here when they are ready.</p>}
           </div>
         </article>
       </section>
 
-      <NextActionCard title={nextAction?.title} description={nextAction?.description} evidence={nextAction?.evidence} destination={nextAction?.destination ?? undefined} />
+      <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} />
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
         <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-4">
             <section id="attendance-overview" className="space-y-3">
-              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{lesson.title}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
+              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'Lesson summary available in your learning history.')}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
             </section>
-            {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">RECORDS TO CONFIRM</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Needs confirmation</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records stay separate until the lesson details can be confirmed.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{lesson.title}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{lesson.summary}</p></article>)}</div></section> : null}
+            {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">RECORDS TO CONFIRM</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Needs confirmation</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records stay separate until the lesson details can be confirmed.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'This lesson record is waiting to be confirmed.')}</p></article>)}</div></section> : null}
           </div>
           <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} /></div>
         </div>
@@ -251,11 +254,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
             <section className="rounded-[28px] border border-slate-300 bg-slate-100/70 p-4 shadow-sm md:p-5">
         <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Your learning history, useful patterns, vocabulary, grammar and teacher feedback stay together here.</p></div>
-        {allReports.length ? <section id="class-reports" className="mt-5 rounded-[24px] border border-violet-200 bg-violet-50/60 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">Learning history</p><h4 className="mt-1 text-xl font-bold text-[#0a235c]">Class Reports</h4><p className="mt-1 text-sm text-slate-700">Review what you worked on, what your teacher noticed and what comes next.</p></div><div className="mt-4 grid gap-4 lg:grid-cols-2">{allReports.map((report) => { const notes = reportLearningNotes(report.teacherInsight); return <article key={report.id} className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">{report.date}</p><h4 className="mt-1 text-lg font-bold leading-6 text-[#0a235c]">{report.title}</h4><div className="mt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What you worked on</p><p className="mt-2 text-sm leading-6 text-slate-700">{report.summary}</p></div>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => <span key={item} className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-900">{item}</span>)}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-600">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).join(', ')}</p> : null}{notes.noticed ? <div className="mt-4 border-t border-violet-100 pt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What we noticed</p><p className="mt-2 text-sm leading-6 text-[#3d5578]">{notes.noticed}</p></div> : null}{notes.next ? <div className="mt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What comes next</p><p className="mt-2 text-sm leading-6 text-[#3d5578]">{notes.next}</p></div> : null}</article>})}</div></section> : null}
-        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => { const state = normalizeProgressState(item.status); return <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={state} /></div>{state === 'Not Assessed' ? <p className="mt-2.5 text-sm leading-6 text-slate-500">There is not yet enough evidence to classify this skill.</p> : <p className="mt-2.5 text-sm leading-6 text-slate-700">{item.insight}</p>}</article> })}</section> : null}
+        {allReports.length ? <section id="class-reports" className="mt-5 rounded-[24px] border border-violet-200 bg-violet-50/60 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">Learning history</p><h4 className="mt-1 text-xl font-bold text-[#0a235c]">Class Reports</h4><p className="mt-1 text-sm text-slate-700">Tap a class to open the full report.</p></div><div className="mt-4 space-y-3">{allReports.map((report) => { const notes = reportLearningNotes(report.teacherInsight); return <details key={report.id} className="group rounded-2xl border border-violet-200 bg-white shadow-sm"><summary className="cursor-pointer list-none p-4 [&::-webkit-details-marker]:hidden"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">{report.date}</p><h4 className="mt-1 text-base font-bold leading-6 text-[#0a235c]">{learnerReportTitle(report.title)}</h4></div><span className="shrink-0 text-xs font-bold text-violet-700 group-open:hidden">Open</span><span className="hidden shrink-0 text-xs font-bold text-violet-700 group-open:inline">Close</span></div></summary><div className="border-t border-violet-100 px-4 pb-4 pt-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What you worked on</p><p className="mt-2 text-sm leading-6 text-slate-700">{learnerFacingText(report.summary, 'Lesson summary available.')}</p></div>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => { const safeItem = learnerFacingText(item); return safeItem ? <span key={item} className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-900">{safeItem}</span> : null })}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-600">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).map((item) => learnerFacingText(item)).filter(Boolean).join(', ')}</p> : null}{notes.noticed ? <div className="mt-4 border-t border-violet-100 pt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What we noticed</p><p className="mt-2 text-sm leading-6 text-[#3d5578]">{notes.noticed}</p></div> : null}</div></details>})}</div></section> : null}
+        {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => { const state = normalizeProgressState(item.status); return <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={state} /></div>{state === 'Not Assessed' ? <p className="mt-2.5 text-sm leading-6 text-slate-500">We don't have enough information yet to describe this skill.</p> : <p className="mt-2.5 text-sm leading-6 text-slate-700">{learnerFacingText(item.insight, 'Keep building this skill through real use in lessons.')}</p>}</article> })}</section> : null}
         {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-700">Choose a word and use it in a sentence of your own.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
-        {visibleGrammar.length ? <section id="grammar-overview" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-700">{student.grammarOverview.summary}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => <li key={point} className="rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm leading-6 text-[#334b6d] shadow-sm">{point}</li>)}</ul></section> : null}
-        {visibleFeedback.length ? <section id="teacher-feedback" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Teacher Feedback</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">{feedback.title}</h4><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">Teacher perspective</p></div></div><p className="mt-4 text-sm leading-7 text-slate-700">{feedback.body}</p></article>)}</div></section> : null}
+        {visibleGrammar.length ? <section id="grammar-overview" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-700">{learnerFacingText(student.grammarOverview.summary, 'Useful language patterns from your recent lessons.')}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => { const safePoint = learnerFacingText(point); return safePoint ? <li key={point} className="rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm leading-6 text-[#334b6d] shadow-sm">{safePoint}</li> : null })}</ul></section> : null}
+        {visibleFeedback.length ? <section id="teacher-feedback" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Learning Notes</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">{learnerFacingText(feedback.title, 'Learning note')}</h4><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">Learning note</p></div></div><p className="mt-4 text-sm leading-7 text-slate-700">{learnerFacingText(feedback.body, 'A useful learning note will appear here when there is something worth highlighting.')}</p></article>)}</div></section> : null}
         {learningLinks.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your portfolio, book a lesson or contact Prime Support.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{learningLinks.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.id === 'portfolio' ? 'Open your learning portfolio.' : link.id === 'calendar' ? 'Book your next lesson.' : link.id === 'support' ? 'Get help with access, links or class logistics.' : 'Open this learning resource.'}</p></a>)}</div></section> : null}
       </section>
     </div>
