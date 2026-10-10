@@ -34,9 +34,9 @@ function hasText(value: unknown, minimum = 1): value is string {
   return typeof value === 'string' && value.trim().length >= minimum
 }
 
-function isValidGeminiProvenance(provenance: GenerationProvenance | undefined): boolean {
+function isValidModelProvenance(provenance: GenerationProvenance | undefined): boolean {
   if (!provenance) return false
-  if (provenance.provider !== 'gemini') return false
+  if (!hasText(provenance.provider)) return false
   if (!hasText(provenance.model)) return false
   if (!hasText(provenance.requestId)) return false
   if (!hasText(provenance.promptVersion)) return false
@@ -63,7 +63,7 @@ export function evaluatePromptOneGate(input: {
   )
   const reasons: string[] = []
 
-  if (!isValidGeminiProvenance(promptOne.generationProvenance)) reasons.push('Gemini provenance is missing or invalid.')
+  if (!isValidModelProvenance(promptOne.generationProvenance)) reasons.push('Model provenance is missing or invalid.')
   if (!candidates.length) reasons.push('Prompt 1 produced zero evidence candidates.')
   if (substantive.length === 0) reasons.push('Prompt 1 has no substantive traceable evidence candidate.')
   if (persistedEvidenceCount < substantive.length) reasons.push('Persisted evidence count is lower than substantive candidate count.')
@@ -95,8 +95,8 @@ export function evaluateClassReportGate(input: {
 
   if (hasPlaceholder) reasons.push('Class Report contains a known placeholder.')
   if (!hasSubstantiveReport) reasons.push('Class Report lacks substantive persisted evidence content.')
-  if (report.generationStatus !== 'gemini_generated') reasons.push('Class Report generation status is not gemini_generated.')
-  if (!isValidGeminiProvenance(report.generationProvenance)) reasons.push('Class Report Gemini provenance is missing or invalid.')
+  if (report.generationStatus !== 'model_generated' && report.generationStatus !== 'gemini_generated') reasons.push('Class Report generation status is not a proven model-generated state.')
+  if (!isValidModelProvenance(report.generationProvenance)) reasons.push('Class Report model provenance is missing or invalid.')
 
   const allowed = reasons.length === 0
   return {

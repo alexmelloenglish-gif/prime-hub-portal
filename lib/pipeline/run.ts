@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
-import { GeminiGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
+import { ModelGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
 import { evaluateClassReportGate, evaluatePromptOneGate, qualityGateErrorMessage, QualityGateRejectedError, type QualityGateAssessment } from './quality-gate'
 import {
   SHARED_LEARNING_MACHINE_CONTRACT_VERSION,
@@ -640,7 +640,7 @@ async function publishAfterReview(
     ...report,
     documentStatus: 'published',
     contentStatus: 'validated',
-    generationStatus: 'gemini_generated',
+    generationStatus: report.generationStatus || 'model_generated',
     implementationStatus: 'proven',
   }
   if (projection.documentStatus !== 'published') {
@@ -1215,12 +1215,12 @@ export async function processLessonTranscript(
         return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
       }
     }
-    const isGeminiFailure = error instanceof GeminiGenerationError
+    const isModelFailure = error instanceof ModelGenerationError
     const message = error instanceof Error ? error.message : 'Unknown pipeline failure'
-    if (isGeminiFailure) {
+    if (isModelFailure) {
       const aggregateId = `${run.id}:${error.stage}`
       await prisma.pipelineEvent.upsert({
-        where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: run.id, eventType: 'GeminiGenerationFailed', aggregateId } },
+        where: { pipelineRunId_eventType_aggregateId: { pipelineRunId: run.id, eventType: 'ModelGenerationFailed', aggregateId } },
         update: {
           payload: {
             provider: error.provider,
@@ -1234,12 +1234,13 @@ export async function processLessonTranscript(
             stage: error.stage,
             code: error.code,
             httpStatus: error.httpStatus || null,
+            attempts: error.attempts,
           },
         },
         create: {
           pipelineRunId: run.id,
-          eventType: 'GeminiGenerationFailed',
-          aggregateType: 'GeminiGeneration',
+          eventType: 'ModelGenerationFailed',
+          aggregateType: 'ModelGeneration',
           aggregateId,
           payload: {
             provider: error.provider,
@@ -1253,6 +1254,7 @@ export async function processLessonTranscript(
             stage: error.stage,
             code: error.code,
             httpStatus: error.httpStatus || null,
+            attempts: error.attempts,
           },
         },
       })
@@ -1261,7 +1263,7 @@ export async function processLessonTranscript(
       where: { id: run.id },
       data: {
         status: 'failed',
-        errorCode: isGeminiFailure ? `GEMINI_${error.code.toUpperCase()}` : 'PIPELINE_FAILED',
+        errorCode: isModelFailure ? 'MODEL_PROVIDER_FAILED' : 'PIPELINE_FAILED',
         errorMessage: message,
       },
     })
