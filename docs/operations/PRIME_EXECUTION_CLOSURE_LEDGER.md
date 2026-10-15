@@ -171,3 +171,39 @@ RUNTIME-VERIFIED + REQUIRED READ-BACK → ELIGIBLE TO CLOSE
 
 ### Operational invariant for all future handoffs
 A deploy tagged ERROR, CANCELED, or replaced remains attached to its **failure lane** and a named remediation; only truly redundant intermediate builds may be canceled for capacity. Update Issue #58 plus this handoff and closure ledger on each material change. Owner must not need to rediscover old failures.
+
+
+---
+
+## 2026-10-15 — BUILD REMEDIATION VERIFIED; FUNCTIONAL INCIDENTS STILL OPEN (continuation of Issue #58)
+
+**This checkpoint supersedes the earlier 2026-10-15 DL-01 "under repair" phrasing, not the open-functional work.** The owner expressly rejects treating older failed deploys as merely historical. A repaired build is evidence of one resolved *failure cause*, not evidence that every feature associated with that branch is correct.
+
+### DL-01 / PR #95 — build breakages FIXED + deployed; authenticated learner acceptance OPEN
+1. Previously failed Vercel previews: `dpl_DxdQvUtqm4G6LXo8bsPLsWZDTeHN`, `dpl_G1SCovDPsfLWqhKV4M3msfV7rRvX`, `dpl_5LVkN6k1mfDtVbemUXM8t8dTGkSr`, `dpl_6BDhEvyDFxpDxrVZRCtbyvHaQA3S` (stale positive `teacher-validated` expectation).
+2. Later exact-head build also failed on unescaped apostrophe in JSX (`react/no-unescaped-entities`).
+3. Both causes fixed **on the same PR #95**: commits `c2c34c6...` (status-color contract keeps internal Teacher Authority but not student badges), `ac3b443...` (JSX).
+4. Exact PR head `ac3b443169d207417ade0a2c519c6e4c30ccaaf8`: Student Dashboard Contract / Coordination Runtime Witness / Golden Runtime Witness all SUCCESS; Vercel Preview `dpl_BqhVWH8gUchHUkgV1henFz1Ldpri` READY.
+5. PR #95 merged as `33d46be9205d94f32de21a58c4220ec5a767b4c3`; Production deployment `dpl_5RoCTRaACfnZEfcu81cHQSb6e8QP` READY; `www.primedigitalhub.com.br` resolves to this exact SHA; public home returned HTTP 200; last-hour Vercel runtime error scan: zero groups.
+6. **Still OPEN:** signed-in learner/mobile read-back for Gus/Louise; verify collapsed reports, no authority badges, no teacher-only text, correct Next Step destination and actual student ownership. Passing build and unauthenticated homepage do not prove these.
+
+### DL-02 / Google Meet attendance cron — configuration PARTIALLY REPAIRED, operation OPEN
+1. Recurrent seven-day error group `meet_attendance_cron_failed / PRIME_MEET_ORGANIZER_EMAIL_NOT_CONFIGURED`, seven occurrences, last 14 October on `/api/cron/meet-attendance`.
+2. On 15 October, Vercel Production key `PRIME_MEET_ORGANIZER_EMAIL` was created with non-secret value `alexmello.english@gmail.com` specified by the repository `.env.example` (environment variable ID `XwO8GoW9pIewVYNl`). No credentials revealed/committed; CRON_SECRET remains platform-managed.
+3. Post-change Production build contains new environment binding. **Do not call cron repaired** until the actual organizer OAuth account + Meet readonly scope, a successful bounded scheduled/manual reconciliation, persisted attendance read-back and idempotency are proven. No such witness yet; last-hour absence of errors does not prove future cron health.
+
+### DL-03 / Warnings and dependency vulnerabilities — OPEN
+- Raw `<img>` Next lint/performance warnings, obsolete Browserslist data, unused arguments `_portalHref` and `_user`, Vercel 20.x Settings vs Node 22.x repository engine warning remain to be triaged.
+- Prior npm install output counted 35 advisories including 3 critical. No reviewed production dependency severity/fix matrix or lockfile remediation yet. Do not use indiscriminate force updates.
+- Preserve these as an actionable engineering lane with reviewed dependency upgrades and build/runtime proof, not "nonblocking, therefore closed".
+
+### DL-04 / Genuine shared-Machine evidence — OPEN (not a build error)
+- Louise/Gustavo latest lessons must be processed from actual canonical source through PipelineRun, teacher decision, CLR, dashboard and Portfolio without shortcut.
+- Incorrect cross-learner Next Step origin/destination is not established as corrected by the learner-facing fallback alone.
+- Keep `PIPELINE_AUTOMATION_FROZEN` untouched absent separately authorized activation.
+
+### Synchronization and handoff
+- Prior docs/ledger reconciliation merged as PR #98, SHA `16ece9576953b05cd28c9370a90bf34acf9b93c0`.
+- Issue #58 audit comment `6183671865` and remediation update comment `6183743801` are part of this lane.
+- Next actions: (1) authenticated student/mobile acceptance, (2) verify next Meet cron actual runtime/OAuth and persist idempotent attendance result, (3) vulnerability triage and build hygiene, (4) source-to-final shared-Machine proof.
+- No status may advance to CLOSED solely because an obsolete deploy was superseded or a newer build reached READY.
