@@ -37,14 +37,13 @@ No fourth temporal layer such as LONGITUDINAL is permitted in the student-facing
 
 Current level, target level, objective and learning focus may be shown only from authorized learner state.
 
-Student-facing authority labels use natural language:
-- Teacher confirmed
-- Teacher note
-- Not available
+Student-facing authority is implicit in publication. The learner should not be asked to interpret validation mechanics.
 
-Internal distinctions such as teacher-validated, portfolio-confirmed, qualified, canonical, repository, source authority or projection version remain implementation details.
+Positive provenance labels such as "Teacher confirmed", "Teacher validated", "Teacher authorized", "AI generated", "System detected", "Portfolio confirmed" or similar governance language must not appear on the learner surface. If a state is genuinely unavailable, "Not available" may be shown because the absence itself is meaningful to the learner.
 
-Do not explain validation mechanics to the learner.
+Internal distinctions such as teacher-validated, portfolio-confirmed, qualified, canonical, repository, source authority, model/provider provenance or projection version remain teacher/audit implementation details.
+
+AI may assist in producing candidates, summaries or structured proposals, but it does not receive student-facing authorship or authority credit. Publication authority belongs to the PRIME learning process and its human gate; that governance stays behind the interface.
 
 ## What Changed
 
@@ -76,6 +75,8 @@ Avoid internal evidence-state vocabulary.
 
 Show the action in language the learner can understand and act on.
 
+The learner-facing action must describe what the learner will do or experience. Teacher lesson-plan instructions ("start with...", "observe...", "prioritize...", "check whether...", "conduct...") must remain teacher-side and must never be used as the student's Next Step description.
+
 Do not expose:
 - Evidence
 - Learning signal
@@ -99,10 +100,13 @@ Pending records, when shown, use learner-facing language such as "Needs confirma
 
 Learning History preserves complete published class-report history.
 
+Class reports are collapsed by default, especially on mobile. The learner sees the lesson date/title first and chooses when to open the detail.
+
 Class reports use learner-facing labels:
 - What you worked on
 - What we noticed
-- What comes next
+
+The dashboard has one centralized Next Step. Do not repeat teacher planning or "next verification" instructions inside every historical report.
 
 Internal source strings may continue to preserve evidence, interpretation, boundary and verification semantics, but these labels must not leak into the student-facing interface.
 
@@ -172,3 +176,17 @@ A dashboard conforms to Presentation Contract v1 when a learner can answer these
 4. What should I do next?
 5. What happened recently?
 6. What should I remember from my learning history?
+
+
+## Enforcement model
+
+This contract is enforced in code, not by relying on prompt obedience alone.
+
+- Generated or imported learner-facing strings pass through a runtime language policy gate.
+- Internal governance vocabulary and teacher-only lesson-plan phrasing fail closed to a neutral learner-safe fallback.
+- Positive authority/provenance badges are not rendered on the learner surface.
+- Student-dashboard CI runs a dedicated learner-facing language policy self-test.
+- Class Reports must remain collapsed by default.
+- A future content generator may propose content, but it cannot bypass the deterministic learner renderer or the build gate.
+
+Teacher/audit views may preserve full provenance, evidence, model/provider metadata, boundaries and authorization state.
