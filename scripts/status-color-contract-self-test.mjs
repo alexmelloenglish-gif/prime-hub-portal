@@ -43,10 +43,13 @@ assert.ok(!confirmedBlock.includes('emerald-') && !confirmedBlock.includes('gree
 const editedConfirmedBlock = statusContract.match(/TEACHER_EDITED_CONFIRMED:[\s\S]*?},/)?.[0] || ''
 assert.ok(editedConfirmedBlock.includes('blue-'), 'Teacher Edited & Confirmed must remain blue')
 
-assert.match(studentPrimitives, /'teacher-validated': pedagogicalAuthorityStatusClass\('TEACHER_CONFIRMED'\)/)
-assert.match(studentPrimitives, /'portfolio-confirmed': pedagogicalAuthorityStatusClass\('TEACHER_CONFIRMED'\)/)
-assert.match(studentPrimitives, /qualified: pedagogicalAuthorityStatusClass\('TEACHER_NOTE'\)/)
-assert.match(studentPrimitives, /'not-available': pedagogicalAuthorityStatusClass\('NOT_AVAILABLE'\)/)
+// Teacher Authority is still represented by the canonical contract and in teacher-facing
+// intelligence surfaces. It must NOT appear as positive validation badges on student cards.
+assert.doesNotMatch(studentPrimitives, /pedagogicalAuthorityStatusClass\('TEACHER_CONFIRMED'\)/)
+assert.doesNotMatch(studentPrimitives, /'teacher-validated':\s*'Teacher confirmed'/)
+assert.match(studentPrimitives, /status !== 'not-available'/)
+assert.match(studentPrimitives, /Not available/)
+
 
 assert.match(intelligenceBadge, /PedagogicalAuthorityStatus/)
 assert.match(insights, /Teacher confirmed/)
