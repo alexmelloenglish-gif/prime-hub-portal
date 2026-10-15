@@ -18,7 +18,7 @@ export function HeroSection() {
       <div className="pointer-events-none absolute right-[-10rem] top-[-8rem] h-[34rem] w-[34rem] rounded-full bg-[#eaf2fb] blur-3xl" aria-hidden="true" />
       <div className="pointer-events-none absolute left-[-12rem] top-[28rem] h-[28rem] w-[28rem] rounded-full bg-red-50 blur-3xl" aria-hidden="true" />
 
-      <div className="container relative z-10 grid min-w-0 items-center gap-10 pb-14 pt-8 lg:grid-cols-[0.93fr_1.07fr] lg:pb-18 lg:pt-12">
+      <div className="container relative z-10 grid min-w-0 items-center gap-10 pb-14 pt-8 lg:grid-cols-[0.93fr_1.07fr] lg:pb-20 lg:pt-12">
         <div className="min-w-0 space-y-6">
           <div className="inline-flex max-w-full items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#244571] sm:text-sm sm:tracking-[0.22em]">
             <span className="h-2 w-2 shrink-0 rounded-full bg-prime-red" />
