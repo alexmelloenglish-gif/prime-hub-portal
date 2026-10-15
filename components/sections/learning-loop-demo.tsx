@@ -26,7 +26,7 @@ const steps = [
 
 export function LearningLoopDemo() {
   return (
-    <section id="como-funciona" className="relative overflow-hidden border-y border-slate-200 bg-[#f7fafd] py-14 sm:py-18">
+    <section id="como-funciona" className="relative overflow-hidden border-y border-slate-200 bg-[#f7fafd] py-14 sm:py-20">
       <div className="container relative z-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-prime-red">Como funciona</p>
