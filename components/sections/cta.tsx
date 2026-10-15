@@ -32,6 +32,9 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
               <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
                 Conte o que você quer conseguir com o inglês e conheça o acompanhamento da Prime.
               </p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+                Escolha um horário disponível e receba as instruções do encontro.
+              </p>
 
               <div className="mt-7 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a
@@ -56,7 +59,7 @@ export function CTASection({ portalHref: _portalHref }: CTASectionProps) {
                   aria-label="Falar com a Prime Digital Hub pelo WhatsApp"
                   className={cn(
                     buttonVariants({ size: 'lg' }),
-                    'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640] bg-[#118640] px-6 py-3 text-center text-base font-semibold leading-5 text-white shadow-[0_16px_34px_rgba(17,134,64,0.18)] transition hover:border-[#0f753a] hover:bg-[#0f753a] hover:text-white sm:w-auto sm:px-7'
+                    'h-auto min-h-12 w-full min-w-0 max-w-full whitespace-normal rounded-full border border-[#118640]/35 bg-white px-6 py-3 text-center text-base font-semibold leading-5 text-[#118640] transition hover:border-[#118640] hover:bg-green-50 hover:text-[#0f753a] sm:w-auto sm:px-7'
                   )}
                 >
                   <WhatsAppIcon className="mr-2 h-5 w-5 shrink-0" />
