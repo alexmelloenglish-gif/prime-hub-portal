@@ -24,9 +24,9 @@ export function FeaturesGrid() {
       <div className="container">
         <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-prime-red">Acompanhamento docente</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-prime-red">Professor</p>
             <h2 className="font-display text-3xl font-bold tracking-tight text-[#0b2c5c] md:text-4xl">
-              Um professor que acompanha o seu caminho.
+              Acompanhamento humano, aula após aula.
             </h2>
             <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
               Seus objetivos, dúvidas e experiências fazem parte da aula. O professor orienta a prática, oferece correções e decide com você como avançar.
@@ -34,6 +34,9 @@ export function FeaturesGrid() {
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-600">
               Você entende melhor o que conseguiu fazer, onde ainda precisa de prática e por que determinado foco vem a seguir.
             </p>
+            <div className="mt-6 inline-flex items-center rounded-full border border-slate-200 bg-[#f7fafd] px-4 py-2 text-sm font-semibold text-[#244571]">
+              Alexandre Mello · Professor e fundador da Prime Digital Hub
+            </div>
           </div>
 
           <div className="grid gap-4">
