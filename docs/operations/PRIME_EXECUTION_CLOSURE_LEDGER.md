@@ -137,3 +137,37 @@ DEPLOYED → NOT NECESSARILY WORKING
 READY → NOT NECESSARILY RUNTIME-VERIFIED
 RUNTIME-VERIFIED + REQUIRED READ-BACK → ELIGIBLE TO CLOSE
 ```
+
+
+---
+
+## 2026-10-15 — DEPLOY BACKLOG IS ACTIVE WORK (owner correction, NOT archival evidence)
+
+**Directive:** Failed/obsolete deploys do not become "historical-only" by age, or by another later READY deployment. They remain OPEN corrective items until root cause, remediating exact SHA, checks, Production read-back and functional acceptance are documented. Canceled intermediate preview builds of the *same* superseded head can be classified as capacity deduplication, but this does not close root-cause incidents. Canonical mirror: Issue #58 comment `6183671865`.
+
+### DL-01 — Student dashboard PR #95: BLOCKED / UNDER REPAIR
+- PR: #95 `fix/student-dashboard-learner-language-2026-10-10`, still OPEN/unmerged at this checkpoint.
+- Failed previews include `dpl_DxdQvUtqm4G6LXo8bsPLsWZDTeHN`, `dpl_G1SCovDPsfLWqhKV4M3msfV7rRvX`, `dpl_5LVkN6k1mfDtVbemUXM8t8dTGkSr`, `dpl_6BDhEvyDFxpDxrVZRCtbyvHaQA3S`.
+- Repeated root cause from Vercel build stderr: `scripts/status-color-contract-self-test.mjs` retained an assertion that student primitives map `teacher-validated` to a visible TEACHER_CONFIRMED badge, while PR #95 correctly removes positive provenance badges from learner UI. **Test/projection-boundary mismatch, not Vercel outage.**
+- Repair attempt now on PR #95: align status-color test with learner-hidden / teacher-internal authority, commit `c2c34c6b5546c493cae66a6b0f85da44a9f71d9a`; verify latest exact-head build + all workflows; repair other regressions on the same PR, then merge, Production deploy and read-back on student UI at desktop/mobile. **OPEN until those proofs exist.**
+- Important: audit/full source/Teacher Authority remains internal; merely changing tests is insufficient to declare UI correct. Learner "Next Step" must not link to another student's task; Gus/Louise reprocessing and data ownership remain distinct unclosed pipeline work.
+
+### DL-02 — Meet attendance cron repeatedly fails in Production: OPEN
+- Last 7-day Vercel runtime grouped errors: **7** occurrences of `meet_attendance_cron_failed / PRIME_MEET_ORGANIZER_EMAIL_NOT_CONFIGURED`, route `/api/cron/meet-attendance`, last `2026-10-14T04:57:07Z`.
+- `CRON_SECRET` exists in Production; no `PRIME_MEET_ORGANIZER_EMAIL` or `GOOGLE_MEET_ACCESS_TOKEN` found in the Production Vercel environment key inventory at this checkpoint.
+- `.env.example` mentions `alexmello.english@gmail.com` as intended organizer hint but **does not itself prove the connected OAuth account has Meet readonly scope or refresh-token readiness**.
+- Required repair: recover the actual organizer identity from platform records, provision least-privilege runtime env in Vercel, verify Google Meet delegated access/token/scopes, execute one authorized bounded cron reconciliation with persisted result, prove no duplicate attendance and inspect subsequent scheduled run. **Do not hardcode tokens, invent authorization, or mark resolved because the error disappears.**
+
+### DL-03 — Production build warnings / security audit: OPEN until triaged
+- Non-blocking warnings: deprecated/stale `caniuse-lite` Browserslist data; Next.js raw `<img>` warnings (hero, CTA, programs); unused `_portalHref` and `_user`; Vercel Settings Node 20.x vs repository `engines.node=22.x`.
+- Older Vercel npm install output reported **35 dependency advisories (1 low, 10 moderate, 21 high, 3 critical)**. Inventory and prioritize exploitable production vulnerabilities, lockfile-reviewed upgrades; never blindly `npm audit fix --force`.
+- Required proof: exact package/lockfile upgrade, full tests/CI/Preview, Production smoke and fresh `npm audit --omit=dev` differentiation, without conflating warnings with runtime incidents.
+
+### DL-04 — Other outstanding canonical-runtime lanes (not closed by landing release)
+- PR #97 landing (Production commit `1e40f8ca11408d3e056fccb282f160b91128222c`, deployment `dpl_AaZHrqekhdPihwi4AovdibdxYgTT`, READY, homepage HTTP 200): landing-only success. Does not close dashboard or Meet cron incidents.
+- Genuine Louise and Gustavo source lessons still require end-to-end shared Machine `source → PipelineRun → Teacher Authority → CLR → projections → dashboard/portfolio read-back`, preserving `PIPELINE_AUTOMATION_FROZEN` until specifically authorized.
+- Gustavo wrong-student Next Step, verbose/mobile reports, exposed governance phrasing: PR #95 addresses rendering; data/projection identity and canonical replay remain OPEN pending runtime proof.
+- Explicit Gustavo checkpoint DB deletion remains unverified and must not be inferred from a UI hide.
+
+### Operational invariant for all future handoffs
+A deploy tagged ERROR, CANCELED, or replaced remains attached to its **failure lane** and a named remediation; only truly redundant intermediate builds may be canceled for capacity. Update Issue #58 plus this handoff and closure ledger on each material change. Owner must not need to rediscover old failures.
