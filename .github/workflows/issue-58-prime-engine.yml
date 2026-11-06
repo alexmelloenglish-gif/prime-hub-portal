@@ -143,7 +143,7 @@ jobs:
 
   dependency-remediation:
     name: Review and remediate production dependency advisories
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/chore/issue-58-prime-engine-closure' && !contains(github.event.head_commit.message, 'security(deps): remediate production advisories') }}
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
