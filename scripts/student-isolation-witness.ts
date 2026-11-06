@@ -34,9 +34,9 @@ async function main() {
   assert.match(resolverSource, /studentId: requestedStudentId/, 'G6 must resolve the explicitly requested learner id')
   assert.doesNotMatch(resolverSource, /guardianEmail|canonicalEmail|studentEmail/, 'G6 must not infer authority from email equality')
 
-  async function createUser(role: string) {
+  async function createUser(identity: string, role: string) {
     const user = await prisma.user.create({
-      data: { name: 'Synthetic ' + role, email: role + '.' + nonce + '@invalid.test', role },
+      data: { name: 'Synthetic ' + identity, email: identity + '.' + nonce + '@invalid.test', role },
     })
     createdUserIds.push(user.id)
     return user
@@ -72,11 +72,11 @@ async function main() {
   }
 
   try {
-    const admin = await createUser('admin')
-    const studentA = await createUser('student')
-    const studentB = await createUser('student')
-    const guardian = await createUser('guardian')
-    const teacher = await createUser('teacher')
+    const admin = await createUser('admin', 'admin')
+    const studentA = await createUser('student-a', 'student')
+    const studentB = await createUser('student-b', 'student')
+    const guardian = await createUser('guardian', 'guardian')
+    const teacher = await createUser('teacher', 'teacher')
 
     await addRelation({ userId: studentA.id, studentId: learnerA, relationType: 'LEARNER_SELF', authorizedBy: admin.id })
     await addRelation({ userId: studentB.id, studentId: learnerB, relationType: 'LEARNER_SELF', authorizedBy: admin.id })
