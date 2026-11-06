@@ -10,6 +10,7 @@ const files = {
   insights: 'app/dashboard/admin/intelligence/insights/page.tsx',
   learningState: 'app/dashboard/admin/intelligence/learning-state/page.tsx',
   validation: 'app/dashboard/admin/intelligence/validation/page.tsx',
+  validationTask: 'app/dashboard/admin/intelligence/validation/[taskId]/page.tsx',
   learners: 'app/dashboard/admin/intelligence/students/page.tsx',
   learnerDecision: 'app/dashboard/admin/intelligence/students/[studentId]/page.tsx',
   decisionPackages: 'lib/teacher-decision-packages.ts',
@@ -79,7 +80,7 @@ assert.match(source.actions, /Only source-grounded AI proposals that are still u
 assert.match(source.actions, /Historical proposal containment/, 'Teaching Actions must keep excluded historical proposals visible as contained history rather than deleting them')
 assert.doesNotMatch(source.actions, /label="Teacher review"/, 'Teaching Actions must not falsely label legacy CoachingGuidance rows as pending teacher review')
 assert.match(source.validation, /Teacher decisions and exceptions/, 'Validation must remain a bounded human-decision workspace')
-assert.match(source.validation, /recordTeacherAuthorityDecision/, 'Canonical validation decisions must use the persisted Teacher Authority service')
+assert.match(source.validationTask, /recordTeacherAuthorityDecision/, 'Canonical validation decisions must use the persisted Teacher Authority service')
 assert.match(source.authorityDecision, /canonicalAuthorityDraftHash/, 'Teacher approval must bind to the exact preserved authority payload hash')
 assert.match(source.authorityDecision, /reviewer\.role/, 'Teacher Authority service must resolve and enforce the persisted reviewer role')
 assert.match(source.authorityDecision, /updateMany\([\s\S]*status: 'pending'/, 'Only one decision may win the pending-task transition')
