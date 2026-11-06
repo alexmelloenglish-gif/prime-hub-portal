@@ -7,6 +7,7 @@ import fs from 'node:fs'
 import { buildSharedLearningMachineExecutionOptions } from '../lib/learning-machine/shared-run-contract.ts'
 import { resolveExistingDriveTranscriptDisposition } from '../lib/pipeline/retry-eligibility.ts'
 
+async function main() {
 process.env.GOOGLE_AI_STUDIO_API_KEY = 'retry-state-witness-synthetic-key'
 process.env.PRIME_PIPELINE_MODEL = 'retry-state-witness-deterministic'
 process.env.PRIME_MODEL_PROVIDER_ORDER = 'gemini'
@@ -274,6 +275,13 @@ try {
 } finally {
   await prisma.$disconnect()
 }
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
+
 }
 
 main().catch((error) => {
