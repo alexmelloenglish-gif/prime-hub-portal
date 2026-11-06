@@ -9,7 +9,7 @@ export const maxDuration = 300
 
 function isAuthorized(request: Request): boolean {
   const expected = process.env.PRIME_PIPELINE_INGEST_SECRET
-  if (!expected) return process.env.NODE_ENV !== 'production'
+  if (!expected) return false
   return request.headers.get('x-prime-pipeline-secret') === expected
 }
 

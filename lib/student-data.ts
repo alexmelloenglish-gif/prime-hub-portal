@@ -247,10 +247,6 @@ function canPreviewAnotherStudent(user: AuthenticatedUser, requestedStudentEmail
     return false
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    return true
-  }
-
   return isAdminUser(user)
 }
 

@@ -3,11 +3,15 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { isAdminUser } from '@/lib/student-data'
 import { reviewPipelineRun } from '@/lib/pipeline/run'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
@@ -35,6 +39,7 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to process review decision'
     const status = message.includes('not found') || message.includes('missing') ? 404 : 500
-    return NextResponse.json({ error: message }, { status })
+    console.error(JSON.stringify({ event: 'pipeline_review_failed', status, errorName: error instanceof Error ? error.name : 'UnknownError' }))
+    return NextResponse.json({ error: status === 404 ? 'review_target_not_found' : 'review_failed' }, { status })
   }
 }

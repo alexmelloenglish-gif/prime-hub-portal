@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
 import { getStudentDashboardState } from '@/lib/student-data'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 function vocabularyKey(term: string) {
   return term.trim().toLocaleLowerCase('en-US')
@@ -51,6 +52,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
+  const contentLength = Number(request.headers.get('content-length') || 0)
+  if (contentLength > 16_000) {
+    return NextResponse.json({ error: 'request_too_large' }, { status: 413 })
+  }
+
   let body: Record<string, unknown>
   try {
     body = (await request.json()) as Record<string, unknown>

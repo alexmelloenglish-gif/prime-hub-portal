@@ -3,10 +3,13 @@ import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { isAdminUser } from '@/lib/student-data'
 import { getPrismaClient } from '@/lib/prisma'
+import { decryptAudio } from '@/lib/private-audio'
 
 type SubmissionPayload = {
   mimeType?: string
-  audioBase64?: string
+  audioCiphertext?: string
+  audioIv?: string
+  audioAuthTag?: string
 }
 
 function parseRange(rangeHeader: string | null, size: number) {
@@ -45,11 +48,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 
   const payload = event.payload as SubmissionPayload
-  if (!payload.audioBase64 || !payload.mimeType?.startsWith('audio/')) {
+  if (!payload.audioCiphertext || !payload.audioIv || !payload.audioAuthTag || !payload.mimeType?.startsWith('audio/')) {
     return NextResponse.json({ error: 'Audio unavailable' }, { status: 404 })
   }
 
-  const bytes = Buffer.from(payload.audioBase64, 'base64')
+  let bytes: Buffer
+  try {
+    bytes = decryptAudio(payload) || Buffer.alloc(0)
+  } catch {
+    return NextResponse.json({ error: 'Audio unavailable' }, { status: 404 })
+  }
+  if (!bytes.length) return NextResponse.json({ error: 'Audio unavailable' }, { status: 404 })
   const size = bytes.length
   const range = parseRange(request.headers.get('range'), size)
 
@@ -73,7 +82,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   if (range && !range.invalid) {
     const chunk = bytes.subarray(range.start, range.end + 1)
-    return new Response(chunk, {
+    return new Response(new Uint8Array(chunk), {
       status: 206,
       headers: {
         ...commonHeaders,
@@ -83,7 +92,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     })
   }
 
-  return new Response(bytes, {
+  return new Response(new Uint8Array(bytes), {
     status: 200,
     headers: {
       ...commonHeaders,

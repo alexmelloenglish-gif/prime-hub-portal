@@ -1,6 +1,9 @@
 import { randomUUID } from 'crypto'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import { getPrismaClient } from '@/lib/prisma'
+import { authOptions } from '@/lib/auth'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 const ALLOWED_VALUES = new Set(['VERY_WELL', 'WITH_HELP', 'STUDY_MORE'])
 const REQUIRED_ITEMS = [
@@ -21,6 +24,19 @@ const REQUIRED_ITEMS = [
 
 export async function POST(request: Request) {
   try {
+    const originError = rejectCrossOriginMutation(request)
+    if (originError) return originError
+
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ ok: false, error: 'authentication_required' }, { status: 401 })
+    }
+
+    const contentLength = Number(request.headers.get('content-length') || 0)
+    if (contentLength > 32_000) {
+      return NextResponse.json({ ok: false, error: 'payload_too_large' }, { status: 413 })
+    }
+
     const body = await request.json()
     if (body?.journeyKey !== '7q4m9' || body?.studentId !== 'stu_4c4da6c04ac4') {
       return NextResponse.json({ ok: false, error: 'invalid_journey' }, { status: 403 })
@@ -47,6 +63,7 @@ export async function POST(request: Request) {
           studentId: 'stu_4c4da6c04ac4',
           journeyId: 'gustavo-first-5-lessons-2026',
           source: 'young-learner-journey-check-in',
+          submittedBy: session.user.email,
           ratingsAreSelfPerceptionNotProficiency: true,
           answers,
           recordedAt: recordedAt.toISOString(),

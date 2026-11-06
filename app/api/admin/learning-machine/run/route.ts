@@ -5,12 +5,16 @@ import { executeSharedLearningMachine } from '@/lib/learning-machine/shared-runn
 import { prepareDriveTranscriptPayload } from '@/lib/drive-reconciliation'
 import { parseTranscriptPayload } from '@/lib/pipeline/run'
 import { isAdminUser } from '@/lib/student-data'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
 
 export async function POST(request: Request) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
@@ -32,7 +36,7 @@ export async function POST(request: Request) {
     })
     return NextResponse.json(result)
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to execute PRIME Learning Machine'
-    return NextResponse.json({ error: message }, { status: 400 })
+    console.error(JSON.stringify({ event: 'admin_learning_machine_failed', errorName: error instanceof Error ? error.name : 'UnknownError' }))
+    return NextResponse.json({ error: 'learning_machine_execution_failed' }, { status: 400 })
   }
 }

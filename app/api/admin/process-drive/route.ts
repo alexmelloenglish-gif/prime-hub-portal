@@ -3,11 +3,15 @@ import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 import { isAdminUser } from '@/lib/student-data'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-export async function POST() {
+export async function POST(request: Request) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
   const session = await getServerSession(authOptions)
 
   if (!session?.user) {

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { getStudentDashboardState } from '@/lib/student-data'
 import { getPrismaClient } from '@/lib/prisma'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
+import { encryptAudio } from '@/lib/private-audio'
 
 const MAX_AUDIO_BYTES = 3 * 1024 * 1024
 const SUPPORTED_ACTION_IDS = new Set([
@@ -62,8 +64,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const contentLength = Number(request.headers.get('content-length') || 0)
+  if (contentLength > MAX_AUDIO_BYTES + 32_000) {
+    return NextResponse.json({ error: 'request_too_large' }, { status: 413 })
+  }
 
   const form = await request.formData()
   const requestedEmail = String(form.get('studentEmail') || '')
@@ -82,6 +92,13 @@ export async function POST(request: NextRequest) {
 
   const duration = Number(form.get('durationSeconds') || 0)
   const bytes = Buffer.from(await audio.arrayBuffer())
+  let encryptedAudio: ReturnType<typeof encryptAudio>
+  try {
+    encryptedAudio = encryptAudio(bytes)
+  } catch {
+    return NextResponse.json({ error: 'audio_storage_unavailable' }, { status: 503 })
+  }
+
   const aggregateId = `${student.studentId}:${actionId}`
   const submissionRunId = `learner-action-${randomUUID()}`
   const prisma = getPrismaClient()
@@ -97,7 +114,8 @@ export async function POST(request: NextRequest) {
         studentEmail: student.studentEmail,
         actionId,
         mimeType: audio.type,
-        audioBase64: bytes.toString('base64'),
+        ...encryptedAudio,
+        encryptedAt: new Date().toISOString(),
         durationSeconds: Number.isFinite(duration) && duration > 0 ? Math.round(duration) : null,
         source: 'learner_browser_recording',
         authorityStatus: 'learner_submission_pending_teacher_review',

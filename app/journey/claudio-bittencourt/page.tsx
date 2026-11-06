@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
 import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
+import { authOptions } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'Cláudio • PRIME Learning Journey | Prime Digital Hub',
@@ -18,7 +21,12 @@ function Kicker({children}:{children:React.ReactNode}) {
   return <p className="text-xs font-black uppercase tracking-[0.22em] text-[#e60023]">{children}</p>
 }
 
-export default function ClaudioJourneyPage() {
+export default async function ClaudioJourneyPage() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    redirect('/login?callbackUrl=%2Fjourney%2Fclaudio-bittencourt')
+  }
+
   return <main className="min-h-screen bg-[#f7fbff] text-[#0b2c5c]">
     <header className="border-b border-blue-100 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">

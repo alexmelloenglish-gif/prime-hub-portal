@@ -3,12 +3,16 @@ import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { retryFailedPipelineRun } from '@/lib/pipeline/run'
 import { isAdminUser } from '@/lib/student-data'
+import { rejectCrossOriginMutation } from '@/lib/request-security'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300
 
 export async function POST(request: Request) {
+  const originError = rejectCrossOriginMutation(request)
+  if (originError) return originError
+
   const session = await getServerSession(authOptions)
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
@@ -37,6 +41,7 @@ export async function POST(request: Request) {
     return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Pipeline retry failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error(JSON.stringify({ event: 'pipeline_retry_failed', errorName: error instanceof Error ? error.name : 'UnknownError' }))
+    return NextResponse.json({ error: message.includes('not found') ? 'pipeline_run_not_found' : 'pipeline_retry_failed' }, { status: 500 })
   }
 }
