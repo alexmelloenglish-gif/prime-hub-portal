@@ -1,14 +1,14 @@
 Número,Falha,Agente responsável,Classificação da evidência,Evidência,Impacto,Situação
-1,Fragmentação da execução,Computer app,Fato diretamente observável,Comandos repetidos,Perda de tempo,Comprovada
-2,Falha de continuidade e persistência de artefatos,Computer app,Fato diretamente observável,Arquivos output não persistem,Retrabalho,Comprovada
-3,Mistura de identificadores,Computer app,Fato diretamente observável,IDs externos tratados como grupo,Contaminação,Comprovada
-4,Atualização como progresso,Computer app,Fato diretamente observável,Consultas isoladas,Falsa sensação de avanço,Comprovada
-5,Falha de planejamento,Computer app,Declaração do próprio agente,Sem estimativa de chamadas,Promessa não cumprida,Comprovada
-6,Omissão de limite,Computer app,Inferência sustentada pelo histórico,Limite revelado tarde,Decisão sem informação,Parcialmente comprovada
-7,Falha de rastreabilidade,Computer app,Fato diretamente observável,Tabelas reconstruídas,Dificuldade de auditoria,Comprovada
-8,Limite de download binário,Computer app,Fato diretamente observável,read_file_content retorna texto,SHA-256 impossível,Comprovada
-9,Falha de execução de permissões,Computer app,Fato diretamente observável,Nenhuma chamada de permissões,Governança incompleta,Comprovada
-10,Falha de idioma,Computer app,Fato diretamente observável,Inglês misturado,Desrespeito à instrução,Comprovada
+1,Fragmentação da execução,Perplexity Computer API,Fato diretamente observável,Comandos repetidos,Perda de tempo,Comprovada
+2,Falha de continuidade e persistência de artefatos,Perplexity Computer API,Fato diretamente observável,Arquivos output não persistem,Retrabalho,Comprovada
+3,Mistura de identificadores,Perplexity Computer API,Fato diretamente observável,IDs externos tratados como grupo,Contaminação,Comprovada
+4,Atualização como progresso,Perplexity Computer API,Fato diretamente observável,Consultas isoladas,Falsa sensação de avanço,Comprovada
+5,Falha de planejamento,Perplexity Computer API,Declaração do próprio agente,Sem estimativa de chamadas,Promessa não cumprida,Comprovada
+6,Omissão de limite,Perplexity Computer API,Inferência sustentada pelo histórico,Limite revelado tarde,Decisão sem informação,Parcialmente comprovada
+7,Falha de rastreabilidade,Perplexity Computer API,Fato diretamente observável,Tabelas reconstruídas,Dificuldade de auditoria,Comprovada
+8,Limite de download binário,Perplexity Computer API,Fato diretamente observável,read_file_content retorna texto,SHA-256 impossível,Comprovada
+9,Falha de execução de permissões,Perplexity Computer API,Fato diretamente observável,Nenhuma chamada de permissões,Governança incompleta,Comprovada
+10,Falha de idioma,Perplexity Computer API,Fato diretamente observável,Inglês misturado,Desrespeito à instrução,Comprovada
 11,Consumo de créditos,Perplexity,Informação ainda não disponível,Sem telemetria,Não quantificável,Dado não disponível
 12,Tempo de execução,Perplexity,Informação ainda não disponível,Sem telemetria,Não quantificável,Dado não disponível
 13,Causa técnica dos erros,Perplexity,Hipótese técnica,Sem log interno,Não atribuível,Inconclusiva
