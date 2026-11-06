@@ -38,7 +38,8 @@
     "shared-learning-machine:self-test": "node scripts/shared-learning-machine-self-test.mjs && node --experimental-strip-types scripts/shared-learning-machine-behavioral-self-test.mjs",
     "drive-transcript:self-test": "node --experimental-strip-types scripts/drive-transcript-tab-self-test.mjs",
     "status-color:self-test": "node scripts/status-color-contract-self-test.mjs",
-    "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs"
+    "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs",
+    "test:issue-58-retry-legacy": "node --experimental-strip-types --test tests/pipeline/retry-legacy.spec.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
