@@ -759,7 +759,7 @@ async function publishAfterReview(
 
 export async function finalizeSharedLearningMachineAfterTeacherAuthority(input: {
   validationTaskId: string
-}): Promise<PipelineResult> {
+}): Promise<AdminPipelineRetryResult> {
   const prisma = getPrismaClient()
   const validationTaskId = input.validationTaskId.trim()
   if (!validationTaskId) throw new Error('validationTaskId is required')
