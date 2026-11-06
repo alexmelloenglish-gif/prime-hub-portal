@@ -58,7 +58,7 @@ if (result.error) {
 
       const report = {
         generatedAt: new Date().toISOString(),
-        commit: process.env.GITHUB_SHA || process.env.GIT_COMMIT || 'unknown',
+        commit: spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim() || 'unknown',
         command: 'npm audit --omit=dev --json',
         scope: 'production dependencies only',
         npmExitCode: result.status,
