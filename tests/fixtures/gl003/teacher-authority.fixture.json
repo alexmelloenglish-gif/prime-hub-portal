@@ -1,0 +1,51 @@
+{
+  "studentId": "student-gl003-fixture",
+  "studentEmail": "student-gl003-fixture@example.test",
+  "studentName": "Synthetic GL-003 Learner",
+  "teacherId": "teacher-gl003-fixture",
+  "teacherName": "Synthetic Teacher",
+  "lessonId": "lesson-gl003-fixture",
+  "transcriptId": "transcript-gl003-fixture",
+  "sourceFileId": "drive-file-gl003-fixture",
+  "source": "google_meet",
+  "transcript": "Synthetic lesson evidence: the learner practiced the target grammar with a traceable teacher review boundary.",
+  "promptOneArtifact": {
+    "schema_version": "phase-b-prompt-1.v3",
+    "artifact_status": "draft",
+    "authority_status": "non_authoritative",
+    "implementation_status": "not_proven",
+    "generationStatus": "model_generated",
+    "generationProvenance": {
+      "provider": "synthetic-provider",
+      "model": "synthetic-model",
+      "requestId": "req-gl003-fixture",
+      "promptVersion": "prompt-1.v3",
+      "startedAt": "2026-11-06T00:00:00.000Z",
+      "completedAt": "2026-11-06T00:00:01.000Z",
+      "artifactId": "artifact-gl003-fixture",
+      "responseStatus": 200,
+      "validationStatus": "valid"
+    },
+    "traceability": {
+      "architecture_principles": ["AP-004", "AP-005"],
+      "business_rules_candidates": ["BR-GL003-001"],
+      "invariants_checked": ["INV-012: AI recommendation does not replace human authority."]
+    },
+    "evidence_candidates": [
+      {
+        "evidence_candidate_id": "candidate-gl003-fixture",
+        "content": "The learner practiced the target grammar.",
+        "source_span": "Synthetic lesson evidence",
+        "provenance": {
+          "origin": "synthetic-fixture",
+          "source_reference": "drive-file-gl003-fixture"
+        }
+      }
+    ]
+  },
+  "teacherDecision": {
+    "decisionType": "accepted",
+    "authorityScope": "lesson_canonicalization",
+    "decisionStatus": "pending_teacher_validation"
+  }
+}

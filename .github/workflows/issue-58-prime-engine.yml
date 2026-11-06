@@ -31,3 +31,45 @@ jobs:
 
       - name: Run legacy retry eligibility test
         run: npm run test:issue-58-retry-legacy
+
+  gl003-teacher-authority:
+    name: Teacher Authority / GL-003 integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: prime
+          POSTGRES_PASSWORD: prime
+          POSTGRES_DB: prime_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U prime -d prime_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_test?schema=public
+      DATABASE_URL_UNPOOLED: postgresql://prime:prime@localhost:5432/prime_test?schema=public
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Show Node version
+        run: node --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply test schema
+        run: npx prisma db push --skip-generate
+
+      - name: Run Teacher Authority / GL-003 integration test
+        run: npm run test:issue-58-gl003

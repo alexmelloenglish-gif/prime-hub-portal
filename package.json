@@ -40,7 +40,8 @@
     "status-color:self-test": "node scripts/status-color-contract-self-test.mjs",
     "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs",
     "test:issue-58-retry-legacy": "node --experimental-strip-types --test tests/pipeline/retry-legacy.spec.ts",
-    "test:issue-58-retry-shared": "node --experimental-strip-types --test tests/pipeline/retry-shared.spec.ts"
+    "test:issue-58-retry-shared": "node --experimental-strip-types --test tests/pipeline/retry-shared.spec.ts",
+    "test:issue-58-gl003": "tsx --test tests/pipeline/gl003-teacher-authority.spec.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -68,6 +69,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.32",
+    "tsx": "^4.23.15",
     "typescript": "^5.3.3"
   }
 }
