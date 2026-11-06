@@ -11,6 +11,8 @@ import {
 } from '@/lib/learning-machine/shared-run-contract'
 import {
   checkpointLearningMachine,
+  listLearningMachineTriggerOrigins,
+  persistLearningMachineManifest,
   recordLearningMachineTrigger,
 } from '@/lib/learning-machine/run-history'
 import {
@@ -582,6 +584,7 @@ async function publishAfterReview(
     finalizeRun?: boolean
     finalizeReviewTask?: boolean
     authorityStatus?: string
+    authorityTaskType?: 'review_task' | 'validation_task'
   },
 ): Promise<{
   report: ClassReportOutput
@@ -717,7 +720,9 @@ async function publishAfterReview(
         aggregateId: projection.reportId,
         payload: {
           reviewerId,
-          reviewTaskId,
+          ...(options?.authorityTaskType === 'validation_task'
+            ? { validationTaskId: reviewTaskId, authorityTaskType: 'validation_task' }
+            : { reviewTaskId, authorityTaskType: 'review_task' }),
           documentStatus: 'published',
           reason: reason || null,
           autoPublished: !isHumanReview,
@@ -730,7 +735,9 @@ async function publishAfterReview(
         aggregateId: normalizedInput.studentEmail,
         payload: {
           reviewerId,
-          reviewTaskId,
+          ...(options?.authorityTaskType === 'validation_task'
+            ? { validationTaskId: reviewTaskId, authorityTaskType: 'validation_task' }
+            : { reviewTaskId, authorityTaskType: 'review_task' }),
           patchId: publishedPatch.patch_id,
           operationKey: publishedPatch.operation_key,
           applyStatus: portfolioApply.status,
@@ -746,6 +753,311 @@ async function publishAfterReview(
     coaching: coachingProjection?.content as CoachingGuidanceOutput | undefined,
     portfolioApplyStatus: portfolioApply.status,
     portfolioVersion: portfolioApply.version,
+  }
+}
+
+export async function finalizeSharedLearningMachineAfterTeacherAuthority(input: {
+  validationTaskId: string
+}): Promise<PipelineResult> {
+  const prisma = getPrismaClient()
+  const validationTaskId = input.validationTaskId.trim()
+  if (!validationTaskId) throw new Error('validationTaskId is required')
+
+  const task = await prisma.validationTask.findUnique({ where: { id: validationTaskId } })
+  if (
+    !task
+    || task.type !== 'canonical_learning_record_authority'
+    || task.entityType !== 'PipelineRun'
+    || task.status !== 'approved'
+    || task.decision !== 'approved'
+    || !task.reviewerId
+    || !task.reviewedAt
+  ) {
+    throw new Error('An approved PipelineRun canonical Teacher Authority task is required')
+  }
+
+  const run = await prisma.pipelineRun.findUnique({
+    where: { id: task.entityId },
+    include: { transcript: true },
+  })
+  if (!run?.transcript || run.executionMode !== SHARED_LEARNING_MACHINE_EXECUTION_MODE) {
+    throw new Error('Teacher Authority task is not linked to a Shared Learning Machine run')
+  }
+
+  if (run.status === 'completed' && run.finalManifest) {
+    return {
+      pipelineRunId: run.id,
+      status: 'completed',
+      duplicate: true,
+      validationTaskId: task.id,
+    }
+  }
+
+  if (
+    run.status !== 'awaiting_teacher_authority'
+    && !(run.status === 'failed' && run.resumePoint === 'communication_projection')
+  ) {
+    if (run.status === 'finalizing') {
+      return {
+        pipelineRunId: run.id,
+        status: run.status,
+        duplicate: true,
+        validationTaskId: task.id,
+      }
+    }
+    throw new Error('Shared run is not at the approved Teacher Authority completion boundary')
+  }
+
+  const reviewer = await prisma.user.findUnique({
+    where: { id: task.reviewerId },
+    select: { id: true, role: true },
+  })
+  if (!reviewer || !['admin', 'teacher'].includes(reviewer.role)) {
+    throw new Error('Persisted Teacher Authority reviewer is not an authorized teacher or administrator')
+  }
+
+  const evidence = asRecord(task.evidence)
+  const authorityPayloadHash = asOptionalString(evidence.authorityPayloadHash)
+  const authorityEvent = await prisma.pipelineEvent.findFirst({
+    where: {
+      pipelineRunId: run.id,
+      eventType: 'TeacherAuthorityDecisionRecorded',
+      aggregateId: task.id,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+  const authorityEventPayload = asRecord(authorityEvent?.payload)
+  if (
+    !authorityPayloadHash
+    || authorityEventPayload.authorityPayloadHash !== authorityPayloadHash
+    || authorityEventPayload.reviewerId !== reviewer.id
+    || authorityEventPayload.decision !== 'approved'
+  ) {
+    throw new Error('Persisted Teacher Authority event does not bind the approved reviewer and exact payload')
+  }
+
+  const canonicalization = await prisma.canonicalizationProvenance.findFirst({
+    where: { teacherDecisionId: task.id },
+    include: { canonicalRecord: true },
+  })
+  if (!canonicalization || canonicalization.transactionStatus !== 'committed') {
+    throw new Error('G2 canonicalization is not committed for the approved Teacher Authority task')
+  }
+  const canonicalRecordId = canonicalization.canonicalRecordId
+  const [verification, portfolioProjection, learningIntelligenceProjection] = await Promise.all([
+    prisma.canonicalLearningRecordVerification.findFirst({
+      where: {
+        expectedCanonicalRecordId: canonicalRecordId,
+        verificationStatus: 'PASS',
+      },
+      orderBy: { verifiedAt: 'desc' },
+    }),
+    prisma.canonicalLearningRecordProjection.findFirst({
+      where: {
+        canonicalRecordId,
+        targetType: 'portfolio',
+        projectionStatus: 'VERIFIED',
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.canonicalLearningIntelligenceProjection.findFirst({
+      where: {
+        canonicalRecordId,
+        targetType: 'learning_intelligence',
+        projectionStatus: 'VERIFIED',
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+  ])
+  if (!verification || !portfolioProjection || !learningIntelligenceProjection) {
+    throw new Error('G2–G5 canonical gates must all be verified before Shared Machine completion')
+  }
+
+  const claim = await prisma.pipelineRun.updateMany({
+    where: {
+      id: run.id,
+      executionMode: SHARED_LEARNING_MACHINE_EXECUTION_MODE,
+      status: { in: ['awaiting_teacher_authority', 'failed'] },
+      resumePoint: { in: ['awaiting_teacher_authority', 'communication_projection'] },
+    },
+    data: {
+      status: 'finalizing',
+      currentStage: 'communication_projection',
+      resumePoint: 'communication_projection',
+      errorCode: null,
+      errorMessage: null,
+      completedAt: null,
+    },
+  })
+  if (claim.count !== 1) {
+    const current = await prisma.pipelineRun.findUniqueOrThrow({ where: { id: run.id } })
+    return {
+      pipelineRunId: current.id,
+      status: current.status,
+      duplicate: true,
+      validationTaskId: task.id,
+      errorCode: current.errorCode || undefined,
+    }
+  }
+
+  const normalizedInput = rebuildInput(run, run.transcript)
+  try {
+    const products = await publishAfterReview(
+      run.id,
+      normalizedInput,
+      task.id,
+      reviewer.id,
+      task.reason ?? undefined,
+      {
+        finalizeRun: false,
+        finalizeReviewTask: false,
+        authorityStatus: 'teacher_authorized',
+        authorityTaskType: 'validation_task',
+      },
+    )
+
+    const publishedReport = await prisma.classReportProjection.findUnique({
+      where: {
+        studentEmail_lessonId: {
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+        },
+      },
+      select: { reportId: true, documentStatus: true, implementationStatus: true },
+    })
+    if (
+      !publishedReport
+      || publishedReport.documentStatus !== 'published'
+      || publishedReport.implementationStatus !== 'proven'
+    ) {
+      throw new Error('Class Report publication read-back failed after Teacher Authority')
+    }
+
+    const triggerOrigins = await listLearningMachineTriggerOrigins(run.id)
+    const promptOne = asRecord(run.promptOneArtifact)
+    const generationProvenance = asRecord(promptOne.generationProvenance)
+    const manifest = {
+      manifestVersion: 'shared-runner-manifest-v1',
+      completionBoundary: 'teacher_authority_g2_g5_and_communication_projection',
+      normalizedRunIdentity: run.normalizedRunIdentity,
+      machineVersion: run.machineVersion,
+      machineContractVersion: run.machineContractVersion,
+      pipelineRunId: run.id,
+      attemptNumber: run.attemptNumber,
+      transcriptId: run.transcriptId,
+      sourceFileId: run.transcript.sourceFileId,
+      sourceContentHash: createHash('sha256').update(run.transcript.content).digest('hex'),
+      triggerOrigins,
+      providerProvenance: {
+        provider: generationProvenance.provider ?? null,
+        model: generationProvenance.model ?? null,
+        promptVersion: generationProvenance.promptVersion ?? null,
+        requestId: generationProvenance.requestId ?? null,
+        artifactId: generationProvenance.artifactId ?? null,
+        responseStatus: generationProvenance.responseStatus ?? null,
+        validationStatus: generationProvenance.validationStatus ?? null,
+      },
+      teacherAuthority: {
+        validationTaskId: task.id,
+        reviewerId: reviewer.id,
+        reviewerRole: reviewer.role,
+        decision: task.decision,
+        decisionTimestamp: task.reviewedAt.toISOString(),
+        authorityPayloadHash,
+      },
+      canonicalization: {
+        canonicalRecordId,
+        canonicalVersion: canonicalization.canonicalVersion,
+        canonicalHash: canonicalization.canonicalHash,
+        provenanceId: canonicalization.id,
+      },
+      verification: {
+        verificationId: verification.id,
+        status: verification.verificationStatus,
+      },
+      projections: {
+        portfolio: {
+          projectionId: portfolioProjection.projectionId,
+          projectionHash: portfolioProjection.projectionHash,
+          status: portfolioProjection.projectionStatus,
+        },
+        learningIntelligence: {
+          projectionId: learningIntelligenceProjection.projectionId,
+          projectionHash: learningIntelligenceProjection.projectionHash,
+          status: learningIntelligenceProjection.projectionStatus,
+        },
+      },
+      communicationProjection: {
+        classReportId: publishedReport.reportId,
+        classReportStatus: publishedReport.documentStatus,
+        classReportImplementationStatus: publishedReport.implementationStatus,
+        portfolioApplyStatus: products.portfolioApplyStatus,
+        portfolioVersion: products.portfolioVersion,
+      },
+    }
+
+    await persistLearningMachineManifest({
+      pipelineRunId: run.id,
+      manifest,
+      status: 'completed',
+      completed: true,
+    })
+    await prisma.pipelineEvent.upsert({
+      where: {
+        pipelineRunId_eventType_aggregateId: {
+          pipelineRunId: run.id,
+          eventType: 'TeacherAuthorityDecisionConsumed',
+          aggregateId: task.id,
+        },
+      },
+      update: {
+        payload: {
+          validationTaskId: task.id,
+          reviewerId: reviewer.id,
+          reviewerRole: reviewer.role,
+          authorityPayloadHash,
+          canonicalRecordId,
+          classReportId: publishedReport.reportId,
+        },
+      },
+      create: {
+        pipelineRunId: run.id,
+        eventType: 'TeacherAuthorityDecisionConsumed',
+        aggregateType: 'ValidationTask',
+        aggregateId: task.id,
+        payload: {
+          validationTaskId: task.id,
+          reviewerId: reviewer.id,
+          reviewerRole: reviewer.role,
+          authorityPayloadHash,
+          canonicalRecordId,
+          classReportId: publishedReport.reportId,
+        },
+      },
+    })
+
+    return {
+      pipelineRunId: run.id,
+      status: 'completed',
+      duplicate: false,
+      validationTaskId: task.id,
+      report: products.report,
+      coaching: products.coaching,
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Shared Teacher Authority finalization failed'
+    await prisma.pipelineRun.update({
+      where: { id: run.id },
+      data: {
+        status: 'failed',
+        currentStage: 'communication_projection',
+        resumePoint: 'communication_projection',
+        errorCode: 'TEACHER_AUTHORITY_FINALIZATION_FAILED',
+        errorMessage: message,
+        completedAt: null,
+      },
+    })
+    throw error
   }
 }
 
