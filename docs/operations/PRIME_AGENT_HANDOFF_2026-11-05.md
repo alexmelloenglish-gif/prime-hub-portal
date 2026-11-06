@@ -306,3 +306,43 @@ A seção foi uma fotografia anterior à publicação do lote. A afirmação de 
 ### Limites desta reconciliação
 
 Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Teacher Authority foi aplicada; nenhum snapshot/transcript foi excluído; nenhuma migration, alteração de banco ou mudança de Production secret foi feita. PIPELINE_AUTOMATION_FROZEN permanece intocado. Esta reconciliação não fecha o projeto globalmente nem encerra esta Issue.
+
+
+---
+
+## Live-state correction — Issue #58 execution checkpoint (2026-11-06)
+
+**Authority boundary:** this section is a later read-back and supersedes only the stale operational statuses below; historical checkpoints remain intact. Repository baseline: `main` = `f6ebe00f5f854c643ffcd5759d2c267317dd4c4c` (PR #101 merged). Do not use the older `e92b0bc` reference as current HEAD.
+
+### Verified changes since the previous checkpoint
+
+| Item | Current state | Evidence |
+|---|---|---|
+| Production release | VERIFIED by Vercel-connected executor | Deployment `dpl_DEjqj6n2jBtv1b2CoZfSoH9c5bSo`, Production / READY, source SHA `f6ebe00f5f854c643ffcd5759d2c267317dd4c4c`, alias `www.primedigitalhub.com.br`; apex redirects to www. SHA is descendant of hardening commit `b6c6ed19ff3649ef10d35b6ef97452e5b8c21c4c`. See Issue #58 comment [#6676444071](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6676444071). |
+| PR #96 infrastructure recovery | CLOSED as superseded, not merged | Its only file is already in main with identical blob `8c6c48784b3e66403b6f37286c81ee2ccad162eb`, integrated through PR #101. See [PR #96](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/96). |
+| GL-003 duplicate tracking | Issue #5 CLOSED as duplicate; Issue #6 remains OPEN/canonical | No Laura retry was executed. Historical failed run and source remain untouched. See [Issue #6](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/6). |
+| PR #100 privacy foundation | OPEN; review concerns recorded | Retention periods remain proposed product defaults, not approved legal policy. Inventory scans tracked files and limited email/Google URL patterns; it is not exhaustive PII/DLP detection. No deletion, anonymization, migration, or merge. See [PR #100](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/100). |
+
+### Current runtime and code read-back
+
+- Production aggregate runtime errors reported by the Vercel-connected executor: 7 occurrences of `meet_attendance_cron_failed` / `MEET_SCOPE_REAUTH_REQUIRED` on `/api/cron/meet-attendance`, first 2026-10-15T04:57:07Z, last 2026-11-05T04:57:07Z, associated with older deployment `dpl_6rtSXqopNfFDZRewKeMhYYoEeXv9`. This is not evidence of a failure after current deployment `f6ebe00`; individual logs were unavailable under the reported Hobby retention limit. Organizer OAuth reauthorization with `https://www.googleapis.com/auth/meetings.space.readonly`, bounded cron execution, persistence read-back and idempotent replay remain OPEN/BLOCKED.
+- Owner/Admin Google login, learner A→A/A→B isolation, and guardian authorization remain NOT VERIFIED; no authorized session and two approved learner test identities were available.
+- Code read-back confirms `app/api/pipeline/ingest/route.ts` checks the ingest secret and returns the freeze response before invoking the shared runner while `PIPELINE_AUTOMATION_FROZEN` is true.
+- `lib/pipeline/run.ts` contains separate legacy failed-attempt creation and Shared Learning Machine failed-run resume paths. Legacy retry rebuilds from the stored transcript and increments attempt number; Shared Machine uses a conditional failed-run claim to prevent concurrent resume. Existing structural test: `scripts/pipeline-attempts-self-test.mjs`. This is code evidence only, not a disposable-Postgres behavioral witness or a real learner/Production witness.
+- Shared Learning Machine full witness, provider provenance, Teacher Authority boundary and final CLR/projection read-back remain OPEN/NOT VERIFIED. Do not run real learner retries or change the freeze.
+
+### Current access boundaries
+
+- The Vercel-connected executor reported a successful read-back as above. A separate executor's current Vercel connection still receives 403 for team `team_IzmZVUw0i508RwviU26at2Or`; that is an access-context limitation, not a contradictory Production result.
+- A separate Neon Management search for `prime` returned an empty project list. This does not prove the Production database is absent or disconnected; the Vercel project record still lists managed Postgres/Neon environment bindings. No database operation was performed.
+
+### Active execution requests
+
+1. Security/dependency lane: publish its actual branch, remote SHA, resolved package versions, fresh `npm audit --omit=dev` advisory matrix, `npm ci`, self-tests and build. No verifiable branch/SHA/result was present in this checkpoint; treat any claimed work as IN PROGRESS / UNVERIFIED until evidence is posted.
+2. PR #100 executor: update the branch against current `main`, keep retention values explicitly proposed, narrow scanner claims to its actual tracked-file/pattern coverage, rerun tests and gates, and post one updated PR. No deletion/anonymization/TTL/migration.
+3. Learning Machine lane: prove the four retry states using synthetic fixtures and disposable Postgres: FAILED → retry/resume; COMPLETED → duplicate/skip; PROCESSING → no duplicate; transcript without run → explicitly defined behavior. Do not call Laura or another real learner.
+4. Meet/OAuth and authenticated QA: prepare exact bounded procedures; wait for the authorized organizer and approved test identities. Do not request Alexandre to relay between agents.
+
+### Safety invariants
+
+`PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
