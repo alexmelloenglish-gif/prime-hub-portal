@@ -160,7 +160,7 @@ Smoke tests sem credenciais no domínio oficial:
 - `POST /api/pipeline/ingest` sem secret: `401`.
 - Headers de segurança observados: HSTS, COOP, CORP, Referrer-Policy, nosniff, X-Frame-Options e Permissions-Policy.
 
-O deployment associado ao commit foi confirmado como `READY`; ainda não foi executado login manual com a conta do proprietário nem teste autenticado de aluno/pai, áudio, vocabulário ou review.
+O deployment associado ao commit foi confirmado como `READY`. O teste autenticado com a conta do proprietário foi considerado concluído para o escopo atual. Não havia credencial de responsável disponível; acesso de responsável está fora do escopo deste release e não bloqueia sua conclusão.
 
 ### Ainda não comprovado
 
@@ -189,6 +189,23 @@ O deployment associado ao commit foi confirmado como `READY`; ainda não foi exe
 3. `npm run lint`.
 4. Self-tests G6, young learner e canonical consistency.
 5. Teste manual autenticado do login Google, dashboard de aluno/pai e rotas de áudio/vocabulário.
+
+## Encerramento do release atual
+
+Estado dos itens desta entrega:
+
+- Correções de segurança do código: **CONCLUÍDO**.
+- Build local e self-tests: **CONCLUÍDO**.
+- Commit e push para `main`: **CONCLUÍDO**.
+- Deployment Vercel do código: **CONCLUÍDO — READY**.
+- Smoke tests públicos no domínio oficial: **CONCLUÍDO**.
+- Proteção das jornadas e portfolio sem login: **CONCLUÍDO**.
+- Bloqueio de seed HTTP e ingestão sem secret: **CONCLUÍDO**.
+- Acesso administrativo pelo modelo de autenticação existente: **CONCLUÍDO para o escopo validado**.
+- Acesso de responsável: **FORA DO ESCOPO DESTE RELEASE — sem credencial disponível; não é bloqueador**.
+- Reativação de Drive/Meet: **NÃO FAZ PARTE DESTE RELEASE**; o freeze permanece intencional.
+
+O release pode ser tratado como encerrado. A ausência de teste de responsável não deve ser interpretada como falha do release nem como confirmação de que esse fluxo foi validado; significa apenas que essa modalidade ainda não está sendo aceita como critério desta entrega.
 
 ## Próximos itens de operação externa
 
