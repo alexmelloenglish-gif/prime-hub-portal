@@ -18,9 +18,10 @@ import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboar
 import registry from '@/data/students/student-core-registry.json'
 import { accountIdentityFromSession, resolveAuthorizedLearnerRelation } from '@/lib/learner-account-resolution'
 
+const identityCache = <T extends (...args: never[]) => unknown>(fn: T): T => fn
 const cache: typeof reactCache = typeof reactCache === 'function'
   ? reactCache
-  : ((fn: (...args: any[]) => any) => fn) as typeof reactCache
+  : identityCache as typeof reactCache
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
