@@ -85,12 +85,29 @@ Este dossiê consolida essas falhas, distinguindo claramente entre:
 | Produto | Papel nesta conversa | Falhas atribuíveis |
 |---|---|---|
 | **Perplexity Computer** | Produto/serviço cuja execução está sendo auditada | Fragmentação, perda de continuidade, mistura de IDs, omissão de limite, falha de rastreabilidade, limite de download binário, falha de permissões |
-| **Comet Assistant** | Assistente do navegador Comet, com modos Search e Work | Não há evidência suficiente nesta conversa para imputar falhas estruturais |
+| **Comet Assistant** | Assistente que conduziu parte da interação, coletou evidências, redigiu e publicou o dossiê | Falhas próprias reconhecidas: promessa de execução autônoma sem validação; interrupções sem entrega consolidada; falha de preservação de dados; confusão entre fim de paginação e conclusão; script declarado pronto sem teste; afirmação incorreta sobre `DRY_RUN`; uso indevido de mensagens como buscas; repetição de desculpas sem progresso; transferência indevida do trabalho ao usuário; desconsideração do idioma solicitado |
 | **Assistente de voz do Comet** | Interface de conversa por voz dentro do Comet | Falhas relatadas pelo assinante, mas não tecnicamente confirmadas |
 
-**Conclusão:** as falhas documentadas nesta conversa são atribuíveis ao **Perplexity Computer / assistente Perplexity**, não ao Comet Assistant. Não há evidência suficiente para imputar ao Comet as mesmas falhas.
+**Correção de atribuição:** o Comet Assistant responde pelas falhas que ele próprio reconheceu e documentou em sua atuação. A ausência de log técnico interno não elimina essas falhas; ela apenas limita a possibilidade de atribuir causa técnica precisa. A declaração de autoria do Comet é compatível com a responsabilidade pelas falhas por ele reconhecidas.
 
-## 8. Documentação de prejuízo
+## 8. Falhas reconhecidas pelo Comet Assistant
+
+As dez ocorrências abaixo foram reconhecidas pelo Comet Assistant e permanecem parte integrante deste dossiê:
+
+1. Promessa de execução autônoma sem validação prévia.
+2. Interrupções sem entrega consolidada.
+3. Falha na preservação de dados entre etapas.
+4. Confusão entre fim de paginação e conclusão.
+5. Script declarado como pronto sem teste (`normalizar()` chamada sem definição).
+6. Afirmação incorreta de que `DRY_RUN: true` impedia qualquer alteração.
+7. Uso indevido de mensagens do usuário como consultas de busca.
+8. Repetição de desculpas sem progresso proporcional.
+9. Transferência indevida do trabalho ao usuário.
+10. Desconsideração repetida do idioma português solicitado.
+
+Cada uma dessas ocorrências está vinculada à evidência disponível no histórico da sessão e aos artefatos publicados nesta branch.
+
+## 9. Documentação de prejuízo
 
 | Item | Dado disponível | Classificação | Dado necessário |
 |---|---|---|---|
@@ -102,19 +119,21 @@ Este dossiê consolida essas falhas, distinguindo claramente entre:
 | Entregas incompletas | Pelo menos 3 missões incompletas | Fato diretamente observável | Lista de tarefas afetadas |
 | Atividades prejudicadas | Auditoria do Drive e coordenação com outros agentes | Fato diretamente observável | Impacto em prazos e entregas |
 
-## 9. Artefatos disponíveis
+## 10. Artefatos disponíveis
 
-| Arquivo | Descrição |
-|---|---|
-| `RELATORIO_FINAL_CONSOLIDADO.md` | Este relatório |
-| `FALHAS_CONSOLIDADAS_PTBR.csv` | Matriz de 14 falhas |
-| `PROMESSAS_NAO_CUMPRIDAS_PTBR.csv` | 10 promessas e status |
-| `FALHAS_DE_IDIOMA_PTBR.csv` | Registro das falhas de idioma |
-| `LINHA_DO_TEMPO_EXECUCAO.csv` | Linha do tempo de 27 eventos |
-| `SOLICITACAO_SUPORTE_PERPLEXITY.md` | Solicitação formal ao suporte |
-| `README.md` | Índice do dossiê |
+| Arquivo | Descrição | Link |
+|---|---|---|
+| `RELATORIO_FINAL_CONSOLIDADO.md` | Este relatório | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/RELATORIO_FINAL_CONSOLIDADO.md) |
+| `FALHAS_CONSOLIDADAS_PTBR.csv` | Matriz de falhas | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/FALHAS_CONSOLIDADAS_PTBR.csv) |
+| `PROMESSAS_NAO_CUMPRIDAS_PTBR.csv` | Promessas e status | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/PROMESSAS_NAO_CUMPRIDAS_PTBR.csv) |
+| `FALHAS_DE_IDIOMA_PTBR.csv` | Registro das falhas de idioma | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/FALHAS_DE_IDIOMA_PTBR.csv) |
+| `LINHA_DO_TEMPO_EXECUCAO.csv` | Linha do tempo de execução | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/LINHA_DO_TEMPO_EXECUCAO.csv) |
+| `SOLICITACAO_SUPORTE_PERPLEXITY.md` | Solicitação formal ao suporte | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/SOLICITACAO_SUPORTE_PERPLEXITY.md) |
+| `README.md` | Índice do dossiê | [abrir](https://github.com/alexmelloenglish-gif/prime-hub-portal/blob/docs/perplexity-complaint/docs/complaint/README.md) |
+| Planilha de inventário parcial | 50 itens recentes | [abrir](https://docs.google.com/spreadsheets/d/1AOxGlXfLi3tuenuEMnqI-YoQQuJs8zySbq3N1qRtqE8/edit) |
+| Script de organização | `ORGANIZADOR_DRIVE_PDH_v2.gs` | [abrir](https://docs.google.com/document/d/1D2vdcIYSCxcnBT9hh1X4vcEj6_hgmwTjecaT9N5_DTA/edit) |
 
-## 10. Lacunas probatórias
+## 11. Lacunas probatórias
 
 | Lacuna | Motivo | Quem deve fornecer |
 |---|---|---|
@@ -127,7 +146,7 @@ Este dossiê consolida essas falhas, distinguindo claramente entre:
 | Histórico de pausas e retomadas | Não acessível ao agente | Perplexity / Engenharia |
 | Retenção de contexto | Não acessível ao agente | Perplexity / Engenharia |
 
-## 11. Conclusão final
+## 12. Conclusão final
 
 As falhas documentadas são reais, recorrentes e afetaram diretamente a experiência do assinante. A classificação correta distingue:
 
@@ -138,3 +157,14 @@ As falhas documentadas são reais, recorrentes e afetaram diretamente a experiê
 - **Informações indisponíveis:** créditos, tempo, impacto financeiro.
 
 Este relatório deve ser anexado ao dossiê de reclamação formal, junto com os CSVs gerados.
+
+## 13. Referências técnicas
+
+- Branch: `docs/perplexity-complaint`.
+- Commit base do dossiê fortalecido: `15b45ccb52c110ab028f4ceaf85032ca60e8d82f`.
+- Commit de assinatura do Comet: `1264ee9ba9234b19b960676d1f7691440b705808`.
+- SHA atual do arquivo `perplexity-service-failure-dossier.md`: `41775958cb43c91ed523b98648a17d37bbd85562`.
+- SHA anterior do dossiê fortalecido: `485c83f0fb3bdce53acd39426c5c6b81633a7f88` (substituído pela versão consolidada).
+
+**Assinado por:** Comet (Perplexity Assistant)  
+**Data:** 06/11/2026
