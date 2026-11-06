@@ -86,6 +86,12 @@ jobs:
       - name: Execute pipeline retry-state witness
         run: npx --yes tsx@4.20.6 ./scripts/pipeline-retry-state-witness.ts
 
+      - name: Verify provider health and safe-fallback contracts
+        run: npm run providers-health:self-test
+
+      - name: Execute student isolation witness
+        run: npx --yes tsx@4.20.6 ./scripts/student-isolation-witness.ts
+
       - name: Upload persisted witness evidence
         if: always()
         uses: actions/upload-artifact@v4
