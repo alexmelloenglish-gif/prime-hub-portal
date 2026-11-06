@@ -378,10 +378,8 @@ assert.match(
   /resolveExistingDriveTranscriptDisposition/,
   'Drive reconciliation must use the explicit retry disposition policy',
 )
-assert.match(
-  pipeline,
-  /else if \\(retryTranscript && !existing\\)/,
+assert.ok(
+  pipeline.includes('else if (retryTranscript && !existing)'),
   'The runner must attach the first attempt to an existing orphan Transcript',
 )
-
 console.log('Shared PRIME Learning Machine behavioral self-test: PASS')
