@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { authOptions } from '../../lib/auth'
+import { getStudentDashboardState, isAdminUser } from '../../lib/student-data'
 
 // Helpers to call NextAuth callbacks in isolation
 const { jwt, session, signIn, redirect } = authOptions.callbacks
@@ -65,4 +66,38 @@ test('redirect envia para /dashboard em URLs inseguras ou relativas', async () =
   // URL absoluta com origem diferente → fallback /dashboard
   const r3 = await redirect!({ url: 'https://malicioso.com/alguma-coisa', baseUrl } as any)
   assert.equal(r3, `${baseUrl}/dashboard`)
+})
+
+test('isAdminUser retorna true para role=admin e emails configurados', () => {
+  const adminUser: any = { email: 'admin@example.com', role: 'admin' }
+  assert.equal(isAdminUser(adminUser), true)
+
+  const previewUser: any = { email: 'preview@example.com', role: 'student' }
+  process.env.ADMIN_PREVIEW_EMAILS = 'preview@example.com'
+  assert.equal(isAdminUser(previewUser), true)
+
+  const regularUser: any = { email: 'aluno@example.com', role: 'student' }
+  assert.equal(isAdminUser(regularUser), false)
+})
+
+test('getStudentDashboardState: aluno só vê os próprios dados em estado de preview', async () => {
+  const alunoUser: any = { email: 'aluno@example.com', name: 'Aluno', role: 'student' }
+  const state = await getStudentDashboardState(alunoUser, 'outro@example.com')
+
+  assert.equal(state.viewerEmail, 'aluno@example.com')
+  // Como não há Firestore configurado neste teste e nenhum snapshot explícito para "aluno@example.com",
+  // o estado esperado é de preview sem acesso real.
+  assert.equal(state.hasAccess, false)
+  assert.equal(state.student, null)
+  assert.equal(state.isPreviewingAnotherStudent, false)
+})
+
+test('getStudentDashboardState: admin pode pré-visualizar outro aluno (marcado como preview)', async () => {
+  const adminUser: any = { email: 'admin@example.com', name: 'Admin', role: 'admin' }
+  const state = await getStudentDashboardState(adminUser, 'aluno@example.com')
+
+  assert.equal(state.viewerEmail, 'admin@example.com')
+  // Em ambiente de teste sem fontes reais, a Engine devolve preview sem dados persistidos,
+  // mas marca que o alvo é diferente do viewer.
+  assert.equal(state.isPreviewingAnotherStudent, true)
 })
