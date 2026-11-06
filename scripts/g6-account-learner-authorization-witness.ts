@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { getPrismaClient } from '../lib/prisma.ts'
 import {
   accountIdentityFromSession,
@@ -85,7 +85,7 @@ async function main() {
       database: 'GitHub Actions disposable PostgreSQL service',
       productionTouched: false,
       syntheticIdentity: true,
-      accountRef: account.id.length ? 'sha256:' + account.id.length : 'redacted',
+      accountRef: createHash('sha256').update(account.id).digest('hex').slice(0, 16),
       ownLearner: 'AUTHORIZED',
       crossLearnerAttempt: 'ABSENT',
       multipleRelationsWithoutSelection: 'NOT_OBSERVABLE',
