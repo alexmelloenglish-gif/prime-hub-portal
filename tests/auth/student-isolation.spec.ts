@@ -134,3 +134,99 @@ test('dashboard and learner write routes enforce the explicit account-learner re
   assert.match(checkInRoute, /resolveAuthorizedLearnerRelation/)
   assert.match(checkInRoute, /requestedStudentId:\s*'stu_4c4da6c04ac4'/)
 })
+
+
+test('PostgreSQL-backed isolation: account A reads only A; cross-learner and unlinked guardian are denied', {
+  skip: !process.env.DATABASE_URL ? 'DATABASE_URL is required for the disposable PostgreSQL isolation proof' : false,
+}, async () => {
+  const { getPrismaClient } = await import('../../lib/prisma')
+  const prisma = getPrismaClient()
+  const suffix = `issue58-${process.pid}-${Date.now()}`
+  const accountA = `${suffix}-account-a`
+  const accountB = `${suffix}-account-b`
+  const guardian = `${suffix}-guardian`
+  const admin = `${suffix}-admin`
+  const studentA = 'stu_e22a6c379329'
+  const studentB = 'stu_e01adc4e23d0'
+  const relationIds: string[] = []
+
+  try {
+    await prisma.user.createMany({
+      data: [
+        { id: accountA, email: `${accountA}@example.invalid`, role: 'student' },
+        { id: accountB, email: `${accountB}@example.invalid`, role: 'student' },
+        { id: guardian, email: `${guardian}@example.invalid`, role: 'guardian' },
+        { id: admin, email: `${admin}@example.invalid`, role: 'admin' },
+      ],
+    })
+
+    const relationA = await prisma.accountLearnerRelation.create({
+      data: {
+        userId: accountA,
+        studentId: studentA,
+        status: 'ACTIVE',
+        relationType: 'LEARNER_SELF',
+        sourceType: 'synthetic_ci_test',
+        sourceReference: suffix,
+        authorizedBy: admin,
+        authorizedAt: new Date(),
+      },
+    })
+    relationIds.push(relationA.id)
+
+    const relationB = await prisma.accountLearnerRelation.create({
+      data: {
+        userId: accountB,
+        studentId: studentB,
+        status: 'ACTIVE',
+        relationType: 'LEARNER_SELF',
+        sourceType: 'synthetic_ci_test',
+        sourceReference: suffix,
+        authorizedBy: admin,
+        authorizedAt: new Date(),
+      },
+    })
+    relationIds.push(relationB.id)
+
+    const ownAccess = await getStudentDashboardState({
+      id: accountA,
+      email: `${accountA}@example.invalid`,
+      name: 'Synthetic Account A',
+      role: 'student',
+    } as any)
+    assert.equal(ownAccess.hasAccess, true, 'account A must resolve its own authorized learner')
+    assert.equal(ownAccess.student?.studentId, studentA, 'account A must receive learner A only')
+
+    const crossAccess = await getStudentDashboardState({
+      id: accountA,
+      email: `${accountA}@example.invalid`,
+      name: 'Synthetic Account A',
+      role: 'student',
+    } as any, 'diegodasiro@gmail.com')
+    assert.equal(crossAccess.hasAccess, false, 'account A must not read learner B')
+    assert.equal(crossAccess.student, null, 'cross-account denial must return no student payload')
+
+    const unlinkedGuardianAccess = await getStudentDashboardState({
+      id: guardian,
+      email: `${guardian}@example.invalid`,
+      name: 'Synthetic Guardian',
+      role: 'guardian',
+    } as any, 'claudio.bit@gmail.com')
+    assert.equal(unlinkedGuardianAccess.hasAccess, false, 'guardian without an explicit relation must be denied')
+    assert.equal(unlinkedGuardianAccess.student, null, 'unlinked guardian denial must return no student payload')
+
+    const accountBAccess = await getStudentDashboardState({
+      id: accountB,
+      email: `${accountB}@example.invalid`,
+      name: 'Synthetic Account B',
+      role: 'student',
+    } as any)
+    assert.equal(accountBAccess.hasAccess, true, 'account B must resolve its own authorized learner')
+    assert.equal(accountBAccess.student?.studentId, studentB, 'account B must receive learner B only')
+  } finally {
+    await prisma.accountLearnerRelationEvent.deleteMany({ where: { relationId: { in: relationIds } } })
+    await prisma.accountLearnerRelation.deleteMany({ where: { id: { in: relationIds } } })
+    await prisma.user.deleteMany({ where: { id: { in: [accountA, accountB, guardian, admin] } } })
+    await prisma.$disconnect()
+  }
+})
