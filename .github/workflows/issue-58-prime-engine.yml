@@ -54,26 +54,26 @@ jobs:
       - name: Run provider health and fallback test
         run: npm run test:issue-58-providers-health
 
-  student-isolation:
-    name: Student authentication and isolation
+  retry-shared-postgres:
+    name: Shared retry concurrent Postgres claim
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: prime_test
-          POSTGRES_PASSWORD: prime_test
-          POSTGRES_DB: prime_test
+          POSTGRES_USER: prime
+          POSTGRES_PASSWORD: prime
+          POSTGRES_DB: prime_issue_58
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U prime_test -d prime_test"
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://prime_test:prime_test@localhost:5432/prime_test?schema=public
-      DATABASE_URL_UNPOOLED: postgresql://prime_test:prime_test@localhost:5432/prime_test?schema=public
+      PRIME_TEST_DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_issue_58
+      DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_issue_58
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,8 +90,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Prepare disposable PostgreSQL schema
+      - name: Apply Prisma schema
         run: npx prisma db push --skip-generate
 
-      - name: Run student authentication and isolation tests
-        run: npm run test:issue-58-student-isolation
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run concurrent shared retry Postgres test
+        run: npm run test:issue-58-retry-shared-postgres
