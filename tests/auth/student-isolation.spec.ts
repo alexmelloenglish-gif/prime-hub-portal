@@ -6,7 +6,7 @@ import { resolveAuthorizedLearnerRelation } from '../../lib/learner-account-reso
 import { getPrismaClient } from '../../lib/prisma.ts'
 
 const prisma = getPrismaClient()
-const suffix = randomUUID().replaceAll('-', '')
+const suffix = randomUUID().replace(/-/g, '')
 const learnerA = `synthetic-learner-a-${suffix}`
 const learnerB = `synthetic-learner-b-${suffix}`
 const sourceReference = `student-isolation-witness-${suffix}`
