@@ -20,7 +20,7 @@ assert.match(pipeline, /sharedSameExecutionResume[\s\S]*existing!\.attemptNumber
 assert.match(pipeline, /existing\?\.status === 'failed'[\s\S]*existing\.attemptNumber \+ 1/, 'Legacy failed processing may still advance the historical attempt number')
 assert.match(pipeline, /retryTranscript && !existing[\s\S]*rebuildInput/, 'An orphan Transcript must create its first attempt from the canonical stored transcript')
 assert.doesNotMatch(pipeline, /transcript\.upsert/, 'Pipeline retries must never update or rewrite a canonical transcript')
-assert.match(reconciliation, /latestAttempt\?\.status !== 'failed'/, 'Drive reconciliation must permit a failed source to retry')
+assert.match(reconciliation, /resolveExistingDriveTranscriptDisposition/, 'Drive reconciliation must use the explicit transcript retry disposition policy')
 assert.match(pipeline, /newestAttempt\?\.id !== expectedPipelineRunId/, 'A targeted retry must reject a stale historical run target')
 assert.match(pipeline, /PipelineRetryRequested/, 'A targeted retry must persist an audit event on the active run')
 assert.match(pipeline, /retryMode: 'canonical_stored_transcript'/, 'Legacy targeted retry must declare canonical transcript reuse')
