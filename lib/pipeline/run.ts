@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { Prisma } from '@prisma/client'
 import { getPrismaClient } from '@/lib/prisma'
 import { ModelGenerationError, runPromptFour, runPromptOne, runPromptThree, runPromptTwo } from './prompts'
