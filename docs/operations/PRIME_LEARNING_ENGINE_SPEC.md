@@ -67,7 +67,7 @@ A Engine deve produzir e persistir, sem autoridade própria:
 - Login de aluno solicita apenas `openid email profile`; autorização de Meet não deve ser solicitada ao estudante.
 - Testes de contrato não chamam endpoints externos. Provas de rede são executadas somente em staging/produção por healthchecks protegidos e com credenciais do ambiente.
 
-**Prova:** `scripts/providers-health-self-test.mjs`, `scripts/model-provider-pool-self-test.mjs` e rotas/healthchecks descritos acima.
+**Prova:** `scripts/providers-health-self-test.mjs`, `scripts/providers-health-witness.ts`, `scripts/model-provider-pool-self-test.mjs` e rotas/healthchecks descritos acima. A witness simula Gemini HTTP 503 → OpenAI 200 e também a exaustão total, sem rede externa.
 
 ## 7. Dependências
 
