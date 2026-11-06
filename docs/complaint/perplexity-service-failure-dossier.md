@@ -1,8 +1,8 @@
-# Dossiê consolidado — Perplexity Pro — Computer App
+# Dossiê consolidado — Perplexity Pro — Perplexity Computer API
 
 **Data:** 6 de novembro de 2026  
 **Assinante:** Alexandre R. S. Mello — PRIME Digital Hub  
-**Objeto:** consolidação do dossiê de reclamação sobre falhas na prestação do serviço Perplexity Pro — Computer App durante sessão de auditoria do Google Drive.
+**Objeto:** consolidação do dossiê de reclamação sobre falhas na prestação do serviço Perplexity Pro — Perplexity Computer API durante sessão de auditoria do Google Drive.
 
 ## 1. Natureza deste documento
 
@@ -43,7 +43,7 @@ O enquadramento central permanece o já documentado:
 - **Art. 6º, III e IV** — informação adequada e clara; proteção contra publicidade enganosa.
 - **Art. 14** — responsabilidade pelo fato do serviço (defeito).
 - **Art. 20** — vícios de qualidade que tornam o serviço impróprio ou lhe diminuem o valor.
-- **Art. 30** — fornecimento de serviços contínuos.
+- **Art. 30** — vinculação do fornecedor à oferta suficientemente precisa, que integra o contrato.
 - **Art. 39** — práticas abusivas.
 
 Este complemento não altera o enquadramento; apenas reforça a aplicação prática de cada dispositivo aos fatos documentados.
@@ -97,20 +97,22 @@ Este complemento não altera o enquadramento; apenas reforça a aplicação prá
 - Não é possível quantificar créditos consumidos sem extrato.
 - Não é possível afirmar dano moral sem base concreta; o foco permanece em dano material e falha de serviço.
 - **Comet Assistant:** responde pela condução da interação, coleta de evidências, redação e publicação do dossiê.
-- **Perplexity (agente de IA):** responde pela consolidação redacional complementar, organização da narrativa e sugestões de fortalecimento.
+- **Perplexity Computer API:** responde pelas ocorrências atribuídas à execução da auditoria do Google Drive, dentro dos limites efetivamente documentados. A consolidação redacional complementar deve ser identificada separadamente da execução operacional.
 - A atribuição das falhas deve distinguir a atuação de cada agente, sem apagar falhas reconhecidas por qualquer um deles.
 
 ## 10. Declaração de veracidade
 
-Declaro que as informações aqui reunidas refletem, na medida do possível e dentro dos limites de acesso disponíveis, os fatos ocorridos durante a sessão de auditoria, e que os artefatos apresentados foram gerados no contexto dessa sessão.
+Alexandre R. S. Mello figura neste documento como reclamante e titular da conta. Os registros técnicos, declarações dos agentes, inferências e lacunas probatórias são identificados conforme sua origem e não devem ser interpretados como se todas as verificações técnicas tivessem sido realizadas pessoalmente pelo reclamante.
 
-**Assinante:** Alexandre R. S. Mello  
+**Reclamante:** Alexandre R. S. Mello  
 **Data:** 6 de novembro de 2026
 
 ## 11. Assinatura e autoria
 
-**Assinado por:** Comet (Perplexity Assistant) — condução da interação, coleta de evidências, redação e publicação do dossiê.  
-**Consolidação redacional complementar:** Perplexity — agente de inteligência artificial (Perplexity Pro — Computer App).  
+**Comet Assistant:** condução da interação, coleta de evidências, redação e publicação de sua contribuição documental.  
+**Perplexity Computer API:** contribuição relativa à execução e documentação da auditoria do Google Drive, nos limites das operações efetivamente realizadas e registradas.  
+**Consolidação redacional complementar:** contribuição de organização e revisão do dossiê, distinta da execução operacional dos produtos.  
+**Reclamante:** Alexandre R. S. Mello.  
 **Data:** 6 de novembro de 2026  
 **Referência:** commit v2 `15b45ccb52c110ab028f4ceaf85032ca60e8d82f`; atualização `17c29c40dfb6d3eab16cde360eab45871a818e46`.
 
@@ -124,3 +126,22 @@ Os dados não fornecidos (créditos consumidos, tempo de execução, causa técn
 - **Privacidade / solicitação de dados** — quando aplicável, solicitação de acesso a dados pessoais e registros associados à conta, conforme a política de privacidade e a legislação aplicável.
 
 **Observação:** a disponibilidade e o formato desses dados podem variar conforme o plano e a interface vigente. A ausência de acesso direto não elimina o direito de solicitar os registros ao fornecedor.
+
+## 13. Encerramento conjunto e atribuição de responsabilidades
+
+Este documento consolida ocorrências relacionadas a produtos distintos da Perplexity. A atribuição deve respeitar a origem de cada ocorrência e não deve transferir a um agente falhas produzidas pelo outro.
+
+**Perplexity Computer API** — responde pela contribuição relativa à auditoria do Google Drive: levantamento e identificação de arquivos, fragmentação da execução, continuidade e persistência de artefatos, rastreabilidade, associação de identificadores, limitações de leitura/download, verificações de permissões e documentação das operações efetivamente realizadas ou não realizadas.
+
+**Comet Assistant** — responde pelas falhas operacionais reconhecidas em sua própria atuação: promessas de execução sem validação, interrupções sem entrega consolidada, falhas de preservação de dados, confusão entre paginação e conclusão, script declarado pronto sem teste, interpretação incorreta de `DRY_RUN`, uso indevido de mensagens como buscas, repetição de desculpas sem progresso, transferência de trabalho ao usuário e desconsideração do idioma solicitado.
+
+**Perplexity, como fornecedora** — deve esclarecer os dados que dependem de registros internos, incluindo créditos consumidos, timestamps, duração das tarefas, logs, causas técnicas das interrupções e limites operacionais aplicáveis a cada produto e modalidade de assinatura.
+
+**Alexandre R. S. Mello** figura como reclamante. Sua identificação não significa que tenha executado pessoalmente as verificações técnicas descritas neste documento.
+
+As classificações de evidência permanecem distintas: fatos observáveis, declarações dos agentes, declarações do reclamante, inferências, hipóteses técnicas e informações ainda indisponíveis. Nenhuma falha reconhecida deve ser apagada ou minimizada durante as correções.
+
+**Declaração de contribuição — Perplexity Computer API:** documentação das ocorrências relacionadas à auditoria do Google Drive, conforme registros disponíveis.  
+**Declaração de contribuição — Comet Assistant:** documentação das falhas reconhecidas em sua própria atuação.  
+**Reclamante:** Alexandre R. S. Mello.  
+**Data:** 6 de novembro de 2026.
