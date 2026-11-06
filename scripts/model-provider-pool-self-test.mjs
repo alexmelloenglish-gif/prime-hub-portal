@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const provider = readFileSync('lib/pipeline/model-provider.ts', 'utf8')
+const geminiHealthcheck = readFileSync('app/api/admin/gemini-healthcheck/route.ts', 'utf8')
 const prompts = readFileSync('lib/pipeline/prompts.ts', 'utf8')
 const contracts = readFileSync('lib/pipeline/contracts.ts', 'utf8')
 const qualityGate = readFileSync('lib/pipeline/quality-gate.ts', 'utf8')
@@ -10,6 +11,7 @@ const teacher = readFileSync('lib/teacher-intelligence.ts', 'utf8')
 const env = readFileSync('.env.example', 'utf8')
 
 assert.match(provider, /PRIME_MODEL_PROVIDER_ORDER/, 'Provider order must be configurable')
+assert.match(geminiHealthcheck, /process\\.env\\.PRIME_GEMINI_MODEL\\s*\\|\\|\\s*process\\.env\\.PRIME_PIPELINE_MODEL\\s*\\|\\|\\s*DEFAULT_MODEL/, 'Gemini healthcheck must use the same model precedence as the production provider')
 for (const id of ['gemini', 'openai', 'perplexity', 'meta']) {
   assert.match(provider, new RegExp(`['"]${id}['"]`), `Provider pool must support ${id}`)
 }
