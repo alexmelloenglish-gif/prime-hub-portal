@@ -1539,7 +1539,14 @@ export async function retryFailedPipelineRun(input: {
           errorMessage: message,
         },
       })
-      throw error
+      // The retry request was accepted and claimed its durable run. Surface the
+      // resulting failed state in the normal result envelope so legacy and Shared
+      // retries have the same HTTP contract; clients must inspect status/errorCode.
+      result = {
+        pipelineRunId: latest.id,
+        status: 'failed',
+        duplicate: false,
+      }
     }
 
     await prisma.pipelineEvent.upsert({
