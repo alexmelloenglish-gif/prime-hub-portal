@@ -331,3 +331,38 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — PRIME Learning Engine executable closure lane
+
+**Branch:** `issue-58/engine-regression-and-ops`  
+**Merge status:** OPEN / awaiting exact-head CI  
+**Production changes:** none; `PIPELINE_AUTOMATION_FROZEN` untouched.
+
+### Implementation artifacts added or strengthened
+
+| Requirement | Artifact | Proof boundary / state |
+|---|---|---|
+| Legacy retry | `scripts/pipeline-attempts-self-test.mjs` + `scripts/pipeline-retry-state-witness.ts` | Existing disposable-Postgres witness retained; exact-head run pending |
+| Shared retry | `scripts/pipeline-retry-state-witness.ts` | Added assertions for exactly one processing row, same PipelineRun/attempt, normalized identity, idempotency key and unchanged resumePoint; exact-head run pending |
+| Teacher Authority / GL-003 | `scripts/golden-runtime-witness.ts` + redaction self-test | Witness now emits explicit approved status/decision, reviewer, timestamp, authority hash and hashed source→run→provider→artifact→teacher→canonical trace; exact-head run pending |
+| Learner isolation | `scripts/student-isolation-witness.ts` | New disposable-Postgres witness for learner self, A→B denial, guardian grant/revocation, teacher explicit selection and ambiguity fail-closed; includes route/session guard assertions |
+| Providers | `scripts/providers-health-self-test.mjs` | New no-network contract test for protected Gemini healthcheck, Meet OAuth/cron failures and visible model-provider fallbacks |
+| Dependency audit | `scripts/prime-dependency-audit.mjs`, `.github/workflows/prime-dependency-audit.yml` | Production-only audit generates a Markdown artifact and fails on high/critical; exact-head execution pending |
+| Canonical specification | `docs/operations/PRIME_LEARNING_ENGINE_SPEC.md` | New |
+| Dependency ledger | `docs/operations/PRIME_DEPENDENCIES_LEDGER.md` | New; historical count marked historical pending new report |
+| Issue closure gate | `docs/operations/ISSUE_58_CLOSURE_CRITERIA.md` | New |
+| CI wiring | `.github/workflows/golden-runtime-witness.yml`, `package.json` | Provider contracts and student-isolation witness added to disposable-Postgres workflow; audit workflow added |
+
+### Current closure state
+
+- Retry legacy/shared: **IMPLEMENTED — exact-head CI pending**.
+- Synthetic GL-003: **IMPLEMENTED — exact-head CI pending**. Approval is an isolated database fixture, not an authenticated human session.
+- Auth/isolation: **IMPLEMENTED — exact-head CI pending**. Session identity is synthetic; this is not Google OAuth or Production browser acceptance.
+- Providers: **CONTRACT TEST ADDED — exact-head CI pending**. Network health must still be executed in protected staging; no provider credentials are used by CI.
+- Dependencies: **AUDIT AUTOMATION ADDED — audit result pending**. No package is declared remediated without the fresh production audit report and reviewed lockfile PR.
+- Production learner replay, authenticated owner/teacher acceptance, real Meet OAuth reconciliation and changing the automation freeze remain **OPEN / NOT AUTHORIZED BY THIS PATCH**.
+
+No row in this table becomes CLOSED until the exact PR head has passing workflows and the required evidence artifact is available.
