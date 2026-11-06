@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
+import { recordTeacherAuthorityDecision } from '@/lib/teacher-authority-decision'
 import { runG2RuntimeProof } from '@/lib/g2-runtime-proof'
 import { runG3RuntimeProof } from '@/lib/g3-runtime-proof'
 import { runG4RuntimeProof } from '@/lib/g4-runtime-proof'
@@ -200,16 +201,26 @@ async function decideValidation(formData: FormData) {
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) return
 
-  await prisma.validationTask.update({
-    where: { id: taskId },
-    data: {
-      status: decision,
-      decision,
+  const reason = String(formData.get('reason') || '').trim()
+  if (task.type === 'canonical_learning_record_authority') {
+    await recordTeacherAuthorityDecision({
+      taskId,
       reviewerId: session.user.id,
-      reviewedAt: new Date(),
-      reason: String(formData.get('reason') || '').trim() || null,
-    },
-  })
+      decision: decision as 'approved' | 'rejected',
+      reason,
+    })
+  } else {
+    await prisma.validationTask.update({
+      where: { id: taskId },
+      data: {
+        status: decision,
+        decision,
+        reviewerId: session.user.id,
+        reviewedAt: new Date(),
+        reason: reason || null,
+      },
+    })
+  }
 
   if (task.type === 'attendance_reconciliation' && decision === 'approved') {
     await prisma.attendanceRecord.update({
