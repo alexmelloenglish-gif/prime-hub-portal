@@ -86,6 +86,9 @@ jobs:
       - name: Execute pipeline retry-state witness
         run: npx --yes tsx@4.20.6 ./scripts/pipeline-retry-state-witness.ts
 
+      - name: Execute focused shared retry integration test
+        run: npm run test:issue-58-retry-shared
+
       - name: Upload persisted witness evidence
         if: always()
         uses: actions/upload-artifact@v4
