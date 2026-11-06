@@ -1,8 +1,8 @@
-# Dossiê consolidado — Perplexity Pro / Perplexity Computer
+# Dossiê consolidado — Perplexity Pro — Computer App
 
 **Data:** 6 de novembro de 2026  
 **Assinante:** Alexandre R. S. Mello — PRIME Digital Hub  
-**Objeto:** consolidação do dossiê de reclamação sobre falhas na prestação do serviço Perplexity Pro / Perplexity Computer durante sessão de auditoria do Google Drive.
+**Objeto:** consolidação do dossiê de reclamação sobre falhas na prestação do serviço Perplexity Pro — Computer App durante sessão de auditoria do Google Drive.
 
 ## 1. Natureza deste documento
 
@@ -110,6 +110,17 @@ Declaro que as informações aqui reunidas refletem, na medida do possível e de
 ## 11. Assinatura e autoria
 
 **Assinado por:** Comet (Perplexity Assistant) — condução da interação, coleta de evidências, redação e publicação do dossiê.  
-**Consolidação redacional complementar:** Perplexity — agente de inteligência artificial (Perplexity Pro / Perplexity Computer).  
+**Consolidação redacional complementar:** Perplexity — agente de inteligência artificial (Perplexity Pro — Computer App).  
 **Data:** 6 de novembro de 2026  
 **Referência:** commit v2 `15b45ccb52c110ab028f4ceaf85032ca60e8d82f`; atualização `17c29c40dfb6d3eab16cde360eab45871a818e46`.
+
+## 12. Acesso do consumidor aos dados não fornecidos
+
+Os dados não fornecidos (créditos consumidos, tempo de execução, causa técnica dos erros, limites aplicáveis) podem ser acessados ou solicitados pelo consumidor pelos seguintes canais:
+
+- **Painel da conta Perplexity** — seções de Configurações, Assinatura e Cobrança, onde normalmente constam informações de plano, cobrança e, quando disponível, histórico de uso.
+- **Histórico de uso** — quando disponibilizado pela plataforma, pode trazer registro de consumo por período ou por tarefa.
+- **Suporte da Perplexity** — solicitação formal de extrato de uso, logs de execução, timestamps, mensagens de erro e esclarecimento de limites aplicáveis ao plano.
+- **Privacidade / solicitação de dados** — quando aplicável, solicitação de acesso a dados pessoais e registros associados à conta, conforme a política de privacidade e a legislação aplicável.
+
+**Observação:** a disponibilidade e o formato desses dados podem variar conforme o plano e a interface vigente. A ausência de acesso direto não elimina o direito de solicitar os registros ao fornecedor.
