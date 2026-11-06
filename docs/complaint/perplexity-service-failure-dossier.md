@@ -65,8 +65,8 @@ Este complemento não altera o enquadramento; apenas reforça a aplicação prá
 
 | Item | Método | Dado necessário | Status |
 |---|---|---|---|
-| Créditos consumidos | Extrato de uso ÷ tarifa por crédito | Extrato de faturamento | Pendente fornecimento |
-| Tempo desperdiçado | Soma dos intervalos entre comandos repetidos | Timestamps da conversa | Pendente quantificação |
+| Créditos consumidos | Extrato de uso ÷ tarifa por crédito | Extrato de faturamento | Não disponível ao agente; requer fornecimento pela Perplexity |
+| Tempo desperdiçado | Soma dos intervalos entre comandos repetidos | Timestamps da conversa | Não disponível ao agente; requer fornecimento pela Perplexity |
 | Retrabalho | Nº de reconstruções × tempo médio por reconstrução | Contagem de reconstruções | Pendente quantificação |
 | Impacto em prazos | Comparação entre prazo planejado e realizado | Cronograma original | Pendente documentação |
 
@@ -74,8 +74,8 @@ Este complemento não altera o enquadramento; apenas reforça a aplicação prá
 
 | Item | Link/Hash | Status |
 |---|---|---|
-| Planilha de auditoria | [a preencher — depende de dado da Perplexity] | Pendente |
-| Script de extração | [a preencher — depende de dado da Perplexity] | Pendente |
+| Planilha de auditoria | `Drive-Files-and-Folders.xlsx` — Google Drive do assinante | Identificado |
+| Script de extração | `ORGANIZADOR_DRIVE_PDH_v2.gs.pdf` — Google Drive do assinante | Identificado |
 | Branch de trabalho | `docs/perplexity-complaint` | Confirmado |
 | Commit da versão fortalecida | `15b45cc...` | Confirmado |
 | SHA do arquivo | `485c83f0...` | Confirmado |
