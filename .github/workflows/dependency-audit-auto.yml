@@ -1,10 +1,10 @@
 name: Dependency Audit Auto Fix
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - '**'
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -33,6 +33,26 @@ jobs:
 
       - name: Run npm audit fix
         run: npm audit fix --omit=dev
+
+      - name: Diagnóstico
+        if: always()
+        run: |
+          {
+            echo "## Dependency Audit Diagnostics"
+            echo "- Node: $(node -v)"
+            echo "- npm: $(npm -v)"
+            echo "- git status:"
+            git status --short
+            echo "- git diff:"
+            git --no-pager diff -- package.json package-lock.json || true
+          } > audit-diagnostic.md
+
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-diagnostic
+          path: audit-diagnostic.md
 
       - name: Commit dependency fixes
         run: |
