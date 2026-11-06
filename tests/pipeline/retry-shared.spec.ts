@@ -48,7 +48,7 @@ test('runtime witness covers same-run identity, resume point and one concurrent 
   assert.match(witness, /sharedOutcomes\.filter\(\(item\) => item\.status === 'fulfilled' && item\.value\.duplicate\)/)
   assert.match(witness, /sharedRuns\[0\]\.normalizedRunIdentity, sharedOptions\.normalizedRunIdentity/)
   assert.match(witness, /sharedRuns\[0\]\.resumePoint, 'prompt_1'/)
-  assert.match(witness, /same_execution_resume/)
+  assert.match(runner, /retryMode: 'same_execution_resume'/)
   assert.match(behavioral, /Two concurrent retries must produce one and only one active resumer/)
   assert.match(behavioral, /protected continuation work must not execute twice/i)
 })
