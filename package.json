@@ -42,7 +42,7 @@
     "test:issue-58-retry-legacy": "node --experimental-strip-types --test tests/pipeline/retry-legacy.spec.ts",
     "test:issue-58-providers-health": "node --experimental-strip-types --test tests/integration/providers-health.spec.ts",
     "test:issue-58-retry-shared": "node --experimental-strip-types --test tests/pipeline/retry-shared.spec.ts",
-    "test:issue-58-student-isolation": "NODE_OPTIONS=--conditions=react-server npx --yes tsx@4.20.6 --test tests/auth/student-isolation.spec.ts"
+    "test:issue-58-student-isolation": "npx --yes tsx@4.20.6 --test tests/auth/student-isolation.spec.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
