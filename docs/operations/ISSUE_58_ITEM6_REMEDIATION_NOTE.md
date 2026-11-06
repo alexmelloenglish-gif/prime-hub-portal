@@ -63,3 +63,14 @@ They flow through the optional `@google-cloud/firestore-api` / `google-gax` depe
 ## Boundaries
 
 No Production secret, Production database, migration, learner record, deployment, merge, or `PIPELINE_AUTOMATION_FROZEN` setting was changed. All tests used disposable/synthetic CI infrastructure. Issue #58 remains OPEN.
+
+
+## Final exact-head rerun
+
+The corrected remediation note is present on final branch head `feab5a17c070ad88547a8c7dfb8316c62895ea33`. Exact-head CI passed:
+- [Issue 58 validation #42175797922](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175797922): SUCCESS, including fresh Production dependency audit and full build.
+- [Student Dashboard Contract #42175803749](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803749): SUCCESS.
+- [Golden Runtime Witness #42175803766](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803766): SUCCESS.
+- [Coordination Runtime Witness #42175803820](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803820): SUCCESS.
+
+On the final run the production tree remains at 4 moderate advisories and zero high/critical. The build and production high/critical audit gate pass. This is not a zero-advisory audit; Item 6 remains PARTIAL/OPEN pending disposition of the four moderate transitive advisories.
