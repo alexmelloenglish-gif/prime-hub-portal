@@ -15,6 +15,8 @@ const files = {
   learnerDecision: 'app/dashboard/admin/intelligence/students/[studentId]/page.tsx',
   decisionPackages: 'lib/teacher-decision-packages.ts',
   authorityDecision: 'lib/teacher-authority-decision.ts',
+  pipelineRun: 'lib/pipeline/run.ts',
+  goldenWitness: 'scripts/golden-runtime-witness.ts',
   gustavoPackage: 'data/teacher-intelligence/gustavo-drummond-v2.json',
   lessonsPage: 'app/dashboard/admin/intelligence/lessons/page.tsx',
   lessonTrace: 'app/dashboard/admin/intelligence/lessons/[runId]/page.tsx',
