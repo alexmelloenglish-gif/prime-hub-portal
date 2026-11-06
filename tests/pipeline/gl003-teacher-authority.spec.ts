@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
 import { after, test } from 'node:test'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { checkpointLearningMachine } from '../../lib/learning-machine/run-history.ts'
@@ -21,7 +21,7 @@ type Fixture = {
 }
 
 const fixture = JSON.parse(
-  await readFile(new URL('../fixtures/gl003/teacher-authority.fixture.json', import.meta.url), 'utf8'),
+  readFileSync(new URL('../fixtures/gl003/teacher-authority.fixture.json', import.meta.url), 'utf8'),
 ) as Fixture
 const prisma = new PrismaClient()
 const pipelineRunId = 'pipeline-run-gl003-fixture'
