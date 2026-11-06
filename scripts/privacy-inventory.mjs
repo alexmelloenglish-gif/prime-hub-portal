@@ -47,7 +47,13 @@ const report = {
   trackedFileCount: trackedFiles.length,
   categories: counts,
   contentCandidateFileCount: contentCandidates.length,
-  note: 'Paths and counts only; no names, emails, transcript content, document IDs, or raw payloads are emitted.',
+  scanScope: {
+    input: 'git ls-files tracked files in the current checkout',
+    pathClassification: 'known path patterns only',
+    contentPatterns: ['email-like strings', 'Google Docs document/spreadsheet/file URLs'],
+    limitations: 'not comprehensive PII/DLP; does not inspect database, remote storage, audio, images, PDFs, untracked files, Git history, or external transcripts; unreadable files are skipped',
+  },
+  note: 'Output contains counts and categories only; matched values and file paths are not emitted.',
 }
 
 console.log(JSON.stringify(report, null, 2))
