@@ -23,14 +23,14 @@ async function main() {
   const retryRoute = fs.readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
   const resolverSource = fs.readFileSync('lib/learner-account-resolution.ts', 'utf8')
 
-  assert.match(dashboardLayout, /getServerSession\\(authOptions\\)/, 'Dashboard must derive access from NextAuth session')
-  assert.match(dashboardLayout, /if \\(!activeUser\\)\\s*\\{\\s*redirect\\('\\/login'\\)/, 'Anonymous dashboard access must redirect to login')
-  assert.match(dashboardLayout, /isAuthorizedLearner\\(activeStudentEmail\\)/, 'Learner dashboard must require an eligible learner identity')
-  assert.match(studentDataSource, /user\\?\\.role === 'admin'/, 'Admin preview must depend on the admin role')
-  assert.match(studentDataSource, /return isAdminUser\\(user\\)/, 'Cross-learner preview must be admin-only')
-  assert.match(retryRoute, /if \\(!session\\?\\.user\\)[\\s\\S]*status: 401/, 'Admin retry must reject unauthenticated requests')
-  assert.match(retryRoute, /if \\(!isAdminUser\\(session\\.user\\)\\)[\\s\\S]*status: 403/, 'Admin retry must reject non-admin sessions')
-  assert.match(resolverSource, /userId: account\\.accountId[\\s\\S]*status: 'ACTIVE'/, 'G6 must scope the active relation to the authenticated account id')
+  assert.match(dashboardLayout, /getServerSession\(authOptions\)/, 'Dashboard must derive access from NextAuth session')
+  assert.match(dashboardLayout, /if \(!activeUser\)\s*\{\s*redirect\('\/login'\)/, 'Anonymous dashboard access must redirect to login')
+  assert.match(dashboardLayout, /isAuthorizedLearner\(activeStudentEmail\)/, 'Learner dashboard must require an eligible learner identity')
+  assert.match(studentDataSource, /user\?\.role === 'admin'/, 'Admin preview must depend on the admin role')
+  assert.match(studentDataSource, /return isAdminUser\(user\)/, 'Cross-learner preview must be admin-only')
+  assert.match(retryRoute, /if \(!session\?\.user\)[\s\S]*status: 401/, 'Admin retry must reject unauthenticated requests')
+  assert.match(retryRoute, /if \(!isAdminUser\(session\.user\)\)[\s\S]*status: 403/, 'Admin retry must reject non-admin sessions')
+  assert.match(resolverSource, /userId: account\.accountId[\s\S]*status: 'ACTIVE'/, 'G6 must scope the active relation to the authenticated account id')
   assert.match(resolverSource, /studentId: requestedStudentId/, 'G6 must resolve the explicitly requested learner id')
   assert.doesNotMatch(resolverSource, /guardianEmail|canonicalEmail|studentEmail/, 'G6 must not infer authority from email equality')
 
@@ -87,27 +87,33 @@ async function main() {
 
     const studentOwn = await resolveAuthorizedLearnerRelation({ account: identity(studentA), requestedStudentId: learnerA })
     assert.equal(studentOwn.status, 'AUTHORIZED')
+    if (studentOwn.status !== 'AUTHORIZED') throw new Error('Student own-learner relation did not authorize')
     assert.equal(studentOwn.studentId, learnerA)
     assert.equal(studentOwn.relation.relationType, 'LEARNER_SELF')
 
     const studentCross = await resolveAuthorizedLearnerRelation({ account: identity(studentA), requestedStudentId: learnerB })
     assert.equal(studentCross.status, 'ABSENT')
+    if (studentCross.status !== 'ABSENT') throw new Error('Cross-learner request was not denied')
     assert.equal(studentCross.reason, 'REQUESTED_LEARNER_NOT_AUTHORIZED')
 
     const guardianOwn = await resolveAuthorizedLearnerRelation({ account: identity(guardian), requestedStudentId: learnerA })
     assert.equal(guardianOwn.status, 'AUTHORIZED')
+    if (guardianOwn.status !== 'AUTHORIZED') throw new Error('Guardian authorization fixture did not resolve')
     assert.equal(guardianOwn.relation.relationType, 'AUTHORIZED_ACCESS')
 
     const guardianRevoked = await resolveAuthorizedLearnerRelation({ account: identity(guardian), requestedStudentId: learnerB })
     assert.equal(guardianRevoked.status, 'ABSENT')
+    if (guardianRevoked.status !== 'ABSENT') throw new Error('Revoked guardian relation was not denied')
     assert.equal(guardianRevoked.reason, 'REQUESTED_LEARNER_NOT_AUTHORIZED')
 
     const teacherOwn = await resolveAuthorizedLearnerRelation({ account: identity(teacher), requestedStudentId: learnerA })
     assert.equal(teacherOwn.status, 'AUTHORIZED')
+    if (teacherOwn.status !== 'AUTHORIZED') throw new Error('Teacher authorization fixture did not resolve')
     assert.equal(teacherOwn.relation.relationType, 'OTHER_AUTHORIZED')
 
     const teacherAmbiguous = await resolveAuthorizedLearnerRelation({ account: identity(teacher) })
     assert.equal(teacherAmbiguous.status, 'NOT_OBSERVABLE')
+    if (teacherAmbiguous.status !== 'NOT_OBSERVABLE') throw new Error('Ambiguous teacher relation was not rejected')
     assert.equal(teacherAmbiguous.reason, 'AMBIGUOUS_RELATION')
 
     const evidence = {
