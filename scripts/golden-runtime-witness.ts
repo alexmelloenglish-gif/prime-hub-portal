@@ -329,6 +329,7 @@ const [
   { runG4RuntimeProof },
   { runG5RuntimeProof },
   { recordTeacherAuthorityDecision },
+  { finalizeSharedLearningMachineAfterTeacherAuthority },
 ] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
   import('../lib/prisma.ts'),
@@ -338,6 +339,7 @@ const [
   import('../lib/g4-runtime-proof.ts'),
   import('../lib/g5-runtime-proof.ts'),
   import('../lib/teacher-authority-decision.ts'),
+  import('../lib/pipeline/run.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -470,14 +472,25 @@ assert.equal(g4.projectionStatus, 'VERIFIED')
 const g5 = await runG5RuntimeProof(authorityTask.id)
 assert.equal(g5.projectionStatus, 'VERIFIED')
 
+const completion = await finalizeSharedLearningMachineAfterTeacherAuthority({
+  validationTaskId: authorityTask.id,
+})
+assert.equal(completion.status, 'completed')
+assert.equal(completion.duplicate, false)
+const completionReplay = await finalizeSharedLearningMachineAfterTeacherAuthority({
+  validationTaskId: authorityTask.id,
+})
+assert.equal(completionReplay.status, 'completed')
+assert.equal(completionReplay.duplicate, true)
+
 const run = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
   include: { reviewTasks: true, transcript: true },
 })
 assert.ok(run)
-assert.equal(run.status, 'awaiting_teacher_authority')
-assert.equal(run.authorityStatus, 'non_authoritative')
-assert.equal(run.completedAt, null)
+assert.equal(run.status, 'completed')
+assert.equal(run.authorityStatus, 'teacher_authorized')
+assert.ok(run.completedAt, 'Finalized Shared Machine run must have a completion timestamp')
 assert.equal(run.reviewTasks.length, 0)
 
 const canonicalRecords = await prisma.canonicalLearningRecord.findMany({
@@ -510,13 +523,13 @@ const classReports = await prisma.classReportProjection.findMany({
   where: { pipelineRunId: run.id },
 })
 assert.equal(classReports.length, 1)
-assert.equal(classReports[0].documentStatus, 'draft')
-assert.equal(classReports[0].implementationStatus, 'not_proven')
+assert.equal(classReports[0].documentStatus, 'published')
+assert.equal(classReports[0].implementationStatus, 'proven')
 
 const publicationEvents = await prisma.pipelineEvent.findMany({
   where: { pipelineRunId: run.id, eventType: 'ClassReportProjectionPublished' },
 })
-assert.equal(publicationEvents.length, 0, 'Canonical authority must not auto-publish the legacy Class Report')
+assert.equal(publicationEvents.length, 1, 'The post-authority communication projection must publish one audited Class Report')
 
 // A wholly synthetic read-model baseline. The runtime witness must never
 // borrow a real learner profile or repository Firestore export.
