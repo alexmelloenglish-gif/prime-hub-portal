@@ -18,6 +18,22 @@ async function main() {
   const learnerB = 'synthetic-learner-b-' + nonce
   const now = new Date()
 
+  const dashboardLayout = fs.readFileSync('app/dashboard/layout.tsx', 'utf8')
+  const studentDataSource = fs.readFileSync('lib/student-data.ts', 'utf8')
+  const retryRoute = fs.readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
+  const resolverSource = fs.readFileSync('lib/learner-account-resolution.ts', 'utf8')
+
+  assert.match(dashboardLayout, /getServerSession\\(authOptions\\)/, 'Dashboard must derive access from NextAuth session')
+  assert.match(dashboardLayout, /if \\(!activeUser\\)\\s*\\{\\s*redirect\\('\\/login'\\)/, 'Anonymous dashboard access must redirect to login')
+  assert.match(dashboardLayout, /isAuthorizedLearner\\(activeStudentEmail\\)/, 'Learner dashboard must require an eligible learner identity')
+  assert.match(studentDataSource, /user\\?\\.role === 'admin'/, 'Admin preview must depend on the admin role')
+  assert.match(studentDataSource, /return isAdminUser\\(user\\)/, 'Cross-learner preview must be admin-only')
+  assert.match(retryRoute, /if \\(!session\\?\\.user\\)[\\s\\S]*status: 401/, 'Admin retry must reject unauthenticated requests')
+  assert.match(retryRoute, /if \\(!isAdminUser\\(session\\.user\\)\\)[\\s\\S]*status: 403/, 'Admin retry must reject non-admin sessions')
+  assert.match(resolverSource, /userId: account\\.accountId[\\s\\S]*status: 'ACTIVE'/, 'G6 must scope the active relation to the authenticated account id')
+  assert.match(resolverSource, /studentId: requestedStudentId/, 'G6 must resolve the explicitly requested learner id')
+  assert.doesNotMatch(resolverSource, /guardianEmail|canonicalEmail|studentEmail/, 'G6 must not infer authority from email equality')
+
   async function createUser(role: string) {
     const user = await prisma.user.create({
       data: { name: 'Synthetic ' + role, email: role + '.' + nonce + '@invalid.test', role },
