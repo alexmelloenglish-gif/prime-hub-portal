@@ -240,6 +240,7 @@ const driveCronRoute = readFileSync('app/api/cron/drive-transcripts/route.ts', '
 const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
 const driveReconciliation = readFileSync('lib/drive-reconciliation.ts', 'utf8')
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
+const retryEligibility = readFileSync('lib/pipeline/retry-eligibility.ts', 'utf8')
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
 const migration = readFileSync(
   'prisma/migrations/20260925013000_add_shared_learning_machine_runner_state/migration.sql',
@@ -365,6 +366,22 @@ assert.match(
   retryRoute,
   /sourceFileId: sourceFileId \|\| undefined/,
   'Manual/shared retry must not require Drive provenance when the run itself is known',
+)
+
+assert.match(
+  retryEligibility,
+  /process_orphaned_transcript/,
+  'An existing Transcript without a PipelineRun must remain eligible for its first attempt',
+)
+assert.match(
+  driveReconciliation,
+  /resolveExistingDriveTranscriptDisposition/,
+  'Drive reconciliation must use the explicit retry disposition policy',
+)
+assert.match(
+  pipeline,
+  /else if \\(retryTranscript && !existing\\)/,
+  'The runner must attach the first attempt to an existing orphan Transcript',
 )
 
 console.log('Shared PRIME Learning Machine behavioral self-test: PASS')
