@@ -366,3 +366,36 @@ The previous failure in run #42172636936 was an environment configuration failur
 ### Non-claims and invariants
 
 The database used for the retry test was a disposable synthetic PostgreSQL 16 service. No production database, production secret, learner record, migration, Teacher Authority action, or live retry was touched. `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No merge, deployment, or Issue #58 closure was performed. The CI evidence does not prove a full learner source-to-dashboard witness.
+
+
+## 2026-11-06 — Dependency audit and Golden witness workflow correction
+
+### Production dependency audit — exact current lockfile result
+
+On commit `0f0581d9693e3ad18a377d0f8119de82303b03ab`, the new `Production dependency audit` job ran `npm audit --omit=dev --json` against the PR #108 lockfile and reported **27 production advisories: 3 critical, 13 high, 10 moderate, 1 low**. The job correctly failed at the high-severity threshold; it did not modify dependencies.
+
+Notable direct-package findings:
+- `next`: critical; current resolved version falls within multiple affected ranges. npm reports a non-major fix path within the declared `^15.0.0` range.
+- `next-auth`: critical; affected through 4.24.14; patched release 4.24.15 is within the declared `^4.24.0` range.
+- `@vercel/oidc`: high; fix path reports 4.0.7 (major from pinned 3.8.4).
+- `postcss`: high; fix path is available within the declared range.
+- `sharp`: high; fix path reports 0.35.5 (major from pinned 0.34.5).
+- `firebase-admin`: moderate; npm reports fix path 14.5.0 (major from current 13.x range).
+
+Transitive production findings also include `websocket-driver` (critical), `@fastify/busboy`, `@grpc/grpc-js`, `node-forge`, `protobufjs`, `zod`, `source-map-js`, `nanoid`, and others. Full advisory titles, affected ranges, severities and npm fixAvailable values are in run [#42174341756](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42174341756), job `Production dependency audit`.
+
+**Status remains OPEN:** exact findings are now reproducible on the PR candidate, but no package or lockfile changes are claimed. Major-version updates require compatibility review and full regression/build verification. The CI audit job remains a fail-closed gate.
+
+### Golden Runtime Witness workflow correction
+
+A separate Golden Runtime Witness run had successfully completed the migration baseline, Golden witness, redaction check and pipeline retry-state witness, then failed because the final step invoked a nonexistent npm script `test:issue-58-retry-shared`. The actual package script is `test:issue-58-retry-shared-postgres`, and the test requires `PRIME_TEST_DATABASE_URL`.
+
+Corrected `.github/workflows/golden-runtime-witness.yml` in commit `aa401e6d723aab5fc09ca3b42c8e59c44e9577c5`:
+- set `PRIME_TEST_DATABASE_URL` to the same disposable PostgreSQL 16 database;
+- invoke the existing `test:issue-58-retry-shared-postgres` script.
+
+Validation of this workflow correction is pending the new Golden Runtime Witness CI run. Do not call it fixed at runtime until that run passes.
+
+### Closure gate
+
+Item 8 remains OPEN. The synthetic PR #108 tests do not close authenticated Production acceptance, Meet organizer OAuth/cron reconciliation, or the real canonical source-to-dashboard witness. No Production secrets, database, learner data, automation freeze, deployment or merge was changed.
