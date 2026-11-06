@@ -1,6 +1,7 @@
 // @ts-nocheck
 // Runtime witness harness: runtime assertions validate behavior; product TypeScript remains gated separately.
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -826,6 +827,12 @@ fs.writeFileSync(
 )
 console.log(JSON.stringify(evidence, null, 2))
 await prisma.$disconnect()
+
+// Reuse this disposable PostgreSQL service for the actual two-account dashboard isolation test.
+execFileSync('npx', ['--yes', 'tsx@4.20.6', '--test', 'tests/auth/student-isolation.spec.ts'], {
+  env: process.env,
+  stdio: 'inherit',
+})
 }
 
 main().catch((error) => {
