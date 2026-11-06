@@ -13,5 +13,10 @@
       "source": "/dashboard/student",
       "destination": "/dashboard"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "chore/issue-58-prime-engine-closure": false
+    }
+  }
 }
