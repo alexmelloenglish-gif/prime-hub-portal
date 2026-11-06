@@ -687,7 +687,12 @@ const evidence = {
   teacherAuthority: {
     decisionPath: 'synthetic_direct_disposable_database_fixture',
     authenticatedTeacherSession: false,
+    decision: authorityTask.decision,
+    status: authorityTask.status,
+    reviewerRole: teacher.role,
+    authorityScope: 'lesson_canonicalization',
     validationTaskRef: safeRef(authorityTask.id),
+    teacherDecisionRef: safeRef(authorityTask.id),
     reviewerRef: safeRef(authorityTask.reviewerId),
     reviewedAt: authorityTask.reviewedAt?.toISOString(),
     approvalHash: authorityTask.evidence.authorityPayloadHash,

@@ -1,0 +1,62 @@
+name: PRIME Engine Dependency Audit
+
+on:
+  pull_request:
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/audit-prime-engine.mjs"
+      - ".github/workflows/prime-engine-dependencies.yml"
+      - "docs/operations/PRIME_DEPENDENCIES_LEDGER.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/audit-prime-engine.mjs"
+      - ".github/workflows/prime-engine-dependencies.yml"
+      - "docs/operations/PRIME_DEPENDENCIES_LEDGER.md"
+  schedule:
+    - cron: "0 12 * * 1" # Mondays 09:00 America/Sao_Paulo
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-production-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact candidate checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install lockfile exactly
+        run: npm ci
+
+      - name: Audit production dependency tree
+        run: npm run audit:prime-engine
+
+      - name: Upload production dependency audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prime-engine-production-dependency-audit
+          path: |
+            artifacts/prime-engine-npm-audit.json
+            artifacts/prime-engine-npm-audit.md
+          if-no-files-found: error
