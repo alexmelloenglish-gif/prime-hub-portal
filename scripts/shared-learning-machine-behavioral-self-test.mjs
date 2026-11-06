@@ -10,6 +10,7 @@ import {
   resolveProtectedStage,
   resolveUniqueSharedRunConflict,
 } from '../lib/learning-machine/behavioral-boundary.ts'
+import { resolveExistingDriveTranscriptDisposition } from '../lib/pipeline/retry-eligibility.ts'
 
 const transcript = {
   lessonId: 'golden-lesson-2026-09-25',
@@ -50,6 +51,27 @@ assert.equal(
   'Retry must preserve the same normalized run identity',
 )
 assert.notEqual(manual.triggerOrigin, automatic.triggerOrigin)
+
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: false }),
+  'process_new_source',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'failed' }),
+  'retry_failed_run',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: null }),
+  'process_orphaned_transcript',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'completed' }),
+  'skip_existing_run',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'processing' }),
+  'skip_existing_run',
+)
 
 assert.deepEqual(canonicalResumeStagesFrom('canonicalization'), [
   'canonicalization',
