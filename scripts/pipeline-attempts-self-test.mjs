@@ -25,6 +25,9 @@ assert.match(pipeline, /newestAttempt\?\.id !== expectedPipelineRunId/, 'A targe
 assert.match(pipeline, /PipelineRetryRequested/, 'A targeted retry must persist an audit event on the active run')
 assert.match(pipeline, /retryMode: 'canonical_stored_transcript'/, 'Legacy targeted retry must declare canonical transcript reuse')
 assert.match(pipeline, /retryMode: 'same_execution_resume'/, 'Shared-machine retry must declare same-execution resume')
+assert.match(pipeline, /result = \{[\s\S]*?pipelineRunId: latest\.id,[\s\S]*?status: 'failed',[\s\S]*?duplicate: false/, 'Shared retry failures after claim must return the same result envelope as legacy attempts')
+assert.match(pipeline, /errorCode: 'SHARED_RUNNER_RESUME_FAILED'/, 'Shared retry failures must retain a stable run-level error code')
+
 assert.match(retryRoute, /isAdminUser\(session\.user\)/, 'The targeted retry API must require an administrator')
 assert.match(retryRoute, /request\.json\(\)/, 'The retry endpoint must accept a JSON request body')
 assert.match(retryRoute, /pipelineRunId_required/, 'The retry endpoint must reject requests without the exact target run ID')
