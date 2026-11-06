@@ -10,6 +10,7 @@ import {
   resolveProtectedStage,
   resolveUniqueSharedRunConflict,
 } from '../lib/learning-machine/behavioral-boundary.ts'
+import { resolveExistingDriveTranscriptDisposition } from '../lib/pipeline/retry-eligibility.ts'
 
 const transcript = {
   lessonId: 'golden-lesson-2026-09-25',
@@ -50,6 +51,27 @@ assert.equal(
   'Retry must preserve the same normalized run identity',
 )
 assert.notEqual(manual.triggerOrigin, automatic.triggerOrigin)
+
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: false }),
+  'process_new_source',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'failed' }),
+  'retry_failed_run',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: null }),
+  'process_orphaned_transcript',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'completed' }),
+  'skip_existing_run',
+)
+assert.equal(
+  resolveExistingDriveTranscriptDisposition({ transcriptExists: true, latestRunStatus: 'processing' }),
+  'skip_existing_run',
+)
 
 assert.deepEqual(canonicalResumeStagesFrom('canonicalization'), [
   'canonicalization',
@@ -218,6 +240,7 @@ const driveCronRoute = readFileSync('app/api/cron/drive-transcripts/route.ts', '
 const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
 const driveReconciliation = readFileSync('lib/drive-reconciliation.ts', 'utf8')
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
+const retryEligibility = readFileSync('lib/pipeline/retry-eligibility.ts', 'utf8')
 const schema = readFileSync('prisma/schema.prisma', 'utf8')
 const migration = readFileSync(
   'prisma/migrations/20260925013000_add_shared_learning_machine_runner_state/migration.sql',
@@ -345,4 +368,18 @@ assert.match(
   'Manual/shared retry must not require Drive provenance when the run itself is known',
 )
 
+assert.match(
+  retryEligibility,
+  /process_orphaned_transcript/,
+  'An existing Transcript without a PipelineRun must remain eligible for its first attempt',
+)
+assert.match(
+  driveReconciliation,
+  /resolveExistingDriveTranscriptDisposition/,
+  'Drive reconciliation must use the explicit retry disposition policy',
+)
+assert.ok(
+  pipeline.includes('else if (retryTranscript && !existing)'),
+  'The runner must attach the first attempt to an existing orphan Transcript',
+)
 console.log('Shared PRIME Learning Machine behavioral self-test: PASS')
