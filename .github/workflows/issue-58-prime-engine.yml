@@ -1,0 +1,29 @@
+name: Issue 58 — PRIME Engine validation
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - chore/issue-58-prime-engine-closure
+
+jobs:
+  retry-legacy:
+    name: Retry legacy eligibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run legacy retry eligibility test
+        run: npm run test:issue-58-retry-legacy
