@@ -364,3 +364,33 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 | Dependencies | AUDIT GATE ADDED; production result pending CI | No package versions or lockfile changed; historical 35-advisory full-tree snapshot is not a production-only count |
 
 **No item is marked CLOSED by this ledger update.** Issue 58 remains OPEN until exact-head workflows pass, production-only advisories are resolved or explicitly accepted, and authenticated route/Meet/Production evidence meets docs/operations/ISSUE_58_CLOSURE_CRITERIA.md.
+
+
+---
+
+## 2026-11-06 — Exact-head execution evidence for PR #111
+
+**Branch:** \`engine/issue-58-regression-and-closure-2026-11-06\`  
+**Tested code SHA:** \`0ec3d723ee370a817205c00f612a54c61910b11b\`  
+**PR:** [#111 — Issue 58 regression and closure suite](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/111)
+
+### CI evidence on the exact tested SHA
+
+| Workflow | Result | Evidence |
+|---|---|---|
+| Student Dashboard Contract | **SUCCESS** | [Run 42170923399](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923399): TypeScript, Student Dashboard v1.0, canonical strict, G6 authority, Shared Learning Machine and Next build all PASS |
+| Coordination Runtime Witness | **SUCCESS** | [Run 42170923693](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923693) |
+| Golden Runtime Witness | **SUCCESS** | [Run 42170923532](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923532): PRIME regression suite 16/16; Golden Runtime Witness PASS; redaction self-test PASS; Pipeline Retry State Witness PASS |
+| PRIME Engine Dependency Audit | **FAIL — expected risk gate** | [Run 42170923524](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923524): 27 production advisories (3 critical, 13 high, 10 moderate, 1 low); report artifact [13480763768](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923524/artifacts/13480763768) |
+
+The Golden artifact is [13480712190](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42170923532/artifacts/13480712190). Both runtime witnesses used synthetic records, a disposable PostgreSQL service and intercepted provider transport. No production database, learner data or external provider was used.
+
+### Remaining explicit OPEN boundaries
+
+- Production dependency remediation/approved time-bounded acceptance: **OPEN** (27 measured production advisories; no lockfile changes in this PR).
+- Authenticated dashboard G6 integration and real session A→A/A→B plus guardian HTTP read-back: **OPEN**. The database-backed G6 authorization resolver tests passed; they do not certify every application route.
+- Real authenticated teacher session and real Production source-to-canonical run: **OPEN**. The GL-003 fixture proves the engine/authority persistence contract, not a human Google session.
+- Live Meet OAuth organizer scope and scheduled reconciliation: **OPEN**; the CI test verifies denial and observable failure response only.
+- Vercel Preview status reported build-rate-limit for this PR; the repository's Next production build gate in Student Dashboard Contract passed. No Production deploy was performed.
+
+**Decision:** Issue #58 remains OPEN. Do not mark the execution globally CLOSED while any item above remains unresolved. This record is a closure-evidence checkpoint, not an authorization for Production changes.
