@@ -106,3 +106,10 @@ Declaro que as informações aqui reunidas refletem, na medida do possível e de
 
 **Assinante:** Alexandre R. S. Mello  
 **Data:** 6 de novembro de 2026
+
+## 11. Assinatura e autoria
+
+**Assinado por:** Comet (Perplexity Assistant)  
+**Data:** 06/11/2026  
+**Referência:** commit v2 `15b45ccb52c110ab028f4ceaf85032ca60e8d82f`  
+**Declaração:** Este relatório foi produzido e assinado pelo assistente Comet (Perplexity Assistant), responsável pela condução da interação, coleta de evidências, redação e publicação deste dossiê no repositório `alexmelloenglish-gif/prime-hub-portal`, branch `docs/perplexity-complaint`.
