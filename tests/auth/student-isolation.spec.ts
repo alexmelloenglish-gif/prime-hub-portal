@@ -3,6 +3,8 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { authOptions } from '../../lib/auth'
 import { getStudentDashboardState, isAdminUser } from '../../lib/student-data'
+import { accountIdentityFromSession } from '../../lib/learner-account-resolution'
+import { readFileSync } from 'node:fs'
 
 // Helpers to call NextAuth callbacks in isolation
 const { jwt, session, signIn, redirect } = authOptions.callbacks
@@ -100,4 +102,35 @@ test('getStudentDashboardState: admin pode pré-visualizar outro aluno (marcado 
   // Em ambiente de teste sem fontes reais, a Engine devolve preview sem dados persistidos,
   // mas marca que o alvo é diferente do viewer.
   assert.equal(state.isPreviewingAnotherStudent, true)
+})
+
+
+test('learner identity is the authenticated account id, never the email', () => {
+  assert.equal(accountIdentityFromSession({ email: 'same@example.com', role: 'student' } as any), null)
+
+  const account = accountIdentityFromSession({
+    id: 'account-A',
+    email: 'same@example.com',
+    role: 'student',
+  } as any)
+
+  assert.equal(account?.accountId, 'account-A')
+  assert.equal(account?.accountEmail, 'same@example.com')
+})
+
+test('dashboard and learner write routes enforce the explicit account-learner relation boundary', () => {
+  const studentData = readFileSync('lib/student-data.ts', 'utf8')
+  const resolver = readFileSync('lib/learner-account-resolution.ts', 'utf8')
+  const vocabularyRoute = readFileSync('app/api/student/vocabulary-reuse/route.ts', 'utf8')
+  const audioRoute = readFileSync('app/api/dashboard/action/audio/route.ts', 'utf8')
+  const checkInRoute = readFileSync('app/api/journey/gustavo/check-in/route.ts', 'utf8')
+
+  assert.match(studentData, /resolveAuthorizedLearnerRelation/)
+  assert.match(studentData, /requestedStudentId:\s*requestedLearner\?\.studentId/)
+  assert.match(resolver, /userId:\s*account\.accountId/)
+  assert.match(resolver, /status:\s*'ACTIVE'/)
+  assert.match(vocabularyRoute, /getStudentDashboardState\(session\.user/)
+  assert.match(audioRoute, /getStudentDashboardState\(session\.user/)
+  assert.match(checkInRoute, /resolveAuthorizedLearnerRelation/)
+  assert.match(checkInRoute, /requestedStudentId:\s*'stu_4c4da6c04ac4'/)
 })
