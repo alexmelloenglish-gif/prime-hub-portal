@@ -2,6 +2,9 @@ name: Dependency Audit Fix
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - fix/issue-58-dependency-audit
 
 permissions:
   contents: write
@@ -25,11 +28,3 @@ jobs:
           git add package.json package-lock.json
           git diff --cached --quiet || git commit -m "fix(deps): npm audit fix for production advisories"
           git push
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: fix/issue-58-dependency-audit
-          base: main
-          title: "fix(deps): resolve production dependency advisories"
-          body: "Automated npm audit fix for the 27 production advisories blocking PRs #109/#110/#111."
