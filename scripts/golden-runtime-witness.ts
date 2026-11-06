@@ -1,16 +1,21 @@
 // @ts-nocheck
 // Runtime witness harness: runtime assertions validate behavior; product TypeScript remains gated separately.
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
-const STUDENT_ID = 'stu_4c4da6c04ac4'
-const STUDENT_EMAIL = 'carolvdrummond@gmail.com'
-const LESSON_ID = 'gustavo-golden-runtime-2026-09-25'
-const TRANSCRIPT_ID = 'gustavo-golden-runtime-transcript-v1'
-const SOURCE_FILE_ID = 'golden-runtime-disposable-source-2026-09-25'
+const STUDENT_ID = 'stu_runtime_witness_synthetic'
+const STUDENT_EMAIL = 'golden.learner@invalid.test'
+const LESSON_ID = 'synthetic-golden-runtime-lesson-v1'
+const TRANSCRIPT_ID = 'synthetic-golden-runtime-transcript-v1'
+const SOURCE_FILE_ID = 'synthetic-golden-runtime-source-v1'
 const TEACHER_EMAIL = 'golden.teacher@invalid.test'
-const FIXED_TIME = '2026-09-25T20:00:00.000Z'
+const FIXED_TIME = '2026-11-06T04:00:00.000Z'
+
+function safeRef(value) {
+  return createHash('sha256').update(String(value)).digest('hex').slice(0, 16)
+}
 
 function readPromptInput(body) {
   const text = body?.contents?.[0]?.parts?.[0]?.text || ''
@@ -42,8 +47,8 @@ function promptOneFixture(input) {
     },
     lesson_observations: [{
       observation_id: 'obs-golden-1',
-      source_span: 'Gustavo: No, I did not. I went to school and drank water.',
-      observation: 'Gustavo repaired a past answer and reused irregular past forms in a personal sentence.',
+      source_span: 'Learner: No, I did not. I went to school and drank water.',
+      observation: 'Learner repaired a past answer and reused irregular past forms in a personal sentence.',
       observation_type: 'language_use',
       evidence_candidate_ids: ['ev-golden-1'],
       confidence: 0.99,
@@ -53,8 +58,8 @@ function promptOneFixture(input) {
       student_id: input.studentId,
       lesson_id: input.lessonId,
       source_transcript_id: input.transcriptId,
-      source_span: 'Gustavo: No, I did not. I went to school and drank water.',
-      content: 'Gustavo repaired a past answer and reused irregular past forms in a personal sentence.',
+      source_span: 'Learner: No, I did not. I went to school and drank water.',
+      content: 'Learner repaired a past answer and reused irregular past forms in a personal sentence.',
       evidence_type: 'observable_language_performance',
       provenance: {
         origin: 'runtime-witness-fixture',
@@ -94,8 +99,8 @@ function promptOneFixture(input) {
       author_type: 'ai',
     }],
     presentation_candidates: {
-      class_report_facts: ['Gustavo repaired a past answer and reused went and drank in a personal sentence.'],
-      student_facing_summary: 'Gustavo practised Past Simple through a real personal example and corrected one answer.',
+      class_report_facts: ['Learner repaired a past answer and reused went and drank in a personal sentence.'],
+      student_facing_summary: 'Learner practised Past Simple through a real personal example and corrected one answer.',
       vocabulary_candidates: ['retrieval', 'went', 'drank'],
       grammar_focus_candidates: ['Did + base form', 'Past Simple short answers'],
       homework_recommendation: {
@@ -151,11 +156,11 @@ function promptTwoFixture(input) {
     authorityStatus: 'non_authoritative',
     sourceReferences,
     title: 'Golden Runtime Class Report',
-    markdown: '# Golden Runtime Class Report\n\nGustavo repaired a past answer and reused irregular past forms in a personal sentence.\n\nNext: retrieve the same pattern in a new story.',
-    summary: 'Gustavo repaired a past answer and reused irregular past forms in a meaningful personal sentence.',
+    markdown: '# Golden Runtime Class Report\n\nLearner repaired a past answer and reused irregular past forms in a personal sentence.\n\nNext: retrieve the same pattern in a new story.',
+    summary: 'Learner repaired a past answer and reused irregular past forms in a meaningful personal sentence.',
     evidenceHighlights: evidenceHighlights.length
       ? evidenceHighlights
-      : ['Gustavo repaired a past answer and reused irregular past forms in a personal sentence.'],
+      : ['Learner repaired a past answer and reused irregular past forms in a personal sentence.'],
     grammarFocus: ['Did + base form', 'Past Simple short answers'],
     vocabulary: ['retrieval', 'went', 'drank'],
     corrections: [{
@@ -179,7 +184,7 @@ function promptThreeFixture(input) {
   const report = input.report
   return {
     patch_schema_version: 'portfolio-projection-patch.v3',
-    patch_id: 'patch-gustavo-golden-runtime-v1',
+    patch_id: 'patch-synthetic-golden-runtime-v1',
     operation_key: `${context.student_id}|${input.lesson.lessonId}|${report.reportId}`,
     portfolio_id: context.portfolio_id,
     student_id: context.student_id,
@@ -241,11 +246,11 @@ function promptThreeFixture(input) {
 
 function promptFourFixture(input) {
   return {
-    coaching_guidance_id: 'coaching-gustavo-golden-runtime-v1',
+    coaching_guidance_id: 'coaching-synthetic-golden-runtime-v1',
     student_id: input.lesson.studentId,
     teacher_id: input.lesson.teacherId,
     studentSnapshot: [
-      'Gustavo repaired a Past Simple answer and reused went and drank.',
+      'Learner repaired a Past Simple answer and reused went and drank.',
       'Independent retrieval should be checked again in a new context.',
     ],
     topTeachingPriorities: [{
@@ -287,7 +292,9 @@ function promptFourFixture(input) {
   }
 }
 
+let mockedProviderRequestCount = 0
 globalThis.fetch = async (_url, init = {}) => {
+  mockedProviderRequestCount += 1
   const request = JSON.parse(String(init.body || '{}'))
   const system = request?.systemInstruction?.parts?.[0]?.text || ''
   const input = readPromptInput(request)
@@ -346,7 +353,7 @@ const transcript = {
   lessonId: LESSON_ID,
   studentEmail: STUDENT_EMAIL,
   studentId: STUDENT_ID,
-  studentName: 'Gustavo Drummond de Andrade Salgado',
+  studentName: 'Synthetic Learner',
   teacherId: teacher.id,
   teacherName: 'Golden Runtime Teacher',
   program: 'English Learning — Golden Runtime Witness',
@@ -354,9 +361,9 @@ const transcript = {
   transcriptId: TRANSCRIPT_ID,
   transcript: [
     'Teacher: Did you go to school yesterday?',
-    'Gustavo: I do not... No, I did not.',
+    'Learner: I do not... No, I did not.',
     'Teacher: Tell me one thing you did.',
-    'Gustavo: I went to school and drank water.',
+    'Learner: I went to school and drank water.',
   ].join('\n'),
   source: 'google_meet',
   effectiveAt: FIXED_TIME,
@@ -479,12 +486,63 @@ const publicationEvents = await prisma.pipelineEvent.findMany({
 })
 assert.equal(publicationEvents.length, 0, 'Canonical authority must not auto-publish the legacy Class Report')
 
-const baseStudent = JSON.parse(
-  fs.readFileSync(
-    path.join(process.cwd(), 'data/students/carolvdrummond-gmail-com.firestore.json'),
-    'utf8',
-  ),
-)
+// A wholly synthetic read-model baseline. The runtime witness must never
+// borrow a real learner profile or repository Firestore export.
+const baseStudent = {
+  studentId: STUDENT_ID,
+  studentEmail: STUDENT_EMAIL,
+  currentLevel: 'CEFR A1',
+  targetLevel: 'CEFR A2',
+  focus: 'Retrieve Past Simple language independently in meaningful contexts.',
+  vocabularyBank: [],
+  grammarOverview: {
+    title: 'Synthetic grammar baseline',
+    summary: 'Synthetic fixture only.',
+    focusPoints: [],
+  },
+  teacherFeedback: [],
+  canonicalProjection: {
+    version: 'synthetic-dashboard-projection-v1',
+    currentState: {
+      level: {
+        value: 'CEFR A1',
+        qualifier: 'Synthetic teacher-validated baseline.',
+        status: 'teacher-validated',
+      },
+      targetLevel: {
+        value: 'CEFR A2',
+        qualifier: 'Synthetic teacher-validated target.',
+        status: 'teacher-validated',
+      },
+    },
+    whatChanged: null,
+    priorities: [
+      {
+        id: 'synthetic-baseline-priority-1',
+        title: 'Retrieve core language independently.',
+        why: 'Synthetic baseline priority.',
+        evidence: 'Synthetic fixture.',
+        status: 'teacher-validated',
+      },
+      {
+        id: 'synthetic-baseline-priority-2',
+        title: 'Preserve first-attempt evidence.',
+        why: 'Synthetic baseline priority.',
+        evidence: 'Synthetic fixture.',
+        status: 'teacher-validated',
+      },
+      {
+        id: 'synthetic-baseline-priority-3',
+        title: 'Reuse language in a new context.',
+        why: 'Synthetic baseline priority.',
+        evidence: 'Synthetic fixture.',
+        status: 'teacher-validated',
+      },
+    ],
+    nextAction: null,
+    schedule: { status: 'not_scheduled', label: 'Synthetic fixture.' },
+  },
+}
 
 const [verifiedIntelligenceRows, verifiedPortfolioRows] = await Promise.all([
   prisma.canonicalLearningIntelligenceProjection.findMany({
@@ -575,34 +633,67 @@ const triggerOrigins = triggerEvents
   .filter((origin) => typeof origin === 'string')
 assert.deepEqual([...new Set(triggerOrigins)].sort(), ['automatic', 'manual'])
 
+const promptOneArtifact = run.promptOneArtifact
+const generationProvenance = promptOneArtifact && typeof promptOneArtifact === 'object'
+  ? promptOneArtifact.generationProvenance
+  : null
+assert.ok(generationProvenance, 'The persisted Prompt 1 artifact must retain provider provenance')
+assert.equal(generationProvenance.provider, 'gemini')
+assert.equal(generationProvenance.model, 'runtime-witness-deterministic')
+assert.equal(generationProvenance.responseStatus, 200)
+assert.equal(generationProvenance.validationStatus, 'valid')
+
 const evidence = {
   verdict: 'GOLDEN RUNTIME WITNESS PASS',
   database: 'GitHub Actions disposable PostgreSQL service',
   productionTouched: false,
   fixture: {
-    studentId: STUDENT_ID,
-    studentEmail: STUDENT_EMAIL,
-    lessonId: LESSON_ID,
-    transcriptId: TRANSCRIPT_ID,
+    type: 'synthetic_disposable_fixture',
+    learnerRef: safeRef(STUDENT_ID),
+    lessonRef: safeRef(LESSON_ID),
+    transcriptRef: safeRef(TRANSCRIPT_ID),
+    sourceRef: safeRef(SOURCE_FILE_ID),
+  },
+  sourceProvenance: {
+    sourceKind: 'synthetic_google_docs_fixture',
+    sourceRef: safeRef(SOURCE_FILE_ID),
+    transcriptContentHash: safeRef(transcript.transcript),
+    rawTranscriptIncluded: false,
+  },
+  providerProvenance: {
+    provider: generationProvenance.provider,
+    model: generationProvenance.model,
+    promptVersion: generationProvenance.promptVersion,
+    responseStatus: generationProvenance.responseStatus,
+    validationStatus: generationProvenance.validationStatus,
+    requestRef: safeRef(generationProvenance.requestId),
+    artifactRef: safeRef(generationProvenance.artifactId),
+    transport: 'in_process_mocked_fetch',
+    externalProviderContacted: false,
+    mockedProviderRequestCount,
   },
   pipelineRun: {
-    id: run.id,
-    normalizedRunIdentity: run.normalizedRunIdentity,
+    idRef: safeRef(run.id),
+    normalizedRunIdentityRef: safeRef(run.normalizedRunIdentity),
     executionMode: run.executionMode,
+    machineVersion: run.machineVersion,
+    machineContractVersion: run.machineContractVersion,
     status: run.status,
     resumePoint: run.resumePoint,
     authorityStatus: run.authorityStatus,
     completedAt: run.completedAt,
-    finalManifest: run.finalManifest,
+    finalManifestPresent: Boolean(run.finalManifest),
   },
   teacherAuthority: {
-    validationTaskId: authorityTask.id,
-    reviewerId: authorityTask.reviewerId,
+    decisionPath: 'synthetic_direct_disposable_database_fixture',
+    authenticatedTeacherSession: false,
+    validationTaskRef: safeRef(authorityTask.id),
+    reviewerRef: safeRef(authorityTask.reviewerId),
     reviewedAt: authorityTask.reviewedAt?.toISOString(),
     approvalHash: authorityTask.evidence.authorityPayloadHash,
   },
   canonical: {
-    canonicalRecordId: canonical.canonicalRecordId,
+    canonicalRecordRef: safeRef(canonical.canonicalRecordId),
     canonicalVersion: canonical.canonicalVersion,
     canonicalHash: canonical.canonicalHash,
     readBackVerification: g3Rows[0].verificationStatus,
@@ -610,10 +701,10 @@ const evidence = {
     learningIntelligenceProjection: g5Rows[0].projectionStatus,
   },
   learnerProducts: {
-    classReportId: classReports[0].reportId,
+    classReportRef: safeRef(classReports[0].reportId),
     classReportStatus: classReports[0].documentStatus,
-    canonicalPortfolioProjectionId: g4Rows[0].projectionId,
-    canonicalLearningIntelligenceProjectionId: g5Rows[0].projectionId,
+    canonicalPortfolioProjectionRef: safeRef(g4Rows[0].projectionId),
+    canonicalLearningIntelligenceProjectionRef: safeRef(g5Rows[0].projectionId),
     legacyPublicationCount: publicationEvents.length,
   },
   dashboard: {
