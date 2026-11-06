@@ -6,7 +6,7 @@
 
 **Base auditada:** `7ebb32dfeee55a5a0aad4414f9f6ac6d5d725a8e`
 
-**Estado deste handoff:** alterações aplicadas localmente, ainda não commitadas, não publicadas e não comprovadas em produção. O segundo lote de hardening foi aplicado em 2026-11-05 22:20.
+**Estado deste handoff:** correções publicadas em produção no commit `b6c6ed1`; smoke tests públicos passaram em 2026-11-05 22:32. O segundo lote de hardening foi aplicado em 2026-11-05 22:20.
 
 ## Objetivo
 
@@ -138,6 +138,29 @@ O atalho do portfolio agora exige sessão antes de redirecionar para o documento
 - `npm run build`: passou completamente; TypeScript, lint, coleta de páginas, geração estática e otimização Next.js concluídos. Permanecem apenas warnings preexistentes de `<img>`, variável não usada e Browserslist.
 - `npm ci --ignore-scripts`: instalou o lockfile; `npm audit` reportou vulnerabilidades da árvore de dependências, não corrigidas neste lote para evitar alterações não relacionadas.
 - O diff contém as correções de segurança, os helpers de hardening, a cifragem de áudio, os atalhos protegidos e este arquivo de handoff.
+
+### Evidência de publicação
+
+- Commit publicado: `b6c6ed19ff3649ef10d35b6ef97452e5b8c21c4c` em `origin/main`.
+- Deployment Vercel: `dpl_DTM4AxVP4bLda7pMAvKnttxgTRzK`.
+- Target: `production`.
+- Estado Vercel: `READY`.
+- URL de deployment: `prime-hub-portal-r2qyvpomh-prime-digital-hun-dasboard.vercel.app`.
+- Domínio oficial testado: `https://www.primedigitalhub.com.br`.
+
+Smoke tests sem credenciais no domínio oficial:
+
+- `/`: `200`.
+- `/api/seed`: `410`, com seed HTTP desativado.
+- `/journey/claudio-bittencourt`: `307` para login.
+- `/journey/gustavo-5-lessons-7q4m9`: `307` para login.
+- `/journey/gustavo-5-lessons-7q4m9/check-in`: `307` para login.
+- `/portfolio/gustavo-7q4m9`: `307` para login.
+- `/dashboard`: redireciona para login.
+- `POST /api/pipeline/ingest` sem secret: `401`.
+- Headers de segurança observados: HSTS, COOP, CORP, Referrer-Policy, nosniff, X-Frame-Options e Permissions-Policy.
+
+O deployment associado ao commit foi confirmado como `READY`; ainda não foi executado login manual com a conta do proprietário nem teste autenticado de aluno/pai, áudio, vocabulário ou review.
 
 ### Ainda não comprovado
 
