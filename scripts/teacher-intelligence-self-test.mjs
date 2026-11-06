@@ -89,6 +89,12 @@ assert.match(source.authorityDecision, /updateMany\([\s\S]*status: 'pending'/, '
 assert.match(source.authorityDecision, /TeacherAuthorityDecisionRecorded/, 'Pipeline-linked Teacher Authority decisions must create a durable run event')
 assert.match(source.authorityDecision, /TASK_ALREADY_DECIDED/, 'A conflicting second decision must be rejected')
 assert.match(source.authorityDecision, /idempotentReplay: true/, 'Repeating the same decision by the same reviewer must be idempotent')
+assert.match(source.pipelineRun, /finalizeSharedLearningMachineAfterTeacherAuthority/, 'Shared Machine must have a Teacher Authority finalization boundary')
+assert.match(source.pipelineRun, /persistLearningMachineManifest/, 'Shared Machine finalization must persist the final manifest')
+assert.match(source.pipelineRun, /TeacherAuthorityDecisionConsumed/, 'Shared Machine completion must audit consumption of Teacher Authority')
+assert.match(source.validationTask, /finalizeSharedLearningMachineAfterTeacherAuthority/, 'G5 must invoke finalization for PipelineRun authority tasks')
+assert.match(source.goldenWitness, /finalizeSharedLearningMachineAfterTeacherAuthority/, 'Golden runtime witness must run the production finalization service')
+
 
 assert.match(source.validation, /Teacher-confirmed learners/, 'Validation must show resolved teacher-confirmed packages')
 assert.match(source.learners, /teacher-reviewed learning updates/, 'Learner directory must expose available teacher-reviewed packages')
