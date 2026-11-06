@@ -8,23 +8,38 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+
+concurrency:
+  group: dependency-audit-fix
+  cancel-in-progress: false
 
 jobs:
   audit-fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
       - name: Run npm audit fix
         run: npm audit fix --omit=dev
-      - name: Commit changes
+
+      - name: Commit dependency fixes
         run: |
           git config user.name "PRIME DIGITAL HUB"
           git config user.email "alexmello.english@gmail.com"
           git add package.json package-lock.json
-          git diff --cached --quiet || git commit -m "fix(deps): npm audit fix for production advisories"
-          git push
+          if git diff --cached --quiet; then
+            echo "No dependency changes to commit."
+          else
+            git commit -m "fix(deps): npm audit fix for production advisories"
+            git push
+          fi
