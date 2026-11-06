@@ -6,6 +6,15 @@ const report = JSON.parse(output)
 if (!Number.isInteger(report.trackedFileCount) || report.trackedFileCount <= 0) {
   throw new Error('Privacy inventory must scan tracked files')
 }
+if (report.scanScope?.input !== 'git ls-files tracked files in the current checkout') {
+  throw new Error('Privacy inventory must disclose its tracked-file input scope')
+}
+if (!Array.isArray(report.scanScope?.contentPatterns) || report.scanScope.contentPatterns.length !== 2) {
+  throw new Error('Privacy inventory must disclose the exact limited content patterns')
+}
+if (!/not comprehensive PII\/DLP/i.test(report.scanScope?.limitations || '')) {
+  throw new Error('Privacy inventory must disclose that it is not comprehensive PII/DLP')
+}
 if (!Number.isInteger(report.contentCandidateFileCount) || report.contentCandidateFileCount < 0) {
   throw new Error('Privacy inventory must report a non-negative candidate count')
 }
