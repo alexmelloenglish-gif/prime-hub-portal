@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash, randomUUID } from 'node:crypto'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { getPrismaClient } from '../lib/prisma.ts'
 import {
   accountIdentityFromSession,
@@ -91,6 +92,11 @@ async function main() {
       multipleRelationsWithoutSelection: 'NOT_OBSERVABLE',
       explicitLearnerSelectionRequired: true,
     }
+    mkdirSync('artifacts', { recursive: true })
+    writeFileSync(
+      'artifacts/g6-account-learner-authorization-witness.json',
+      JSON.stringify(report, null, 2) + '\\n',
+    )
     console.log(JSON.stringify(report, null, 2))
   } finally {
     await prisma.accountLearnerRelation.deleteMany({ where: { userId: account.id } })
