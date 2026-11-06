@@ -82,4 +82,4 @@ The first CI-only \`npm audit --omit=dev\` measured **27 affected production pac
 
 **Decision:** OPEN — no advisory has been accepted or marked fixed. The CI audit workflow failed intentionally because the production dependency tree is not clean, and successfully uploaded the detailed JSON/Markdown artifact. Several available fixes require major versions (including next-auth, @vercel/oidc, firebase-admin and sharp); those require separate compatibility, build and regression work before lockfile changes are accepted.
 
-The audit utility now also embeds the workflow's exact \`GITHUB_SHA\` in each generated report. The next exact-head workflow run supersedes this initial snapshot.
+The audit utility now also embeds the workflow's exact \`GITHUB_SHA\` in each generated report. The report embeds the exact checked-out SHA (`git rev-parse HEAD`), not the GitHub pull-request merge ref.
