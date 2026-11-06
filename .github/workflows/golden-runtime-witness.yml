@@ -86,6 +86,9 @@ jobs:
       - name: Execute pipeline retry-state witness
         run: npx --yes tsx@4.20.6 ./scripts/pipeline-retry-state-witness.ts
 
+      - name: Execute G6 account-to-learner authorization witness
+        run: npx --yes tsx@4.20.6 ./scripts/g6-account-learner-authorization-witness.ts
+
       - name: Upload persisted witness evidence
         if: always()
         uses: actions/upload-artifact@v4

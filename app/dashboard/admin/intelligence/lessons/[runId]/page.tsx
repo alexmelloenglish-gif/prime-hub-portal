@@ -46,6 +46,7 @@ export default async function TeacherLessonDetailPage({ params }: { params: Prom
     trace.portfolio
   )
   const failedWithoutPedagogicalOutput = trace.run.status === 'failed' && !hasTeacherMaterial
+  const providerUnavailable = trace.run.errorCode === 'MODEL_PROVIDER_FAILED' || trace.run.errorCode === 'SHARED_RUNNER_RESUME_FAILED'
   const syntheticSource = containsSyntheticMarker(trace.transcript?.metadata)
 
   return (
@@ -76,6 +77,20 @@ export default async function TeacherLessonDetailPage({ params }: { params: Prom
         <p className="mt-2 text-sm text-[#60718d]">
           {lessonDate ? new Date(lessonDate).toLocaleString('en-GB') : 'Lesson date unavailable'}
         </p>
+
+        {providerUnavailable ? (
+          <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p className="font-bold text-amber-950">Provider unavailable — lesson source preserved</p>
+            <p className="mt-1 text-sm leading-6 text-amber-900">
+              PRIME did not publish new learner-facing output from this failed attempt. The stored Transcript and run history remain preserved.
+              Check provider health, inspect the recorded provider attempts, then use one supervised retry against the same failed run. Do not re-ingest the source or create another lesson.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3 text-xs font-bold">
+              <a href="/api/admin/gemini-healthcheck" target="_blank" rel="noreferrer" className="text-amber-950 underline">Check Gemini health</a>
+              <Link href="/dashboard/admin/intelligence/machine" className="text-amber-950 underline">Open Learning Machine inbox</Link>
+            </div>
+          </div>
+        ) : null}
 
         {failedWithoutPedagogicalOutput ? (
           <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4">

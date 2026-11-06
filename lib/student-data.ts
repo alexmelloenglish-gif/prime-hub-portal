@@ -15,6 +15,7 @@ import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
+import { resolveDashboardTargetEmail } from '@/lib/dashboard-access-boundary'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -1119,9 +1120,11 @@ export async function getStudentDashboardState(
   }
 
   const viewerEmail = normalizeEmail(user.email)
-  const targetEmail = canPreviewAnotherStudent(user, requestedStudentEmail)
-    ? normalizeEmail(requestedStudentEmail)
-    : viewerEmail
+  const targetEmail = resolveDashboardTargetEmail({
+    viewerEmail,
+    requestedStudentEmail,
+    mayPreviewAnotherStudent: canPreviewAnotherStudent(user, requestedStudentEmail),
+  })
 
   const state = await getStudentDashboardStateCached(targetEmail, user.name)
 
