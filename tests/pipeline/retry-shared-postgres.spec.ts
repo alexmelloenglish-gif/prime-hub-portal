@@ -14,6 +14,7 @@ const prisma = new PrismaClient({
 })
 
 const RUN_ID = 'issue-58-retry-shared-postgres'
+const TRANSCRIPT_ID = 'issue-58-retry-shared-postgres-transcript'
 const NORMALIZED_IDENTITY = 'issue-58:retry-shared:concurrent:postgres'
 
 async function resetFixture() {
@@ -21,9 +22,28 @@ async function resetFixture() {
     where: { id: RUN_ID },
   })
 
+  await prisma.transcript.upsert({
+    where: { id: TRANSCRIPT_ID },
+    update: {
+      studentEmail: 'retry-shared.postgres@invalid.test',
+      lessonId: 'issue-58-retry-shared-postgres-lesson',
+      source: 'google_meet',
+      content: 'Synthetic disposable retry-shared fixture.',
+    },
+    create: {
+      id: TRANSCRIPT_ID,
+      studentEmail: 'retry-shared.postgres@invalid.test',
+      lessonId: 'issue-58-retry-shared-postgres-lesson',
+      source: 'google_meet',
+      content: 'Synthetic disposable retry-shared fixture.',
+    },
+  })
+
   return prisma.pipelineRun.create({
     data: {
       id: RUN_ID,
+      idempotencyKey: 'issue-58-retry-shared-postgres-idempotency',
+      transcriptId: TRANSCRIPT_ID,
       status: 'failed',
       executionMode: 'shared_learning_machine',
       normalizedRunIdentity: NORMALIZED_IDENTITY,
