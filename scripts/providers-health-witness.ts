@@ -36,8 +36,10 @@ async function main() {
     assert.equal(recovered.result, 'fallback-ok')
     assert.equal(recovered.generationStatus, 'model_generated')
     assert.equal(recovered.generationProvenance.provider, 'openai')
+    const recoveredAttempts = recovered.generationProvenance.attempts ?? []
+    assert.equal(recoveredAttempts.length, 2, 'Provider provenance must retain both failed and successful attempts')
     assert.deepEqual(
-      recovered.generationProvenance.attempts.map((attempt) => [attempt.provider, attempt.outcome, attempt.responseStatus]),
+      recoveredAttempts.map((attempt) => [attempt.provider, attempt.outcome, attempt.responseStatus]),
       [['gemini', 'failed', 503], ['openai', 'success', 200]],
     )
 
@@ -71,7 +73,7 @@ async function main() {
       externalProviderContacted: false,
       transport: 'in_process_fetch_stub',
       cases: [
-        { scenario: 'gemini_503_falls_back_to_openai_mock', verdict: 'PASS', attempts: recovered.generationProvenance.attempts.map((attempt) => ({ provider: attempt.provider, outcome: attempt.outcome, responseStatus: attempt.responseStatus })) },
+        { scenario: 'gemini_503_falls_back_to_openai_mock', verdict: 'PASS', attempts: recoveredAttempts.map((attempt) => ({ provider: attempt.provider, outcome: attempt.outcome, responseStatus: attempt.responseStatus })) },
         { scenario: 'all_configured_providers_fail_visibly', verdict: 'PASS', errorCode: 'all_providers_failed', failureCount: 1 },
       ],
       providerCalls: calls,
