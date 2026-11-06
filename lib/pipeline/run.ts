@@ -814,6 +814,42 @@ export async function processLessonTranscript(
         include: { transcript: true },
       })
   const existing = existingShared || existingBySourceFile?.pipelineRuns[0] || existingByKey
+  const retryTranscript = existingShared?.transcript || existingBySourceFile || existingByKey?.transcript
+
+  if (retryTranscript) {
+    // All subsequent identity/idempotency decisions must be based on the
+    // preserved Transcript that the runner will actually process, not on a
+    // newer Drive export supplied by a later trigger.
+    normalizedInput = rebuildInput(
+      { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
+      retryTranscript,
+    )
+    if (executionOptions) {
+      const triggerOrigin = executionOptions.triggerOrigin
+      const requestedBy = executionOptions.requestedBy
+      if (existing?.executionMode === SHARED_LEARNING_MACHINE_EXECUTION_MODE) {
+        const persistedOptions = persistedSharedExecutionOptions(
+          existing,
+          triggerOrigin,
+          requestedBy,
+        )
+        if (!persistedOptions) {
+          throw new Error('Existing shared-run identity could not be restored from its preserved PipelineRun')
+        }
+        executionOptions = persistedOptions
+      } else if (existing && existing.status !== 'failed') {
+        // A legacy non-failed run is not a Shared Machine execution. Do not
+        // append a Shared trigger event or claim a new identity for that run.
+        executionOptions = undefined
+      } else {
+        executionOptions = buildSharedLearningMachineExecutionOptions({
+          transcript: normalizedInput,
+          triggerOrigin,
+          requestedBy,
+        })
+      }
+    }
+  }
 
   if (existing?.status === 'completed') {
     await recordSharedTriggerIfNeeded(existing.id, executionOptions)
@@ -906,7 +942,6 @@ export async function processLessonTranscript(
 
   let run
   let transcript
-  const retryTranscript = existingShared?.transcript || existingBySourceFile || existingByKey?.transcript
 
   if (sharedSameExecutionResume && existing && retryTranscript) {
     normalizedInput = rebuildInput(
