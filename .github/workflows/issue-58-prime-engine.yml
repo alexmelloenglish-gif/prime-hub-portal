@@ -201,8 +201,8 @@ jobs:
           node-version: 22.x
           cache: npm
 
-      - name: Install locked dependencies
-        run: npm ci
+      - name: Install dependencies and regenerate lockfile
+        run: npm install
 
       - name: Apply non-forced compatible security updates
         shell: bash
