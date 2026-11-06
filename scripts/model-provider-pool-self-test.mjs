@@ -11,7 +11,7 @@ const teacher = readFileSync('lib/teacher-intelligence.ts', 'utf8')
 const env = readFileSync('.env.example', 'utf8')
 
 assert.match(provider, /PRIME_MODEL_PROVIDER_ORDER/, 'Provider order must be configurable')
-assert.match(geminiHealthcheck, /process\\.env\\.PRIME_GEMINI_MODEL\\s*\\|\\|\\s*process\\.env\\.PRIME_PIPELINE_MODEL\\s*\\|\\|\\s*DEFAULT_MODEL/, 'Gemini healthcheck must use the same model precedence as the production provider')
+assert.match(geminiHealthcheck, /process\.env\.PRIME_GEMINI_MODEL\s*\|\|\s*process\.env\.PRIME_PIPELINE_MODEL\s*\|\|\s*DEFAULT_MODEL/, 'Gemini healthcheck must use the same model precedence as the production provider')
 for (const id of ['gemini', 'openai', 'perplexity', 'meta']) {
   assert.match(provider, new RegExp(`['"]${id}['"]`), `Provider pool must support ${id}`)
 }
