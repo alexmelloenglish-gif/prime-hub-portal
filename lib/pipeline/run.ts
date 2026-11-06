@@ -981,6 +981,47 @@ export async function processLessonTranscript(
       }
       return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
     }
+  } else if (retryTranscript && !existing) {
+    // A durable Transcript without any PipelineRun is an orphaned source, not a
+    // successfully processed lesson. Reuse that immutable transcript and create
+    // its first attempt instead of trying to insert a duplicate sourceFileId.
+    normalizedInput = rebuildInput(
+      { studentEmail: retryTranscript.studentEmail, lessonId: retryTranscript.lessonId },
+      retryTranscript,
+    )
+    try {
+      run = await prisma.pipelineRun.create({
+        data: {
+          idempotencyKey,
+          transcriptId: retryTranscript.id,
+          attemptNumber: 1,
+          studentEmail: normalizedInput.studentEmail,
+          lessonId: normalizedInput.lessonId,
+          status: 'received',
+          executionMode: executionOptions?.executionMode ?? 'legacy',
+          normalizedRunIdentity: executionOptions?.normalizedRunIdentity ?? null,
+          machineVersion: executionOptions?.machineVersion ?? null,
+          machineContractVersion: executionOptions?.machineContractVersion ?? null,
+          currentStage: executionOptions ? 'received' : null,
+          resumePoint: executionOptions ? 'prompt_1' : null,
+        },
+      })
+      transcript = retryTranscript
+    } catch (error) {
+      const concurrent = await resolveUniqueSharedRunConflict({
+        error,
+        isUniqueConstraintError,
+        loadExisting: () => executionOptions
+          ? prisma.pipelineRun.findUnique({
+              where: { normalizedRunIdentity: executionOptions.normalizedRunIdentity },
+            })
+          : prisma.pipelineRun.findUnique({ where: { idempotencyKey } }),
+      })
+      if (concurrent.studentEmail !== normalizedInput.studentEmail) {
+        throw new Error('idempotency identity is already bound to a different student')
+      }
+      return { pipelineRunId: concurrent.id, status: concurrent.status, duplicate: true }
+    }
   } else if (!existing) {
     const metadata = buildStoredInputMetadata(normalizedInput)
     try {
