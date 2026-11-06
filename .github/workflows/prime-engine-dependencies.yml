@@ -17,6 +17,8 @@ on:
       - "scripts/audit-prime-engine.mjs"
       - ".github/workflows/prime-engine-dependencies.yml"
       - "docs/operations/PRIME_DEPENDENCIES_LEDGER.md"
+  schedule:
+    - cron: "0 12 * * 1" # Mondays 09:00 America/Sao_Paulo
   workflow_dispatch:
 
 permissions:
