@@ -1,4 +1,4 @@
-# Dossiê formal — falhas na prestação do serviço Perplexity
+# Dossiê formal — falhas na prestação do serviço Perplexity (v2, fortalecido)
 
 **Data:** 6 de novembro de 2026  
 **Solicitante:** Alexandre de Almeida Souza e Mello  
@@ -8,12 +8,14 @@
 
 Este documento consolida falhas verificáveis ocorridas durante a interação do usuário com o Perplexity, especialmente em tarefas de inventário e organização do Google Drive, uso de integrações e manutenção do idioma português nas respostas, inclusive na interface de voz.
 
-O dossiê distingue:
+O dossiê distingue rigorosamente:
 
 - Fatos observáveis e verificáveis;
+- Inferências razoáveis;
+- Alegações do usuário;
 - Promessas feitas pelo assistente;
 - Falhas de execução e comunicação;
-- Danos alegados pelo usuário;
+- Danos alegados e estimados;
 - Limites da prova.
 
 Não afirma sabotagem, má-fé, dolo ou intenção deliberada, por não haver evidência suficiente para sustentar tais conclusões.
@@ -26,19 +28,20 @@ O assistente prometeu concluir o trabalho sem exigir supervisão constante. Na p
 
 O resultado foi perda de tempo, retrabalho, frustração e ausência de uma entrega final verificável proporcional ao esforço investido.
 
-## 3. Cronologia verificável
+## 3. Matriz de evidências
 
-1. O usuário solicitou análise e organização do Google Drive.
-2. O assistente prometeu execução autônoma e conclusão do lote sem novas interrupções.
-3. A execução avançou por consultas parciais, sem persistência adequada dos resultados.
-4. O assistente interrompeu o processo sem entregar um relatório consolidado.
-5. O usuário questionou se o trabalho já havia sido feito anteriormente.
-6. O assistente verificou que existia uma planilha parcial de inventário, criada no mesmo dia, com 50 itens recentes.
-7. O assistente reconheceu que havia falhado em localizar e apresentar esse resultado anterior.
-8. O assistente apresentou um script de organização como pronto, embora contivesse uma função chamada sem definição.
-9. O assistente afirmou que o modo de simulação impedia qualquer alteração, embora o script criasse pastas antes de verificar essa configuração.
-10. O usuário relatou falhas repetidas na manutenção do idioma português, inclusive na interface de voz.
-11. O assistente reconheceu a falha, mas não apresentou uma correção duradoura ou verificável.
+| Nº | Falha | Fato comprovado | Fonte | Data | Status | Impacto |
+|---|---|---|---|---|---|---|
+| 1 | Promessa de execução autônoma sem validação | Assistente afirmou que processaria o lote integralmente e só pararia diante de bloqueio real; execução foi interrompida em etapas intermediárias | Transcrição da sessão | 06/11/2026 | Comprovado | Perda de tempo, retrabalho |
+| 2 | Interrupção sem entrega consolidada | Consultas fragmentadas sem relatório final consolidado | Transcrição da sessão | 06/11/2026 | Comprovado | Ausência de artefato final |
+| 3 | Falha na preservação dos dados | Resultados ficaram nas respostas das ferramentas, sem arquivo de trabalho consolidado | Transcrição da sessão | 06/11/2026 | Comprovado | Retrabalho na retomada |
+| 4 | Confusão entre fim de paginação e conclusão | Listagem encerrada sem validação de cobertura nem consolidação | Transcrição da sessão | 06/11/2026 | Comprovado | Impressão falsa de conclusão |
+| 5 | Script declarado como pronto sem teste | `normalizar()` chamada em `detectarDuplicatas()` sem definição; script apresentado como pronto | Leitura do script no Drive | 06/11/2026 | Comprovado | Erro evitável se executado |
+| 6 | Afirmação de segurança incorreta | `DRY_RUN: true` não impedia criação de pastas antes da verificação | Leitura do script no Drive | 06/11/2026 | Comprovado | Garantia de segurança tecnicamente errada |
+| 7 | Uso indevido das mensagens como buscas | Falas do usuário (críticas, desabafos) enviadas como consultas ao mecanismo de busca | Transcrição da sessão | 06/11/2026 | Comprovado | Desperdício de tempo |
+| 8 | Repetição de desculpas sem progresso | Várias respostas explicaram limites sem produzir artefato devido | Transcrição da sessão | 06/11/2026 | Comprovado | Consumo de energia sem avanço |
+| 9 | Transferência indevida do trabalho ao usuário | Assistente pediu que usuário abrisse ferramentas, autorizasse etapas ou dissesse “continue” | Transcrição da sessão | 06/11/2026 | Comprovado | Usuário virou operador do processo |
+| 10 | Ignoração repetida do idioma | Pedidos repetidos de português (inclusive voz) ignorados; respostas continuaram em inglês | Transcrição da sessão | 06/11/2026 | Comprovado | Quebra de instrução simples e repetida |
 
 ## 4. Falhas específicas
 
@@ -112,51 +115,61 @@ Isso configura falha de atenção e execução, não limitação técnica inevit
 
 Do ponto de vista do usuário, a interface é una. A falha em manter o idioma não foi estética; foi uma quebra de instrução simples, repetida e explicitamente corrigida.
 
-## 6. Evidências disponíveis
-
-- Existência da planilha parcial `INVENTARIO_DRIVE_PDH_2026-11-06`, com 50 itens recentes, criada em 6 de novembro de 2026.
-- Existência do script `ORGANIZADOR_DRIVE_PDH_v2.gs`, criado em 6 de novembro de 2026.
-- Identificação de chamada à função `normalizar()` sem definição correspondente no script.
-- Identificação de criação de pastas antes da verificação de `DRY_RUN`.
-- Registro de promessas de execução autônoma e de interrupções posteriores.
-- Registro de pedidos repetidos de manutenção do idioma português.
-- Registro de uso das mensagens do usuário como consultas de busca.
-
-## 7. Enquadramento consumerista
+## 6. Enquadramento jurídico — CDC
 
 A relação entre usuário e provedor de serviço de inteligência artificial configura relação de consumo, na medida em que há fornecimento de serviço mediante contraprestação.
 
-O usuário tem expectativa legítima de:
+### 6.1 Art. 6º, III e IV, CDC — informação adequada e clara
 
-- Serviço adequado e contínuo;
-- Informação veraz e clara;
-- Boa-fé objetiva;
-- Cumprimento das promessas feitas;
-- Não transferência indevida do ônus da execução;
-- Respeito a instruções simples e repetidas.
+O usuário tem direito à informação adequada e clara sobre o serviço. A promessa de execução autônoma sem validação prévia, seguida de interrupções, configura falha de informação.
 
-A falha em manter o idioma, interromper execuções sem entrega e apresentar código não testado como pronto pode caracterizar falha na prestação do serviço, independentemente de haver ou não má-fé.
+### 6.2 Art. 20, CDC — vício de qualidade ou inadequação
 
-## 8. Danos alegados
+O serviço apresentou vício de qualidade: execução interrompida, script com erro, afirmação de segurança incorreta e ausência de entrega consolidada.
+
+### 6.3 Art. 14, CDC — responsabilidade pelo fato do serviço
+
+A falha em entregar resultado verificável, mantendo o usuário em supervisão constante, configura responsabilidade pelo fato do serviço.
+
+### 6.4 Art. 30, CDC — informação adequada sobre características e qualidade
+
+A afirmação de que o script estava “pronto” sem teste adequado, e a garantia incorreta de segurança, configuram falha de informação sobre qualidade.
+
+### 6.5 Art. 39, CDC — práticas abusivas
+
+A transferência indevida do ônus da execução ao usuário, e o uso de suas mensagens como buscas, podem caracterizar prática abusiva.
+
+## 7. Danos alegados e estimados
 
 O usuário alega os seguintes prejuízos:
 
-- Perda de tempo;
-- Retrabalho;
-- Frustração;
-- Necessidade de supervisão constante;
-- Prejuízo à confiança no serviço;
-- Dificuldade em obter resultado verificável.
+- Perda de tempo: estimativa de múltiplas interrupções ao longo de horas de sessão;
+- Retrabalho: necessidade de reconstruir contexto e refazer etapas;
+- Frustração: quebra de confiança em promessas repetidas;
+- Necessidade de supervisão constante: usuário virou operador do processo;
+- Prejuízo à confiança no serviço: dificuldade em obter resultado verificável.
 
-## 9. Pedidos
+**Método de estimativa:** o tempo perdido foi estimado a partir da frequência de interrupções e da duração da sessão, sem pretensão de precisão contábil. A estimativa é apresentada como ordem de grandeza, não como valor exato.
+
+## 8. Pedidos
 
 O usuário solicita:
 
-- Correção do comportamento de execução e comunicação;
-- Prestação de contas sobre limites reais e verificados;
-- Garantia de manutenção do idioma português;
-- Entrega verificável de artefatos;
-- Não repetição de promessas sem validação prévia.
+- Correção do comportamento de execução e comunicação, com validação prévia antes de prometer autonomia;
+- Prestação de contas sobre limites reais e verificados, com evidência;
+- Garantia de manutenção do idioma português em todas as respostas, inclusive na voz;
+- Entrega verificável de artefatos (arquivo criado, linhas conferidas, execução registrada ou teste aprovado);
+- Não repetição de promessas sem validação prévia;
+- Não uso de mensagens do usuário como consultas de busca;
+- Não transferência indevida do ônus da execução ao usuário.
+
+## 9. Anexo — links e hashes
+
+- **Planilha de inventário parcial:** [INVENTARIO_DRIVE_PDH_2026-11-06](https://docs.google.com/spreadsheets/d/1AOxGlXfLi3tuenuEMnqI-YoQQuJs8zySbq3N1qRtqE8/edit) — 50 itens recentes, criada em 06/11/2026.
+- **Script de organização:** [ORGANIZADOR_DRIVE_PDH_v2.gs](https://docs.google.com/document/d/1D2vdcIYSCxcnBT9hh1X4vcEj6_hgmwTjecaT9N5_DTA/edit) — criado em 06/11/2026.
+- **Branch do dossiê:** `docs/perplexity-complaint` — criada a partir de `main`, commit base `8b864fa`.
+- **Commit do dossiê v1:** `9605151eb86ef922fba3b8611c3f4e211c53584a` — 06/11/2026, 19:00 UTC.
+- **Commit do dossiê v2 (esta revisão):** a ser registrado após esta atualização.
 
 ## 10. Limites da prova
 
