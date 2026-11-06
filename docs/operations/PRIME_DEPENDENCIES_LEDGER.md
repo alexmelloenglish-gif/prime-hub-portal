@@ -28,7 +28,7 @@ It writes both:
 - artifacts/prime-engine-npm-audit.json — machine-readable release evidence;
 - artifacts/prime-engine-npm-audit.md — reviewer-readable severity/package inventory.
 
-The audit is production-only. Development/test dependency advisories are intentionally excluded from this particular gate and must not be represented as production findings.
+The audit is production-only. Development/test dependency advisories are intentionally excluded from this particular gate and must not be represented as production findings. CI executes the gate for dependency-manifest/lockfile changes, pushes to main, manual dispatch, and every Monday at 09:00 America/Sao_Paulo.
 
 ### Historical baseline — 2026-11-05
 
