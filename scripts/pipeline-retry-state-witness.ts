@@ -205,6 +205,10 @@ async function main() {
     assert.equal(sharedRuns[0].id, sharedHistoricalRun.id)
     assert.equal(sharedRuns[0].attemptNumber, 1)
     assert.equal(sharedRuns[0].executionMode, 'shared_learning_machine')
+    assert.equal(sharedRuns[0].normalizedRunIdentity, sharedOptions.normalizedRunIdentity)
+    assert.equal(sharedRuns[0].idempotencyKey, sharedOptions.normalizedRunIdentity)
+    assert.equal(sharedRuns[0].currentStage, 'prompt_1')
+    assert.equal(sharedRuns[0].resumePoint, 'prompt_1')
     assert.equal(sharedRuns[0].status, 'failed')
     assert.equal(providerRequests, 2)
     summaries.push({
