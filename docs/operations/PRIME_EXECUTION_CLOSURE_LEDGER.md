@@ -331,3 +331,38 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — PR #108 CI closure update (commit d1329e1)
+
+This checkpoint updates only the PR #108 validation lane. It does not supersede unrelated production/runtime checkpoints above.
+
+### Verified in GitHub Actions
+
+- Branch: `chore/issue-58-prime-engine-closure`
+- Validated commit: `d1329e1341ff12aff7fed0712f240043a09d1ad2`
+- Run: [#42173995437](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42173995437)
+- Shared retry job: SUCCESS. PostgreSQL 16 service healthy; `DATABASE_URL_UNPOOLED` supplied; `prisma db push --skip-generate` PASS; `prisma generate` PASS; `npm run test:issue-58-retry-shared-postgres` PASS (TAP 1/1, 0 failures). Two concurrent claims yielded exactly one winner.
+- Legacy retry job: SUCCESS.
+- Provider health/fallback job: SUCCESS; TAP 3/3, 0 failures.
+
+The previous failure in run #42172636936 was an environment configuration failure before test execution: Prisma P1012 because `DATABASE_URL_UNPOOLED` was absent. The workflow now supplies that variable. The new run is the relevant proof; no inference is drawn from the earlier run about retry correctness.
+
+### Updated item status for PR #108
+
+| Item | Status | Evidence boundary |
+|---|---|---|
+| 1 — Legacy retry | DONE | Prior dedicated CI run #42168425008; retained evidence above |
+| 2 — Shared retry | DONE | Run #42173995437, PostgreSQL-backed concurrent claim test 1/1 PASS |
+| 3 — Teacher Authority / GL-003 | DONE | Prior dedicated CI run #42169970132; synthetic contract proof |
+| 4 — Authentication / learner isolation | DONE within dashboard-service boundary | PostgreSQL-backed service test in run #42172312618; not browser/session E2E |
+| 5 — Providers / fallback | DONE at test boundary | Run #42173995437, 3/3 PASS; synthetic provider behavior, no live provider calls |
+| 6 — Dependencies / audit | OPEN | Current commit has no fresh `npm audit --omit=dev` report or reviewed lockfile remediation. `npm ci` output in run #42173995437 reported 37 total advisories across the full dependency tree (1 low, 17 moderate, 16 high, 3 critical); this is not the production-only audit. |
+| 7 — Specification / ledgers | UPDATED | This checkpoint and Issue #58 comment #6678639160 record exact CI proof and limits |
+| 8 — Closure criteria | OPEN | Issue #58 remains open; production/authenticated acceptance, security/dependency lane and real canonical Machine witness remain separate gates |
+
+### Non-claims and invariants
+
+The database used for the retry test was a disposable synthetic PostgreSQL 16 service. No production database, production secret, learner record, migration, Teacher Authority action, or live retry was touched. `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No merge, deployment, or Issue #58 closure was performed. The CI evidence does not prove a full learner source-to-dashboard witness.
