@@ -72,8 +72,9 @@ test('provider fallback is deterministic and records the failed Gemini attempt',
     })
     assert.equal(result.fixture, 'synthetic-fallback')
     assert.equal(result.generationProvenance.provider, 'openai')
+    const attempts = result.generationProvenance.attempts ?? []
     assert.deepEqual(
-      result.generationProvenance.attempts.map((attempt) => [attempt.provider, attempt.outcome]),
+      attempts.map((attempt) => [attempt.provider, attempt.outcome]),
       [['gemini', 'failed'], ['openai', 'success']],
     )
     assert.equal(requests.length, 2)
