@@ -322,20 +322,14 @@ delete process.env.FIREBASE_PRIVATE_KEY
 
 const [
   { executeSharedLearningMachine },
+  { executeCanonicalContinuation },
   { getPrismaClient },
   { mergeCanonicalLearningIntelligenceRows },
-  { runG2RuntimeProof },
-  { runG3RuntimeProof },
-  { runG4RuntimeProof },
-  { runG5RuntimeProof },
 ] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
+  import('../lib/learning-machine/canonical-continuation.ts'),
   import('../lib/prisma.ts'),
   import('../lib/canonical-dashboard-bridge.ts'),
-  import('../lib/g2-runtime-proof.ts'),
-  import('../lib/g3-runtime-proof.ts'),
-  import('../lib/g4-runtime-proof.ts'),
-  import('../lib/g5-runtime-proof.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -425,27 +419,37 @@ assert.equal(authorityTask.status, 'approved')
 assert.equal(authorityTask.decision, 'approved')
 assert.ok(authorityTask.reviewedAt)
 
-const g2 = await runG2RuntimeProof(authorityTask.id)
-assert.equal(g2.replay.idempotentReplay, true)
-assert.equal(g2.atomicity.noPartialState, true)
+const continuation = await executeCanonicalContinuation({
+  pipelineRunId: first.pipelineRunId,
+  validationTaskId: authorityTask.id,
+  reviewerRef: teacher.id,
+  decisionTimestamp: reviewedAt,
+})
+assert.equal(continuation.verification.status, 'PASS')
+assert.equal(continuation.portfolioProjection.projectionStatus, 'VERIFIED')
+assert.equal(continuation.learningIntelligenceProjection.projectionStatus, 'VERIFIED')
 
-const g3 = await runG3RuntimeProof(authorityTask.id)
-assert.equal(g3.status, 'PASS')
-
-const g4 = await runG4RuntimeProof(authorityTask.id)
-assert.equal(g4.projectionStatus, 'VERIFIED')
-
-const g5 = await runG5RuntimeProof(authorityTask.id)
-assert.equal(g5.projectionStatus, 'VERIFIED')
+const replay = await executeCanonicalContinuation({
+  pipelineRunId: first.pipelineRunId,
+  validationTaskId: authorityTask.id,
+  reviewerRef: teacher.id,
+  decisionTimestamp: reviewedAt,
+})
+assert.equal(replay.canonicalization.idempotentReplay, true)
+assert.equal(replay.verification.status, 'PASS')
+assert.equal(replay.portfolioProjection.idempotentReplay, true)
+assert.equal(replay.learningIntelligenceProjection.idempotentReplay, true)
 
 const run = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
   include: { reviewTasks: true, transcript: true },
 })
 assert.ok(run)
-assert.equal(run.status, 'awaiting_teacher_authority')
-assert.equal(run.authorityStatus, 'non_authoritative')
-assert.equal(run.completedAt, null)
+assert.equal(run.status, 'completed')
+assert.equal(run.authorityStatus, 'teacher_authorized')
+assert.ok(run.completedAt)
+assert.equal(run.currentStage, 'completed')
+assert.equal(run.resumePoint, null)
 assert.equal(run.reviewTasks.length, 0)
 
 const canonicalRecords = await prisma.canonicalLearningRecord.findMany({
