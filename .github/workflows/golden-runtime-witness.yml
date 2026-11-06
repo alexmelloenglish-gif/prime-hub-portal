@@ -28,6 +28,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_runtime_witness?schema=public
+      PRIME_TEST_DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_runtime_witness?schema=public
       DATABASE_URL_UNPOOLED: postgresql://prime:prime@localhost:5432/prime_runtime_witness?schema=public
       NODE_ENV: test
       NEXTAUTH_SECRET: runtime-witness-only-not-production
@@ -87,7 +88,7 @@ jobs:
         run: npx --yes tsx@4.20.6 ./scripts/pipeline-retry-state-witness.ts
 
       - name: Execute focused shared retry integration test
-        run: npm run test:issue-58-retry-shared
+        run: npm run test:issue-58-retry-shared-postgres
 
       - name: Upload persisted witness evidence
         if: always()
