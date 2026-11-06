@@ -47,7 +47,7 @@ No current package is marked remediated solely because Dependabot is configured 
 | Date | Commit / PR | Audit artifact | Result | Disposition |
 |---|---|---|---|---|
 | Historical checkpoint (2026-11-06) | Previous handoff; tree-wide npm audit | Not retained in this ledger | 35 findings: 1 low, 10 moderate, 21 high, 3 critical | Historical baseline only; production-only rerun required |
-| Current branch | Pending PR exact-head CI | `prime-dependency-audit.md` | PENDING | Do not call vulnerabilities closed before exact-head result |
+| PR #109 — audit run 42166892201, SHA `ac97686e255a6edbe947f526e6b4194204638525` | `artifacts/prime-dependency-audit.md` (artifact 13478254992) | **FAIL — 27 production advisories: 3 critical, 13 high, 10 moderate, 1 low** | Current dependency baseline confirmed; remediation still OPEN. Direct vulnerable packages include `next`, `next-auth`, `@vercel/oidc`, `postcss` and `sharp`; transitive findings include `websocket-driver`, `@fastify/busboy`, `@grpc/grpc-js`, `node-forge`, `protobufjs`, `zod` and Google SDK dependencies. No versions or lockfile were changed in this PR. |
 
 ## 5. Non-negotiable controls
 
