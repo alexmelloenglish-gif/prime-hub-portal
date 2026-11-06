@@ -172,7 +172,7 @@ jobs:
           set -e
           echo "npm audit fix exit code: ${audit_fix_status}"
           npm install --save-exact @vercel/oidc@4.0.7 sharp@0.35.5 firebase-admin@14.5.0
-          npm pkg set 'overrides.postcss=^8.5.23'
+          npm pkg set 'overrides.postcss=$postcss'
           npm install
           set +e
           npm audit fix
