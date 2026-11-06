@@ -80,10 +80,16 @@ jobs:
       - name: Execute Golden runtime witness
         run: npx --yes tsx@4.20.6 ./scripts/golden-runtime-witness.ts
 
+      - name: Verify Golden witness artifact redaction
+        run: node ./scripts/golden-runtime-witness-redaction-self-test.mjs
+
+      - name: Execute pipeline retry-state witness
+        run: npx --yes tsx@4.20.6 ./scripts/pipeline-retry-state-witness.ts
+
       - name: Upload persisted witness evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: golden-runtime-witness
-          path: artifacts/golden-runtime-witness.json
+          path: artifacts/*.json
           if-no-files-found: warn
