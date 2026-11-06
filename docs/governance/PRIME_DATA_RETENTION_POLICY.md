@@ -43,7 +43,16 @@ solicitação identificada
 → verificação de ausência
 ```
 
-O primeiro entregável de implementação é o inventário seguro (`npm run privacy:inventory`). Ele informa categorias e contagens sem imprimir e-mails, nomes, transcripts ou áudio. A execução destrutiva permanece separada e não faz parte deste lote.
+O primeiro entregável de implementação é o inventário limitado (`npm run privacy:inventory`). Ele classifica caminhos rastreados por padrões conhecidos e conta arquivos cujo conteúdo contém somente dois padrões: e-mails e URLs de Google Docs. A saída contém contagens e categorias, não valores encontrados. **Isto não é um scanner abrangente de PII/DLP:** não inspeciona semanticamente transcripts, áudio, imagens, PDFs, payloads do banco, arquivos não rastreados, histórico Git ou conteúdo externo; também não comprova detecção de todo arquivo sensível novo fora de áreas aprovadas. Resultados negativos significam apenas que os padrões implementados não foram encontrados no escopo lido. A execução destrutiva permanece separada e não faz parte deste lote.
+
+## Escopo real e limitações do inventário
+
+- Entradas: somente arquivos retornados por `git ls-files` no checkout em que o comando é executado.
+- Classificação: padrões de caminho para snapshots, portfolios, documentos forenses, mídia, exports e fixtures.
+- Busca no conteúdo: somente expressões regulares para e-mails e URLs de Google Docs; não valida se um candidato é dado pessoal real.
+- Saída: contagens, categorias e número de arquivos candidatos; nenhum caminho ou valor encontrado é impresso.
+- Arquivos binários/ilegíveis: leitura como texto UTF-8 com falhas ignoradas; portanto, não há garantia de inspeção de conteúdo binário.
+- Não cobre banco de dados, storage remoto, transcripts fora do repositório, áudio, imagens, anexos, histórico Git ou arquivos não rastreados.
 
 ## Fora do escopo desta versão
 
@@ -58,6 +67,6 @@ O primeiro entregável de implementação é o inventário seguro (`npm run priv
 A política será considerada implementada quando:
 
 - o inventário seguro rodar localmente e no CI;
-- novos arquivos sensíveis fora das áreas aprovadas forem detectados antes do merge;
+- o escopo de varredura e suas limitações estiverem explícitos; detecção abrangente de novos arquivos sensíveis exige um controle adicional de allowlist/policy e não é fornecida por este inventário;
 - qualquer exclusão futura exigir dry-run, confirmação e recibo;
 - o owner do produto aprovar os prazos definitivos.
