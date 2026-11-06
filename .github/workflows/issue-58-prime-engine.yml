@@ -139,3 +139,56 @@ jobs:
             }
           '
           exit "$audit_status"
+
+
+  dependency-remediation:
+    name: Review and remediate production dependency advisories
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/chore/issue-58-prime-engine-closure' && !contains(github.event.head_commit.message, 'security(deps): remediate production advisories') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: chore/issue-58-prime-engine-closure
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Apply non-forced compatible security updates
+        shell: bash
+        run: |
+          set +e
+          npm audit fix
+          audit_fix_status=$?
+          set -e
+          echo "npm audit fix exit code: ${audit_fix_status}"
+          npm install --save-exact @vercel/oidc@4.0.7 sharp@0.35.5 firebase-admin@14.5.0
+
+      - name: Enforce production high and critical advisory gate
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verify complete application build and regression suite
+        run: npm run build
+
+      - name: Commit verified dependency manifest and lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes were generated."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "security(deps): remediate production advisories"
+          git push origin HEAD:chore/issue-58-prime-engine-closure
