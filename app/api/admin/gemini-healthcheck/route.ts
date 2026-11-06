@@ -26,7 +26,7 @@ export async function GET() {
   }
 
   const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY?.trim()
-  const model = process.env.PRIME_PIPELINE_MODEL || DEFAULT_MODEL
+  const model = process.env.PRIME_GEMINI_MODEL || process.env.PRIME_PIPELINE_MODEL || DEFAULT_MODEL
 
   if (!apiKey) {
     return NextResponse.json(
