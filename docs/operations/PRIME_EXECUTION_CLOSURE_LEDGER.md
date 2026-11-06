@@ -331,3 +331,197 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — PR #108 CI closure update (commit d1329e1)
+
+This checkpoint updates only the PR #108 validation lane. It does not supersede unrelated production/runtime checkpoints above.
+
+### Verified in GitHub Actions
+
+- Branch: `chore/issue-58-prime-engine-closure`
+- Validated commit: `d1329e1341ff12aff7fed0712f240043a09d1ad2`
+- Run: [#42173995437](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42173995437)
+- Shared retry job: SUCCESS. PostgreSQL 16 service healthy; `DATABASE_URL_UNPOOLED` supplied; `prisma db push --skip-generate` PASS; `prisma generate` PASS; `npm run test:issue-58-retry-shared-postgres` PASS (TAP 1/1, 0 failures). Two concurrent claims yielded exactly one winner.
+- Legacy retry job: SUCCESS.
+- Provider health/fallback job: SUCCESS; TAP 3/3, 0 failures.
+
+The previous failure in run #42172636936 was an environment configuration failure before test execution: Prisma P1012 because `DATABASE_URL_UNPOOLED` was absent. The workflow now supplies that variable. The new run is the relevant proof; no inference is drawn from the earlier run about retry correctness.
+
+### Updated item status for PR #108
+
+| Item | Status | Evidence boundary |
+|---|---|---|
+| 1 — Legacy retry | DONE | Prior dedicated CI run #42168425008; retained evidence above |
+| 2 — Shared retry | DONE | Run #42173995437, PostgreSQL-backed concurrent claim test 1/1 PASS |
+| 3 — Teacher Authority / GL-003 | DONE | Prior dedicated CI run #42169970132; synthetic contract proof |
+| 4 — Authentication / learner isolation | DONE within dashboard-service boundary | PostgreSQL-backed service test in run #42172312618; not browser/session E2E |
+| 5 — Providers / fallback | DONE at test boundary | Run #42173995437, 3/3 PASS; synthetic provider behavior, no live provider calls |
+| 6 — Dependencies / audit | OPEN | Current commit has no fresh `npm audit --omit=dev` report or reviewed lockfile remediation. `npm ci` output in run #42173995437 reported 37 total advisories across the full dependency tree (1 low, 17 moderate, 16 high, 3 critical); this is not the production-only audit. |
+| 7 — Specification / ledgers | UPDATED | This checkpoint and Issue #58 comment #6678639160 record exact CI proof and limits |
+| 8 — Closure criteria | OPEN | Issue #58 remains open; production/authenticated acceptance, security/dependency lane and real canonical Machine witness remain separate gates |
+
+### Non-claims and invariants
+
+The database used for the retry test was a disposable synthetic PostgreSQL 16 service. No production database, production secret, learner record, migration, Teacher Authority action, or live retry was touched. `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No merge, deployment, or Issue #58 closure was performed. The CI evidence does not prove a full learner source-to-dashboard witness.
+
+
+## 2026-11-06 — Dependency audit and Golden witness workflow correction
+
+### Production dependency audit — exact current lockfile result
+
+On commit `0f0581d9693e3ad18a377d0f8119de82303b03ab`, the new `Production dependency audit` job ran `npm audit --omit=dev --json` against the PR #108 lockfile and reported **27 production advisories: 3 critical, 13 high, 10 moderate, 1 low**. The job correctly failed at the high-severity threshold; it did not modify dependencies.
+
+Notable direct-package findings:
+- `next`: critical; current resolved version falls within multiple affected ranges. npm reports a non-major fix path within the declared `^15.0.0` range.
+- `next-auth`: critical; affected through 4.24.14; patched release 4.24.15 is within the declared `^4.24.0` range.
+- `@vercel/oidc`: high; fix path reports 4.0.7 (major from pinned 3.8.4).
+- `postcss`: high; fix path is available within the declared range.
+- `sharp`: high; fix path reports 0.35.5 (major from pinned 0.34.5).
+- `firebase-admin`: moderate; npm reports fix path 14.5.0 (major from current 13.x range).
+
+Transitive production findings also include `websocket-driver` (critical), `@fastify/busboy`, `@grpc/grpc-js`, `node-forge`, `protobufjs`, `zod`, `source-map-js`, `nanoid`, and others. Full advisory titles, affected ranges, severities and npm fixAvailable values are in run [#42174341756](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42174341756), job `Production dependency audit`.
+
+**Status remains OPEN:** exact findings are now reproducible on the PR candidate, but no package or lockfile changes are claimed. Major-version updates require compatibility review and full regression/build verification. The CI audit job remains a fail-closed gate.
+
+### Golden Runtime Witness workflow correction
+
+A separate Golden Runtime Witness run had successfully completed the migration baseline, Golden witness, redaction check and pipeline retry-state witness, then failed because the final step invoked a nonexistent npm script `test:issue-58-retry-shared`. The actual package script is `test:issue-58-retry-shared-postgres`, and the test requires `PRIME_TEST_DATABASE_URL`.
+
+Corrected `.github/workflows/golden-runtime-witness.yml` in commit `aa401e6d723aab5fc09ca3b42c8e59c44e9577c5`:
+- set `PRIME_TEST_DATABASE_URL` to the same disposable PostgreSQL 16 database;
+- invoke the existing `test:issue-58-retry-shared-postgres` script.
+
+Validation of this workflow correction is pending the new Golden Runtime Witness CI run. Do not call it fixed at runtime until that run passes.
+
+### Closure gate
+
+Item 8 remains OPEN. The synthetic PR #108 tests do not close authenticated Production acceptance, Meet organizer OAuth/cron reconciliation, or the real canonical source-to-dashboard witness. No Production secrets, database, learner data, automation freeze, deployment or merge was changed.
+
+
+---
+
+## 2026-11-06 — Reconciled retry witness, Shared Learning Machine E2E, and dependency remediation
+
+This is the latest evidence checkpoint for the Issue #58 work. Historical PR #108 checkpoints above remain as historical SHA-specific records.
+
+### Item 2 — shared retry: DONE, strongest behavioral proof is PR #111
+
+The code in `scripts/pipeline-retry-state-witness.ts` at PR #111 commit `1d331ea9db3d14790575ec95df74bffaedadd63a` was read directly. It seeds a synthetic failed Shared Learning Machine PipelineRun in disposable PostgreSQL, blocks the first mocked provider request, and invokes `processLessonTranscript(sharedInput, sharedOptions)` twice concurrently.
+
+The assertions require:
+- the losing execution returns `duplicate: true`, points to the same `pipelineRunId`, and observes `processing`;
+- only one PipelineRun remains for the transcript;
+- the persisted run retains its ID, `attemptNumber=1`, `executionMode=shared_learning_machine`, `normalizedRunIdentity`, `idempotencyKey`, and `resumePoint=prompt_1`;
+- exactly one provider request occurs in the shared-retry scenario.
+
+CI proof: [Golden Runtime Witness run #42171552035](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42171552035), SHA `1d331ea9db3d14790575ec95df74bffaedadd63a`. The log shows `PIPELINE RETRY STATE WITNESS PASS`, `successfulClaims=1`, `pipelineRunCount=1`, `samePipelineRunPreserved=true`, `losingRetryReturnedDuplicate=true`, `providerRequestCount=1`. The `test:prime-engine` suite passed 16/16. Persisted artifact: [13481800966](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42171552035/artifacts/13481800966).
+
+This is a PR #111 proof, not a SHA or workflow result from PR #108. PR #108 independently passed its focused PostgreSQL claim test in [run #42173995437](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42173995437), TAP 1/1. Both proofs support Item 2; do not attribute the PR #111 witness to the PR #108 commit.
+
+### Item 5 — Shared Learning Machine E2E: DONE at synthetic CI witness boundary
+
+On the PR #111 SHA above:
+- Golden Runtime Witness, migration/baseline steps, redaction, and Pipeline Retry State Witness passed in run #42171552035.
+- Student Dashboard Contract passed in [run #42171552052](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42171552052), including the Shared Learning Machine gate and Next build.
+- Coordination Runtime Witness passed in [run #42171552029](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42171552029).
+
+The witness covers synthetic fixtures and mocked providers in disposable CI infrastructure. It does not establish a real learner Production execution or full authenticated source→CLR→projection→dashboard acceptance. The PR #108 lane separately labels Item 5 as Provider health/fallback; that is a separate sub-check and must not be confused with the Shared Learning Machine E2E label used by the PR #111 closure suite.
+
+### Item 6 — dependencies and audit: HIGH/CRITICAL PRODUCTION FINDINGS REMEDIATED; MODERATE RESIDUALS OPEN
+
+The production dependency audit originally reported 27 advisories (3 critical, 13 high, 10 moderate, 1 low). A controlled remediation job on the PR #108 branch then:
+- applied non-forced npm remediation plus explicit reviewed package updates;
+- passed `npm audit --omit=dev --audit-level=high`;
+- passed the full `npm run build`;
+- committed the updated dependency manifest and lockfile.
+
+Commit: `ca8e8692f15e907b8ade25619676e5943c788159` — `security(deps): remediate production advisories`.
+
+Resolved package versions read from that exact commit:
+- `next`: 15.5.29
+- `next-auth`: 4.24.15
+- `@vercel/oidc`: 4.0.7
+- `postcss`: 8.5.32
+- `sharp`: 0.35.5
+- `firebase-admin`: 14.5.0
+- notable transitives: `websocket-driver` 0.7.5, `@fastify/busboy` 3.2.5, `@grpc/grpc-js` 1.14.7, `protobufjs` 7.6.6, `zod` 4.6.7, `source-map-js` 1.2.2, `nanoid` 3.3.20.
+
+The successful remediation job log reports the production audit gate passing with **4 moderate advisories remaining and no high/critical production advisories**. The full dependency tree also has moderate-only findings. Therefore the high/critical production risk gate is remediated, but Item 6 remains OPEN/PARTIAL until the remaining moderate advisories are reviewed and either fixed or explicitly accepted. This distinction is intentional; do not report a zero-advisory audit.
+
+Remediation evidence: [run #42175012104](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175012104), job `Review and remediate production dependency advisories` SUCCESS. It ran `npm audit --omit=dev --audit-level=high`, then `npm run build` (compile, TypeScript/lint, 28 static pages and all embedded self-tests completed), and committed the dependency update. The separate `Production dependency audit` job in that same run is a FAILURE against the *pre-remediation* SHA `7ae5c22...`; it is not the audit result of the new commit `ca8e869...`.
+
+### Verification still required on the final dependency SHA
+
+GitHub's automatic push suppression for a workflow-token push can prevent fresh push-triggered workflows from starting. Re-trigger the PR validation on `ca8e869...` through a PR-synchronizing commit, then verify the production audit, Golden Runtime Witness, Student Dashboard Contract, Coordination Runtime Witness and focused retry job against the exact resulting head SHA. Do not treat the pre-remediation failed audit as if it evaluated the new lockfile.
+
+### Remaining boundaries
+
+- Item 7: this ledger checkpoint records the new evidence and SHA.
+- Item 8: remains OPEN; authenticated Production acceptance and the real learner source-to-dashboard witness remain separate gates.
+- `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production database, Production secret, live learner, attendance, migration, merge, or deployment was altered by these CI runs. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — Final exact-head verification after dependency documentation update
+
+Final branch head verified: `feab5a17c070ad88547a8c7dfb8316c62895ea33`.
+
+The documentation-only update to the Item 6 remediation note was followed by a new complete CI pass on this exact head:
+- [Issue 58 — PRIME Engine validation #42175797922](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175797922) — SUCCESS. Jobs: Production dependency audit, dependency remediation + full build, legacy retry, shared retry PostgreSQL, provider health/fallback.
+- [Golden Runtime Witness #42175803766](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803766) — SUCCESS.
+- [Coordination Runtime Witness #42175803820](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803820) — SUCCESS.
+- [Student Dashboard Contract #42175803749](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803749) — SUCCESS. TypeScript, Student Dashboard v1.0 contract, canonical strict, G6, Shared Learning Machine and Next build gates all passed.
+
+The push workflow log again reports production audit `critical=0, high=0, moderate=4, low=0`; the audit threshold PASS is zero critical/high. The remediation job passed `npm audit --omit=dev --audit-level=high` and `npm run build`. Residual moderate advisories remain explicitly open.
+
+This final exact-head pass closes the CI rerun requested by the preceding checkpoint. It does not close the four residual moderate dependency advisories, Production authenticated acceptance, Meet/OAuth reconciliation, the real learner source-to-dashboard witness, or Issue #58. No merge or deploy was performed; `PIPELINE_AUTOMATION_FROZEN` remains unchanged.
+
+
+---
+
+## 2026-11-06 — Item 7 reconciliado após o audit final da Issue #58
+
+Este é o checkpoint canônico mais recente para a reconciliação de especificação e ledgers. As seções anteriores permanecem como histórico SHA-específico e não substituem as evidências abaixo.
+
+### Evidência final
+
+- Branch: `chore/issue-58-prime-engine-closure`
+- Run final: [Issue 58 — PRIME Engine validation #42178395266](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42178395266)
+- Head validado: `dbf20514942a3a6ff0537402331c42397ee636be`
+- Job de audit: [Production dependency audit #127762071944](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42178395266/job/127762071944) — `SUCCESS`
+- Relatório: `docs/operations/audit/npm-audit-production.json`
+- Blob do relatório: `9f393303ce2814429958fffa1693691409bd9dc9`
+
+Metadados finais do relatório:
+
+```json
+{
+  "info": 0,
+  "low": 0,
+  "moderate": 0,
+  "high": 0,
+  "critical": 0,
+  "total": 0
+}
+```
+
+### Status reconciliado
+
+| Item | Status | Evidência |
+|---|---|---|
+| 1 — Legacy retry | DONE | Job verde no run `42178395266` |
+| 2 — Shared retry | DONE | Job PostgreSQL verde no run `42178395266` |
+| 3 — Teacher Authority / GL-003 | DONE | Contratos e validações da branch |
+| 4 — Authentication / learner isolation | DONE no limite do serviço | Não equivale a E2E autenticado de produção |
+| 5 — Providers / fallback | DONE no limite do teste | Job verde no run `42178395266` |
+| 6 — Dependencies / audit | DONE | Audit final zerado e lockfile sincronizado |
+| 7 — Specification / ledgers | DONE | `ISSUE_58_ITEM7_RECONCILIATION.md` e `PRIME_DEPENDENCIES_LEDGER.md` |
+| 8 — Closure criteria | OPEN | Critérios de aceitação de produção e witness completo permanecem pendentes |
+
+Os registros históricos que mencionam quatro advisories moderate referem-se a estados intermediários anteriores à remediação final. Eles permanecem úteis como histórico, mas não descrevem o estado atual e não devem ser usados sem essa qualificação.
+
+Commits canônicos da reconciliação: `eec67ea` (overrides), `c59e427`/`ccf8ff4` (lockfile), `efc971a` (concorrência do CI) e `dbf2051` (documentação). A Issue #58 permanece `OPEN`; não houve merge, deploy, alteração de segredo, banco de produção ou dado de learner.

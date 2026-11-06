@@ -107,6 +107,7 @@ export async function persistLearningMachineManifest(input: {
   manifest: Record<string, unknown>
   status: string
   completed: boolean
+  authorityStatus?: string
 }) {
   const prisma = getPrismaClient()
   const completedAt = input.completed ? new Date() : null
@@ -116,6 +117,7 @@ export async function persistLearningMachineManifest(input: {
       where: { id: input.pipelineRunId },
       data: {
         status: input.status,
+        ...(input.authorityStatus ? { authorityStatus: input.authorityStatus } : {}),
         currentStage: input.completed ? 'completed' : undefined,
         resumePoint: input.completed ? null : undefined,
         finalManifest: asJson(input.manifest),

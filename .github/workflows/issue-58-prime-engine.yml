@@ -1,0 +1,279 @@
+name: Issue 58 — PRIME Engine validation
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - chore/issue-58-prime-engine-closure
+  workflow_dispatch:
+
+jobs:
+  retry-legacy:
+    name: Retry legacy eligibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Show Node version
+        run: node --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run legacy retry eligibility test
+        run: npm run test:issue-58-retry-legacy
+
+  providers-health:
+    name: Provider health and fallback
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Show Node version
+        run: node --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run provider health and fallback test
+        run: npm run test:issue-58-providers-health
+
+  retry-shared-postgres:
+    name: Shared retry concurrent Postgres claim
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: prime
+          POSTGRES_PASSWORD: prime
+          POSTGRES_DB: prime_issue_58
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PRIME_TEST_DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_issue_58
+      DATABASE_URL: postgresql://prime:prime@localhost:5432/prime_issue_58
+      DATABASE_URL_UNPOOLED: postgresql://prime:prime@localhost:5432/prime_issue_58
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Show Node version
+        run: node --version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply Prisma schema
+        run: npx prisma db push --skip-generate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run concurrent shared retry Postgres test
+        run: npm run test:issue-58-retry-shared-postgres
+
+
+  production-dependency-audit:
+    name: Production dependency audit
+    runs-on: ubuntu-latest
+    concurrency:
+      group: issue-58-branch-writer-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: chore/issue-58-prime-engine-closure
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Audit production dependency tree
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > npm-audit-production.json
+          audit_status=$?
+          set -e
+          node -e '
+            const report = require("./npm-audit-production.json");
+            console.log("PRODUCTION_AUDIT_SUMMARY", JSON.stringify(report.metadata?.vulnerabilities ?? {}));
+            for (const [name, advisory] of Object.entries(report.vulnerabilities ?? {})) {
+              console.log("ADVISORY", JSON.stringify({
+                name,
+                severity: advisory.severity,
+                direct: advisory.isDirect,
+                range: advisory.range,
+                fixAvailable: advisory.fixAvailable,
+                via: advisory.via
+              }));
+            }
+          '
+          node -e '
+            const counts = require("./npm-audit-production.json").metadata?.vulnerabilities ?? {};
+            console.log("PRODUCTION_AUDIT_THRESHOLD", JSON.stringify({
+              critical: counts.critical ?? 0,
+              high: counts.high ?? 0,
+              moderate: counts.moderate ?? 0,
+              low: counts.low ?? 0,
+              total: counts.total ?? 0
+            }));
+            if ((counts.critical ?? 0) > 0 || (counts.high ?? 0) > 0) {
+              console.error("Production dependency audit blocked: critical/high advisories remain.");
+              process.exit(1);
+            }
+            console.log("Production dependency audit gate PASS: zero critical/high advisories; lower-severity findings remain reported.");
+          '
+
+      - name: Upload production dependency audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-dependency-audit
+          path: npm-audit-production.json
+          if-no-files-found: warn
+
+      - name: Persist production audit report
+        if: github.event_name == 'push' && always() && hashFiles('npm-audit-production.json') != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/operations/audit
+          cp npm-audit-production.json docs/operations/audit/npm-audit-production.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/operations/audit/npm-audit-production.json
+          if git diff --cached --quiet -- docs/operations/audit/npm-audit-production.json; then
+            echo "No production audit report changes to persist."
+            exit 0
+          fi
+          git commit -m "chore(audit): record production dependency audit report"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin chore/issue-58-prime-engine-closure
+            git rebase origin/chore/issue-58-prime-engine-closure
+
+            if git push origin HEAD:chore/issue-58-prime-engine-closure; then
+              echo "Audit report pushed successfully."
+              exit 0
+            fi
+
+            echo "Push attempt ${attempt} failed; retrying..."
+            sleep $((attempt * 5))
+          done
+
+          echo "Unable to push audit report after 5 attempts."
+          exit 1
+
+
+  dependency-remediation:
+    name: Review and remediate production dependency advisories
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: issue-58-branch-writer-${{ github.head_ref || github.ref_name }}
+      cancel-in-progress: false
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: chore/issue-58-prime-engine-closure
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies and regenerate lockfile
+        run: npm install
+
+      - name: Apply non-forced compatible security updates
+        shell: bash
+        run: |
+          set +e
+          npm audit fix
+          audit_fix_status=$?
+          set -e
+          echo "npm audit fix exit code: ${audit_fix_status}"
+          npm install --save-exact @vercel/oidc@4.0.7 sharp@0.35.5 firebase-admin@14.5.0
+          npm pkg set 'overrides.postcss=$postcss'
+          npm install
+          set +e
+          npm audit fix
+          audit_fix_status=$?
+          set -e
+          echo "post-override npm audit fix exit code: ${audit_fix_status}"
+
+      - name: Enforce production high and critical advisory gate
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verify complete application build and regression suite
+        run: npm run build
+
+      - name: Commit verified dependency manifest and lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "No dependency changes were generated."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "security(deps): remediate production advisories"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin chore/issue-58-prime-engine-closure
+            git rebase origin/chore/issue-58-prime-engine-closure
+
+            if git push origin HEAD:chore/issue-58-prime-engine-closure; then
+              echo "Dependency remediation pushed successfully."
+              exit 0
+            fi
+
+            echo "Push attempt ${attempt} failed; retrying..."
+            sleep $((attempt * 5))
+          done
+
+          echo "Unable to push dependency remediation after 5 attempts."
+          exit 1

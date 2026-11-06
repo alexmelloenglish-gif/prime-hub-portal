@@ -1,6 +1,7 @@
 // @ts-nocheck
 // Runtime witness harness: runtime assertions validate behavior; product TypeScript remains gated separately.
 import assert from 'node:assert/strict'
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -313,6 +314,93 @@ globalThis.fetch = async (_url, init = {}) => {
   })
 }
 
+async function runAccountLearnerIsolationWitness(prisma) {
+  const suffix = Date.now().toString()
+  const admin = await prisma.user.create({
+    data: { email: `g6-admin-${suffix}@invalid.test`, role: 'admin', name: 'G6 disposable admin' },
+  })
+  const accountA = await prisma.user.create({
+    data: { email: `g6-account-a-${suffix}@invalid.test`, role: 'student', name: 'G6 account A' },
+  })
+  const accountB = await prisma.user.create({
+    data: { email: `g6-account-b-${suffix}@invalid.test`, role: 'student', name: 'G6 account B' },
+  })
+  const relationIds = []
+  try {
+    const [
+      { authorizeAccountLearnerRelation, revokeAccountLearnerRelation },
+      { accountIdentityFromSession, resolveAuthorizedLearnerRelation },
+    ] = await Promise.all([
+      import('../lib/account-learner-relation.ts'),
+      import('../lib/learner-account-resolution.ts'),
+    ])
+    const studentA = 'stu_e22a6c379329'
+    const studentB = 'stu_e01adc4e23d0'
+    const relationA = await authorizeAccountLearnerRelation({
+      actorUserId: admin.id,
+      userId: accountA.id,
+      studentId: studentA,
+      relationType: 'LEARNER_SELF',
+      sourceType: 'disposable_runtime_witness',
+      sourceReference: 'issue-58-item-4-account-a',
+    })
+    relationIds.push(relationA.id)
+    const relationB = await authorizeAccountLearnerRelation({
+      actorUserId: admin.id,
+      userId: accountB.id,
+      studentId: studentB,
+      relationType: 'LEARNER_SELF',
+      sourceType: 'disposable_runtime_witness',
+      sourceReference: 'issue-58-item-4-account-b',
+    })
+    relationIds.push(relationB.id)
+
+    const identityA = accountIdentityFromSession({ id: accountA.id, email: accountA.email, role: 'student' })
+    const identityB = accountIdentityFromSession({ id: accountB.id, email: accountB.email, role: 'student' })
+    assert.ok(identityA && identityB, 'Authenticated account ids must be required')
+
+    const ownA = await resolveAuthorizedLearnerRelation({ account: identityA, requestedStudentId: studentA })
+    const crossA = await resolveAuthorizedLearnerRelation({ account: identityA, requestedStudentId: studentB })
+    const ownB = await resolveAuthorizedLearnerRelation({ account: identityB, requestedStudentId: studentB })
+    const crossB = await resolveAuthorizedLearnerRelation({ account: identityB, requestedStudentId: studentA })
+
+    assert.equal(ownA.status, 'AUTHORIZED')
+    assert.equal(ownA.studentId, studentA)
+    assert.equal(crossA.status, 'ABSENT', 'Account A must not resolve account B learner')
+    assert.equal(ownB.status, 'AUTHORIZED')
+    assert.equal(ownB.studentId, studentB)
+    assert.equal(crossB.status, 'ABSENT', 'Account B must not resolve account A learner')
+
+    await revokeAccountLearnerRelation({
+      actorUserId: admin.id,
+      relationId: relationA.id,
+      reason: 'Disposable isolation witness revocation',
+      sourceType: 'disposable_runtime_witness',
+      sourceReference: 'issue-58-item-4-revocation',
+    })
+    const revokedA = await resolveAuthorizedLearnerRelation({ account: identityA, requestedStudentId: studentA })
+    assert.equal(revokedA.status, 'ABSENT', 'Revoked relation must deny access')
+
+    return {
+      verdict: 'PASS',
+      database: 'disposable PostgreSQL',
+      accountAOwnLearner: ownA.status === 'AUTHORIZED',
+      accountACrossLearnerDenied: crossA.status === 'ABSENT',
+      accountBOwnLearner: ownB.status === 'AUTHORIZED',
+      accountBCrossLearnerDenied: crossB.status === 'ABSENT',
+      revokedRelationDenied: revokedA.status === 'ABSENT',
+      accountRefs: [safeRef(accountA.id), safeRef(accountB.id)],
+      learnerRefs: [safeRef(studentA), safeRef(studentB)],
+    }
+  } finally {
+    if (relationIds.length) {
+      await prisma.accountLearnerRelationEvent.deleteMany({ where: { relationId: { in: relationIds } } })
+      await prisma.accountLearnerRelation.deleteMany({ where: { id: { in: relationIds } } })
+    }
+    await prisma.user.deleteMany({ where: { id: { in: [admin.id, accountA.id, accountB.id] } } })
+  }
+}
+
 async function main() {
 process.env.GOOGLE_AI_STUDIO_API_KEY = 'runtime-witness-mocked-provider'
 process.env.PRIME_PIPELINE_MODEL = 'runtime-witness-deterministic'
@@ -322,20 +410,14 @@ delete process.env.FIREBASE_PRIVATE_KEY
 
 const [
   { executeSharedLearningMachine },
+  { executeCanonicalContinuation },
   { getPrismaClient },
   { mergeCanonicalLearningIntelligenceRows },
-  { runG2RuntimeProof },
-  { runG3RuntimeProof },
-  { runG4RuntimeProof },
-  { runG5RuntimeProof },
 ] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
+  import('../lib/learning-machine/canonical-continuation.ts'),
   import('../lib/prisma.ts'),
   import('../lib/canonical-dashboard-bridge.ts'),
-  import('../lib/g2-runtime-proof.ts'),
-  import('../lib/g3-runtime-proof.ts'),
-  import('../lib/g4-runtime-proof.ts'),
-  import('../lib/g5-runtime-proof.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -425,27 +507,37 @@ assert.equal(authorityTask.status, 'approved')
 assert.equal(authorityTask.decision, 'approved')
 assert.ok(authorityTask.reviewedAt)
 
-const g2 = await runG2RuntimeProof(authorityTask.id)
-assert.equal(g2.replay.idempotentReplay, true)
-assert.equal(g2.atomicity.noPartialState, true)
+const continuation = await executeCanonicalContinuation({
+  pipelineRunId: first.pipelineRunId,
+  validationTaskId: authorityTask.id,
+  reviewerRef: teacher.id,
+  decisionTimestamp: reviewedAt,
+})
+assert.equal(continuation.verification.status, 'PASS')
+assert.equal(continuation.portfolioProjection.projectionStatus, 'VERIFIED')
+assert.equal(continuation.learningIntelligenceProjection.projectionStatus, 'VERIFIED')
 
-const g3 = await runG3RuntimeProof(authorityTask.id)
-assert.equal(g3.status, 'PASS')
-
-const g4 = await runG4RuntimeProof(authorityTask.id)
-assert.equal(g4.projectionStatus, 'VERIFIED')
-
-const g5 = await runG5RuntimeProof(authorityTask.id)
-assert.equal(g5.projectionStatus, 'VERIFIED')
+const continuationReplay = await executeCanonicalContinuation({
+  pipelineRunId: first.pipelineRunId,
+  validationTaskId: authorityTask.id,
+  reviewerRef: teacher.id,
+  decisionTimestamp: reviewedAt,
+})
+assert.equal(continuationReplay.canonicalization.idempotentReplay, true)
+assert.equal(continuationReplay.verification.status, 'PASS')
+assert.equal(continuationReplay.portfolioProjection.idempotentReplay, true)
+assert.equal(continuationReplay.learningIntelligenceProjection.idempotentReplay, true)
 
 const run = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
   include: { reviewTasks: true, transcript: true },
 })
 assert.ok(run)
-assert.equal(run.status, 'awaiting_teacher_authority')
-assert.equal(run.authorityStatus, 'non_authoritative')
-assert.equal(run.completedAt, null)
+assert.equal(run.status, 'completed')
+assert.equal(run.authorityStatus, 'teacher_authorized')
+assert.ok(run.completedAt)
+assert.equal(run.currentStage, 'completed')
+assert.equal(run.resumePoint, null)
 assert.equal(run.reviewTasks.length, 0)
 
 const canonicalRecords = await prisma.canonicalLearningRecord.findMany({
@@ -643,7 +735,10 @@ assert.equal(generationProvenance.model, 'runtime-witness-deterministic')
 assert.equal(generationProvenance.responseStatus, 200)
 assert.equal(generationProvenance.validationStatus, 'valid')
 
+const accountIsolation = await runAccountLearnerIsolationWitness(prisma)
+
 const evidence = {
+  accountIsolation,
   verdict: 'GOLDEN RUNTIME WITNESS PASS',
   database: 'GitHub Actions disposable PostgreSQL service',
   productionTouched: false,
@@ -732,6 +827,12 @@ fs.writeFileSync(
 )
 console.log(JSON.stringify(evidence, null, 2))
 await prisma.$disconnect()
+
+// Reuse this disposable PostgreSQL service for the actual two-account dashboard isolation test.
+execFileSync('npx', ['--yes', 'tsx@4.20.6', '--test', 'tests/auth/student-isolation.spec.ts'], {
+  env: process.env,
+  stdio: 'inherit',
+})
 }
 
 main().catch((error) => {

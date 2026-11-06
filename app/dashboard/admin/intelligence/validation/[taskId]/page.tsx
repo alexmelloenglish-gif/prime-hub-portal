@@ -11,6 +11,7 @@ import {
   CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_TARGET,
   CANONICAL_LEARNING_INTELLIGENCE_PROJECTION_VERSION,
 } from '@/lib/canonical-learning-intelligence-projection'
+import { executeCanonicalContinuation } from '@/lib/learning-machine/canonical-continuation'
 
 export const dynamic = 'force-dynamic'
 
@@ -200,13 +201,14 @@ async function decideValidation(formData: FormData) {
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) return
 
+  const reviewedAt = new Date()
   await prisma.validationTask.update({
     where: { id: taskId },
     data: {
       status: decision,
       decision,
       reviewerId: session.user.id,
-      reviewedAt: new Date(),
+      reviewedAt,
       reason: String(formData.get('reason') || '').trim() || null,
     },
   })
@@ -219,6 +221,15 @@ async function decideValidation(formData: FormData) {
         authorityStatus: 'authoritative',
         reconciledAt: new Date(),
       },
+    })
+  }
+
+  if (task.type === 'canonical_learning_record_authority' && decision === 'approved') {
+    await executeCanonicalContinuation({
+      pipelineRunId: task.entityId,
+      validationTaskId: task.id,
+      reviewerRef: session.user.id,
+      decisionTimestamp: reviewedAt,
     })
   }
 

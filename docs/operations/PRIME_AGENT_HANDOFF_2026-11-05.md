@@ -346,3 +346,49 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — PR #108 execution handoff update
+
+This section is the latest execution status for the Issue #58 PR #108 lane; earlier historical checkpoints remain preserved.
+
+### Completed with exact CI evidence
+
+- **Shared retry (Item 2): DONE.** Commit `d1329e1341ff12aff7fed0712f240043a09d1ad2`; [Actions run #42173995437](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42173995437). The PostgreSQL 16 job completed schema push, Prisma Client generation and the actual `tests/pipeline/retry-shared-postgres.spec.ts` test. TAP: 1 test, 1 pass, 0 fail. Concurrent claims produced exactly one winner. The prior P1012 failure was caused by missing `DATABASE_URL_UNPOOLED` in the workflow; the workflow now supplies it.
+- **Providers/fallback (Item 5): DONE at synthetic test boundary.** Same run; 3 tests, 3 pass, 0 fail. No live external provider call was made.
+- **Legacy retry job:** SUCCESS in the same run.
+
+### Still open
+
+- **Dependencies (Item 6): OPEN.** No current-commit production-only audit matrix or reviewed package/lockfile remediation is available. The same CI run's `npm ci` reported 37 advisories across the full tree (1 low, 17 moderate, 16 high, 3 critical); this is not a substitute for `npm audit --omit=dev`. Do not run indiscriminate `npm audit fix --force`.
+- **Full closure (Item 8): OPEN.** Do not equate passing synthetic regression tests with Production acceptance or a full source → PipelineRun → provenance → Teacher Authority → CLR → projections → dashboard/portfolio witness.
+- **Production login and authenticated learner/guardian acceptance:** NOT VERIFIED, per the latest operational checkpoint.
+- **Meet attendance OAuth/cron:** OPEN/BLOCKED pending authorized organizer reauthorization, bounded execution, persisted read-back and idempotency.
+- **Real learner witness:** OPEN/NOT VERIFIED. Do not replay a real learner or alter `PIPELINE_AUTOMATION_FROZEN` without explicit authorization.
+
+### Issue and release boundaries
+
+The validation evidence was posted to [Issue #58 comment #6678639160](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6678639160). Issue #58 remains OPEN. PR #108 is not merged. No deployment, production database mutation, migration, secret change, learner-data mutation, or automation activation was performed by this validation.
+
+
+---
+
+## 2026-11-06 — Dependency audit matrix and Golden witness correction
+
+### Current production-only audit (PR #108 candidate)
+
+Run [#42174341756](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42174341756), commit `0f0581d9693e3ad18a377d0f8119de82303b03ab`, ran `npm audit --omit=dev --json` and returned **27 advisories: 3 critical, 13 high, 10 moderate, 1 low**. This is the current candidate's production dependency tree, not the old audit from another SHA.
+
+The critical direct packages are `next` and `next-auth`; a critical transitive finding is `websocket-driver`. High direct findings include `@vercel/oidc`, `postcss` and `sharp`. Other affected transitive packages include `@fastify/busboy`, `@grpc/grpc-js`, `node-forge`, `protobufjs`, `zod`, `source-map-js`, `nanoid`, and others. npm's fix paths include compatible updates for `next`, `next-auth` and `postcss`, but major upgrades for `@vercel/oidc`, `sharp` and `firebase-admin`.
+
+**Dependency remediation is still OPEN.** No blind force upgrade or lockfile mutation was made. The audit gate now fails on high/critical production advisories until reviewed updates are verified.
+
+### Golden Runtime Witness workflow correction
+
+Run #42174004933 passed the Golden witness and pipeline retry-state witness but failed at the final focused retry test because the workflow referenced nonexistent `test:issue-58-retry-shared`. The existing package script is `test:issue-58-retry-shared-postgres`, which also requires `PRIME_TEST_DATABASE_URL`.
+
+Commit `aa401e6d723aab5fc09ca3b42c8e59c44e9577c5` corrects both the script name and the disposable database environment variable. The rerun is pending; keep the workflow status OPEN until it passes.
+
+Issue #58 remains OPEN. No merge, deploy, Production database/secret mutation, learner replay or automation activation was performed.

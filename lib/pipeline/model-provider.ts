@@ -50,7 +50,7 @@ export class ModelGenerationError extends Error {
   }
 }
 
-type ProviderId = 'gemini' | 'openai' | 'perplexity' | 'meta'
+export type ProviderId = 'gemini' | 'openai' | 'perplexity' | 'meta'
 
 type ProviderConfig = {
   id: ProviderId

@@ -301,12 +301,47 @@ async function resolveReviewer(reviewerRef: string) {
 
 async function assertPersistedPublicationAuthority(input: {
   pipelineRunId: string
-  reviewTaskId: string
+  reviewTaskId?: string
+  validationTaskId?: string
   reviewerId: string
   decisionTimestamp: Date
   authorityPayloadHash: string
 }) {
   const prisma = getPrismaClient()
+  if (input.validationTaskId) {
+    const task = await prisma.validationTask.findUnique({ where: { id: input.validationTaskId } })
+    if (
+      !task
+      || task.entityType !== 'PipelineRun'
+      || task.entityId !== input.pipelineRunId
+      || task.type !== 'canonical_learning_record_authority'
+      || task.status !== 'approved'
+      || task.decision !== 'approved'
+      || !task.reviewerId
+      || !task.reviewedAt
+    ) {
+      throw new Error('Shared runner Teacher Authority decision is not durably approved')
+    }
+    const persistedReviewer = await resolveReviewer(task.reviewerId)
+    const persistedHash = canonicalAuthorityDraftHash(
+      JSON.parse(JSON.stringify(task.suggestedValue)) as CanonicalAuthorityDraft,
+    )
+    assertTeacherAuthorityBinding(
+      {
+        reviewerId: input.reviewerId,
+        decisionTimestamp: input.decisionTimestamp,
+        authorityPayloadHash: input.authorityPayloadHash,
+      },
+      {
+        reviewerId: persistedReviewer.id,
+        decisionTimestamp: task.reviewedAt,
+        authorityPayloadHash: persistedHash,
+      },
+    )
+    return
+  }
+
+  if (!input.reviewTaskId) throw new Error('Shared runner Teacher Authority task is missing')
   const task = await prisma.reviewTask.findUnique({ where: { id: input.reviewTaskId } })
   if (
     !task
@@ -347,13 +382,13 @@ async function assertPersistedPublicationAuthority(input: {
 
 async function loadCanonicalizationResult(input: {
   pipelineRunId: string
-  reviewTaskId: string
+  authorityTaskId: string
 }) {
   const prisma = getPrismaClient()
   const record = await prisma.canonicalLearningRecord.findFirst({
     where: {
       pipelineRunId: input.pipelineRunId,
-      teacherDecisionId: input.reviewTaskId,
+      teacherDecisionId: input.authorityTaskId,
     },
     orderBy: { canonicalVersion: 'desc' },
     include: { canonicalizationProvenance: true },
@@ -379,13 +414,13 @@ function jsonStringArray(value: Prisma.JsonValue) {
 
 async function loadVerificationResult(input: {
   canonicalRecordId: string
-  reviewTaskId: string
+  authorityTaskId: string
 }) {
   const prisma = getPrismaClient()
   const verification = await prisma.canonicalLearningRecordVerification.findFirst({
     where: {
       expectedCanonicalRecordId: input.canonicalRecordId,
-      expectedTeacherDecisionId: input.reviewTaskId,
+      expectedTeacherDecisionId: input.authorityTaskId,
       verificationStatus: 'PASS',
     },
     orderBy: { verifiedAt: 'desc' },
@@ -443,12 +478,15 @@ async function loadProjectionResults(canonicalRecordId: string) {
 
 export async function executeCanonicalContinuation(input: {
   pipelineRunId: string
-  reviewTaskId: string
+  reviewTaskId?: string
+  validationTaskId?: string
   reviewerRef: string
   decisionTimestamp: Date
   communicationProjection?: () => Promise<Record<string, unknown> | void>
 }) {
   const prisma = getPrismaClient()
+  const authorityTaskId = input.validationTaskId || input.reviewTaskId
+  if (!authorityTaskId) throw new Error('Shared runner Teacher Authority task is missing')
   const run = await prisma.pipelineRun.findUnique({
     where: { id: input.pipelineRunId },
     select: {
@@ -479,6 +517,7 @@ export async function executeCanonicalContinuation(input: {
   await assertPersistedPublicationAuthority({
     pipelineRunId: input.pipelineRunId,
     reviewTaskId: input.reviewTaskId,
+    validationTaskId: input.validationTaskId,
     reviewerId: reviewer.id,
     decisionTimestamp: input.decisionTimestamp,
     authorityPayloadHash,
@@ -486,8 +525,8 @@ export async function executeCanonicalContinuation(input: {
 
   const command: CanonicalizationCommand = {
     ...draft,
-    authoritySourceType: 'review_task',
-    teacherDecisionId: input.reviewTaskId,
+    authoritySourceType: input.validationTaskId ? 'validation_task' : 'review_task',
+    teacherDecisionId: authorityTaskId,
     reviewerId: reviewer.id,
     reviewerRole: reviewer.role,
     decisionTimestamp: input.decisionTimestamp.toISOString(),
@@ -533,7 +572,7 @@ export async function executeCanonicalContinuation(input: {
     },
     load: () => loadCanonicalizationResult({
       pipelineRunId: input.pipelineRunId,
-      reviewTaskId: input.reviewTaskId,
+      authorityTaskId,
     }),
   })
 
@@ -572,7 +611,7 @@ export async function executeCanonicalContinuation(input: {
     },
     load: () => loadVerificationResult({
       canonicalRecordId: canonicalization.canonicalRecordId,
-      reviewTaskId: input.reviewTaskId,
+      authorityTaskId,
     }),
   })
 
@@ -649,7 +688,9 @@ export async function executeCanonicalContinuation(input: {
     lessonId: run.lessonId,
     triggerOrigins,
     teacherAuthority: {
-      reviewTaskId: input.reviewTaskId,
+      reviewTaskId: input.reviewTaskId || null,
+      validationTaskId: input.validationTaskId || null,
+      teacherDecisionId: authorityTaskId,
       reviewerId: reviewer.id,
       reviewerRole: reviewer.role,
       decisionTimestamp: input.decisionTimestamp.toISOString(),
@@ -693,6 +734,7 @@ export async function executeCanonicalContinuation(input: {
     manifest,
     status: 'completed',
     completed: true,
+    authorityStatus: 'teacher_authorized',
   })
 
   await checkpointLearningMachine({
