@@ -34,7 +34,7 @@
     "pedagogical-semantics:self-test": "node --experimental-strip-types scripts/pedagogical-processing-semantics-self-test.mjs",
     "lesson-observability:self-test": "node --experimental-strip-types scripts/lesson-observability-self-test.mjs",
     "lesson-digest:self-test": "node --experimental-strip-types scripts/lesson-digest-self-test.mjs",
-    "young-learner-access:self-test": "node scripts/young-learner-access-self-test.mjs",
+    "young-learner-access:self-test": "node --experimental-strip-types scripts/young-learner-access-self-test.mjs",
     "shared-learning-machine:self-test": "node scripts/shared-learning-machine-self-test.mjs && node --experimental-strip-types scripts/shared-learning-machine-behavioral-self-test.mjs",
     "drive-transcript:self-test": "node --experimental-strip-types scripts/drive-transcript-tab-self-test.mjs",
     "status-color:self-test": "node scripts/status-color-contract-self-test.mjs",
@@ -72,6 +72,8 @@
     "typescript": "^5.3.3"
   },
   "overrides": {
-    "postcss": "$postcss"
+    "postcss": "$postcss",
+    "glob": "^14.0.2",
+    "minimatch": "^11.0.1"
   }
 }
