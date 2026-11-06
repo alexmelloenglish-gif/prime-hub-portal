@@ -331,3 +331,36 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-06 — PRIME Learning Engine / Issue 58 execution branch
+
+**Base:** main@c7b63aad7f16b506d5856791dd2a83ce840ece46  
+**Branch:** engine/issue-58-regression-and-closure-2026-11-06  
+**Status:** implementation in review; CI evidence pending for this exact head.
+
+### Artifacts added
+- Pipeline regression specs: retry-legacy, retry-shared and GL-003 Teacher Authority.
+- G6 database-backed synthetic student/guardian isolation spec.
+- Provider fallback/health contract spec using intercepted fetch and synthetic credentials.
+- audit:prime-engine script and production-only dependency ledger.
+- canonical Learning Engine specification and Issue 58 closure criteria.
+
+### Runtime witness strengthening
+- Pipeline retry-state witness now asserts that the concurrent shared retry retains the same PipelineRun ID, idempotency/normalized identity and persisted resumePoint after exactly one retry claim.
+- Golden Runtime Witness emits Teacher Authority decision, status, reviewer role, authority scope, validation-task/decision references and payload approval hash. Its fixture is explicitly synthetic and does not claim an authenticated teacher session.
+- Golden Runtime Witness workflow runs npm run test:prime-engine after disposable-Postgres migrations and Prisma generation.
+
+### Proof status
+| Lane | Current state | Evidence boundary |
+|---|---|---|
+| Legacy retry | IMPLEMENTED; exact-head CI pending | Disposable-Postgres witness covers FAILED → attempt 2, COMPLETED duplicate and PROCESSING no duplicate |
+| Shared retry | IMPLEMENTED; exact-head CI pending | Disposable-Postgres witness proves one concurrent claim and preserves run identity/resumePoint |
+| GL-003 / Teacher Authority | IMPLEMENTED; exact-head CI pending | Synthetic provider + explicit persisted approval + G2–G5 read-back; not a real authenticated teacher session |
+| G6 student/guardian isolation | IMPLEMENTED; exact-head CI pending | Synthetic relation rows in disposable PostgreSQL; API/dashboard G6 end-to-end integration remains OPEN |
+| Provider health/fallback | IMPLEMENTED; exact-head CI pending | Mocked Gemini/OpenAI/Perplexity/Meta transport; Meet route failure contract only, no live Meet OAuth witness |
+| Dependencies | AUDIT GATE ADDED; production result pending CI | No package versions or lockfile changed; historical 35-advisory full-tree snapshot is not a production-only count |
+
+**No item is marked CLOSED by this ledger update.** Issue 58 remains OPEN until exact-head workflows pass, production-only advisories are resolved or explicitly accepted, and authenticated route/Meet/Production evidence meets docs/operations/ISSUE_58_CLOSURE_CRITERIA.md.
