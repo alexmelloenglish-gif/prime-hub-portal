@@ -1,0 +1,35 @@
+name: Dependency Audit Fix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Run npm audit fix
+        run: npm audit fix --omit=dev
+      - name: Commit changes
+        run: |
+          git config user.name "PRIME DIGITAL HUB"
+          git config user.email "alexmello.english@gmail.com"
+          git add package.json package-lock.json
+          git diff --cached --quiet || git commit -m "fix(deps): npm audit fix for production advisories"
+          git push
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: fix/issue-58-dependency-audit
+          base: main
+          title: "fix(deps): resolve production dependency advisories"
+          body: "Automated npm audit fix for the 27 production advisories blocking PRs #109/#110/#111."
