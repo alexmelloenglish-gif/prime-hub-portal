@@ -1,76 +1,55 @@
-# Issue 58 — Item 6 — Dependency remediation evidence
+# Issue 58 — Item 6 — Evidência final de remediação de dependências
 
-Status: **HIGH/CRITICAL PRODUCTION ADVISORIES REMEDIATED; 4 MODERATE PRODUCTION ADVISORIES REMAIN OPEN**
+**Status:** DONE — audit de produção zerado e lockfile sincronizado.
 
-## Remediation
+## Escopo
 
-Remediation commit: `ca8e8692f15e907b8ade25619676e5943c788159` — `security(deps): remediate production advisories`.
+Foram aplicados overrides de segurança para as cadeias transitivas de `glob` e `minimatch`, preservando o override existente de `postcss`:
 
-Direct package changes:
-- `@vercel/oidc`: 3.8.4 → 4.0.7
-- `firebase-admin`: 13.x → 14.5.0
-- `sharp`: 0.34.5 → 0.35.5
-- resolved `next`: 15.5.29
-- resolved `next-auth`: 4.24.15
-- `postcss`: 8.5.32 via the root override
-
-Notable resolved transitives:
-- `websocket-driver` 0.7.5
-- `@fastify/busboy` 3.2.5
-- `@grpc/grpc-js` 1.14.7
-- `protobufjs` 7.6.6
-- `zod` 4.6.7
-- `source-map-js` 1.2.2
-- `nanoid` 3.3.20
-
-The dependency job used non-forced `npm audit fix` plus explicit version updates; it did not invoke `npm audit fix --force`.
-
-## Exact-head verification
-
-The bot-authored dependency commit was subsequently validated by PR-synchronizing commits. The current candidate head at this checkpoint is `29beb6d9c6d0db1a3c48fd8cafcdcf461f4ccc8e`.
-
-**Production dependency audit:** [GitHub Actions run #42175566066](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175566066), job `Production dependency audit` SUCCESS. Log summary:
+```json
+{
+  "postcss": "$postcss",
+  "glob": "^14.0.2",
+  "minimatch": "^11.0.1"
+}
 ```
-PRODUCTION_AUDIT_SUMMARY {"info":0,"low":0,"moderate":4,"high":0,"critical":0,"total":4}
-PRODUCTION_AUDIT_THRESHOLD {"critical":0,"high":0,"moderate":4,"low":0,"total":4}
-Production dependency audit gate PASS
+
+Advisories tratados:
+
+- `minimatch` `7.0.0–11.0.0`: `GHSA-g3hv-75wg-m249`
+- `glob` `9.0.0–14.0.1`: `GHSA-3g3m-2fjr-6pw4`
+
+A cadeia afetada incluía dependências transitivas utilizadas por `rimraf` e `google-gax`.
+
+## Commits reconciliados
+
+- [`eec67ea`](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/eec67ea21bacfcd856e6003b5af3041a05c2119e) — aplicação dos overrides.
+- [`c59e427`](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/c59e427e2347028a0053050bfa726894fb43ca1c) — ajuste do workflow para regenerar o lockfile.
+- [`ccf8ff4`](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/ccf8ff4c33b733b51980df2679cf2c46f096356b) — remediação e regeneração do `package-lock.json`.
+- [`efc971a`](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/efc971a4108c35a572ac3794ad6cbb28a1c2e0e5) — serialização e retry dos pushes do CI.
+- [`dbf2051`](https://github.com/alexmelloenglish-gif/prime-hub-portal/commit/dbf20514942a3a6ff0537402331c42397ee636be) — documentação final.
+
+## Evidência final de CI
+
+Run final: [Issue 58 — PRIME Engine validation #42178395266](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42178395266), head `dbf20514942a3a6ff0537402331c42397ee636be`.
+
+Job de audit: [Production dependency audit #127762071944](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42178395266/job/127762071944), conclusão `SUCCESS`.
+
+O relatório persistido em `docs/operations/audit/npm-audit-production.json` possui blob `9f393303ce2814429958fffa1693691409bd9dc9` e os seguintes metadados:
+
+```json
+{
+  "info": 0,
+  "low": 0,
+  "moderate": 0,
+  "high": 0,
+  "critical": 0,
+  "total": 0
+}
 ```
-The audit job continues to print all advisories. Its pass criterion is explicitly zero critical/high production advisories, not zero advisories overall.
 
-**Dependency remediation + full build:** same run #42175566066, job `Review and remediate production dependency advisories` SUCCESS. It ran:
-- `npm ci`
-- `npm audit --omit=dev --audit-level=high` PASS
-- `npm run build` PASS, including TypeScript/lint and 28/28 static pages
+O gate final de dependências passou com zero advisories de produção em todas as severidades. Os quatro moderate registrados em execuções anteriores são evidência histórica de um estado intermediário e não representam o estado final da branch.
 
-**PR validation on exact head `29beb6d...`:**
-- [Issue 58 — PRIME Engine validation #42175573256](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175573256) SUCCESS: Production audit, legacy retry, PostgreSQL shared retry, and provider health/fallback.
-- [Golden Runtime Witness #42175573204](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175573204) SUCCESS.
-- [Coordination Runtime Witness #42175573303](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175573303) SUCCESS.
-- [Student Dashboard Contract #42175573134](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175573134) SUCCESS: TypeScript, Student Dashboard v1.0, canonical strict, G6 authority, Shared Learning Machine and Next build gates.
+## Limites e escopo do fechamento
 
-## Residual moderate advisories
-
-The four production advisories are transitive and moderate:
-- `glob` (AbortSignal cancellation bypass)
-- `minimatch` (globparts amplification DoS)
-- `rimraf` (transitive through glob)
-- `google-gax` (transitive through rimraf)
-
-They flow through the optional `@google-cloud/firestore-api` / `google-gax` dependency subtree. npm reports fix paths, but the compatible dependency path did not remove these four within the current reviewed manifest. No forced major override of the nested Firestore API subtree was applied because that could break a Google-generated client dependency contract without adequate runtime coverage.
-
-**Item 6 remains PARTIAL/OPEN** until those moderate advisories are fixed with a compatible dependency path or explicitly accepted with a documented risk decision. Do not claim zero advisories.
-
-## Boundaries
-
-No Production secret, Production database, migration, learner record, deployment, merge, or `PIPELINE_AUTOMATION_FROZEN` setting was changed. All tests used disposable/synthetic CI infrastructure. Issue #58 remains OPEN.
-
-
-## Final exact-head rerun
-
-The corrected remediation note is present on final branch head `feab5a17c070ad88547a8c7dfb8316c62895ea33`. Exact-head CI passed:
-- [Issue 58 validation #42175797922](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175797922): SUCCESS, including fresh Production dependency audit and full build.
-- [Student Dashboard Contract #42175803749](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803749): SUCCESS.
-- [Golden Runtime Witness #42175803766](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803766): SUCCESS.
-- [Coordination Runtime Witness #42175803820](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42175803820): SUCCESS.
-
-On the final run the production tree remains at 4 moderate advisories and zero high/critical. The build and production high/critical audit gate pass. This is not a zero-advisory audit; Item 6 remains PARTIAL/OPEN pending disposition of the four moderate transitive advisories.
+A remediação cobre a árvore de dependências de produção e a validação automatizada do projeto. Não houve alteração de segredo, banco de produção, registro de learner, deploy ou merge. A Issue #58 permanece `OPEN` enquanto o Item 8 e os demais critérios de encerramento forem concluídos.
