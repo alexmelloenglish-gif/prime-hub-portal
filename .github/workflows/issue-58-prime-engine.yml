@@ -99,3 +99,43 @@ jobs:
 
       - name: Run concurrent shared retry Postgres test
         run: npm run test:issue-58-retry-shared-postgres
+
+
+  production-dependency-audit:
+    name: Production dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Audit production dependency tree
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > npm-audit-production.json
+          audit_status=$?
+          set -e
+          node -e '
+            const report = require("./npm-audit-production.json");
+            console.log("PRODUCTION_AUDIT_SUMMARY", JSON.stringify(report.metadata?.vulnerabilities ?? {}));
+            for (const [name, advisory] of Object.entries(report.vulnerabilities ?? {})) {
+              console.log("ADVISORY", JSON.stringify({
+                name,
+                severity: advisory.severity,
+                direct: advisory.isDirect,
+                range: advisory.range,
+                fixAvailable: advisory.fixAvailable,
+                via: advisory.via
+              }));
+            }
+          '
+          exit "$audit_status"
