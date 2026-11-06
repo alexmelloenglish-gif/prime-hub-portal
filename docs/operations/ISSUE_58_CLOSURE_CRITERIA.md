@@ -10,7 +10,7 @@ Issue 58 can be closed only when each required item has a concrete commit/PR, pa
 - Retry policy and tests: `lib/pipeline/run.ts`, `scripts/pipeline-attempts-self-test.mjs`, `scripts/pipeline-retry-state-witness.ts`.
 - Shared Machine and GL-003: `scripts/golden-runtime-witness.ts`, redaction self-test, provider provenance and Teacher Authority decision/read-back.
 - Access isolation: `lib/learner-account-resolution.ts`, G6 relation schema/migration, `scripts/student-isolation-witness.ts`.
-- Provider health/fallback: protected Gemini healthcheck, Meet attendance collector/cron, `scripts/providers-health-self-test.mjs`.
+- Provider health/fallback: protected Gemini healthcheck, Meet attendance collector/cron, `scripts/providers-health-self-test.mjs` and `scripts/providers-health-witness.ts`.
 - Dependencies: `scripts/prime-dependency-audit.mjs`, audit workflow and `PRIME_DEPENDENCIES_LEDGER.md`.
 - Canonical docs: `PRIME_LEARNING_ENGINE_SPEC.md`, `PRIME_EXECUTION_CLOSURE_LEDGER.md`, this file.
 
