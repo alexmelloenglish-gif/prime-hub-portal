@@ -731,7 +731,10 @@ const evidence = {
   },
   teacherAuthority: {
     decisionPath: 'shared_teacher_authority_decision_service',
-    authenticatedTeacherSession: false,\n    authorizationServiceEnforcedPersistedRole: true,\n    unauthorizedStudentReviewerRejected: true,\n    durableDecisionEventPresent: true,
+    authenticatedTeacherSession: false,
+    authorizationServiceEnforcedPersistedRole: true,
+    unauthorizedStudentReviewerRejected: true,
+    durableDecisionEventPresent: true,
     validationTaskRef: safeRef(authorityTask.id),
     reviewerRef: safeRef(authorityTask.reviewerId),
     reviewedAt: authorityTask.reviewedAt?.toISOString(),
