@@ -40,6 +40,7 @@
     "status-color:self-test": "node scripts/status-color-contract-self-test.mjs",
     "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs",
     "providers-health:self-test": "node scripts/providers-health-self-test.mjs",
+    "providers-health:witness": "node --experimental-strip-types scripts/providers-health-witness.ts",
     "audit:prime-engine": "node scripts/prime-dependency-audit.mjs"
   },
   "dependencies": {
