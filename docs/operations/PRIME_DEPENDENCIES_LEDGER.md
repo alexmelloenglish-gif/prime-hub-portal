@@ -67,3 +67,19 @@ Append for every release:
     Decision (FIXED / MITIGATED / ACCEPTED / OPEN):
     Reviewer and revisit date:
     Artifact:
+
+
+### Measured production-only inventory — 2026-11-06
+
+The first CI-only \`npm audit --omit=dev\` measured **27 affected production packages**. This is distinct from npm ci's full-tree 37-vulnerability message, which includes development dependencies.
+
+| Severity | Count | Affected package names |
+|---|---:|---|
+| Critical | 3 | next, next-auth, websocket-driver |
+| High | 13 | @fastify/busboy, @grpc/grpc-js, @vercel/cli-config, @vercel/oidc, fast-xml-builder, form-data, nanoid, node-forge, postcss, protobufjs, sharp, source-map-js, zod |
+| Moderate | 10 | @google-cloud/firestore, @google-cloud/storage, @protobufjs/utf8, firebase-admin, gaxios, google-gax, postcss-selector-parser, retry-request, teeny-request, uuid |
+| Low | 1 | @tootallnate/once |
+
+**Decision:** OPEN — no advisory has been accepted or marked fixed. The CI audit workflow failed intentionally because the production dependency tree is not clean, and successfully uploaded the detailed JSON/Markdown artifact. Several available fixes require major versions (including next-auth, @vercel/oidc, firebase-admin and sharp); those require separate compatibility, build and regression work before lockfile changes are accepted.
+
+The audit utility now also embeds the workflow's exact \`GITHUB_SHA\` in each generated report. The next exact-head workflow run supersedes this initial snapshot.
