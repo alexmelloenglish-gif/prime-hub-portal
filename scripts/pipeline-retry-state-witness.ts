@@ -68,6 +68,21 @@ async function main() {
         sourceMimeType: 'application/vnd.google-apps.document',
         triageStatus: 'usable_transcript',
         ingestionMode: 'retry-state-disposable-witness',
+        _pipelineInput: {
+          studentId: 'synthetic-' + caseName + '-' + nonce,
+          studentName: 'Synthetic Learner',
+          teacherId: 'synthetic-teacher-' + nonce,
+          teacherName: 'Synthetic Teacher',
+          program: 'PRIME isolated retry-state witness',
+          classDate: '2026-11-06',
+          transcriptId: 'synthetic-transcript-' + nonce + '-' + caseName,
+          source: 'google_meet',
+          effectiveAt: fixedTime.toISOString(),
+          recordedAt: fixedTime.toISOString(),
+          attendanceStatus: 'unknown',
+          attendanceSource: null,
+          externalMeetingId: null,
+        },
       },
     }
   }
