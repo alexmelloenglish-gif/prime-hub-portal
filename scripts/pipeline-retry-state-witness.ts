@@ -20,6 +20,7 @@ globalThis.fetch = async () => {
   })
 }
 
+async function main() {
 const [{ processLessonTranscript }, { getPrismaClient }] = await Promise.all([
   import('../lib/pipeline/run.ts'),
   import('../lib/prisma.ts'),
@@ -273,3 +274,9 @@ try {
 } finally {
   await prisma.$disconnect()
 }
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
