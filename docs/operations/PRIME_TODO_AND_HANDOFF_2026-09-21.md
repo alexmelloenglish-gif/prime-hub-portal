@@ -1285,3 +1285,87 @@ A deploy tagged ERROR, CANCELED, or replaced remains attached to its **failure l
 - Issue #58 audit comment `6183671865` and remediation update comment `6183743801` are part of this lane.
 - Next actions: (1) authenticated student/mobile acceptance, (2) verify next Meet cron actual runtime/OAuth and persist idempotent attendance result, (3) vulnerability triage and build hygiene, (4) source-to-final shared-Machine proof.
 - No status may advance to CLOSED solely because an obsolete deploy was superseded or a newer build reached READY.
+
+
+---
+
+## 2026-11-06 — RECONCILIAÇÃO FACTUAL DO RELEASE / ISSUE #58
+
+Este checkpoint prevalece sobre qualquer frase contraditória anterior deste arquivo e sobre os estados operacionais de 15/10 que não tenham prova posterior. O histórico anterior permanece preservado como histórico.
+
+### Produção atualmente servida — VERIFIED
+
+- main HEAD: e92b0bcca9467c39c7cfe5d988ceb3a1bac61c3c.
+- Production deployment ativo: dpl_7AeXKiYyrVWr17uvy1cNirk1hsSX — READY.
+- https://www.primedigitalhub.com.br e https://primedigitalhub.com.br estão associados ao deployment; o apex redireciona para www.
+- A resposta HTML pública da homepage foi lida e contém assets versionados com o deployment ID acima; homepage HTTP 200.
+- O SHA atual é descendente direto de b6c6ed19ff3649ef10d35b6ef97452e5b8c21c4c (comparação GitHub: 2 commits à frente, 0 atrás). Portanto, o hardening publicado em b6 está contido no release atual.
+- O check combinado do commit b6 e do HEAD e92 apresenta Vercel SUCCESS. O deployment Production correspondente ao HEAD está READY.
+- /api/seed respondeu 410 (seed público desativado). A jornada Gustavo sem sessão foi entregue como página de login (rota protegida); isso prova o bloqueio de visitante, não uma sessão válida.
+- Os headers observados incluem HSTS, COOP, CORP, Referrer-Policy, nosniff, X-Frame-Options e Permissions-Policy.
+
+### Perguntas 1 e 2 — acesso autenticado do proprietário: NOT VERIFIED
+
+**Não foi executado nem comprovado login Google/NextAuth real do proprietário em Production.** Não existe evidência identificável de sessão autenticada com conta/papel, deployment, data, navegação pós-login ou read-back que sustente essa afirmação.
+
+A frase anterior que classificava o teste autenticado como concluído foi incorreta e fica corrigida por este checkpoint. “Acesso administrativo pelo modelo de autenticação existente” descreve, no máximo, a presença de guards/rotas protegidas no código; os smoke tests observados demonstram redirecionamento de visitante não autenticado. Não demonstram login Google concluído nem navegação autenticada real.
+
+Também permanecem NOT VERIFIED:
+- login Google real e acesso Owner/Admin em produção;
+- aluno A restrito aos próprios dados e tentativa negativa A→B;
+- autorização de responsável/guardian;
+- jornadas autenticadas de aluno, áudio, vocabulário, check-in e review.
+
+Não foram usadas credenciais, cookies ou tokens para esta auditoria; não foi realizada navegação autenticada.
+
+### Pergunta 3 — segundo lote: o que foi validado
+
+Resultados registrados para o lote de hardening em b6c6ed1:
+- git diff --check: PASS.
+- npx prisma generate: PASS local; não conectou ao banco.
+- tsc --noEmit: PASS.
+- npm run lint: PASS com warnings preexistentes de imagens e variáveis não usadas.
+- npm run g6:account-learner:self-test: PASS.
+- npm run young-learner-access:self-test: PASS.
+- npm run canonical:validate:strict: PASS, 0 erros e 2 warnings históricos para Rafael Copolillo (PRESENT_LESSON_WITHOUT_REPORT e ATTENDANCE_REPORT_COUNT_DIFFERENCE).
+- npm run build: PASS, com warnings de imagens, variável não usada e Browserslist.
+- npm ci --ignore-scripts instalou o lockfile; npm audit reportou 35 advisories (1 low, 10 moderate, 21 high, 3 critical). Esse lote não corrigiu as vulnerabilidades.
+- Check combinado do commit b6: Vercel SUCCESS; deployment dpl_DTM4AxVP4bLda7pMAvKnttxgTRzK Production READY.
+
+Esses resultados comprovam build, checks locais e self-tests descritos acima. **Não** comprovam login Google, isolamento entre alunos em runtime, fluxo de guardian, execução de áudio/vocabulário após autenticação, nem aceitação funcional autenticada.
+
+### Pergunta 4 — seção “O que não foi alterado”
+
+A seção foi uma fotografia anterior à publicação do lote. A afirmação de que não houve commit/push/PR/deploy não descreve o estado final: foi superada pelo commit b6, pelo deployment Production b6 e pelos commits documentais posteriores d8/e92. Ela deve ser lida somente como registro do estado pré-publicação. Não deve ser usada como descrição atual.
+
+### Incidentes e backlog — estado atual
+
+| Frente | Estado em 2026-11-06 | Evidência / limite |
+|---|---|---|
+| Hardening de código do lote b6 | FIXED / DEPLOYED | b6 incluído no HEAD e92; Production READY |
+| Smoke test público | VERIFIED | homepage 200; seed 410; jornada protegida direciona para login |
+| Login Google / Owner Admin | NOT VERIFIED | nenhum teste autenticado comprovado |
+| Isolamento de dados A→A / A→B | NOT VERIFIED | exige sessão real e duas identidades de teste autorizadas |
+| Meet attendance cron | OPEN / BLOCKED | 7 ocorrências de meet_attendance_cron_failed / MEET_SCOPE_REAUTH_REQUIRED em /api/cron/meet-attendance, entre 15/10 e 05/11; último deployment associado dpl_6rtSXqopNfFDZRewKeMhYYoEeXv9. Requer reautorização OAuth do organizador com meetings.space.readonly e read-back/idempotência |
+| Dependências / avisos de build | OPEN | 35 advisories registrados; triagem/atualização revisada ainda não comprovada |
+| Shared Learning Machine witness real Gustavo/Louise | OPEN / NOT VERIFIED | sem prova ponta a ponta source → PipelineRun → provenance → Teacher Authority → CLR → projeções/read-back |
+| PIPELINE_AUTOMATION_FROZEN | PRESERVED | nenhuma alteração nem reativação nesta reconciliação |
+| Dados de alunos / banco / migrations / secrets | UNCHANGED BY THIS AUDIT | nenhuma mutação executada |
+
+### PRs abertas — decisão registrada
+
+**PR #100 — Add privacy retention foundation**
+- Continua OPEN; head 710498e6eaeda6bfd382027dc19195d557410fbb, base main@e92b0bcca9467c39c7cfe5d988ceb3a1bac61c3c.
+- Preview dpl_GQ2HxN5GC3YAi7qpKmvazSsTiiws READY; workflows Student Dashboard Contract, Coordination Runtime Witness e Golden Runtime Witness reportados SUCCESS.
+- Inventário documenta 426 arquivos rastreados, 13 snapshots e 14 candidatos a portfolio; não apaga dados, não modifica registros, não executa migration nem altera secrets.
+- **Decisão:** tecnicamente adequada para integração como fundação de inventário/fluxo controlado, desde que retenção continue explicitamente como proposta/default de produto. Não é política jurídica aprovada. Nenhum merge/exclusão foi autorizado por este checkpoint.
+
+**PR #96 — Ops: persist infrastructure access recovery path**
+- Continua OPEN, branch baseada em de676a5998be2f376885316e78166c0d25aea5cb.
+- Comparação contra o HEAD atual: branch divergente, 1 commit exclusivo e 7 commits atrás; o único arquivo novo é docs/operations/INFRA_ACCESS_RECOVERY.md.
+- Esse arquivo ainda não existe em main; contém IDs e nomes de variáveis, sem plaintext secrets, e evita pedir ao owner dados de infraestrutura já registrados.
+- **Decisão:** não fazer merge cego da branch antiga. Preservar o conteúdo útil portando o documento para a PR documental baseada no HEAD atual; manter PR #96 aberta até a portabilidade ser validada e então encerrá-la como supersedida, sem perder a informação.
+
+### Limites desta reconciliação
+
+Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Teacher Authority foi aplicada; nenhum snapshot/transcript foi excluído; nenhuma migration, alteração de banco ou mudança de Production secret foi feita. PIPELINE_AUTOMATION_FROZEN permanece intocado. Esta reconciliação não fecha o projeto globalmente nem encerra esta Issue.
