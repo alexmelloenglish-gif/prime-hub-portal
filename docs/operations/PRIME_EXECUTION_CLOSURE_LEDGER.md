@@ -366,3 +366,29 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 - Production learner replay, authenticated owner/teacher acceptance, real Meet OAuth reconciliation and changing the automation freeze remain **OPEN / NOT AUTHORIZED BY THIS PATCH**.
 
 No row in this table becomes CLOSED until the exact PR head has passing workflows and the required evidence artifact is available.
+
+
+---
+
+## 2026-11-06 — Issue 58 exact-head CI evidence
+
+**PR:** [#109](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/109)  
+**Exact tested SHA:** `891276281c720bc777e6f9cd8ababdc7ccebf50f`  
+**Production:** unchanged; no Production deploy or learner replay.
+
+| Workflow | Run | Result | What was proved |
+|---|---:|---|---|
+| Golden Runtime Witness | [42167220905](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220905) | **PASS** | Disposable PostgreSQL migrations; Golden synthetic Engine/Teacher Authority; redaction; legacy/shared retry state witness; exactly-one shared claim; provider fallback/exhaustion mock; student/guardian/teacher G6 isolation witness; evidence artifact [13480230061](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220905/artifacts/13480230061). |
+| Student Dashboard Contract | [42167220806](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220806) | **PASS** | TypeScript, dashboard contract, canonical strict, G6 authority, Shared Learning Machine and Next production build gates. |
+| Coordination Runtime Witness | [42167220824](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220824) | **PASS** | Existing isolated coordination runtime witness. |
+| PRIME Production Dependency Audit | [42167220843](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220843) | **FAIL — expected security gate** | Report artifact [13479690972](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42167220843/artifacts/13479690972): 27 production advisories (3 critical, 13 high, 10 moderate, 1 low). No severity was suppressed. Dependency remediation remains OPEN. |
+| Vercel Preview | [status](https://vercel.com/prime-digital-hun-dasboard?upgradeToPro=build-rate-limit) | **BLOCKED — build-rate-limit** | The provider status reported the account build-rate limit. This is not a successful Preview deployment and not a Production deployment. No code-level Vercel build failure was reported by the GitHub Student Dashboard Contract build. |
+
+### Correção durante a execução
+
+- First student-isolation witness attempt failed because the two synthetic student accounts reused one unique email. The fixture now assigns unique `student-a` and `student-b` emails; the exact-head Golden witness passed afterward.
+- The first provider witness compile exposed an optional provenance array. It now narrows the array and requires both failed Gemini and successful OpenAI attempts before passing.
+
+### Closure decision
+
+Retry legacy/shared, synthetic GL-003/Teacher Authority, G6 isolation and mocked provider fallback are **CI VERIFIED at the exact SHA above**. Production dependency vulnerability remediation, network healthchecks in staging and authenticated Google/teacher sessions remain **OPEN**. Issue #58 must remain OPEN until those gates are resolved and a follow-up exact-head run is green.
