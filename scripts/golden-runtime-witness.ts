@@ -429,16 +429,16 @@ assert.equal(continuation.verification.status, 'PASS')
 assert.equal(continuation.portfolioProjection.projectionStatus, 'VERIFIED')
 assert.equal(continuation.learningIntelligenceProjection.projectionStatus, 'VERIFIED')
 
-const replay = await executeCanonicalContinuation({
+const continuationReplay = await executeCanonicalContinuation({
   pipelineRunId: first.pipelineRunId,
   validationTaskId: authorityTask.id,
   reviewerRef: teacher.id,
   decisionTimestamp: reviewedAt,
 })
-assert.equal(replay.canonicalization.idempotentReplay, true)
-assert.equal(replay.verification.status, 'PASS')
-assert.equal(replay.portfolioProjection.idempotentReplay, true)
-assert.equal(replay.learningIntelligenceProjection.idempotentReplay, true)
+assert.equal(continuationReplay.canonicalization.idempotentReplay, true)
+assert.equal(continuationReplay.verification.status, 'PASS')
+assert.equal(continuationReplay.portfolioProjection.idempotentReplay, true)
+assert.equal(continuationReplay.learningIntelligenceProjection.idempotentReplay, true)
 
 const run = await prisma.pipelineRun.findUnique({
   where: { id: first.pipelineRunId },
