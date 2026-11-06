@@ -104,6 +104,8 @@ jobs:
   production-dependency-audit:
     name: Production dependency audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -153,6 +155,23 @@ jobs:
             }
             console.log("Production dependency audit gate PASS: zero critical/high advisories; lower-severity findings remain reported.");
           '
+
+      - name: Persist production audit report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/operations/audit
+          cp npm-audit-production.json docs/operations/audit/npm-audit-production.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/operations/audit/npm-audit-production.json
+          if git diff --cached --quiet; then
+            echo "Audit report unchanged."
+            exit 0
+          fi
+          git commit -m "chore(audit): record production dependency audit report"
+          git push origin HEAD:chore/issue-58-prime-engine-closure
 
 
   dependency-remediation:
