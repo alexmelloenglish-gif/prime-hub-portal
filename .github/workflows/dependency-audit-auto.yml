@@ -1,0 +1,47 @@
+name: Dependency Audit Auto Fix
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-audit-auto-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit-fix:
+    if: "!startsWith(github.event.head_commit.message, 'fix(deps): npm audit fix') && !startsWith(github.event.head_commit.message, 'ci(deps):')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run npm audit fix
+        run: npm audit fix --omit=dev
+
+      - name: Commit dependency fixes
+        run: |
+          git config user.name "PRIME DIGITAL HUB"
+          git config user.email "alexmello.english@gmail.com"
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "No dependency changes to commit."
+          else
+            git commit -m "fix(deps): npm audit fix for production advisories"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
