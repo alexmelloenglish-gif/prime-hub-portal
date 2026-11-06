@@ -58,6 +58,7 @@ if (result.error) {
 
       const report = {
         generatedAt: new Date().toISOString(),
+        commit: process.env.GITHUB_SHA || process.env.GIT_COMMIT || 'unknown',
         command: 'npm audit --omit=dev --json',
         scope: 'production dependencies only',
         npmExitCode: result.status,
@@ -72,6 +73,7 @@ if (result.error) {
         '# PRIME Engine — production dependency audit',
         '',
         '- Generated: ' + report.generatedAt,
+        '- Commit: ' + report.commit,
         '- Command: npm audit --omit=dev --json',
         '- Scope: production dependencies only (--omit=dev)',
         '- npm exit code: ' + (report.npmExitCode ?? 'unknown'),
