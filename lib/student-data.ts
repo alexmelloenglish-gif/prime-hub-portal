@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cache as reactCache } from 'react'
 import type { Session } from 'next-auth'
 import type { DocumentData } from 'firebase-admin/firestore'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
@@ -17,6 +17,10 @@ import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
 import registry from '@/data/students/student-core-registry.json'
 import { accountIdentityFromSession, resolveAuthorizedLearnerRelation } from '@/lib/learner-account-resolution'
+
+const cache: typeof reactCache = typeof reactCache === 'function'
+  ? reactCache
+  : ((fn: (...args: any[]) => any) => fn) as typeof reactCache
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
