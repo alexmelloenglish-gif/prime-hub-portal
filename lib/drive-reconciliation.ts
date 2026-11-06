@@ -3,6 +3,7 @@ import { ExternalAccountClient } from 'google-auth-library'
 import { getVercelOidcToken } from '@vercel/oidc'
 import studentRegistry from '@/data/students/student-core-registry.json'
 import { getPrismaClient } from '@/lib/prisma'
+import { resolveExistingDriveTranscriptDisposition } from '@/lib/pipeline/retry-eligibility'
 import { extractGoogleDocsTranscript, type GoogleDocsTranscriptExtraction } from '@/lib/google-docs-transcript-extraction'
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3'
@@ -387,11 +388,16 @@ export async function listDriveTranscriptSourceQueue(limit = 30): Promise<DriveT
   return selected.map((file) => {
     const transcript = existingBySource.get(file.id)
     const latestRun = transcript?.pipelineRuns[0]
-    const state: DriveTranscriptSourceQueueItem['state'] = !transcript
-      ? 'not_ingested'
-      : latestRun?.status === 'failed'
+    const disposition = resolveExistingDriveTranscriptDisposition({
+      transcriptExists: Boolean(transcript),
+      latestRunStatus: latestRun?.status,
+    })
+    const state: DriveTranscriptSourceQueueItem['state'] =
+      disposition === 'retry_failed_run'
         ? 'failed'
-        : 'ingested'
+        : disposition === 'skip_existing_run'
+          ? 'ingested'
+          : 'not_ingested'
 
     return {
       sourceFileId: file.id,
@@ -457,7 +463,11 @@ export async function reconcileDriveTranscripts(): Promise<ReconciliationResult>
       select: { pipelineRuns: { orderBy: { attemptNumber: 'desc' }, take: 1, select: { status: true } } },
     })
     const latestAttempt = existing?.pipelineRuns[0]
-    if (existing && latestAttempt?.status !== 'failed') {
+    const disposition = resolveExistingDriveTranscriptDisposition({
+      transcriptExists: Boolean(existing),
+      latestRunStatus: latestAttempt?.status,
+    })
+    if (disposition === 'skip_existing_run') {
       result.alreadyIngested += 1
       continue
     }
