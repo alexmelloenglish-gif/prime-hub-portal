@@ -328,6 +328,7 @@ const [
   { runG3RuntimeProof },
   { runG4RuntimeProof },
   { runG5RuntimeProof },
+  { recordTeacherAuthorityDecision },
 ] = await Promise.all([
   import('../lib/learning-machine/shared-runner.ts'),
   import('../lib/prisma.ts'),
@@ -336,6 +337,7 @@ const [
   import('../lib/g3-runtime-proof.ts'),
   import('../lib/g4-runtime-proof.ts'),
   import('../lib/g5-runtime-proof.ts'),
+  import('../lib/teacher-authority-decision.ts'),
 ])
 
 const prisma = getPrismaClient()
@@ -410,20 +412,50 @@ assert.ok(authorityTaskBeforeApproval.evidence && typeof authorityTaskBeforeAppr
 assert.ok(authorityTaskBeforeApproval.evidence.authorityPayloadHash)
 
 const reviewedAt = new Date(FIXED_TIME)
-const authorityTask = await prisma.validationTask.update({
-  where: { id: authorityTaskBeforeApproval.id },
-  data: {
-    status: 'approved',
-    decision: 'approved',
-    reviewerId: teacher.id,
-    reviewedAt,
-    reason: 'Golden runtime witness: explicit isolated Teacher Intelligence authority approval.',
+const unauthorizedReviewer = await prisma.user.upsert({
+  where: { email: 'golden.student@invalid.test' },
+  update: { role: 'student', name: 'Golden Student Account' },
+  create: {
+    email: 'golden.student@invalid.test',
+    role: 'student',
+    name: 'Golden Student Account',
   },
 })
+await assert.rejects(
+  recordTeacherAuthorityDecision({
+    taskId: authorityTaskBeforeApproval.id,
+    reviewerId: unauthorizedReviewer.id,
+    decision: 'approved',
+    decidedAt: reviewedAt,
+  }),
+  /REVIEWER_NOT_AUTHORIZED/,
+)
+const teacherDecision = await recordTeacherAuthorityDecision({
+  taskId: authorityTaskBeforeApproval.id,
+  reviewerId: teacher.id,
+  decision: 'approved',
+  reason: 'Golden runtime witness: explicit isolated Teacher Intelligence authority approval.',
+  decidedAt: reviewedAt,
+})
+const authorityTask = teacherDecision.task
+assert.equal(teacherDecision.idempotentReplay, false)
+assert.equal(teacherDecision.reviewerRole, 'teacher')
 assert.equal(authorityTask.reviewerId, teacher.id)
 assert.equal(authorityTask.status, 'approved')
 assert.equal(authorityTask.decision, 'approved')
 assert.ok(authorityTask.reviewedAt)
+const teacherAuthorityEvent = await prisma.pipelineEvent.findUnique({
+  where: {
+    pipelineRunId_eventType_aggregateId: {
+      pipelineRunId: first.pipelineRunId,
+      eventType: 'TeacherAuthorityDecisionRecorded',
+      aggregateId: authorityTask.id,
+    },
+  },
+})
+assert.ok(teacherAuthorityEvent, 'Teacher Authority decision must have a durable run event')
+assert.equal(teacherAuthorityEvent.payload.reviewerRole, 'teacher')
+assert.equal(teacherAuthorityEvent.payload.decision, 'approved')
 
 const g2 = await runG2RuntimeProof(authorityTask.id)
 assert.equal(g2.replay.idempotentReplay, true)
@@ -685,8 +717,8 @@ const evidence = {
     finalManifestPresent: Boolean(run.finalManifest),
   },
   teacherAuthority: {
-    decisionPath: 'synthetic_direct_disposable_database_fixture',
-    authenticatedTeacherSession: false,
+    decisionPath: 'shared_teacher_authority_decision_service',
+    authenticatedTeacherSession: false,\n    authorizationServiceEnforcedPersistedRole: true,\n    unauthorizedStudentReviewerRejected: true,\n    durableDecisionEventPresent: true,
     validationTaskRef: safeRef(authorityTask.id),
     reviewerRef: safeRef(authorityTask.reviewerId),
     reviewedAt: authorityTask.reviewedAt?.toISOString(),
