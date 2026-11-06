@@ -18,7 +18,7 @@ assert.match(migration, /SET "transcriptId" = transcript\."id"/, 'Migration must
 assert.match(migration, /RAISE EXCEPTION 'Cannot migrate pipeline attempts/, 'Migration must fail closed on incomplete historical data')
 assert.match(pipeline, /sharedSameExecutionResume[\s\S]*existing!\.attemptNumber/, 'Shared-machine retry must reuse the same durable attempt number')
 assert.match(pipeline, /existing\?\.status === 'failed'[\s\S]*existing\.attemptNumber \+ 1/, 'Legacy failed processing may still advance the historical attempt number')
-assert.match(pipeline, /retryTranscript[\s\S]*rebuildInput/, 'A retry must rebuild input from the canonical stored transcript')
+assert.match(pipeline, /retryTranscript && !existing[\s\S]*rebuildInput/, 'An orphan Transcript must create its first attempt from the canonical stored transcript')
 assert.doesNotMatch(pipeline, /transcript\.upsert/, 'Pipeline retries must never update or rewrite a canonical transcript')
 assert.match(reconciliation, /latestAttempt\?\.status !== 'failed'/, 'Drive reconciliation must permit a failed source to retry')
 assert.match(pipeline, /newestAttempt\?\.id !== expectedPipelineRunId/, 'A targeted retry must reject a stale historical run target')
