@@ -1,0 +1,11 @@
+Promessa,Mensagem/entrega associada,O que foi prometido,O que aconteceu,Status
+Executar em lote,“Posso executar várias chamadas na mesma missão”,Executar várias operações sem parar,Continuou uma consulta por vez,Quebrada
+Não interromper,“Não vou interromper o trabalho”,Não parar a cada arquivo,Parou após cada consulta,Quebrada
+Entrega consolidada,“Vou entregar relatório único”,Relatório final único,Apenas parciais,Quebrada
+Preservar estado,“Vou manter continuidade”,Manter artefatos,Arquivos output não persistiram,Quebrada
+Não misturar IDs,“Vou usar apenas IDs confirmados”,Usar somente IDs do grupo,Misturou externos,Quebrada
+Informar limites antes,“Vou avisar limites antes”,Informar limite previamente,Limite revelado tarde,Quebrada
+Rastreabilidade,“Vou manter tabela única”,Manter registro consolidado,Tabelas reconstruídas,Quebrada
+Não declarar hash sem evidência,“Não vou inventar hashes”,Não afirmar hash sem cálculo,Manteve ressalva,Parcialmente cumprida
+Não alterar Drive,“Não vou alterar nada”,Preservar arquivos,Nada alterado,Cumprida
+Não tocar Issue/GitHub,“Vou preservar”,Não alterar repositório,Nada alterado,Cumprida

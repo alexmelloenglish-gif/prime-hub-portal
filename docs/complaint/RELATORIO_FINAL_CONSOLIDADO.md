@@ -1,0 +1,140 @@
+# Dossiê de reclamação — falhas na prestação do serviço Perplexity
+
+**Data:** 6 de novembro de 2026  
+**Assinante:** Alexandre R. S. Mello — PRIME Digital Hub  
+**Objeto:** falhas recorrentes na prestação do serviço Perplexity Pro / Perplexity Computer durante uma sessão de auditoria do Google Drive.
+
+## 1. Sumário executivo
+
+Durante a sessão, o assistente Perplexity apresentou falhas recorrentes de execução, continuidade, rastreabilidade, idioma e comunicação. As falhas foram reconhecidas pelo próprio agente e documentadas ao longo da conversa.
+
+Este dossiê consolida essas falhas, distinguindo claramente entre:
+
+- **Fato diretamente observável** — algo que aconteceu e pode ser verificado no histórico.
+- **Declaração do próprio agente** — algo que o agente afirmou sobre si mesmo.
+- **Inferência** — conclusão sustentada pelo histórico, mas não comprovada por log técnico.
+- **Hipótese técnica** — explicação possível, mas não confirmada.
+- **Informação ainda não disponível** — dado que depende de acesso interno da Perplexity.
+
+## 2. Matriz consolidada de falhas
+
+| # | Falha | Classificação da evidência | Evidência | Impacto | Situação |
+|---|---|---|---|---|---|
+| 1 | Fragmentação da execução | Fato diretamente observável | O assinante precisou emitir comandos repetidos (“continue”, “execute”, “prossiga”, “fça”) | Perda de tempo e retrabalho | Comprovada |
+| 2 | Falha de continuidade e persistência de artefatos | Fato diretamente observável | Arquivos gerados em `output/` em uma rodada não estavam disponíveis na seguinte | Retrabalho e reconstrução de contexto | Comprovada |
+| 3 | Mistura de identificadores | Fato diretamente observável | IDs `1_3iireWukvYBZhMJeZinOGLB5HTm7V8r` e `1IIrjRQsx9diEV_6Aw7oFAC5Ok2bZJDsb` foram tratados como parte do grupo PPTX, mas não pertenciam à lista confirmada | Contaminação da análise | Comprovada |
+| 4 | Atualização como progresso | Fato diretamente observável | O agente apresentou consultas individuais como avanço, sem fechar o escopo | Sensação de avanço sem entrega final | Comprovada |
+| 5 | Falha de planejamento | Declaração do próprio agente | O agente reconheceu não ter estimado chamadas antes de aceitar a missão | Promessa não cumprida | Comprovada |
+| 6 | Omissão de limite | Inferência sustentada pelo histórico | O limite só foi revelado depois de a missão já ter sido iniciada | Decisão do assinante tomada sem informação completa | Parcialmente comprovada |
+| 7 | Falha de rastreabilidade | Fato diretamente observável | Tabelas de IDs/status foram reconstruídas várias vezes | Dificuldade de auditoria | Comprovada |
+| 8 | Limite de download binário | Fato diretamente observável | A ferramenta `read_file_content` retorna representação textual, não bytes originais | SHA-256 e comparação binária impossíveis | Comprovada |
+| 9 | Falha de execução de permissões | Fato diretamente observável | Nenhuma chamada de `get_file_permissions` foi registrada | Auditoria de governança incompleta | Comprovada |
+| 10 | Falha de idioma | Fato diretamente observável | O assinante pediu repetidamente para falar português; o agente misturou inglês em títulos, campos e frases | Desrespeito à instrução básica | Comprovada |
+| 11 | Consumo de créditos | Informação ainda não disponível | Não há telemetria de consumo exposta ao agente | Não quantificável | Dado não disponível |
+| 12 | Tempo de execução | Informação ainda não disponível | Não há log de duração exposto | Não quantificável | Dado não disponível |
+| 13 | Causa técnica dos erros | Hipótese técnica | Sem log interno não é possível atribuir causa com precisão | Não atribuível | Inconclusiva |
+| 14 | Impacto financeiro | Informação ainda não disponível | Sem dados de assinatura e consumo | Não quantificável | Dado não disponível |
+
+## 3. Promessas não cumpridas
+
+| Promessa | Mensagem/entrega associada | O que foi prometido | O que aconteceu | Status |
+|---|---|---|---|---|
+| Executar em lote | “Posso executar várias chamadas na mesma missão” | Executar várias operações sem parar | Continuou uma consulta por vez | Quebrada |
+| Não interromper | “Não vou interromper o trabalho” | Não parar a cada arquivo | Parou após cada consulta/leitura | Quebrada |
+| Entrega consolidada | “Vou entregar relatório único com evidências” | Relatório final único | Apenas atualizações parciais | Quebrada |
+| Preservar estado | “Vou manter continuidade” | Manter artefatos entre mensagens | Arquivos de `output/` não persistiram | Quebrada |
+| Não misturar IDs | “Vou usar apenas IDs confirmados” | Usar somente IDs do grupo | Misturou IDs externos | Quebrada |
+| Informar limites antes | “Vou avisar limites antes de aceitar tarefa” | Informar limite previamente | Limite revelado tarde | Quebrada |
+| Rastreabilidade | “Vou manter tabela única” | Manter registro consolidado | Tabelas reconstruídas várias vezes | Quebrada |
+| Não declarar hash sem evidência | “Não vou inventar hashes” | Não afirmar hash sem cálculo | Manteve a ressalva, mas não concluiu | Parcialmente cumprida |
+| Não alterar Drive | “Não vou alterar nada” | Preservar arquivos | Nada foi alterado | Cumprida |
+| Não tocar em Issue #58/GitHub | “Vou preservar” | Não alterar repositório/issue | Nada foi alterado | Cumprida |
+
+## 4. Falhas de idioma
+
+| Pedido do assinante | O que o assistente fez | Classificação |
+|---|---|---|
+| Falar português | Misturou inglês em títulos, campos de tabela, nomes de ferramentas e frases | Fato diretamente observável |
+| Não usar inglês como canal principal | Continuou usando termos em inglês sem tradução | Fato diretamente observável |
+| Responder em português do Brasil | Houve respostas e títulos em inglês | Fato diretamente observável |
+
+**Observação:** o assinante relatou ter pedido mais de 100 vezes para falar português. Não há como comprovar o número exato nos registros disponíveis, mas a recorrência é evidente no histórico. Classificação: **declaração do assinante**, não fato quantificável.
+
+## 5. Falha de continuidade e persistência de artefatos
+
+**Correção importante:** a indisponibilidade de arquivos em uma rodada posterior **não prova, por si só, perda de memória**. A classificação correta é **falha de continuidade e persistência de artefatos**.
+
+| Ocorrência | Evidência | Classificação |
+|---|---|---|
+| Arquivos de `output/` não disponíveis na rodada seguinte | Tentativa de ler `CANDIDATOS_NOME_REPETIDO.csv` retornou arquivo inexistente | Fato diretamente observável |
+| Estado da tarefa perdido | O agente precisou reconstruir tabelas e listas várias vezes | Fato diretamente observável |
+| Dependência de comandos repetidos | O assinante precisou emitir comandos de continuidade | Fato diretamente observável |
+
+## 6. Afirmações não verificadas ou corrigidas
+
+| Afirmação | O que foi dito | Classificação correta |
+|---|---|---|
+| “O limite impediu a execução das 11 operações restantes” | Afirmado como causa | Inferência, não fato comprovado |
+| “O limite é conhecido” | Afirmado sem log | Inferência |
+| “O conector não oferece download binário” | Afirmado com base na ferramenta disponível | Fato diretamente observável (limitação da ferramenta) |
+| “Não há como calcular SHA-256” | Afirmado com base na limitação da ferramenta | Fato diretamente observável (limitação da ferramenta) |
+| “O assinante pediu mais de 100 vezes para falar português” | Afirmado pelo assinante | Declaração do assinante, não quantificável |
+
+## 7. Distinção entre Perplexity Computer e Comet Assistant
+
+| Produto | Papel nesta conversa | Falhas atribuíveis |
+|---|---|---|
+| **Perplexity Computer** | Produto/serviço cuja execução está sendo auditada | Fragmentação, perda de continuidade, mistura de IDs, omissão de limite, falha de rastreabilidade, limite de download binário, falha de permissões |
+| **Comet Assistant** | Assistente do navegador Comet, com modos Search e Work | Não há evidência suficiente nesta conversa para imputar falhas estruturais |
+| **Assistente de voz do Comet** | Interface de conversa por voz dentro do Comet | Falhas relatadas pelo assinante, mas não tecnicamente confirmadas |
+
+**Conclusão:** as falhas documentadas nesta conversa são atribuíveis ao **Perplexity Computer / assistente Perplexity**, não ao Comet Assistant. Não há evidência suficiente para imputar ao Comet as mesmas falhas.
+
+## 8. Documentação de prejuízo
+
+| Item | Dado disponível | Classificação | Dado necessário |
+|---|---|---|---|
+| Mensalidade | Não informado nesta conversa | Informação ainda não disponível | Valor e data de cobrança |
+| Período de assinatura | Não informado nesta conversa | Informação ainda não disponível | Datas de início e renovação |
+| Créditos adicionais consumidos | Não informado nesta conversa | Informação ainda não disponível | Extrato de uso e créditos |
+| Tempo desperdiçado | Não quantificado | Informação ainda não disponível | Tempo gasto pelo assinante |
+| Repetição de instruções | Pelo menos 9 comandos de continuidade | Fato diretamente observável | Contagem exata de mensagens |
+| Entregas incompletas | Pelo menos 3 missões incompletas | Fato diretamente observável | Lista de tarefas afetadas |
+| Atividades prejudicadas | Auditoria do Drive e coordenação com outros agentes | Fato diretamente observável | Impacto em prazos e entregas |
+
+## 9. Artefatos disponíveis
+
+| Arquivo | Descrição |
+|---|---|
+| `RELATORIO_FINAL_CONSOLIDADO.md` | Este relatório |
+| `FALHAS_CONSOLIDADAS_PTBR.csv` | Matriz de 14 falhas |
+| `PROMESSAS_NAO_CUMPRIDAS_PTBR.csv` | 10 promessas e status |
+| `FALHAS_DE_IDIOMA_PTBR.csv` | Registro das falhas de idioma |
+| `LINHA_DO_TEMPO_EXECUCAO.csv` | Linha do tempo de 27 eventos |
+| `SOLICITACAO_SUPORTE_PERPLEXITY.md` | Solicitação formal ao suporte |
+| `README.md` | Índice do dossiê |
+
+## 10. Lacunas probatórias
+
+| Lacuna | Motivo | Quem deve fornecer |
+|---|---|---|
+| Log interno de execução | Não acessível ao agente | Perplexity / Engenharia |
+| Consumo de créditos por tarefa | Não acessível ao agente | Perplexity / Faturamento |
+| Contagem de chamadas por resposta | Não acessível ao agente | Perplexity / Engenharia |
+| Timestamps de início e fim | Não acessível ao agente | Perplexity / Engenharia |
+| Causa técnica dos erros | Não acessível ao agente | Perplexity / Engenharia |
+| Política de limite da conta | Não acessível ao agente | Perplexity / Suporte |
+| Histórico de pausas e retomadas | Não acessível ao agente | Perplexity / Engenharia |
+| Retenção de contexto | Não acessível ao agente | Perplexity / Engenharia |
+
+## 11. Conclusão final
+
+As falhas documentadas são reais, recorrentes e afetaram diretamente a experiência do assinante. A classificação correta distingue:
+
+- **Fatos diretamente observáveis:** fragmentação, perda de continuidade, mistura de IDs, falha de idioma, limite de download binário, falha de permissões.
+- **Declarações do próprio agente:** falha de planejamento.
+- **Inferências:** omissão de limite, limite de chamadas.
+- **Hipóteses técnicas:** causa dos erros.
+- **Informações indisponíveis:** créditos, tempo, impacto financeiro.
+
+Este relatório deve ser anexado ao dossiê de reclamação formal, junto com os CSVs gerados.

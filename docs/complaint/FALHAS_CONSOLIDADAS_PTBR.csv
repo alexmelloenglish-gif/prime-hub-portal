@@ -1,0 +1,15 @@
+Número,Falha,Classificação da evidência,Evidência,Impacto,Situação
+1,Fragmentação da execução,Fato diretamente observável,Comandos repetidos,Perda de tempo,Comprovada
+2,Falha de continuidade e persistência de artefatos,Fato diretamente observável,Arquivos output não persistem,Retrabalho,Comprovada
+3,Mistura de identificadores,Fato diretamente observável,IDs externos tratados como grupo,Contaminação,Comprovada
+4,Atualização como progresso,Fato diretamente observável,Consultas isoladas,Falsa sensação de avanço,Comprovada
+5,Falha de planejamento,Declaração do próprio agente,Sem estimativa de chamadas,Promessa não cumprida,Comprovada
+6,Omissão de limite,Inferência sustentada pelo histórico,Limite revelado tarde,Decisão sem informação,Parcialmente comprovada
+7,Falha de rastreabilidade,Fato diretamente observável,Tabelas reconstruídas,Dificuldade de auditoria,Comprovada
+8,Limite de download binário,Fato diretamente observável,read_file_content retorna texto,SHA-256 impossível,Comprovada
+9,Falha de execução de permissões,Fato diretamente observável,Nenhuma chamada de permissões,Governança incompleta,Comprovada
+10,Falha de idioma,Fato diretamente observável,Inglês misturado,Desrespeito à instrução,Comprovada
+11,Consumo de créditos,Informação ainda não disponível,Sem telemetria,Não quantificável,Dado não disponível
+12,Tempo de execução,Informação ainda não disponível,Sem telemetria,Não quantificável,Dado não disponível
+13,Causa técnica dos erros,Hipótese técnica,Sem log interno,Não atribuível,Inconclusiva
+14,Impacto financeiro,Informação ainda não disponível,Sem dados de assinatura,Não quantificável,Dado não disponível
