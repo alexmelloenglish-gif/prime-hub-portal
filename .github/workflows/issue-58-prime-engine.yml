@@ -164,6 +164,23 @@ jobs:
           path: npm-audit-production.json
           if-no-files-found: warn
 
+      - name: Persist production audit report
+        if: always() && hashFiles('npm-audit-production.json') != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/operations/audit
+          cp npm-audit-production.json docs/operations/audit/npm-audit-production.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/operations/audit/npm-audit-production.json
+          if git diff --cached --quiet -- docs/operations/audit/npm-audit-production.json; then
+            echo "No production audit report changes to persist."
+            exit 0
+          fi
+          git commit -m "chore(audit): record production dependency audit report"
+          git push origin HEAD:chore/issue-58-prime-engine-closure
+
 
   dependency-remediation:
     name: Review and remediate production dependency advisories
