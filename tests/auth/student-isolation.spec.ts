@@ -7,7 +7,7 @@ import { accountIdentityFromSession } from '../../lib/learner-account-resolution
 import { readFileSync } from 'node:fs'
 
 // Helpers to call NextAuth callbacks in isolation
-const { jwt, session, signIn, redirect } = authOptions.callbacks
+const { jwt, session, signIn, redirect } = authOptions.callbacks as any
 
 test('student default: nova sessão recebe id e role=student', async () => {
   // token inicial vindo do provider
