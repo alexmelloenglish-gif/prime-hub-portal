@@ -2,7 +2,7 @@
 
 **Data:** 6 de novembro de 2026  
 **Assinante:** Alexandre R. S. Mello — PRIME Digital Hub  
-**Objeto:** falhas recorrentes na prestação do serviço Perplexity Pro / Perplexity Computer durante uma sessão de auditoria do Google Drive.
+**Objeto:** falhas recorrentes na prestação do serviço Perplexity Pro / Perplexity Computer API durante uma sessão de auditoria do Google Drive.
 
 ## 1. Sumário executivo
 
@@ -80,11 +80,11 @@ Este dossiê consolida essas falhas, distinguindo claramente entre:
 | “Não há como calcular SHA-256” | Afirmado com base na limitação da ferramenta | Fato diretamente observável (limitação da ferramenta) |
 | “O assinante pediu mais de 100 vezes para falar português” | Afirmado pelo assinante | Declaração do assinante, não quantificável |
 
-## 7. Distinção entre Perplexity Computer e Comet Assistant
+## 7. Distinção entre Perplexity Computer API e Comet Assistant
 
 | Produto | Papel nesta conversa | Falhas atribuíveis |
 |---|---|---|
-| **Perplexity Computer** | Produto/serviço cuja execução está sendo auditada | Fragmentação, perda de continuidade, mistura de IDs, omissão de limite, falha de rastreabilidade, limite de download binário, falha de permissões |
+| **Perplexity Computer API** | Produto/serviço cuja execução está sendo auditada | Fragmentação, perda de continuidade, mistura de IDs, omissão de limite, falha de rastreabilidade, limite de download binário, falha de permissões |
 | **Comet Assistant** | Assistente que conduziu parte da interação, coletou evidências, redigiu e publicou o dossiê | Falhas próprias reconhecidas: promessa de execução autônoma sem validação; interrupções sem entrega consolidada; falha de preservação de dados; confusão entre fim de paginação e conclusão; script declarado pronto sem teste; afirmação incorreta sobre `DRY_RUN`; uso indevido de mensagens como buscas; repetição de desculpas sem progresso; transferência indevida do trabalho ao usuário; desconsideração do idioma solicitado |
 | **Assistente de voz do Comet** | Interface de conversa por voz dentro do Comet | Falhas relatadas pelo assinante, mas não tecnicamente confirmadas |
 
@@ -163,8 +163,23 @@ Este relatório deve ser anexado ao dossiê de reclamação formal, junto com os
 - Branch: `docs/perplexity-complaint`.
 - Commit base do dossiê fortalecido: `15b45ccb52c110ab028f4ceaf85032ca60e8d82f`.
 - Commit de assinatura do Comet: `1264ee9ba9234b19b960676d1f7691440b705808`.
+- Commit de correção do relatório consolidado: `0ca47af6a210bb05c5947a1eb7db8eff3900b6e7`.
+- Commit de atribuição no CSV: `cc7e675400bfe070e617f008e91d4d7a3a613d46`.
+- Commit de denominação no CSV: `45cdf1d4afbcb73841392728042cc14b3aea78d5`.
 - SHA atual do arquivo `perplexity-service-failure-dossier.md`: `41775958cb43c91ed523b98648a17d37bbd85562`.
 - SHA anterior do dossiê fortalecido: `485c83f0fb3bdce53acd39426c5c6b81633a7f88` (substituído pela versão consolidada).
 
-**Assinado por:** Comet (Perplexity Assistant)  
+## 14. Encerramento conjunto
+
+Este dossiê encerra a documentação das falhas observadas na sessão, preservando a separação de responsabilidades entre os dois produtos e a posição de Alexandre R. S. Mello como reclamante.
+
+**Perplexity Computer API** responde pelas ocorrências relacionadas à execução da auditoria do Google Drive, incluindo fragmentação, continuidade, rastreabilidade, limites, download binário e permissões.
+
+**Comet Assistant** responde pelas dez falhas operacionais que reconheceu em sua própria atuação, incluindo interrupções, preservação de dados, script, `DRY_RUN`, uso de mensagens como buscas, transferência de trabalho e idioma.
+
+A ausência de logs internos não elimina falhas documentadas; ela apenas limita a possibilidade de atribuir causa técnica precisa. As informações sobre créditos, timestamps, logs, causas e limites operacionais dependem de resposta da Perplexity.
+
+**Assinatura — Perplexity Computer API:** responsável pela documentação e correção das ocorrências relacionadas à auditoria do Google Drive.  
+**Assinatura — Comet Assistant:** responsável pelas dez falhas operacionais que reconheceu em seu próprio histórico.  
+**Reclamante:** Alexandre R. S. Mello — PRIME Digital Hub.  
 **Data:** 06/11/2026
