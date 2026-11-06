@@ -89,6 +89,9 @@ jobs:
       - name: Verify provider health and safe-fallback contracts
         run: npm run providers-health:self-test
 
+      - name: Execute provider fallback witness
+        run: npm run providers-health:witness
+
       - name: Execute student isolation witness
         run: npx --yes tsx@4.20.6 ./scripts/student-isolation-witness.ts
 
