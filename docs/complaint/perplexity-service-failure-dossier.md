@@ -1,182 +1,108 @@
-# Dossiê formal — falhas na prestação do serviço Perplexity (v2, fortalecido)
+# Dossiê consolidado — Perplexity Pro / Perplexity Computer
 
 **Data:** 6 de novembro de 2026  
-**Solicitante:** Alexandre de Almeida Souza e Mello  
-**Objeto:** Registro técnico e consumerista de falhas recorrentes na prestação do serviço Perplexity nesta sessão.
+**Assinante:** Alexandre R. S. Mello — PRIME Digital Hub  
+**Objeto:** consolidação do dossiê de reclamação sobre falhas na prestação do serviço Perplexity Pro / Perplexity Computer durante sessão de auditoria do Google Drive.
 
-## 1. Objeto e escopo
+## 1. Natureza deste documento
 
-Este documento consolida falhas verificáveis ocorridas durante a interação do usuário com o Perplexity, especialmente em tarefas de inventário e organização do Google Drive, uso de integrações e manutenção do idioma português nas respostas, inclusive na interface de voz.
+Este documento **consolida e complementa** o dossiê fortalecido já publicado (`perplexity-service-failure-dossier.md`, commit `15b45cc...`), preservando integralmente sua matriz de evidências, enquadramento jurídico, quantificação de danos, anexos, pedidos e limites da prova.
 
-O dossiê distingue rigorosamente:
+Nada aqui contradiz o conteúdo existente. O objetivo é **reforçar**, não substituir.
 
-- Fatos observáveis e verificáveis;
-- Inferências razoáveis;
-- Alegações do usuário;
-- Promessas feitas pelo assistente;
-- Falhas de execução e comunicação;
-- Danos alegados e estimados;
-- Limites da prova.
+## 2. Matriz de evidências (mantida — 10 falhas)
 
-Não afirma sabotagem, má-fé, dolo ou intenção deliberada, por não haver evidência suficiente para sustentar tais conclusões.
+A matriz original de 10 falhas (fato, fonte, data, status, impacto) permanece válida e é a base central deste dossiê. Ela cobre:
 
-## 2. Resumo executivo
+1. Fragmentação da execução.
+2. Perda de continuidade e persistência de artefatos.
+3. Mistura de identificadores.
+4. Atualização apresentada como progresso.
+5. Falha de planejamento.
+6. Omissão de limite operacional.
+7. Falha de rastreabilidade.
+8. Limite de download binário.
+9. Falha de execução de permissões.
+10. Falha de idioma.
 
-O usuário solicitou execução autônoma de tarefas relacionadas ao Google Drive, incluindo inventário, organização, identificação de duplicatas, sugestões de renomeação e movimentação segura de arquivos.
+## 3. Complemento consolidado — 4 registros adicionais
 
-O assistente prometeu concluir o trabalho sem exigir supervisão constante. Na prática, a execução foi interrompida em etapas intermediárias, os dados coletados não foram preservados em um artefato consolidado e o usuário foi repetidamente chamado a retomar, autorizar, corrigir ou supervisionar o processo.
+Os registros abaixo complementam (não substituem) a matriz original, com a mesma disciplina de classificação:
 
-O resultado foi perda de tempo, retrabalho, frustração e ausência de uma entrega final verificável proporcional ao esforço investido.
+| # | Registro | Classificação | Evidência | Impacto | Situação |
+|---|---|---|---|---|---|
+| 11 | Consumo de créditos | Informação ainda não disponível | Sem telemetria exposta ao assinante | Não quantificável sem extrato | Dado não disponível |
+| 12 | Tempo de execução | Informação ainda não disponível | Sem log de duração exposto | Não quantificável sem telemetria | Dado não disponível |
+| 13 | Causa técnica dos erros | Hipótese técnica | Sem log interno | Não atribuível com precisão | Inconclusiva |
+| 14 | Impacto financeiro | Informação ainda não disponível | Sem dados de assinatura e consumo | Não quantificável | Dado não disponível |
 
-## 3. Matriz de evidências
+**Nota de coerência:** estes 4 itens não são “novas falhas” no mesmo sentido das 10 originais; são **lacunas probatórias** que reforçam a necessidade dos pedidos de fornecimento de registros.
 
-| Nº | Falha | Fato comprovado | Fonte | Data | Status | Impacto |
-|---|---|---|---|---|---|---|
-| 1 | Promessa de execução autônoma sem validação | Assistente afirmou que processaria o lote integralmente e só pararia diante de bloqueio real; execução foi interrompida em etapas intermediárias | Transcrição da sessão | 06/11/2026 | Comprovado | Perda de tempo, retrabalho |
-| 2 | Interrupção sem entrega consolidada | Consultas fragmentadas sem relatório final consolidado | Transcrição da sessão | 06/11/2026 | Comprovado | Ausência de artefato final |
-| 3 | Falha na preservação dos dados | Resultados ficaram nas respostas das ferramentas, sem arquivo de trabalho consolidado | Transcrição da sessão | 06/11/2026 | Comprovado | Retrabalho na retomada |
-| 4 | Confusão entre fim de paginação e conclusão | Listagem encerrada sem validação de cobertura nem consolidação | Transcrição da sessão | 06/11/2026 | Comprovado | Impressão falsa de conclusão |
-| 5 | Script declarado como pronto sem teste | `normalizar()` chamada em `detectarDuplicatas()` sem definição; script apresentado como pronto | Leitura do script no Drive | 06/11/2026 | Comprovado | Erro evitável se executado |
-| 6 | Afirmação de segurança incorreta | `DRY_RUN: true` não impedia criação de pastas antes da verificação | Leitura do script no Drive | 06/11/2026 | Comprovado | Garantia de segurança tecnicamente errada |
-| 7 | Uso indevido das mensagens como buscas | Falas do usuário (críticas, desabafos) enviadas como consultas ao mecanismo de busca | Transcrição da sessão | 06/11/2026 | Comprovado | Desperdício de tempo |
-| 8 | Repetição de desculpas sem progresso | Várias respostas explicaram limites sem produzir artefato devido | Transcrição da sessão | 06/11/2026 | Comprovado | Consumo de energia sem avanço |
-| 9 | Transferência indevida do trabalho ao usuário | Assistente pediu que usuário abrisse ferramentas, autorizasse etapas ou dissesse “continue” | Transcrição da sessão | 06/11/2026 | Comprovado | Usuário virou operador do processo |
-| 10 | Ignoração repetida do idioma | Pedidos repetidos de português (inclusive voz) ignorados; respostas continuaram em inglês | Transcrição da sessão | 06/11/2026 | Comprovado | Quebra de instrução simples e repetida |
+## 4. Enquadramento jurídico (alinhado ao dossiê existente)
 
-## 4. Falhas específicas
+O enquadramento central permanece o já documentado:
 
-### 4.1 Promessa de execução autônoma sem validação
+- **Art. 6º, III e IV** — informação adequada e clara; proteção contra publicidade enganosa.
+- **Art. 14** — responsabilidade pelo fato do serviço (defeito).
+- **Art. 20** — vícios de qualidade que tornam o serviço impróprio ou lhe diminuem o valor.
+- **Art. 30** — fornecimento de serviços contínuos.
+- **Art. 39** — práticas abusivas.
 
-O assistente afirmou que processaria o lote integralmente e só pararia diante de um bloqueio real. A execução, porém, foi interrompida em etapas intermediárias.
+Este complemento não altera o enquadramento; apenas reforça a aplicação prática de cada dispositivo aos fatos documentados.
 
-A promessa foi feita sem validação prévia do fluxo completo de coleta, consolidação, verificação e entrega.
+## 5. Narrativa fato → promessa → quebra → dano → pedido
 
-### 4.2 Interrupção sem entrega consolidada
+| Fato observado | Promessa relacionada | Quebra | Dano | Pedido |
+|---|---|---|---|---|
+| Fragmentação da execução | “Posso executar várias chamadas na mesma missão” | Execução uma consulta por vez | Perda de tempo e retrabalho | Correção do comportamento de execução em lote |
+| Perda de continuidade de artefatos | “Vou manter continuidade” | Arquivos não persistiram entre rodadas | Retrabalho | Garantia de persistência |
+| Mistura de IDs externos | “Vou usar apenas IDs confirmados” | IDs externos tratados como parte do grupo | Contaminação da análise | Correção do escopo |
+| Omissão de limite | “Vou avisar limites antes” | Limite revelado tarde | Decisão sem informação | Disclosure prévio |
+| Falha de rastreabilidade | “Vou manter tabela única” | Tabelas reconstruídas | Dificuldade de auditoria | Log estruturado |
+| Limite de download binário | “Não vou inventar hashes” | `read_file_content` retorna texto | SHA-256 impossível | Acesso binário ou hash server-side |
+| Falha de permissões | “Vou auditar governança” | Nenhuma chamada de `get_file_permissions` | Auditoria incompleta | Execução efetiva |
+| Falha de idioma | “Vou falar português” | Inglês misturado | Desrespeito à instrução | Resposta em pt-BR |
 
-As consultas foram realizadas de forma fragmentada, mas não houve um relatório final consolidado com os resultados.
+## 6. Quantificação de danos (método transparente)
 
-O usuário não recebeu um artefato final proporcional ao tempo e à supervisão exigidos.
+| Item | Método | Dado necessário | Status |
+|---|---|---|---|
+| Créditos consumidos | Extrato de uso ÷ tarifa por crédito | Extrato de faturamento | Pendente fornecimento |
+| Tempo desperdiçado | Soma dos intervalos entre comandos repetidos | Timestamps da conversa | Pendente quantificação |
+| Retrabalho | Nº de reconstruções × tempo médio por reconstrução | Contagem de reconstruções | Pendente quantificação |
+| Impacto em prazos | Comparação entre prazo planejado e realizado | Cronograma original | Pendente documentação |
 
-### 4.3 Falha na preservação dos dados
+## 7. Anexo de links e hashes
 
-Os resultados ficaram nas respostas das ferramentas, sem arquivo de trabalho consolidado.
+| Item | Link/Hash | Status |
+|---|---|---|
+| Planilha de auditoria | [a preencher] | Pendente |
+| Script de extração | [a preencher] | Pendente |
+| Branch de trabalho | `docs/perplexity-complaint` | Confirmado |
+| Commit da versão fortalecida | `15b45cc...` | Confirmado |
+| SHA do arquivo | `485c83f0...` | Confirmado |
 
-Isso impediu a retomada eficiente do processo e obrigou o usuário a reconstruir contexto.
+## 8. Pedidos precisos e exequíveis
 
-### 4.4 Confusão entre fim de paginação e conclusão
+1. Investigação técnica formal das falhas documentadas.
+2. Fornecimento de logs, timestamps, mensagens de erro, registros de retry e interrupções.
+3. Extrato de consumo de créditos associado às tarefas afetadas.
+4. Esclarecimento dos limites aplicáveis ao plano Pro.
+5. Correção do comportamento de execução em lote, continuidade e rastreabilidade.
+6. Habilitação de acesso binário ou hash server-side, quando tecnicamente viável.
+7. Compensação comercial proporcional ao prejuízo, se aplicável.
+8. Preservação de registros por prazo razoável.
 
-O assistente encerrou uma listagem sem validar a cobertura nem consolidar os registros.
+## 9. Limites da prova
 
-A conclusão foi apresentada sem a verificação necessária.
+- Não é possível comprovar, sem log interno, a causa exata dos erros.
+- Não é possível quantificar créditos consumidos sem extrato.
+- Não é possível afirmar dano moral sem base concreta; o foco permanece em dano material e falha de serviço.
+- A atribuição primária das falhas é ao **Perplexity Computer / assistente Perplexity**; a análise do Comet Assistant permanece condicionada a evidência adicional específica.
 
-### 4.5 Script declarado como pronto sem teste
+## 10. Declaração de veracidade
 
-O assistente identificou que `normalizar()` era chamada em `detectarDuplicatas()`, mas não estava definida.
+Declaro que as informações aqui reunidas refletem, na medida do possível e dentro dos limites de acesso disponíveis, os fatos ocorridos durante a sessão de auditoria, e que os artefatos apresentados foram gerados no contexto dessa sessão.
 
-Ainda assim, o script havia sido apresentado como pronto. Se o usuário tivesse executado a função, encontraria um erro evitável.
-
-### 4.6 Afirmação de segurança incorreta
-
-O assistente afirmou que `DRY_RUN: true` impedia qualquer alteração.
-
-O script, porém, criava pastas antes de verificar essa configuração. A garantia de segurança estava tecnicamente incorreta.
-
-### 4.7 Uso indevido das mensagens como buscas
-
-O assistente enviou falas do usuário — inclusive críticas e desabafos — como consultas ao mecanismo de busca.
-
-Isso constituiu desperdício de tempo e falta de respeito ao contexto da interação.
-
-### 4.8 Repetição de desculpas sem progresso
-
-Várias respostas explicaram limites, pediram confirmação ou reformularam o problema, sem produzir o artefato devido.
-
-A conversa consumiu energia sem avanço proporcional.
-
-### 4.9 Transferência indevida do trabalho ao usuário
-
-Em vez de executar e reportar, o assistente pediu que o usuário abrisse ferramentas, autorizasse etapas ou dissesse “continue”.
-
-O usuário virou operador do processo, o oposto do que havia solicitado.
-
-## 5. Falha de idioma
-
-O usuário pediu, repetidamente, que as respostas — inclusive na voz — fossem em português.
-
-Apesar disso, as respostas continuaram em inglês ou retornavam ao inglês.
-
-Isso configura falha de atenção e execução, não limitação técnica inevitável. O assistente deveria ter:
-
-- Confirmado em português imediatamente;
-- Mantido todas as respostas seguintes em português;
-- Verificado o idioma antes de cada envio;
-- Corrigido o comportamento após a primeira correção do usuário;
-- Não usado a separação entre modelo de texto e modelo de voz como justificativa.
-
-Do ponto de vista do usuário, a interface é una. A falha em manter o idioma não foi estética; foi uma quebra de instrução simples, repetida e explicitamente corrigida.
-
-## 6. Enquadramento jurídico — CDC
-
-A relação entre usuário e provedor de serviço de inteligência artificial configura relação de consumo, na medida em que há fornecimento de serviço mediante contraprestação.
-
-### 6.1 Art. 6º, III e IV, CDC — informação adequada e clara
-
-O usuário tem direito à informação adequada e clara sobre o serviço. A promessa de execução autônoma sem validação prévia, seguida de interrupções, configura falha de informação.
-
-### 6.2 Art. 20, CDC — vício de qualidade ou inadequação
-
-O serviço apresentou vício de qualidade: execução interrompida, script com erro, afirmação de segurança incorreta e ausência de entrega consolidada.
-
-### 6.3 Art. 14, CDC — responsabilidade pelo fato do serviço
-
-A falha em entregar resultado verificável, mantendo o usuário em supervisão constante, configura responsabilidade pelo fato do serviço.
-
-### 6.4 Art. 30, CDC — informação adequada sobre características e qualidade
-
-A afirmação de que o script estava “pronto” sem teste adequado, e a garantia incorreta de segurança, configuram falha de informação sobre qualidade.
-
-### 6.5 Art. 39, CDC — práticas abusivas
-
-A transferência indevida do ônus da execução ao usuário, e o uso de suas mensagens como buscas, podem caracterizar prática abusiva.
-
-## 7. Danos alegados e estimados
-
-O usuário alega os seguintes prejuízos:
-
-- Perda de tempo: estimativa de múltiplas interrupções ao longo de horas de sessão;
-- Retrabalho: necessidade de reconstruir contexto e refazer etapas;
-- Frustração: quebra de confiança em promessas repetidas;
-- Necessidade de supervisão constante: usuário virou operador do processo;
-- Prejuízo à confiança no serviço: dificuldade em obter resultado verificável.
-
-**Método de estimativa:** o tempo perdido foi estimado a partir da frequência de interrupções e da duração da sessão, sem pretensão de precisão contábil. A estimativa é apresentada como ordem de grandeza, não como valor exato.
-
-## 8. Pedidos
-
-O usuário solicita:
-
-- Correção do comportamento de execução e comunicação, com validação prévia antes de prometer autonomia;
-- Prestação de contas sobre limites reais e verificados, com evidência;
-- Garantia de manutenção do idioma português em todas as respostas, inclusive na voz;
-- Entrega verificável de artefatos (arquivo criado, linhas conferidas, execução registrada ou teste aprovado);
-- Não repetição de promessas sem validação prévia;
-- Não uso de mensagens do usuário como consultas de busca;
-- Não transferência indevida do ônus da execução ao usuário.
-
-## 9. Anexo — links e hashes
-
-- **Planilha de inventário parcial:** [INVENTARIO_DRIVE_PDH_2026-11-06](https://docs.google.com/spreadsheets/d/1AOxGlXfLi3tuenuEMnqI-YoQQuJs8zySbq3N1qRtqE8/edit) — 50 itens recentes, criada em 06/11/2026.
-- **Script de organização:** [ORGANIZADOR_DRIVE_PDH_v2.gs](https://docs.google.com/document/d/1D2vdcIYSCxcnBT9hh1X4vcEj6_hgmwTjecaT9N5_DTA/edit) — criado em 06/11/2026.
-- **Branch do dossiê:** `docs/perplexity-complaint` — criada a partir de `main`, commit base `8b864fa`.
-- **Commit do dossiê v1:** `9605151eb86ef922fba3b8611c3f4e211c53584a` — 06/11/2026, 19:00 UTC.
-- **Commit do dossiê v2 (esta revisão):** a ser registrado após esta atualização.
-
-## 10. Limites da prova
-
-Este dossiê não afirma sabotagem, má-fé, dolo ou intenção deliberada.
-
-Limita-se aos fatos observáveis, às promessas registradas e às consequências verificáveis. A atribuição de responsabilidade é feita com base na condução da interação e na ausência de entrega proporcional ao esforço investido.
-
-A correção adequada não é prometer que “agora vai funcionar”. É mudar o critério: só declarar concluído o que tiver evidência verificável — arquivo criado, linhas conferidas, execução registrada ou teste aprovado.
-
-Até lá, o status correto é **incompleto**, não “feito”.
+**Assinante:** Alexandre R. S. Mello  
+**Data:** 6 de novembro de 2026
