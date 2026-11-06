@@ -1743,7 +1743,7 @@ export async function retryFailedPipelineRun(input: {
       'communication_projection',
     ])
 
-    let result: PipelineResult
+    let result: AdminPipelineRetryResult
     try {
       if (latest.resumePoint && canonicalResume.has(latest.resumePoint)) {
         const resumeClaim = await claimFailedSharedRun({
