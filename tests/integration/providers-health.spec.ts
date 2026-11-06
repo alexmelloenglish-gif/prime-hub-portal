@@ -70,10 +70,10 @@ test('provider fallback: failed Gemini is recorded and OpenAI completes the requ
 
       assert.equal(result.ok, true)
       assert.equal(result.generationProvenance.provider, 'openai')
-      assert.equal(result.generationProvenance.attempts[0].provider, 'gemini')
-      assert.equal(result.generationProvenance.attempts[0].outcome, 'failed')
-      assert.equal(result.generationProvenance.attempts[1].provider, 'openai')
-      assert.equal(result.generationProvenance.attempts[1].outcome, 'success')
+      assert.equal(result.generationProvenance.attempts![0].provider, 'gemini')
+      assert.equal(result.generationProvenance.attempts![0].outcome, 'failed')
+      assert.equal(result.generationProvenance.attempts![1].provider, 'openai')
+      assert.equal(result.generationProvenance.attempts![1].outcome, 'success')
     } finally {
       globalThis.fetch = originalFetch
     }
