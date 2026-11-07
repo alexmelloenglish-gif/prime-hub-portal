@@ -65,3 +65,14 @@ O responsável confirmou o uso de produção com dados sintéticos para o Item 8
 ## Critério de fechamento
 
 Item 8 vira DONE somente quando os três gates passarem com evidência verificável e o pacote for revisado. A Issue #58 permanece OPEN até então.
+
+---
+## 2026-11-07 — Reconciliação de autoridade e tracker
+
+Este runbook descreve um procedimento; ele não é, por si só, uma autorização executável para o agente alterar Production.
+
+O comentário [#6680255016](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6680255016) afirma que foi registrada autorização para usar Production com dados sintéticos. Porém, o próprio runbook ainda lista a conta, o learner e o evento como itens a criar; não há credenciais de teste, fixture provisionada, organizer OAuth de teste ou evidência de login/MFA/read-back humano. O corpo vigente da [Issue #112](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/112) declara que a Issue não autoriza mutações de DB/learner/attendance, reautorização OAuth, deploy, merge ou unfreeze. Não foi localizado um artefato independente que resolva essa divergência de autoridade.
+
+**Disposição:** Gates A/B/C permanecem OPEN e BLOCKED / NOT STARTED. Nenhuma conta/learner/evento será criada, nenhum OAuth será reautorizado, nenhum webhook/cron será acionado e nenhum PipelineRun/candidate real será criado por este monitoramento. Login/MFA e read-back dependem de execução humana autorizada. A afirmação de autorização no comentário #6680255016 não substitui a aprovação operacional explícita nem altera os limites desta tarefa.
+
+A Issue #58 permanece como registro histórico; a aceitação operacional é acompanhada na Issue #112. PIPELINE_AUTOMATION_FROZEN=true permanece inalterado.

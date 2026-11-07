@@ -24,7 +24,8 @@ A documentação foi comparada com a branch, os commits e os runs verificáveis 
 |---|---|---|
 | 1 — Legacy retry | DONE | Job verde no run `42178395266` |
 | 2 — Shared retry | DONE | Job PostgreSQL verde no run `42178395266` |
-| 3 — Teacher Authority / GL-003 | DONE | Contratos e validações existentes na branch |
+| 3 — Teacher Authority contract (synthetic fixture only) | CLOSED | Fixture/Golden Runtime Witness; synthetic database contract only. |
+| GL-003 real Production trace | OPEN / NOT VERIFIED | Requires a genuinely new real lesson/source under PRIME_GL003_EXECUTION_PROTOCOL.md. |
 | 4 — Authentication / learner isolation | DONE no limite do serviço | Validações de contrato; não equivale a E2E autenticado de produção |
 | 5 — Providers / fallback | DONE no limite do teste | Job verde no run `42178395266` |
 | 6 — Dependencies / audit | DONE | `0` info/low/moderate/high/critical; audit e `npm ci` verdes |
@@ -41,3 +42,14 @@ A documentação foi comparada com a branch, os commits e os runs verificáveis 
 ## Limites conhecidos
 
 O fechamento do Item 7 não equivale ao fechamento da Issue #58. A Issue permanece `OPEN` enquanto o Item 8 não for concluído. Nenhum merge, deploy, segredo de produção, banco de produção ou dado de learner foi alterado por esta reconciliação.
+
+---
+## Nomenclature correction — 2026-11-07
+
+The row above is intentionally scoped to the synthetic Teacher Authority contract witness. It does not mark GL-003 as passed.
+
+- Synthetic Teacher Authority fixture: CLOSED within disposable CI only.
+- GL-003 real Production trace: OPEN / NOT VERIFIED; requires a genuinely new real lesson/source under the protocol.
+- Gustavo 2026-09-29 shared Machine historical-source lineage/backfill witness: OPEN / NOT VERIFIED and separate from GL-003.
+
+The fixture uses synthetic identifiers/provider provenance and is not a real source. Do not replay Gustavo or Rafael to manufacture GL-003.

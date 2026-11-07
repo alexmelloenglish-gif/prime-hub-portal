@@ -525,3 +525,34 @@ Metadados finais do relatório:
 Os registros históricos que mencionam quatro advisories moderate referem-se a estados intermediários anteriores à remediação final. Eles permanecem úteis como histórico, mas não descrevem o estado atual e não devem ser usados sem essa qualificação.
 
 Commits canônicos da reconciliação: `eec67ea` (overrides), `c59e427`/`ccf8ff4` (lockfile), `efc971a` (concorrência do CI) e `dbf2051` (documentação). A Issue #58 permanece `OPEN`; não houve merge, deploy, alteração de segredo, banco de produção ou dado de learner.
+
+---
+## 2026-11-07 — Matriz de status reconciliada (PR #108 / Issue #112)
+
+Este checkpoint não apaga os snapshots anteriores. Ele delimita cada claim ao SHA, ambiente e tipo de prova que realmente o sustenta.
+
+| Frente | Status | Evidência reproduzível | Limite / pendência |
+|---|---|---|---|
+| Retry legado (Item 1) | **CLOSED** | Workflow Issue 58 validation SUCCESS no head PR #108 **7d90ebaf05768bb586519669254db68b3a15c0e5**, run [#42183076223](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42183076223). | CI sintético/contratual; não é replay real. |
+| Retry compartilhado (Item 2) | **CLOSED** | PostgreSQL descartável, chamadas concorrentes reais a processLessonTranscript() e provider mockado; PR #111 SHA **1d331ea9db3d14790575ec95df74bffaedadd63a**, run [#42171552035](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42171552035). | Não toca Production nem learner real. |
+| Teacher Authority — contrato sintético (Item 3) | **CLOSED** | Golden Runtime Witness + fixture/teste sintético no PR #108 head **7d90ebaf...**; run [#42183076247](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42183076247). | Não é GL-003 real nem sessão Google autenticada. |
+| Isolamento do dashboard/resolver (Item 4) | **CLOSED** | PostgreSQL descartável, 9/9 PASS; head **64bf4a38e95bdc8e11c07f7d71dba625bd3b5356**, run [#42172312618](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42172312618). | Limite de serviço/resolver; HTTP/browser/NextAuth Production e guardian real permanecem NOT VERIFIED. |
+| Shared Learning Machine — witness sintético (Item 5) | **CLOSED** | Golden Runtime Witness no head atual PR #108; script marca productionTouched=false, provider mockado e IDs sintéticos; run [#42183076247](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42183076247). | Não comprova source real, execução Production ou projeção de learner real. |
+| Audit de dependências de produção — candidato PR #108 (Item 6) | **CLOSED** | Run [#42178395266](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42178395266), head **dbf20514942a3a6ff0537402331c42397ee636be**, job **127762071944** SUCCESS; relatório blob **9f393303ce2814429958fffa1693691409bd9dc9**, total 0. | Aplica-se ao lockfile candidato PR #108, preservado no head atual; não prova audit zerado em main/Production. |
+| Especificação/ledgers canônicos (Item 7) | **OPEN** | Atualização documental preparada nesta branch. | Ainda depende de revisão e integração; main não contém este checkpoint. |
+| Aceitação operacional (Item 8) | **OPEN** | [Issue #112](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/112) e runbook de aceitação. | Gates A/B/C **BLOCKED / NOT STARTED**: sem staging/contas/learner/evento/organizer OAuth provisionados e sem login/MFA/read-back humano. |
+| Gustavo 2026-09-29 — histórico shared Machine / lineage-backfill | **NOT VERIFIED** | Referências de origem: [Issue #58 comentário #5939113394](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-5939113394), [comentário #5939285950](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-5939285950), [PR #87](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/87). | Lane separada; não é GL-003. Nenhuma execução foi autorizada por este monitor. |
+| GL-003 — nova aula/source real | **NOT VERIFIED** | [Protocolo GL-003](../PRIME_GL003_EXECUTION_PROTOCOL.md), SHA **b5559502efabccb73ddf0b05a81f28740c92adaf**. | Deve usar source novo e IDs do runtime; não reprocessar Rafael/Gustavo. |
+| Google/NextAuth Owner/Admin login | **NOT VERIFIED** | Nenhum teste de sessão autenticada foi encontrado nesta rodada. | Exige conta autorizada e login/MFA humano. |
+| Learner A→A/A→B e guardian por HTTP autenticado | **NOT VERIFIED** | Existem provas sintéticas de serviço/resolver. | Não equivalem a HTTP/browser E2E nem Production. |
+| Meet organizer OAuth / cron | **BLOCKED** | Issue #112 e runbook identificam scope meetings.space.readonly e evento de teste pendente. | Organizer OAuth de teste não provisionado; freeze permanece ativo; sem trigger. |
+| Production deployment / alias / runtime atual | **NOT VERIFIED** | GitHub Vercel SUCCESS apenas; Vercel API 403 no escopo da equipe. | Deployment/alias/SHA servidos não foram lidos diretamente nesta rodada. |
+| PR #100 — retenção/privacidade | **OPEN** | PR continua aberto e sem aprovação formal. | Períodos são propostas; nenhum delete/anonymize/migration/TTL. |
+| PR #96 — recuperação de acesso | **CLOSED** | Não merged; arquivo já portado para main com blob **8c6c48784b3e66403b6f37286c81ee2ccad162eb** via PR #101. | Encerramento como supersedido, não como merge. |
+
+### Regras de leitura
+- CLOSED significa apenas o limite de prova descrito na própria linha; não promove a mesma claim para Production.
+- O teste Teacher Authority/GL-003 é uma fixture sintética. O GL-003 real permanece NOT VERIFIED.
+- O witness de Gustavo em 2026-09-29 é um lane histórico separado e permanece NOT VERIFIED.
+- O audit com total zero é do lockfile candidato PR #108, não do main nem do deployment Production.
+- O read-back de Production documentado por executor anterior permanece histórico e atribuído; a leitura Vercel desta rodada falhou por 403.

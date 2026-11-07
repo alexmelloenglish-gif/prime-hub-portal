@@ -1409,3 +1409,39 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+---
+## 2026-11-07 — Atualização do backlog canônico após evidência da Issue #58
+
+A Issue #58 é o registro histórico de limpeza de PRs legadas; a aceitação operacional restante é acompanhada em [Issue #112](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/112). O comentário mais recente da Issue #58 é de @alexmelloenglish-gif, em 2026-11-06 08:06:28 UTC ([#6680255016](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6680255016)); não atribuir esse login a um agente específico.
+
+### Matriz única — estado por limite de evidência
+
+| Item | Status | Evidência / critério |
+|---|---|---|
+| 1 — Retry legado | **CLOSED** | CI no head PR #108 **7d90ebaf...**, run **42183076223**; apenas prova sintética. |
+| 2 — Retry compartilhado | **CLOSED** | PostgreSQL descartável e concorrência real no processo, PR #111 SHA **1d331ea...**, run **42171552035**; provider mockado. |
+| 3 — Teacher Authority | **CLOSED** no contrato sintético | Fixture/Golden Runtime Witness no run **42183076247**; **GL-003 real permanece NOT VERIFIED**. |
+| 4 — Isolamento | **CLOSED** no limite serviço/resolver | PostgreSQL descartável, 9/9 PASS, run **42172312618**; não é sessão/HTTP/browser E2E. |
+| 5 — Shared Learning Machine | **CLOSED** no witness sintético | Golden Runtime Witness, IDs sintéticos, provider mockado, productionTouched=false, run **42183076247**. |
+| 6 — Audit de produção | **CLOSED** para o candidato PR #108 | Run **42178395266**, head **dbf2051...**, relatório blob **9f393303...**, total 0; lockfile não mudou nos cinco commits documentais seguintes. Não é audit de main/Production. |
+| 7 — Especificação e ledgers | **OPEN** | Esta reconciliação está na branch PR #108 e aguarda revisão/integração. |
+| 8 — Aceitação operacional | **OPEN** | Gates A/B/C **BLOCKED / NOT STARTED**; falta ambiente/identidades/evento/organizer de teste e execução humana. |
+
+### Duas lanes que não podem ser fundidas
+- **Gustavo 2026-09-29 — shared Machine histórico / lineage-backfill:** **NOT VERIFIED**, não é GL-003. Preservar origem canônica do Drive, Teacher Authority e CLR existentes. Não montar payload/candidate manualmente e não iniciar execução neste monitor.
+- **GL-003:** **NOT VERIFIED**, nova aula/source real e IDs gerados pelo runtime, conforme docs/PRIME_GL003_EXECUTION_PROTOCOL.md. Reprocessar Gustavo/Rafael e chamar o replay de GL-003 é proibido.
+
+### Bloqueios operacionais precisos
+- Gate A: **BLOCKED** — não há ambiente de homologação, contas de teste, learner fixture nem credenciais de sessão; login/MFA e read-back devem ser executados por humano autorizado.
+- Gate B: **BLOCKED** — organizer OAuth de teste e evento Meet não provisionados; reconsentimento meetings.space.readonly não foi executado; não acionar webhook/cron nem remover o freeze.
+- Gate C: **BLOCKED** — não há fonte/evento de teste provisionado nem correlação ponta a ponta; não criar PipelineRun/candidate real sob este monitor.
+- Production deployment/alias/runtime atual: **NOT VERIFIED** devido ao 403 Vercel no escopo da equipe.
+- PR #100 continua **OPEN / UNAPPROVED**; retenção permanece proposta, sem exclusão, anonimização, migration ou TTL.
+- PR #96 está **CLOSED / NOT MERGED**; seu arquivo foi integrado via PR #101, blob **8c6c48784b3e66403b6f37286c81ee2ccad162eb**.
+
+### Próximas ações seguras
+1. Manter PR #108 como branch de integração existente; revisar este checkpoint e os quatro workflows no head exato antes de qualquer decisão de merge.
+2. Manter Item 8 e Issue #112 abertos até que os gates recebam evidência humana autorizada e revisada.
+3. Não iniciar Gustavo 29/09 nem GL-003; não chamar Teacher Authority; não alterar learner data, attendance, projections, secrets, DB ou migrations.
+4. Manter PIPELINE_AUTOMATION_FROZEN=true.
