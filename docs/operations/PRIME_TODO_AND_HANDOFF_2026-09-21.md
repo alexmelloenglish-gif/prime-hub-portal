@@ -1445,3 +1445,32 @@ A Issue #58 é o registro histórico de limpeza de PRs legadas; a aceitação op
 2. Manter Item 8 e Issue #112 abertos até que os gates recebam evidência humana autorizada e revisada.
 3. Não iniciar Gustavo 29/09 nem GL-003; não chamar Teacher Authority; não alterar learner data, attendance, projections, secrets, DB ou migrations.
 4. Manter PIPELINE_AUTOMATION_FROZEN=true.
+
+
+---
+
+## 2026-11-08 — Live-state correction (PR #108 / Issue #112)
+
+This entry supersedes only the live head, divergence, and latest-comment fields in the 2026-11-07 checkpoint. Earlier snapshots and their SHA-specific results remain historical.
+
+- Latest Issue #58 comment observed: [#6711610084](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6711610084), under **@alexmelloenglish-gif**. The GitHub read returned no newer comment after it. Comments after the reference request are attributed to that account only; no individual agent identity is inferred.
+- Current `main`: **8b864fa6e831788a2868d4fc73070113210afd37**. PR #101 is merged at **f6ebe00f5f854c643ffcd5759d2c267317dd4c4c**.
+- PR #108 remains **OPEN / DRAFT / UNMERGED**, branch `chore/issue-58-prime-engine-closure`, exact head **d8d8fb566a69e110e76ae12b20e88c00c49fe15c**, based on `main`; compare result: **69 commits ahead / 1 behind**. The PR changes 34 files (code, tests, workflows, dependencies and docs); it is not a documentation-only PR.
+- Exact-head GitHub Actions results at `d8d8fb566a69e110e76ae12b20e88c00c49fe15c`:
+- Issue 58 validation: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271334
+- Golden Runtime Witness: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271373
+- Coordination Runtime Witness: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271393
+- Student Dashboard Contract: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271408
+- These four results are CI/disposable-fixture evidence only. The current PR-head Vercel Preview was not independently verified; do not substitute an older Preview event or a green main status for it.
+- Issue #112 remains **OPEN** and is the operational acceptance tracker. Gates A/B/C remain **BLOCKED / NOT STARTED**.
+- Production deployment, served SHA, official-domain alias binding and current runtime remain **NOT VERIFIED**: Vercel team enumeration returned zero teams/projects, and project/deployment reads returned HTTP 403 for scope `prime-digital-hun-dasboard`. GitHub's Vercel SUCCESS on main is not a deployment read-back.
+- PR #100 remains **OPEN / UNMERGED / UNAPPROVED**; its only review is COMMENTED. Retention periods remain proposals. No delete, anonymization, migration or TTL operation is authorized.
+- PR #96 remains **CLOSED / NOT MERGED**. Its only file is present in main with identical blob `8c6c48784b3e66403b6f37286c81ee2ccad162eb`, integrated through PR #101.
+- Gustavo 2026-09-29 historical-source lineage/backfill and GL-003 remain two separate lanes, both **OPEN / NOT VERIFIED**. The first is not GL-003; GL-003 requires a genuinely new real source and runtime-generated IDs.
+- `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No learner/attendance/Production data, secrets, migrations, OAuth, Teacher Authority, projections or runtime triggers were touched.
+
+### Separate repository safety risk found on current main
+
+Main commit `8b864fa6e831788a2868d4fc73070113210afd37` adds `.github/workflows/dependency-audit-auto.yml` (blob `cb836b3dbc7548a8841381a735b9939c3fdd9384`). The workflow triggers on pushes to **all branches** (`'**'`), grants `contents: write`, runs `npm audit fix --omit=dev`, then commits and pushes to `origin HEAD:${{ github.ref_name }}`. On a push to `main`, this workflow can therefore push dependency changes directly to `main` without a reviewable PR. This executor did not edit or disable it; maintainer review is required before treating it as a safe remediation path.
+
+See the detailed evidence-bounded matrix in `PRIME_EXECUTION_CLOSURE_LEDGER.md` and the operational gate checklist in Issue #112. The historical TODO entries (including the earlier Gustavo five-lesson replay) are preserved; the two-lane distinction above controls current witness nomenclature.
