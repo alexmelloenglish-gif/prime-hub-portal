@@ -431,3 +431,42 @@ A rota manual existente app/api/admin/learning-machine/run/route.ts (blob **9973
 - **Risco separado em main:** o commit 8b864fa... adicionou .github/workflows/dependency-audit-auto.yml, que dispara em push para qualquer branch, tem contents: write, executa npm audit fix --omit=dev e faz push de volta para a branch acionadora — inclusive main. Não foi alterado por esta reconciliação; requer revisão explícita antes de confiar nessa automação como canal de remediação.
 
 Nenhum merge, deploy, acesso autenticado, trigger do Gustavo/GL-003, PipelineRun real, Teacher Authority, mutação de banco/learner/attendance, migration, secret change ou alteração do freeze foi executado nesta rodada.
+
+
+---
+
+## 2026-11-08 — Live-state correction (PR #108 / Issue #112)
+
+This entry supersedes only the live head, divergence, and latest-comment fields in the 2026-11-07 checkpoint. Earlier snapshots and their SHA-specific results remain historical.
+
+- Latest Issue #58 comment observed: [#6711610084](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6711610084), under **@alexmelloenglish-gif**. The GitHub read returned no newer comment after it. Comments after the reference request are attributed to that account only; no individual agent identity is inferred.
+- Current `main`: **8b864fa6e831788a2868d4fc73070113210afd37**. PR #101 is merged at **f6ebe00f5f854c643ffcd5759d2c267317dd4c4c**.
+- PR #108 remains **OPEN / DRAFT / UNMERGED**, branch `chore/issue-58-prime-engine-closure`, exact head **d8d8fb566a69e110e76ae12b20e88c00c49fe15c**, based on `main`; compare result: **69 commits ahead / 1 behind**. The PR changes 34 files (code, tests, workflows, dependencies and docs); it is not a documentation-only PR.
+- Exact-head GitHub Actions results at `d8d8fb566a69e110e76ae12b20e88c00c49fe15c`:
+- Issue 58 validation: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271334
+- Golden Runtime Witness: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271373
+- Coordination Runtime Witness: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271393
+- Student Dashboard Contract: SUCCESS — https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42403271408
+- These four results are CI/disposable-fixture evidence only. The current PR-head Vercel Preview was not independently verified; do not substitute an older Preview event or a green main status for it.
+- Issue #112 remains **OPEN** and is the operational acceptance tracker. Gates A/B/C remain **BLOCKED / NOT STARTED**.
+- Production deployment, served SHA, official-domain alias binding and current runtime remain **NOT VERIFIED**: Vercel team enumeration returned zero teams/projects, and project/deployment reads returned HTTP 403 for scope `prime-digital-hun-dasboard`. GitHub's Vercel SUCCESS on main is not a deployment read-back.
+- PR #100 remains **OPEN / UNMERGED / UNAPPROVED**; its only review is COMMENTED. Retention periods remain proposals. No delete, anonymization, migration or TTL operation is authorized.
+- PR #96 remains **CLOSED / NOT MERGED**. Its only file is present in main with identical blob `8c6c48784b3e66403b6f37286c81ee2ccad162eb`, integrated through PR #101.
+- Gustavo 2026-09-29 historical-source lineage/backfill and GL-003 remain two separate lanes, both **OPEN / NOT VERIFIED**. The first is not GL-003; GL-003 requires a genuinely new real source and runtime-generated IDs.
+- `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No learner/attendance/Production data, secrets, migrations, OAuth, Teacher Authority, projections or runtime triggers were touched.
+
+### Separate repository safety risk found on current main
+
+Main commit `8b864fa6e831788a2868d4fc73070113210afd37` adds `.github/workflows/dependency-audit-auto.yml` (blob `cb836b3dbc7548a8841381a735b9939c3fdd9384`). The workflow triggers on pushes to **all branches** (`'**'`), grants `contents: write`, runs `npm audit fix --omit=dev`, then commits and pushes to `origin HEAD:${{ github.ref_name }}`. On a push to `main`, this workflow can therefore push dependency changes directly to `main` without a reviewable PR. This executor did not edit or disable it; maintainer review is required before treating it as a safe remediation path.
+
+### Historical chronology and authentication evidence boundary
+
+| Evidence class | Current interpretation |
+|---|---|
+| Historical pre-publication snapshot | Earlier “no commit/push/PR/deployment” wording describes only the state before the b6 publication; it is not the final state and is not deleted. |
+| Published changes | Commit `b6c6ed19ff3649ef10d35b6ef97452e5b8c21c4c` and later documentation commits are historical publication records. Their existence does not independently prove the deployment currently serving the official domain. |
+| Public unauthenticated smoke | Homepage 200, `/api/seed` 410, protected learner routes redirecting to login, ingestion 401 without secret, and security headers demonstrate public endpoint/guard behavior only. |
+| Authenticated tests actually evidenced | No Google/NextAuth owner login, authenticated Owner/Admin navigation, learner A→A/A→B browser/HTTP test, or guardian Production authorization is accepted as proven in the current evidence package. |
+| Still unverified / blocked | Owner/Admin and guardian flows are **NOT VERIFIED**; Gate A, Meet/OAuth Gate B, and real source-to-dashboard Gate C are **BLOCKED / NOT STARTED** pending provisioned test identities/event and human login/MFA/read-back. |
+
+Do not turn any historical “authenticated owner test completed” wording into CLOSED without a reproducible session artifact that identifies account/role, exact flow, deployment/SHA, timestamp and observed read-back. No personal credentials were used in this monitoring run.
