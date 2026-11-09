@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cache as reactCache } from 'react'
 import type { Session } from 'next-auth'
 import type { DocumentData } from 'firebase-admin/firestore'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
@@ -15,6 +15,13 @@ import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
+import registry from '@/data/students/student-core-registry.json'
+import { accountIdentityFromSession, resolveAuthorizedLearnerRelation } from '@/lib/learner-account-resolution'
+
+const identityCache = <T extends (...args: never[]) => unknown>(fn: T): T => fn
+const cache: typeof reactCache = typeof reactCache === 'function'
+  ? reactCache
+  : identityCache as typeof reactCache
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -1108,26 +1115,69 @@ export async function getStudentDashboardState(
   user: AuthenticatedUser,
   requestedStudentEmail?: string | null
 ): Promise<StudentDashboardState> {
-  if (!user?.email) {
+  const viewerEmail = normalizeEmail(user?.email)
+  const denied: StudentDashboardState = {
+    hasAccess: false,
+    source: 'preview',
+    student: null,
+    isPreviewingAnotherStudent: false,
+    viewerEmail: viewerEmail || null,
+  }
+
+  if (!user?.email) return denied
+
+  // Administrator preview remains an explicit privileged path. Learner access
+  // is resolved by authenticated User.id -> active AccountLearnerRelation -> studentId.
+  if (isAdminUser(user)) {
+    const targetEmail = canPreviewAnotherStudent(user, requestedStudentEmail)
+      ? normalizeEmail(requestedStudentEmail)
+      : viewerEmail
+    const adminState = await getStudentDashboardStateCached(targetEmail, user.name)
     return {
-      hasAccess: false,
-      source: 'preview',
-      student: null,
-      isPreviewingAnotherStudent: false,
-      viewerEmail: null,
+      ...adminState,
+      isPreviewingAnotherStudent: targetEmail !== viewerEmail,
+      viewerEmail,
     }
   }
 
-  const viewerEmail = normalizeEmail(user.email)
-  const targetEmail = canPreviewAnotherStudent(user, requestedStudentEmail)
-    ? normalizeEmail(requestedStudentEmail)
-    : viewerEmail
+  const account = accountIdentityFromSession(user)
+  if (!account) return denied
 
-  const state = await getStudentDashboardStateCached(targetEmail, user.name)
+  const students = (registry as { students?: Array<{
+    studentId?: string
+    canonicalEmail?: string
+    emailAliases?: string[]
+  }> }).students ?? []
+  const requestedEmail = normalizeEmail(requestedStudentEmail)
+  const requestedLearner = requestedEmail
+    ? students.find((entry) =>
+        normalizeEmail(entry.canonicalEmail) === requestedEmail ||
+        (entry.emailAliases ?? []).some((alias) => normalizeEmail(alias) === requestedEmail)
+      )
+    : undefined
+
+  // An unrecognized requested email is never treated as an identity.
+  if (requestedEmail && !requestedLearner?.studentId) return denied
+
+  const resolution = await resolveAuthorizedLearnerRelation({
+    account,
+    requestedStudentId: requestedLearner?.studentId,
+  })
+  if (resolution.status !== 'AUTHORIZED') return denied
+
+  const authorizedLearner = students.find((entry) => entry.studentId === resolution.studentId)
+  const canonicalEmail = normalizeEmail(authorizedLearner?.canonicalEmail)
+  if (!canonicalEmail) return denied
+
+  const state = await getStudentDashboardStateCached(canonicalEmail, user.name)
+  if (!state.hasAccess || !state.student || state.student.studentId !== resolution.studentId) {
+    return denied
+  }
 
   return {
     ...state,
-    isPreviewingAnotherStudent: targetEmail !== viewerEmail,
+    hasAccess: true,
+    isPreviewingAnotherStudent: false,
     viewerEmail,
   }
 }

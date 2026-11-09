@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { getPrismaClient } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { rejectCrossOriginMutation } from '@/lib/request-security'
+import { accountIdentityFromSession, resolveAuthorizedLearnerRelation } from '@/lib/learner-account-resolution'
 
 const ALLOWED_VALUES = new Set(['VERY_WELL', 'WITH_HELP', 'STUDY_MORE'])
 const REQUIRED_ITEMS = [
@@ -30,6 +31,18 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ ok: false, error: 'authentication_required' }, { status: 401 })
+    }
+
+    const account = accountIdentityFromSession(session.user)
+    if (!account) {
+      return NextResponse.json({ ok: false, error: 'authorized_learner_relation_required' }, { status: 403 })
+    }
+    const learnerAccess = await resolveAuthorizedLearnerRelation({
+      account,
+      requestedStudentId: 'stu_4c4da6c04ac4',
+    })
+    if (learnerAccess.status !== 'AUTHORIZED') {
+      return NextResponse.json({ ok: false, error: 'authorized_learner_relation_required' }, { status: 403 })
     }
 
     const contentLength = Number(request.headers.get('content-length') || 0)

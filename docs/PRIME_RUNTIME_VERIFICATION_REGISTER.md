@@ -718,3 +718,20 @@ Historical Golden Traces remain immutable witnesses unless an explicit forensic 
 **Status:** `ACTIVE — POST-GATE / AWAITING GL-003`  
 **Authoritative reference:** this document describes the runtime verification boundary; it does not replace the canonical architecture/domain specifications.  
 **Last canonical checkpoint:** Production deployment of `4b1df7c6a51db9b7d8293d6c33e7a87b21363523`.
+
+---
+## 18. Gustavo 2026-09-29 — shared Learning Machine lineage/backfill witness (separate lane)
+
+**Status: OPEN / NOT VERIFIED. This is not GL-003.**
+
+The 2026-09-29 Gustavo source is a historical-source lineage/backfill witness for the shared PRIME Learning Machine. It must remain a separate lane from the post-gate GL-003 experiment. Preserve the canonical Drive source and any existing Teacher Authority / Canonical Learning Record (CLR) state. Do not manually assemble a transcript payload, Evidence Candidate, or substitute source.
+
+The repository already contains the protected manual entry point at app/api/admin/learning-machine/run/route.ts (main blob 997340f5c20000fe58288e280ba14ec5726f41bf). It requires an authenticated admin session; when sourceFileId is supplied it calls prepareDriveTranscriptPayload() and then executeSharedLearningMachine(). This is an existing route, not authorization to trigger it under this monitoring task and not a reason to create another runner.
+
+No Gustavo source was triggered in this checkpoint. No real PipelineRun or candidate was created, no Teacher Authority action was invoked, and no CLR/projection was changed. The witness remains OPEN / NOT VERIFIED until separately authorized, permitted evidence exists.
+
+### GL-003 remains independent
+
+GL-003 is still **OPEN / NOT VERIFIED**. It requires a genuinely new real lesson/source and runtime-generated identifiers under the protocol above. The protocol prohibits reprocessing Rafael or Gustavo and labeling that replay GL-003. The current GL-003 fixture and Golden Runtime Witness are synthetic CI evidence only; they do not satisfy the Production protocol.
+
+Automatic Drive/webhook/cron ingestion remains blocked by PIPELINE_AUTOMATION_FROZEN=true. The existing manual admin route may remain available, but no manual or automatic trigger is authorized by this monitoring checkpoint.
