@@ -439,7 +439,7 @@ Nenhum merge, deploy, acesso autenticado, trigger do Gustavo/GL-003, PipelineRun
 
 This entry supersedes only the live head, divergence, and latest-comment fields in the 2026-11-07 checkpoint. Earlier snapshots and their SHA-specific results remain historical.
 
-- Latest Issue #58 comment observed: [#6711610084](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6711610084), under **@alexmelloenglish-gif**. The GitHub read returned no newer comment after it. Comments after the reference request are attributed to that account only; no individual agent identity is inferred.
+- At the 2026-11-08 checkpoint, the latest Issue #58 comment observed was [#6711610084](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6711610084), under **@alexmelloenglish-gif**. This is a historical read-back and is superseded by the 2026-11-09 correction below.
 - Current `main`: **8b864fa6e831788a2868d4fc73070113210afd37**. PR #101 is merged at **f6ebe00f5f854c643ffcd5759d2c267317dd4c4c**.
 - PR #108 remains **OPEN / DRAFT / UNMERGED**, branch `chore/issue-58-prime-engine-closure`, exact head **d8d8fb566a69e110e76ae12b20e88c00c49fe15c**, based on `main`; compare result: **69 commits ahead / 1 behind**. The PR changes 34 files (code, tests, workflows, dependencies and docs); it is not a documentation-only PR.
 - Exact-head GitHub Actions results at `d8d8fb566a69e110e76ae12b20e88c00c49fe15c`:
@@ -470,3 +470,11 @@ Main commit `8b864fa6e831788a2868d4fc73070113210afd37` adds `.github/workflows/d
 | Still unverified / blocked | Owner/Admin and guardian flows are **NOT VERIFIED**; Gate A, Meet/OAuth Gate B, and real source-to-dashboard Gate C are **BLOCKED / NOT STARTED** pending provisioned test identities/event and human login/MFA/read-back. |
 
 Do not turn any historical “authenticated owner test completed” wording into CLOSED without a reproducible session artifact that identifies account/role, exact flow, deployment/SHA, timestamp and observed read-back. No personal credentials were used in this monitoring run.
+
+
+## 2026-11-09 — live-state read-back
+
+- Latest Issue #58 comment returned by the full paginated read: [#6725557702](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6725557702), by **@alexmelloenglish-gif**, created **2026-11-08 18:46:50 UTC**. No later Issue #58 comment was present as of **2026-11-09 15:12 America/Sao_Paulo**. Attribution is limited to the GitHub account; no individual agent identity is established.
+- Current main: **8b864fa6e831788a2868d4fc73070113210afd37**. PR #108 remains **OPEN / DRAFT / UNMERGED** at **881c892769cea03e3a2d7b5a627bd7780083e228**, **72 commits ahead / 1 behind**, 34 changed files. It is a mixed implementation/test/dependency/documentation PR, not a documentation-only change. No submitted maintainer review or inline review thread was returned.
+- Exact-head GitHub Actions remain SUCCESS on **881c892769cea03e3a2d7b5a627bd7780083e228**: [Issue 58 validation #42511496359](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42511496359), [Coordination Runtime Witness #42511496344](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42511496344), [Golden Runtime Witness #42511496368](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42511496368), and [Student Dashboard Contract #42511496436](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42511496436). These remain CI/disposable-fixture evidence only.
+- Current-head Vercel Preview and current Production deployment/served SHA/alias/runtime remain **NOT VERIFIED**. The current Vercel project read returned HTTP 403 for team scope prime-digital-hun-dasboard; historical Preview bot comments do not prove the current PR head, and GitHub status alone does not prove Production.
