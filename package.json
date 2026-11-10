@@ -67,5 +67,13 @@
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.32",
     "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "@fastify/busboy": "3.2.2",
+    "@grpc/grpc-js": "1.14.5",
+    "fast-xml-builder": "1.1.7",
+    "form-data": "2.5.6",
+    "node-forge": "1.4.2",
+    "protobufjs": "7.6.5"
   }
 }
