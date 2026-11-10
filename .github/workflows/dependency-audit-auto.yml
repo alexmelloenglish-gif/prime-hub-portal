@@ -57,6 +57,9 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Run dependency audit workflow self-test
+        run: node scripts/dependency-audit-workflow-self-test.mjs
+
       - name: Run npm audit (capture exit status)
         id: audit
         shell: bash
@@ -206,16 +209,60 @@ jobs:
                 .slice(0, 16);
             }
 
-            async function findIssueMatches(fingerprint) {
-              const search = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${owner}/${repo} is:issue ${fingerprint}`
-              });
-              return (search.data.items || [])
-                .filter((item) => !item.pull_request)
-                .filter((item) => item.title.includes(`[dependency-audit:${fingerprint}]`)
-                  || item.body?.includes(`Stable fingerprint: ${fingerprint}`))
-                .sort((a, b) => a.number - b.number);
+            function fingerprintFromIssue(issue) {
+              const titleMatch = String(issue.title || '').match(/\[dependency-audit:([a-f0-9]{16})\]/i);
+              if (titleMatch) return titleMatch[1].toLowerCase();
+              const bodyMatch = String(issue.body || '').match(/Stable fingerprint: ([a-f0-9]{16})/i);
+              return bodyMatch ? bodyMatch[1].toLowerCase() : null;
             }
+
+            function indexIssueMatches(issues) {
+              const index = new Map();
+              for (const issue of issues) {
+                if (issue.pull_request) continue;
+                const fingerprint = fingerprintFromIssue(issue);
+                if (!fingerprint) continue;
+                if (!index.has(fingerprint)) index.set(fingerprint, []);
+                index.get(fingerprint).push(issue);
+              }
+              for (const matches of index.values()) {
+                matches.sort((a, b) => a.number - b.number);
+              }
+              return index;
+            }
+
+            async function listExistingIssuesWithBackoff() {
+              let attempt = 0;
+              while (true) {
+                try {
+                  return await github.paginate(github.rest.issues.listForRepo, {
+                    owner, repo, state: 'all', per_page: 100
+                  });
+                } catch (error) {
+                  const status = error.status || error.response?.status;
+                  const headers = error.response?.headers || {};
+                  const retryAfter = Number(headers['retry-after'] || 0);
+                  const resetAt = Number(headers['x-ratelimit-reset'] || 0);
+                  const isRateLimit = (status === 403 || status === 429)
+                    && (retryAfter > 0
+                      || Number(headers['x-ratelimit-remaining']) === 0
+                      || /rate limit/i.test(error.message || ''));
+                  if (!isRateLimit || attempt >= 2) throw error;
+                  const resetDelay = resetAt > 0 ? Math.max(0, resetAt * 1000 - Date.now()) : 0;
+                  const delay = Math.max(retryAfter * 1000, resetDelay, 1000) + 1000;
+                  if (delay > 120000) {
+                    throw new Error(`GitHub rate limit reset requires ${Math.ceil(delay / 1000)}s; refusing an unbounded wait.`);
+                  }
+                  attempt++;
+                  core.warning(`GitHub API rate limit encountered while listing Issues; retry ${attempt}/2 after ${Math.ceil(delay / 1000)}s.`);
+                  await new Promise((resolve) => setTimeout(resolve, delay));
+                }
+              }
+            }
+
+            const existingIssues = await listExistingIssuesWithBackoff();
+            const issuesByFingerprint = indexIssueMatches(existingIssues);
+            core.info(`Indexed ${existingIssues.length} repository Issues/PR records; ${issuesByFingerprint.size} stable advisory fingerprints found.`);
 
             function chooseMatch(matches, title) {
               const exactTitle = matches.filter((item) => item.title === title);
@@ -241,7 +288,7 @@ jobs:
                 processedFingerprints.add(fingerprint);
 
                 const title = `[dependency-audit:${fingerprint}] ${packageName} — ${advisory.severity}`;
-                const matches = await findIssueMatches(fingerprint);
+                const matches = issuesByFingerprint.get(fingerprint) || [];
                 const { match, duplicateCount } = chooseMatch(matches, title);
                 duplicateMatches += duplicateCount;
                 const now = new Date().toISOString();
