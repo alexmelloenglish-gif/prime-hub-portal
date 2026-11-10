@@ -1530,3 +1530,30 @@ This checkpoint supersedes only the live-state fields from the 2026-11-07/09 ent
 - `docs/drive-event-trigger.md` now states that the Drive cron route exists but is not scheduled by current `vercel.json`, and records the actual frozen webhook/cron/ingest/manual-route behavior.
 - `docs/PRIME_GL003_EXECUTION_PROTOCOL.md` now clarifies that its generic trigger language is not current release authority; Issue #112 controls the current hold. Gustavo 2026-09-29 historical-source lineage/backfill and new-source GL-003 remain separate OPEN / NOT VERIFIED lanes.
 - These are documentation-only changes on PR #108's existing branch. They do not alter code, configuration, data, credentials, Production or the freeze.
+
+
+---
+
+## 2026-11-10 — Superseding dependency-audit read-back
+
+This correction supersedes only the dependency-audit and workflow-governance statements in the earlier 2026-11-10 checkpoint. Earlier snapshots remain historical.
+
+### Current main — exact audit artifact
+
+- Main SHA: `fa2e0282af9d358a8580f5316e619023977de772`.
+- Read-only audit run: [#42761687684](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42761687684), job `129648659158`, artifact `13737258907`.
+- The downloaded `npm-audit-report.json` reports **24 vulnerable package records: 12 high, 11 moderate, 1 low, 0 critical**. The workflow and artifact upload succeeded; that success means the report/issue-upsert pipeline completed, not that the dependency tree is clean.
+- Therefore the current-main dependency lane is **OPEN**. Do not promote the zero-advisory result from the older PR #108 candidate lockfile to current main.
+
+### PR #168 — separate candidate, not merged
+
+- Head: `52a792169310db28b4616a1d881e86cec5b080a2`, base: current main `fa2e0282af9d358a8580f5316e619023977de772`.
+- Exact candidate audit: [run #42769864240](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769864240), job `129674876947`, artifact `13740574484`.
+- The downloaded report confirms **8 moderate, 0 high, 0 critical, 0 low**. The four PR checks passed, but PR #168 remains **OPEN / UNMERGED**. This is candidate-branch evidence only; it does not change current main or Production.
+
+### Superseding the earlier dependency auto-push risk
+
+- The earlier risk statement was accurate for historical main `8b864fa6e831788a2868d4fc73070113210afd37` and its workflow version.
+- PR #115 merged at `383193fabb38c3c4f45caafc75f1e988607fcda6` on 2026-11-10, replacing auto-fix/push behavior with a read-only audit. Current workflow blob is `86c811c39296e1b905db6e2365a9c27d438d0c25`: workflow/audit-job permissions are `contents: read`; no `git push` or `contents: write` exists. The secondary job has `issues: write` only to upsert advisory Issues.
+- PR #147 merged at `d7206c0c8a7f255e54761a4a15a6fdd19d399f23` to prevent advisory-issue search rate-limit failures.
+- **Current-main direct-push risk: CLOSED.** The 2026-11-06/08 statement remains valid as history for the earlier workflow but must not be described as the current main behavior. PR #108's branch predates this workflow file and is 10 commits behind main; review/reconcile the branch before any merge decision.
