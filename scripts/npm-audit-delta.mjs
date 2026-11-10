@@ -62,6 +62,15 @@ export function compareAuditReports(baseReport, headReport) {
       regressions.push({ type: 'new-advisory', ...candidate })
       continue
     }
+    if (candidate.range !== existing.range) {
+      regressions.push({
+        type: 'affected-range-change',
+        packageName: candidate.packageName,
+        id: candidate.id,
+        from: existing.range,
+        to: candidate.range,
+      })
+    }
     if ((severityRank[candidate.severity] ?? 0) > (severityRank[existing.severity] ?? 0)) {
       regressions.push({
         type: 'severity-increase',
