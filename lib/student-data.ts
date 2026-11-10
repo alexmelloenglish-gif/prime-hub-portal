@@ -174,6 +174,7 @@ export type StudentDashboardData = {
 export type StudentDashboardState = {
   hasAccess: boolean
   source: 'repository' | 'preview'
+  dataFreshness: 'historical' | 'current' | 'unavailable'
   student: StudentDashboardData | null
   isPreviewingAnotherStudent: boolean
   viewerEmail: string | null
@@ -1004,6 +1005,9 @@ const getStudentDashboardStateCached = cache(
     return {
       hasAccess: Boolean(mergedStudent),
       source: mergedStudent ? 'repository' : 'preview',
+      // The composed profile still contains repository snapshots. Until every displayed field
+      // is sourced from verified Neon projections, the composite must not be labelled current.
+      dataFreshness: mergedStudent ? 'historical' : 'unavailable',
       student: mergedStudent,
       isPreviewingAnotherStudent: false,
       viewerEmail: email,
@@ -1018,6 +1022,7 @@ export async function getStudentDashboardState(
     return {
       hasAccess: false,
       source: 'preview',
+      dataFreshness: 'unavailable',
       student: null,
       isPreviewingAnotherStudent: false,
       viewerEmail: null,
