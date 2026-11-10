@@ -69,7 +69,7 @@ npm audit --omit=dev
 npm audit
 ```
 
-Record exact results, warnings, advisory IDs, dependency paths, and limitations. Do not use `npm audit fix --force` indiscriminately or make unrelated major upgrades.
+Record exact results, warnings, advisory IDs, dependency paths, and limitations. The PR dependency gate compares the production audit against the exact base commit and fails on new advisories, newly vulnerable install paths, or severity increases. A passing delta is not a clean audit: pre-existing findings remain open and require separate remediation. Do not use `npm audit fix --force` indiscriminately or make unrelated major upgrades.
 
 ## 6. External infrastructure boundary
 
