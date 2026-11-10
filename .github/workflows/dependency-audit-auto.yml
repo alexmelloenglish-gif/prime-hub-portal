@@ -57,6 +57,9 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Run dependency audit workflow self-test
+        run: node scripts/dependency-audit-workflow-self-test.mjs
+
       - name: Run npm audit (capture exit status)
         id: audit
         shell: bash
