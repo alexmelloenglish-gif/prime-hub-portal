@@ -3,7 +3,7 @@
 **Repositório:** `alexmelloenglish-gif/prime-hub-portal`  
 **Branch:** `arch/remove-firebase-admin-v2`  
 **Base:** `fa2e0282af9d358a8580f5316e619023977de772`  
-**Estado:** candidato validado localmente; ainda não commitado, publicado ou aberto em PR neste relatório.
+**Estado:** commitado e publicado no PR #169; não mesclado e sem deploy de produção autorizado.
 
 ## Escopo executado
 
@@ -61,7 +61,7 @@ O `prisma validate` inicialmente sem variáveis de ambiente falhou por ausência
 
 ### Produção (`npm audit --omit=dev --json`)
 
-Resultado: **8 nós vulneráveis: 6 high, 2 moderate, 0 critical**. O comando retorna exit code 1 por haver findings.
+Resultado: **8 chaves de vulnerabilidade em 8 pacotes afetados, distribuídas por 9 caminhos/nós instalados: 6 high, 2 moderate, 0 critical**. O comando retorna exit code 1 por haver findings. A nona linha de caminho na tabela abaixo ocorre porque `postcss` aparece tanto em `node_modules/postcss` quanto em `node_modules/next/node_modules/postcss`; não é um nono pacote vulnerável.
 
 | Pacote/caminho | Versão | Severidade | Advisory IDs / observação | Correção indicada |
 |---|---:|---|---|---|
@@ -93,7 +93,7 @@ GHSA-xwg4-73v4-xw9w
 
 ### Árvore completa (`npm audit --json`)
 
-Resultado: **18 nós vulneráveis: 9 high, 9 moderate, 0 critical**. Além dos findings de produção, os principais caminhos de desenvolvimento são:
+Resultado: **18 chaves de vulnerabilidade em 18 pacotes afetados, distribuídas por 20 caminhos/nós instalados: 9 high, 9 moderate, 0 critical**. Além dos findings de produção, os principais caminhos de desenvolvimento são:
 
 - `@typescript-eslint/*` → `minimatch@10.2.5` com `GHSA-g3hv-75wg-m249`;
 - `brace-expansion@5.0.5` com `GHSA-jxxr-4gwj-5jf2`, `GHSA-3jxr-9vmj-r5cp`, `GHSA-mh99-v99m-4gvg`, `GHSA-rgw5-rvv9-x895`, `GHSA-q2hr-2g5m-vwhr`, `GHSA-qhr7-859c-m2p7`, `GHSA-6j4f-fj2g-mc7p`;
@@ -101,7 +101,13 @@ Resultado: **18 nós vulneráveis: 9 high, 9 moderate, 0 critical**. Além dos f
 - `browserslist@4.28.2` com `GHSA-c83g-rgw3-j3cx` e `GHSA-73wf-gq98-2v4g`;
 - `js-yaml@4.1.1` com `GHSA-h67p-54hq-rp68`, `GHSA-52cp-r559-cp3m`, `GHSA-5p4m-2wfm-xmqj` e `GHSA-2883-xcg3-v3hh`.
 
-A árvore completa contém **26 IDs GHSA únicos**. Não foi usado `npm audit fix --force`, não foi feito major upgrade e nenhuma dependência legítima de Google/OIDC foi removida.
+A árvore completa contém **26 IDs GHSA únicos**. A produção contém 11 desses IDs; os demais 15 pertencem somente à árvore completa/dev. Não foi usado `npm audit fix --force`, não foi feito major upgrade e nenhuma dependência legítima de Google/OIDC foi removida.
+
+### Reconciliação contra `main`
+
+Foi criado um worktree descartável no SHA-base `fa2e0282af9d358a8580f5316e619023977de772`, com `npm ci` e os mesmos dois comandos de audit. Os JSONs de `main` produziram exatamente os mesmos resultados: produção com 8 chaves/9 caminhos/11 GHSA e árvore completa com 18 chaves/20 caminhos/26 GHSA, nos mesmos pacotes. Portanto, nenhum finding npm foi introduzido pela remoção do Firebase; os findings são preexistentes na base. A remoção elimina a cadeia Firebase Admin/Firestore do lockfile, mas não é uma correção dos advisories restantes.
+
+A comparação de commits confirma que `HEAD` contém somente `7a4d61e` após `main`; os commits exclusivos de `lot-h/dependency-remediation` não foram incorporados.
 
 ## Limitações
 
