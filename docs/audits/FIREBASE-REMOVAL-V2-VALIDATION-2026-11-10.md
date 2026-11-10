@@ -23,7 +23,7 @@ Foram refatorados:
 - self-tests do dashboard e do parser de projeções;
 - README, `.env.example` e runbooks operacionais.
 
-Os arquivos históricos `data/students/*.firestore.json` foram preservados. Seus nomes são snapshots/fixtures locais e não representam acesso ativo ao Firestore.
+Os arquivos `data/students/*.firestore.json` foram preservados. Eles não representam acesso ativo ao Firestore, mas continuam sendo importados pelo runtime como base de perfis históricos; não são fixtures inertes.
 
 ## Integrações preservadas
 
@@ -107,10 +107,35 @@ A árvore completa contém **26 IDs GHSA únicos**. A produção contém 11 dess
 
 Foi criado um worktree descartável no SHA-base `fa2e0282af9d358a8580f5316e619023977de772`, com `npm ci` e os mesmos dois comandos de audit. Os JSONs de `main` produziram exatamente os mesmos resultados: produção com 8 chaves/9 caminhos/11 GHSA e árvore completa com 18 chaves/20 caminhos/26 GHSA, nos mesmos pacotes. Portanto, nenhum finding npm foi introduzido pela remoção do Firebase; os findings são preexistentes na base. A remoção elimina a cadeia Firebase Admin/Firestore do lockfile, mas não é uma correção dos advisories restantes.
 
-A comparação de commits confirma que `HEAD` contém somente `7a4d61e` após `main`; os commits exclusivos de `lot-h/dependency-remediation` não foram incorporados.
+A comparação inicial confirmou que a implementação original foi criada isoladamente sobre o SHA-base indicado; nenhum commit de `lot-h/dependency-remediation` foi incorporado.
 
 ## Limitações
 
 - Não foram executados fluxos reais contra Neon, Google Drive/Docs, Vercel OIDC/WIF ou qualquer infraestrutura externa; os self-tests estruturais e o build foram executados localmente.
 - O audit de produção continua reportando advisories independentes da remoção do Firebase. Eles exigem uma rodada de manutenção de dependências separada, especialmente para avaliar `next@16` e `@vercel/oidc@4`.
-- O relatório ainda não contém SHA final, URL de branch ou URL de PR: commit e publicação são etapas posteriores a esta validação local.
+- O estado de publicação e os commits posteriores estão registrados no addendum abaixo.
+
+
+## Addendum — correções de proveniência e gate npm
+
+**Data:** 2026-11-10  
+**PR:** https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/169  
+**Branch:** `arch/remove-firebase-admin-v2`
+
+A revisão posterior identificou que os snapshots JSON preservados continuavam sendo lidos pelo runtime e podiam permanecer como base quando Neon/Prisma falhava ou não tinha projeções. A classificação anterior como “snapshots/fixtures” não significava que fossem inertes; esta distinção foi corrigida no código e na documentação.
+
+### Correções publicadas
+
+- `StudentDashboardState.dataFreshness` distingue `historical`, `current` e `unavailable`. Enquanto o perfil composto ainda inclui campos de snapshots, o estado é conservadoramente `historical`.
+- O layout do dashboard exibe um aviso explícito de que os dados não estão certificados como estado atual.
+- O dashboard principal renomeia seções e campos para linguagem histórica, suprime o bloco “What changed” e não apresenta a ação seguinte como atual enquanto a fonte composta for histórica.
+- O preview administrativo de alunos também recebe aviso de proveniência, inclusive no fluxo Young Learner.
+- O painel administrativo separa `historicalReportCount` de `publishedReportCount`; a contagem publicada vem exclusivamente do Neon e fica indisponível quando a consulta falha. Foi removido o `Math.max()` que misturava histórico e publicação.
+- README e runbooks agora declaram que os snapshots ainda são lidos pelo runtime e não podem ser tratados como dados atuais.
+- O workflow de auditoria compara o relatório de produção da branch com o SHA-base e bloqueia novos advisories, novos caminhos vulneráveis, aumento de severidade e mudança de affected range. Os findings preexistentes continuam visíveis e exigem remediação própria.
+
+### Limitação remanescente
+
+A classificação `historical` é intencionalmente conservadora: a aplicação ainda compõe campos de snapshots com projeções Neon, sem provar que todos os campos visíveis foram substituídos por projeções publicadas. O próximo passo arquitetural é separar completamente identidade/autorização do payload de aprendizagem e construir a visão atual exclusivamente a partir de registros verificados no Neon/PLIE.
+
+As correções foram publicadas no PR #169, que permanece aberto e não mesclado. Os testes de CI da revisão corretiva precisam concluir antes de qualquer decisão de merge. Nenhum deploy de produção foi autorizado.
