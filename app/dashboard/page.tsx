@@ -124,7 +124,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     status?: ProjectionEvidenceStatus
   } | null
   const showWhatChanged = Boolean(
-    whatChanged?.title &&
+    studentState.dataFreshness === 'current' &&
+      whatChanged?.title &&
       (whatChanged.changeType === 'learner-progress' ||
         whatChanged.changeType === 'learning-priority' ||
         whatChanged.changeType === 'both')
@@ -211,7 +212,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">NOW</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Last recorded snapshot</h3></div>
+        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">HISTORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Last recorded snapshot</h3></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {current.level ? <CurrentStateCard label="Last recorded level" field={current.level} /> : null}
           {current.targetLevel ? <CurrentStateCard label="Previously recorded target" field={current.targetLevel} /> : null}
@@ -232,7 +233,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         ) : null}
 
         <article className="rounded-[24px] border border-amber-200 bg-amber-50/70 p-5 shadow-sm ring-1 ring-amber-100">
-          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">Previously recorded priorities</h3></div></div>
+          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">HISTORY</p><h3 className="text-xl font-bold text-[#0a235c]">Previously recorded priorities</h3></div></div>
           <div className="mt-5 space-y-3">
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
