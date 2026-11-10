@@ -147,9 +147,11 @@ jobs:
             for (const [packageName, vulnerability] of Object.entries(vulnerabilities)) {
               if (!['high', 'critical'].includes(vulnerability.severity)) continue;
 
-              const advisories = (vulnerability.via || []).filter(item => item && typeof item === 'object');
+              const advisories = (vulnerability.via || []).filter(item =>
+                item && typeof item === 'object' && ['high', 'critical'].includes(item.severity)
+              );
               const normalizedAdvisories = advisories.length ? advisories : [{
-                source: 'npm-audit-unspecified',
+                source: 'npm-audit-package-aggregate',
                 name: packageName,
                 severity: vulnerability.severity,
                 range: vulnerability.range || 'unspecified',
