@@ -187,6 +187,19 @@ async function main() {
       processLessonTranscript(sharedInput, sharedOptions),
     ]
     await providerStarted
+    const claimedRows = await prisma.pipelineRun.findMany({
+      where: {
+        transcriptId: sharedTranscript.id,
+        normalizedRunIdentity: sharedOptions.normalizedRunIdentity,
+        status: 'processing',
+      },
+    })
+    assert.equal(claimedRows.length, 1, 'Exactly one database row may be claimed for the shared execution')
+    assert.equal(claimedRows[0].id, sharedHistoricalRun.id)
+    assert.equal(claimedRows[0].attemptNumber, 1)
+    assert.equal(claimedRows[0].normalizedRunIdentity, sharedOptions.normalizedRunIdentity)
+    assert.equal(claimedRows[0].idempotencyKey, sharedOptions.normalizedRunIdentity)
+    assert.equal(claimedRows[0].resumePoint, 'prompt_1', 'The claim must preserve the durable resume point')
     const losingRetry = await Promise.race(sharedRetries)
     assert.equal(losingRetry.duplicate, true)
     assert.equal(losingRetry.pipelineRunId, sharedHistoricalRun.id)
@@ -205,6 +218,9 @@ async function main() {
     assert.equal(sharedRuns[0].id, sharedHistoricalRun.id)
     assert.equal(sharedRuns[0].attemptNumber, 1)
     assert.equal(sharedRuns[0].executionMode, 'shared_learning_machine')
+    assert.equal(sharedRuns[0].normalizedRunIdentity, sharedOptions.normalizedRunIdentity)
+    assert.equal(sharedRuns[0].idempotencyKey, sharedOptions.normalizedRunIdentity)
+    assert.equal(sharedRuns[0].resumePoint, 'prompt_1', 'Retry must not advance or reset the persisted resume point')
     assert.equal(sharedRuns[0].status, 'failed')
     assert.equal(providerRequests, 2)
     summaries.push({
@@ -213,6 +229,9 @@ async function main() {
       samePipelineRunPreserved: true,
       pipelineRunCount: 1,
       successfulClaims: 1,
+      retryMode: 'same_execution_resume',
+      normalizedRunIdentityPreserved: true,
+      resumePointPreserved: 'prompt_1',
       losingRetryReturnedDuplicate: true,
       providerRequestCount: 1,
     })
