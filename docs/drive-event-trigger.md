@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Drive reconciliation endpoint exists, but the current repository configuration does not schedule it. The intended low-latency path is a Google Workspace Events subscription for the canonical Drive folder, delivered through Google Cloud Pub/Sub to. This describes the intended architecture; it does not prove that the Workspace Events subscription or Pub/Sub push is configured or active:
+The Drive reconciliation endpoint exists, but the current repository configuration does not schedule it. The intended low-latency path is a Google Workspace Events subscription for the canonical Drive folder, delivered through Google Cloud Pub/Sub to the endpoint below. This describes the intended architecture; it does not prove that the Workspace Events subscription or Pub/Sub push is configured or active:
 
 `POST /api/webhooks/drive-events`
 
@@ -39,6 +39,8 @@ The Pub/Sub push subscription must use OIDC authentication. The webhook validate
 Do not create a second WIF pool/provider or a second Drive worker identity. Reuse the existing PRIME WIF and `prime-drive-pipeline-worker` for Drive access.
 
 ## Validation
+
+These are future acceptance steps only. Do not execute them while Issue #112 gates remain blocked or while `PIPELINE_AUTOMATION_FROZEN=true`.
 
 1. Confirm the Workspace Events subscription is ACTIVE.
 2. Confirm the Pub/Sub push subscription is attached to the expected topic and authenticated.
