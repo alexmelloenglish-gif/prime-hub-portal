@@ -35,7 +35,7 @@ export default async function DashboardAdminPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7184a1]">Student access</p>
               <h2 className="mt-1 text-xl font-semibold">{students.length} authorized learners</h2>
               <p className="mt-2 text-sm leading-6 text-[#49617f]">
-                Preview each learner&apos;s current dashboard and confirm that the learning record shown to the student is the intended one.
+                Review each learner&apos;s authorized profile and distinguish historical snapshots from reports currently published in Neon.
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default async function DashboardAdminPage() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7184a1]">Learners</p>
           <h2 className="mt-1 text-2xl font-bold text-[#0a235c]">Authorized student dashboards</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-[#60718d]">
-            This list is for day-to-day administration. Technical processing history is kept out of the main workspace and remains available in the dedicated audit area.
+            Profile levels and historical report totals below come from retained snapshots. Published report counts are queried separately from Neon; unavailable means the database could not be confirmed.
           </p>
         </div>
 
@@ -88,23 +88,25 @@ export default async function DashboardAdminPage() {
                     <h3 className="text-xl font-semibold">{student.studentName}</h3>
                     <p className="mt-1 text-sm text-[#60718d]">{student.studentEmail}</p>
                   </div>
-                  <span className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                    {student.attendanceRate}
-                  </span>
+                  <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-900">Historical snapshot</span>
                 </div>
 
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                   <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Current level</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Snapshot level (historical)</p>
                     <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.currentLevel}</p>
                   </div>
                   <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Target</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Snapshot target (historical)</p>
                     <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.targetLevel}</p>
                   </div>
                   <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Class reports</p>
-                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.canonicalReportCount ?? 0}</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Historical reports</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.historicalReportCount ?? 0}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Published reports (Neon)</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.publishedReportCount === undefined ? 'Unavailable' : student.publishedReportCount}</p>
                   </div>
                 </div>
 
