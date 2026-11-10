@@ -200,10 +200,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
           <div className="min-w-0 max-w-4xl space-y-3">
             <p className="text-sm font-bold text-blue-700">Your PRIME learning dashboard</p>
-            <h2 className="break-words text-3xl font-bold tracking-tight text-[#0a235c] md:text-4xl">What matters now, <span className="text-blue-700">{student.studentName}.</span></h2>
+            <h2 className="break-words text-3xl font-bold tracking-tight text-[#0a235c] md:text-4xl">Your learning history, <span className="text-blue-700">{student.studentName}.</span></h2>
             <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A retained reference to previously recorded learning information. This view is not a live assessment of current progress.</p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
+              <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} recorded lesson{attendedLessons.length === 1 ? '' : 's'}</span>
               {pendingAttendance.length ? <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-950">{pendingAttendance.length} record to confirm{pendingAttendance.length === 1 ? '' : 's'}</span> : null}
               <span className="rounded-full border border-violet-300 bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-950">Learning history available below</span>
             </div>
@@ -216,8 +216,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {current.level ? <CurrentStateCard label="Last recorded level" field={current.level} /> : null}
           {current.targetLevel ? <CurrentStateCard label="Previously recorded target" field={current.targetLevel} /> : null}
-          {current.objective ? <CurrentStateCard label="Your goal" field={current.objective} /> : null}
-          {current.focus ? <CurrentStateCard label="Focus now" field={current.focus} /> : null}
+          {current.objective ? <CurrentStateCard label="Previously recorded goal" field={current.objective} /> : null}
+          {current.focus ? <CurrentStateCard label="Previously recorded focus" field={current.focus} /> : null}
         </div>
         <DevelopmentTrajectory current={current.level} target={current.targetLevel} />
       </section>
@@ -238,7 +238,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
               return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{learnerFacingText(item.title, 'Learning priority')}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{learnerFacingText(item.why, 'Keep building this skill in your next lessons.')}</p></div></div></div>
-            }) : <p className="text-sm text-slate-600">Your current priorities will appear here when they are ready.</p>}
+            }) : <p className="text-sm text-slate-600">Previously recorded priorities are not confirmed as current.</p>}
           </div>
         </article>
       </section>
@@ -246,11 +246,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       {studentState.dataFreshness === 'current' ? <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} /> : null}
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
-        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Historical lesson records</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
+        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Historical lesson records</h3><p className="mt-1 text-sm text-slate-700">Retained lesson records; this is not a live attendance statement.</p></div>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-4">
             <section id="attendance-overview" className="space-y-3">
-              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'Lesson summary available in your learning history.')}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
+              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'Lesson summary available in your learning history.')}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No attended lesson appears in the retained snapshot.</p>}
             </section>
             {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">RECORDS TO CONFIRM</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Needs confirmation</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records stay separate until the lesson details can be confirmed.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'This lesson record is waiting to be confirmed.')}</p></article>)}</div></section> : null}
           </div>
