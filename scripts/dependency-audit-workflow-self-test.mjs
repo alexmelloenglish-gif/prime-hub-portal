@@ -37,7 +37,7 @@ function chooseMatch(matches, title) {
   return { match: closed[0], duplicateCount: Math.max(0, closed.length - 1) };
 }
 function fingerprintFromIssue(issue) {
-  const titleMatch = String(issue.title || '').match(/\\[dependency-audit:([a-f0-9]{16})\\]/i);
+  const titleMatch = String(issue.title || '').match(/\[dependency-audit:([a-f0-9]{16})\]/i);
   if (titleMatch) return titleMatch[1].toLowerCase();
   const bodyMatch = String(issue.body || '').match(/Stable fingerprint: ([a-f0-9]{16})/i);
   return bodyMatch ? bodyMatch[1].toLowerCase() : null;
@@ -134,8 +134,8 @@ assert.equal(duplicateSelection.duplicateCount, 1, 'only additional open matches
 const closedIndex = indexIssueMatches([{ number: 301, state: 'closed', title, body: `Stable fingerprint: ${fingerprint}` }]);
 assert.equal(chooseMatch(closedIndex.get(fingerprint), title).match.state, 'closed', 'closed match remains closed and is not treated as missing');
 const workflowSource = (await import('node:fs')).readFileSync('.github/workflows/dependency-audit-auto.yml', 'utf8');
-assert.match(workflowSource, /github\\.paginate\\(github\\.rest\\.issues\\.listForRepo/);
+assert.match(workflowSource, /github\.paginate\(github\.rest\.issues\.listForRepo/);
 assert.match(workflowSource, /state: 'all', per_page: 100/);
-assert.doesNotMatch(workflowSource, /github\\.rest\\.search\\.issuesAndPullRequests/);
-assert.doesNotMatch(workflowSource, /findIssueMatches\\(fingerprint\\)/);
+assert.doesNotMatch(workflowSource, /github\.rest\.search\.issuesAndPullRequests/);
+assert.doesNotMatch(workflowSource, /findIssueMatches\(fingerprint\)/);
 console.log('dependency-audit-workflow-self-test: all assertions passed');
