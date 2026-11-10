@@ -123,10 +123,10 @@ export function AttendanceSummary({ lessons, scheduleLabel, historical = false }
   const latest = lessons.length ? lessons[lessons.length - 1] : null
   return (
     <aside id="attendance-summary" className="rounded-[24px] border border-emerald-300 bg-emerald-50 p-5 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-800"{historical ? 'Historical attendance' : 'Attendance'}</p>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-800">{historical ? 'Historical attendance' : 'Attendance'}</p>
       <h3 className="mt-1 text-2xl font-bold text-[#0a235c]">{lessons.length} recorded attended lesson{lessons.length === 1 ? '' : 's'}</h3>
       <p className="mt-2 text-sm leading-6 text-slate-700">{historical ? 'This count comes from retained snapshot records and is not a live attendance statement.' : 'Only lessons actually completed with the student present are included.'}</p>
-      {latest ? <p className="mt-4 text-xs font-semibold text-emerald-900">Latest recorded attended: {latest.date}</p> : <p className="mt-4 text-xs text-slate-600">No attended lessons recorded yet.</p>}
+      {latest ? <p className="mt-4 text-xs font-semibold text-emerald-900">Latest recorded attended: {latest.date}</p> : <p className="mt-4 text-xs text-slate-600">No attended lessons are recorded in this source.</p>}
       {lessons.length ? <details className="mt-3"><summary className="cursor-pointer text-xs font-bold text-emerald-800">View attended dates</summary><div className="mt-3 flex flex-wrap gap-2">{lessons.map((lesson) => <span key={lesson.id} className="rounded-full border border-emerald-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-emerald-900">{lesson.date}</span>)}</div></details> : null}
       {scheduleLabel ? <p className="mt-4 border-t border-emerald-200 pt-3 text-xs leading-5 text-slate-600">Schedule: {learnerFacingText(scheduleLabel, 'Your lesson schedule is available from PRIME.')}</p> : null}
     </aside>
