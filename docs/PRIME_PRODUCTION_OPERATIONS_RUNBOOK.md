@@ -12,7 +12,8 @@
 | Area | Required behavior |
 |---|---|
 | Student isolation | Resolve only an authorized repository snapshot or an explicit authenticated profile; never substitute another learner. |
-| Dashboard source | Use `repository` for authorized local snapshots and `preview` for unknown/unauthenticated views. There is no hidden Firestore fallback. |
+| Identity/access source | `repository` identifies an authorized learner profile; it does not certify that snapshot-derived learning fields are current. Unknown profiles remain `preview`. |
+| Learning-data freshness | Snapshot-backed composites are explicitly `historical` until all displayed learning fields are independently sourced from verified, published Neon projections. |
 | Pipeline authority | Use Prisma/Neon projections and explicit review/publication gates for student-visible learning records. |
 | Drive/Docs | Preserve Google Drive/Docs capture, `google-auth-library`, `@vercel/oidc`, and WIF for the pipeline identity. |
 | Secrets | Keep credentials in managed secret storage; never commit or print secret values. |
@@ -54,7 +55,7 @@ prime-drive-pipeline-worker@prime-hub-portal.iam.gserviceaccount.com
 
 ## 5. Validation before publication
 
-Run in the candidate branch:
+Run in the candidate branch. The successful build/self-tests do not substitute for Neon integration tests or a proof that each displayed field has published provenance:
 
 ```bash
 npm ci
@@ -77,6 +78,6 @@ This repository change does not remove or alter Firebase variables, Firestore da
 ## 7. Operational failure handling
 
 - Missing authorized learner: preserve the explicit `preview`/unavailable state; never fall back to another learner.
-- Missing pipeline data: report the bounded repository state and inspect Prisma/Neon connectivity.
+- Missing pipeline data or Neon connectivity: keep the profile marked historical, disclose the limitation, and do not present snapshot-derived levels, attendance, priorities or reports as current.
 - Drive/Docs failure: inspect OIDC/WIF audience, issuer, project number, service-account binding, and pipeline logs without exposing credentials.
 - Build or type failure: fix only within the isolated code scope and rerun the affected checks.
