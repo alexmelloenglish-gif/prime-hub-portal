@@ -27,7 +27,7 @@ export type StudentDirectoryEntry = {
   canonicalReportCount?: number
   publishedReportCount?: number
   latestPipelineStatus?: string | null
-  dataSource?: 'firestore' | 'repository'
+  dataSource?: 'repository'
 }
 
 export type PipelineActivityEntry = {

@@ -316,9 +316,6 @@ globalThis.fetch = async (_url, init = {}) => {
 async function main() {
 process.env.GOOGLE_AI_STUDIO_API_KEY = 'runtime-witness-mocked-provider'
 process.env.PRIME_PIPELINE_MODEL = 'runtime-witness-deterministic'
-delete process.env.FIREBASE_PROJECT_ID
-delete process.env.FIREBASE_CLIENT_EMAIL
-delete process.env.FIREBASE_PRIVATE_KEY
 
 const [
   { executeSharedLearningMachine },
