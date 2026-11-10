@@ -9,7 +9,7 @@ Next.js application with:
 - Google-only authentication through NextAuth
 - Protected `/dashboard` routes
 - PostgreSQL schema managed by Prisma
-- Safe dashboard fallback data when the database is empty
+- Explicit historical snapshot presentation when current Neon-backed learning data is not fully verified
 
 ## Stack
 
@@ -66,7 +66,7 @@ For production, add:
 - `https://primedigitalhub.com.br/api/auth/callback/google`
 
 ## Student data sources
-The dashboard contract is explicit: authorized historical repository snapshots are exposed as `repository`, while unauthenticated or unknown profiles are exposed as `preview`. Pipeline-backed learning records are read from Neon/PostgreSQL through Prisma. Historical files under `data/students/*.firestore.json` are retained as local snapshots and fixtures; their filenames do not imply active Firestore access.
+The dashboard separates profile identity from learning-data freshness. Authorized repository profiles are exposed as `source: repository`, while unknown or unauthenticated profiles are `preview`; the snapshot-backed composite is separately marked `dataFreshness: historical`. Published pipeline records are read from Neon/PostgreSQL through Prisma. Files under `data/students/*.firestore.json` are retained historical snapshots and are still read by the current runtime; their filenames do not imply active Firestore access.
 
 ## Vercel deployment
 
