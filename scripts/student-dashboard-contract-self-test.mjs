@@ -17,6 +17,7 @@ const studentDataSource = await readFile(new URL('lib/student-data.ts', root), '
 const dashboardLayoutSource = await readFile(new URL('app/dashboard/layout.tsx', root), 'utf8')
 const adminDashboardSource = await readFile(new URL('lib/admin-dashboard.ts', root), 'utf8')
 const adminPageSource = await readFile(new URL('app/dashboard/admin/page.tsx', root), 'utf8')
+const adminTeacherPageSource = await readFile(new URL('app/dashboard/admin/intelligence/students/page.tsx', root), 'utf8')
 
 assert.equal(italo.studentId, 'stu_fb5b64e3437e')
 assert.equal(italo.studentEmail, 'itallopires17@gmail.com')
@@ -198,6 +199,10 @@ assert.ok(!adminDashboardSource.includes('Math.max(student.historicalReportCount
 assert.ok(!adminDashboardSource.includes("learningRecordStatus: 'ready'"))
 assert.ok(adminPageSource.includes('Snapshot level (historical)'))
 assert.ok(adminPageSource.includes('Published reports (Neon)'))
+assert.ok(adminTeacherPageSource.includes('Historical snapshot'))
+assert.ok(adminTeacherPageSource.includes('Published in Neon'))
+assert.ok(!adminTeacherPageSource.includes('learningRecordLabel'))
+assert.ok(!adminTeacherPageSource.includes('canonicalReportCount'))
 
 console.log('Student Dashboard Presentation Contract v1 self-test passed: NOW/RECENT/MEMORY + Eduarda pedagogical What Changed + learner-facing authority labels + hidden technical evidence language + preserved learning history.')
 
