@@ -166,35 +166,27 @@ jobs:
 
             function normalizeAdvisories(vulnerability, packageName) {
               const candidates = Array.isArray(vulnerability.via) ? vulnerability.via : [];
-              const normalized = candidates.flatMap((item) => {
-                if (typeof item === 'string') {
-                  return [{
-                    source: item,
-                    name: item,
-                    severity: vulnerability.severity,
-                    range: vulnerability.range || 'unspecified',
-                    url: item.startsWith('http') ? item : ''
-                  }];
-                }
-                if (item && typeof item === 'object') {
-                  return [{
-                    source: item.source || item.url || item.name || 'npm-audit-unspecified',
-                    name: item.name || packageName,
-                    severity: item.severity || vulnerability.severity,
-                    range: item.range || vulnerability.range || 'unspecified',
-                    url: item.url || ''
-                  }];
-                }
-                return [];
-              }).filter((item) => ['high', 'critical'].includes(item.severity));
+              const viaDependencies = [...new Set(candidates.filter((item) => typeof item === 'string'))].sort();
+              const advisories = candidates
+                .filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+                .map((item) => ({
+                  source: item.source || item.url || item.name || 'npm-audit-unspecified',
+                  name: item.name || packageName,
+                  severity: item.severity || vulnerability.severity,
+                  range: item.range || vulnerability.range || 'unspecified',
+                  url: item.url || ''
+                }))
+                .filter((item) => ['high', 'critical'].includes(item.severity));
 
-              return normalized.length ? normalized : [{
+              const normalized = advisories.length ? advisories : [{
                 source: 'npm-audit-package-aggregate',
                 name: packageName,
                 severity: vulnerability.severity,
                 range: vulnerability.range || 'unspecified',
                 url: ''
-              }];
+              }].filter((item) => ['high', 'critical'].includes(item.severity));
+
+              return { advisories: normalized, viaDependencies };
             }
 
             function advisoryIdentity(packageName, advisory) {
@@ -239,7 +231,8 @@ jobs:
               if (!['high', 'critical'].includes(vulnerability.severity)) continue;
               const paths = [...new Set((vulnerability.nodes || []).map(String))].sort();
 
-              for (const advisory of normalizeAdvisories(vulnerability, packageName)) {
+              const { advisories, viaDependencies } = normalizeAdvisories(vulnerability, packageName);
+              for (const advisory of advisories) {
                 const fingerprint = fingerprintFor(packageName, advisory);
                 if (processedFingerprints.has(fingerprint)) {
                   core.info(`Skipped repeated advisory fingerprint ${fingerprint} in the same run.`);
@@ -263,6 +256,7 @@ jobs:
                   `- Advisory URL: ${advisory.url || 'not supplied by npm audit'}`,
                   `- Affected range: ${advisory.range || 'unspecified'}`,
                   `- Dependency paths: ${paths.length ? paths.join(', ') : 'not supplied by npm audit'}`,
+                  `- viaDependencies (related package names, not advisory IDs): ${viaDependencies.length ? viaDependencies.join(', ') : 'none'}`,
                   `- Stable fingerprint: ${fingerprint}`,
                   `- First detected: ${firstDetected}`,
                   `- Latest detected: ${now}`,
