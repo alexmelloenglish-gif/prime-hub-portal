@@ -182,6 +182,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <span className="font-bold">Admin preview active.</span> Viewing {student.studentEmail} while signed in as {studentState.viewerEmail}.
         </section>
       ) : null}
+      {studentState.isPreviewingAnotherStudent && studentState.dataFreshness === 'historical' ? (
+        <section role="status" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+          <strong>Historical learning snapshot.</strong> This learner&apos;s retained repository records are not verified as the current state. Do not interpret the displayed level, priorities or lesson history as current until corresponding PLIE records are confirmed as published in Neon.
+        </section>
+      ) : null}
 
       <section className="relative overflow-hidden rounded-[30px] border border-blue-200 bg-gradient-to-br from-blue-100 via-white to-sky-100 p-5 shadow-md md:p-7">
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center">
@@ -195,7 +200,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <div className="min-w-0 max-w-4xl space-y-3">
             <p className="text-sm font-bold text-blue-700">Your PRIME learning dashboard</p>
             <h2 className="break-words text-3xl font-bold tracking-tight text-[#0a235c] md:text-4xl">What matters now, <span className="text-blue-700">{student.studentName}.</span></h2>
-            <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A focused view of where you are now, what matters next, your recent lessons and useful learning memory.</p>
+            <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A retained reference to previously recorded learning information. This view is not a live assessment of current progress.</p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
               {pendingAttendance.length ? <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-950">{pendingAttendance.length} record to confirm{pendingAttendance.length === 1 ? '' : 's'}</span> : null}
@@ -206,10 +211,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">NOW</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Current State</h3></div>
+        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">NOW</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Last recorded snapshot</h3></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {current.level ? <CurrentStateCard label="Your English now" field={current.level} /> : null}
-          {current.targetLevel ? <CurrentStateCard label="Where you're heading" field={current.targetLevel} /> : null}
+          {current.level ? <CurrentStateCard label="Last recorded level" field={current.level} /> : null}
+          {current.targetLevel ? <CurrentStateCard label="Previously recorded target" field={current.targetLevel} /> : null}
           {current.objective ? <CurrentStateCard label="Your goal" field={current.objective} /> : null}
           {current.focus ? <CurrentStateCard label="Focus now" field={current.focus} /> : null}
         </div>
@@ -227,7 +232,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         ) : null}
 
         <article className="rounded-[24px] border border-amber-200 bg-amber-50/70 p-5 shadow-sm ring-1 ring-amber-100">
-          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">What Matters Now</h3></div></div>
+          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">Previously recorded priorities</h3></div></div>
           <div className="mt-5 space-y-3">
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
@@ -237,10 +242,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         </article>
       </section>
 
-      <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} />
+      {studentState.dataFreshness === 'current' ? <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} /> : null}
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
-        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
+        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Historical lesson records</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-4">
             <section id="attendance-overview" className="space-y-3">
