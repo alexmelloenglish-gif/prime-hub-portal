@@ -10,6 +10,7 @@ on:
     paths:
       - package.json
       - package-lock.json
+      - .github/workflows/dependency-audit-auto.yml
   workflow_dispatch:
   schedule:
     - cron: "23 7 * * 1"
@@ -141,43 +142,98 @@ jobs:
             const { owner, repo } = context.repo;
             const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
             const vulnerabilities = report.vulnerabilities || {};
+            const processedFingerprints = new Set();
             let upserted = 0;
             let closedMatches = 0;
+            let duplicateMatches = 0;
 
-            for (const [packageName, vulnerability] of Object.entries(vulnerabilities)) {
-              if (!['high', 'critical'].includes(vulnerability.severity)) continue;
+            function normalizeAdvisories(vulnerability, packageName) {
+              const candidates = Array.isArray(vulnerability.via) ? vulnerability.via : [];
+              const normalized = candidates.flatMap((item) => {
+                if (typeof item === 'string') {
+                  return [{
+                    source: item,
+                    name: item,
+                    severity: vulnerability.severity,
+                    range: vulnerability.range || 'unspecified',
+                    url: item.startsWith('http') ? item : ''
+                  }];
+                }
+                if (item && typeof item === 'object') {
+                  return [{
+                    source: item.source || item.url || item.name || 'npm-audit-unspecified',
+                    name: item.name || packageName,
+                    severity: item.severity || vulnerability.severity,
+                    range: item.range || vulnerability.range || 'unspecified',
+                    url: item.url || ''
+                  }];
+                }
+                return [];
+              }).filter((item) => ['high', 'critical'].includes(item.severity));
 
-              const advisories = (vulnerability.via || []).filter(item =>
-                item && typeof item === 'object' && ['high', 'critical'].includes(item.severity)
-              );
-              const normalizedAdvisories = advisories.length ? advisories : [{
+              return normalized.length ? normalized : [{
                 source: 'npm-audit-package-aggregate',
                 name: packageName,
                 severity: vulnerability.severity,
                 range: vulnerability.range || 'unspecified',
                 url: ''
               }];
+            }
 
-              for (const advisory of normalizedAdvisories) {
-                const severity = advisory.severity || vulnerability.severity;
-                if (!['high', 'critical'].includes(severity)) continue;
+            function advisoryIdentity(packageName, advisory) {
+              return [
+                `${owner}/${repo}`,
+                packageName,
+                String(advisory.source || advisory.url || advisory.name || 'npm-audit-unspecified'),
+                String(advisory.severity),
+                String(advisory.range || 'unspecified')
+              ].join('|');
+            }
 
-                const advisoryId = String(advisory.source || advisory.url || advisory.name || 'npm-audit-unspecified');
-                const affectedRange = String(advisory.range || vulnerability.range || 'unspecified');
-                const paths = [...new Set((vulnerability.nodes || []).map(String))].sort();
-                const identity = [
-                  `${owner}/${repo}`,
-                  packageName,
-                  advisoryId,
-                  severity,
-                  affectedRange,
-                  paths.join(',')
-                ].join('|');
-                const fingerprint = crypto.createHash('sha256').update(identity).digest('hex').slice(0, 16);
-                const title = `[dependency-audit:${fingerprint}] ${packageName} — ${severity}`;
-                const query = `repo:${owner}/${repo} is:issue in:title ${fingerprint}`;
-                const search = await github.rest.search.issuesAndPullRequests({ q: query });
-                const match = (search.data.items || []).find(item => item.title === title);
+            function fingerprintFor(packageName, advisory) {
+              return crypto.createHash('sha256')
+                .update(advisoryIdentity(packageName, advisory))
+                .digest('hex')
+                .slice(0, 16);
+            }
+
+            async function findIssueMatches(fingerprint) {
+              const search = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue ${fingerprint}`
+              });
+              return (search.data.items || [])
+                .filter((item) => !item.pull_request)
+                .filter((item) => item.title.includes(`[dependency-audit:${fingerprint}]`)
+                  || item.body?.includes(`Stable fingerprint: ${fingerprint}`))
+                .sort((a, b) => a.number - b.number);
+            }
+
+            function chooseMatch(matches, title) {
+              const exactTitle = matches.filter((item) => item.title === title);
+              const open = exactTitle.filter((item) => item.state === 'open');
+              if (open.length) return { match: open[0], duplicateCount: open.length - 1 };
+              const openAny = matches.filter((item) => item.state === 'open');
+              if (openAny.length) return { match: openAny[0], duplicateCount: openAny.length - 1 };
+              const closed = matches.filter((item) => item.state === 'closed');
+              return { match: closed[0], duplicateCount: Math.max(0, closed.length - 1) };
+            }
+
+            for (const [packageName, vulnerability] of Object.entries(vulnerabilities)) {
+              if (!['high', 'critical'].includes(vulnerability.severity)) continue;
+              const paths = [...new Set((vulnerability.nodes || []).map(String))].sort();
+
+              for (const advisory of normalizeAdvisories(vulnerability, packageName)) {
+                const fingerprint = fingerprintFor(packageName, advisory);
+                if (processedFingerprints.has(fingerprint)) {
+                  core.info(`Skipped repeated advisory fingerprint ${fingerprint} in the same run.`);
+                  continue;
+                }
+                processedFingerprints.add(fingerprint);
+
+                const title = `[dependency-audit:${fingerprint}] ${packageName} — ${advisory.severity}`;
+                const matches = await findIssueMatches(fingerprint);
+                const { match, duplicateCount } = chooseMatch(matches, title);
+                duplicateMatches += duplicateCount;
                 const now = new Date().toISOString();
                 const firstDetected = match?.body?.match(/First detected: (.+)/)?.[1] || now;
                 const body = [
@@ -185,10 +241,10 @@ jobs:
                   '',
                   `- Repository: ${owner}/${repo}`,
                   `- Package: ${packageName}`,
-                  `- Severity: **${severity}**`,
-                  `- Advisory identifier: ${advisoryId}`,
+                  `- Severity: **${advisory.severity}**`,
+                  `- Advisory identifier: ${advisory.source || advisory.name}`,
                   `- Advisory URL: ${advisory.url || 'not supplied by npm audit'}`,
-                  `- Affected range: ${affectedRange}`,
+                  `- Affected range: ${advisory.range || 'unspecified'}`,
                   `- Dependency paths: ${paths.length ? paths.join(', ') : 'not supplied by npm audit'}`,
                   `- Stable fingerprint: ${fingerprint}`,
                   `- First detected: ${firstDetected}`,
@@ -208,14 +264,14 @@ jobs:
                   await github.rest.issues.update({
                     owner, repo, issue_number: match.number, body
                   });
-                  core.info(`Updated ${title} (#${match.number})`);
+                  core.info(`Updated ${title} (#${match.number}); retained ${duplicateCount} duplicate match(es) untouched.`);
                   upserted++;
                 } else if (match && match.state === 'closed') {
                   core.warning(`Matching issue #${match.number} is closed; it was not reopened and no duplicate was created.`);
                   closedMatches++;
                 } else {
                   const created = await github.rest.issues.create({ owner, repo, title, body });
-                  core.info(`Created ${title} (#${created.data.number})`);
+                  core.info(`Created ${title} (#${created.data.number}).`);
                   upserted++;
                 }
               }
@@ -223,5 +279,5 @@ jobs:
 
             core.summary
               .addHeading('Dependency advisory issue synchronization')
-              .addRaw(`Created/updated: ${upserted}\n\nClosed matches left unchanged: ${closedMatches}`)
+              .addRaw(`Created/updated: ${upserted}\n\nClosed matches left unchanged: ${closedMatches}\n\nRepeated fingerprints skipped: ${duplicateMatches}`)
               .write();
