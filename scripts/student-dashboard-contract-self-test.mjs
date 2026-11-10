@@ -190,6 +190,7 @@ assert.ok(!/firebase-admin|FIREBASE_|getFirebase|source: 'firestore'|firestore_u
 assert.ok(studentDataSource.includes("source: mergedStudent ? 'repository' : 'preview'"))
 assert.ok(studentDataSource.includes("dataFreshness: mergedStudent ? 'historical' : 'unavailable'"))
 assert.ok(dashboardLayoutSource.includes('Historical learning snapshot'))
+assert.ok(dashboardSource.includes("studentState.isPreviewingAnotherStudent && studentState.dataFreshness === 'historical'"))
 assert.ok(dashboardSource.includes('Last recorded snapshot'))
 assert.ok(dashboardSource.includes("studentState.dataFreshness === 'current'"))
 assert.ok(adminDashboardSource.includes('historicalReportCount'))
