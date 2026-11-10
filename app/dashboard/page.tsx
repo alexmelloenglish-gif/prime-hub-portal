@@ -106,7 +106,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const student = studentState.student
 
   if (student.experienceMode === 'young-learner') {
-    return <YoungLearnerJourneyDashboard student={student} />
+    return (
+      <>
+        {studentState.isPreviewingAnotherStudent && studentState.dataFreshness === 'historical' ? (
+          <section role="status" className="mb-5 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+            <strong>Historical learning snapshot.</strong> This learner&apos;s retained repository records are not verified as the current state. Treat this view as historical reference until corresponding PLIE records are confirmed as published in Neon.
+          </section>
+        ) : null}
+        <YoungLearnerJourneyDashboard student={student} />
+      </>
+    )
   }
 
   const projection = buildDashboardProjection(student)
