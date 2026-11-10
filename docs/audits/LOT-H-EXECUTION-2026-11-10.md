@@ -53,7 +53,7 @@ critical: 0
 total: 8
 ```
 
-Os 8 advisories moderados restantes estão na cadeia opcional Firebase/Google, principalmente em `firebase-admin`, `@google-cloud/firestore`, `@google-cloud/storage`, `google-gax`, `retry-request`, `teeny-request`, `gaxios` e `uuid`. Não restaram findings `high` ou `critical` dos caminhos originalmente auditados.
+Os 8 registros de pacote moderados da auditoria de produção estão na cadeia opcional Firebase/Google, principalmente em `firebase-admin`, `@google-cloud/firestore`, `@google-cloud/storage`, `google-gax`, `retry-request`, `teeny-request`, `gaxios` e `uuid`. Eles correspondem aos advisory IDs detalhados na seção de auditoria completa. Não restaram findings `high` ou `critical` dos caminhos originalmente auditados.
 
 Esses advisories moderados não foram ocultados nem tratados como resolvidos. Permanecem como risco residual para uma rodada posterior de atualização coordenada do Firebase Admin/Google Cloud, pois não há, nesta execução, evidência suficiente para atualizar esse conjunto além dos pisos aplicados sem ampliar o risco de incompatibilidade.
 
@@ -62,6 +62,33 @@ Esses advisories moderados não foram ocultados nem tratados como resolvidos. Pe
 - Não foram executados fluxos reais de autenticação OIDC com credenciais Vercel.
 - Não foram executadas operações reais contra Firestore ou Cloud Storage; isso exigiria credenciais e acesso autorizado. Os módulos foram importados e o build/self-tests foram executados sem expor credenciais.
 - Não foram modificados secrets, OAuth, bancos, Firestore ou produção.
+
+## Auditoria completa da árvore
+
+Além da auditoria de produção, foi executado `npm audit --json` sem `--omit=dev` no mesmo HEAD final.
+
+| Escopo | Registros de pacote | Info | Low | Moderate | High | Critical |
+|---|---:|---:|---:|---:|---:|---:|
+| Produção (`--omit=dev`) | 8 | 0 | 0 | 8 | 0 | 0 |
+| Árvore completa | 14 | 0 | 0 | 14 | 0 | 0 |
+
+Os 14 registros da árvore completa correspondem a **dois advisory IDs únicos**:
+
+- `GHSA-w5hq-g745-h8pq` / npm `1119441` — vulnerabilidade de bounds check em `uuid`; caminho `node_modules/uuid`, alcança produção por `gaxios`/Google Cloud e também é referenciada por `google-gax` e `teeny-request`. O fix automático proposto pelo npm é `firebase-admin@14.5.0`, um major.
+- `GHSA-g3hv-75wg-m249` / npm `1244623` — potencial DoS em `minimatch`; caminho `node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch`, somente na árvore de desenvolvimento.
+
+Não há findings high ou critical na árvore completa. Os oito registros de produção e os seis registros adicionais de desenvolvimento são contagens de pacotes afetados, não oito ou quatorze advisories distintos.
+
+## CI verificado no HEAD final
+
+HEAD verificado: `db42921a323eb6ac618dee12809a70db8fb5c122`.
+
+- [Dependency Audit Report — run 42769481119](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769481119) — success
+- [Golden Runtime Witness — run 42769481766](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769481766) — success
+- [Coordination Runtime Witness — run 42769481135](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769481135) — success
+- [Student Dashboard Contract — run 42769481107](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769481107) — success
+
+No PR, a verificação independente retornou 6 checks successful, 1 skipped e 0 pending/failing.
 
 ## Estado de encerramento
 
