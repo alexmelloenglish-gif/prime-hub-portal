@@ -36,6 +36,24 @@ function chooseMatch(matches, title) {
   const closed = matches.filter((item) => item.state === 'closed');
   return { match: closed[0], duplicateCount: Math.max(0, closed.length - 1) };
 }
+function fingerprintFromIssue(issue) {
+  const titleMatch = String(issue.title || '').match(/\\[dependency-audit:([a-f0-9]{16})\\]/i);
+  if (titleMatch) return titleMatch[1].toLowerCase();
+  const bodyMatch = String(issue.body || '').match(/Stable fingerprint: ([a-f0-9]{16})/i);
+  return bodyMatch ? bodyMatch[1].toLowerCase() : null;
+}
+function indexIssueMatches(issues) {
+  const index = new Map();
+  for (const issue of issues) {
+    if (issue.pull_request) continue;
+    const fingerprint = fingerprintFromIssue(issue);
+    if (!fingerprint) continue;
+    if (!index.has(fingerprint)) index.set(fingerprint, []);
+    index.get(fingerprint).push(issue);
+  }
+  for (const matches of index.values()) matches.sort((a, b) => a.number - b.number);
+  return index;
+}
 function classifyAudit(exitCode, vulnerabilities) {
   const total = Object.values(vulnerabilities).length;
   if (!Number.isInteger(exitCode) || exitCode < 0) return 'technical-failure';
@@ -87,4 +105,37 @@ assert.equal(classifyAudit(0, {}), 'report-valid');
 assert.equal(classifyAudit(1, { postcss: {} }), 'report-valid');
 assert.equal(classifyAudit(1, {}), 'technical-failure');
 assert.equal(classifyAudit(2, { postcss: {} }), 'technical-failure');
+const existing30 = Array.from({ length: 30 }, (_, index) => {
+  const fp = (index + 1).toString(16).padStart(16, '0');
+  return {
+    number: 117 + index,
+    state: index === 29 ? 'closed' : 'open',
+    title: `[dependency-audit:${fp}] package-${index} — high`,
+    body: `Stable fingerprint: ${fp}`
+  };
+});
+const indexed30 = indexIssueMatches(existing30);
+assert.equal(indexed30.size, 30, 'all 30 pre-existing advisory Issues are indexed');
+assert.equal([...indexed30.values()].flat().length, 30, 'existing Issues are retained, not recreated');
+assert.equal(indexed30.get('000000000000001e')[0].number, 146);
+assert.equal(indexed30.get('000000000000001e')[0].state, 'closed', 'closed Issue remains discoverable');
+const fingerprintIndex = indexed30.get('0000000000000001');
+const duplicateSet = [
+  { number: 202, state: 'open', title, body: `Stable fingerprint: ${fingerprint}` },
+  { number: 201, state: 'open', title, body: `Stable fingerprint: ${fingerprint}` },
+  { number: 203, state: 'closed', title, body: `Stable fingerprint: ${fingerprint}` },
+  { number: 204, state: 'open', title: 'unrelated pull request', body: '', pull_request: { url: 'https://example.test/pr/204' } }
+];
+const indexedDuplicates = indexIssueMatches(duplicateSet);
+assert.equal(indexedDuplicates.get(fingerprint).length, 3, 'duplicate Issues are indexed but PRs are excluded');
+const duplicateSelection = chooseMatch(indexedDuplicates.get(fingerprint), title);
+assert.equal(duplicateSelection.match.number, 201, 'selection remains deterministic by lowest issue number');
+assert.equal(duplicateSelection.duplicateCount, 1, 'only additional open matches count as duplicates');
+const closedIndex = indexIssueMatches([{ number: 301, state: 'closed', title, body: `Stable fingerprint: ${fingerprint}` }]);
+assert.equal(chooseMatch(closedIndex.get(fingerprint), title).match.state, 'closed', 'closed match remains closed and is not treated as missing');
+const workflowSource = (await import('node:fs')).readFileSync('.github/workflows/dependency-audit-auto.yml', 'utf8');
+assert.match(workflowSource, /github\\.paginate\\(github\\.rest\\.issues\\.listForRepo/);
+assert.match(workflowSource, /state: 'all', per_page: 100/);
+assert.doesNotMatch(workflowSource, /github\\.rest\\.search\\.issuesAndPullRequests/);
+assert.doesNotMatch(workflowSource, /findIssueMatches\\(fingerprint\\)/);
 console.log('dependency-audit-workflow-self-test: all assertions passed');
