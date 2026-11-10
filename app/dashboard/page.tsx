@@ -106,7 +106,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const student = studentState.student
 
   if (student.experienceMode === 'young-learner') {
-    return <YoungLearnerJourneyDashboard student={student} />
+    return (
+      <>
+        {studentState.isPreviewingAnotherStudent && studentState.dataFreshness === 'historical' ? (
+          <section role="status" className="mb-5 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+            <strong>Historical learning snapshot.</strong> This learner&apos;s retained repository records are not verified as the current state. Treat this view as historical reference until corresponding PLIE records are confirmed as published in Neon.
+          </section>
+        ) : null}
+        <YoungLearnerJourneyDashboard student={student} />
+      </>
+    )
   }
 
   const projection = buildDashboardProjection(student)
@@ -124,7 +133,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     status?: ProjectionEvidenceStatus
   } | null
   const showWhatChanged = Boolean(
-    whatChanged?.title &&
+    studentState.dataFreshness === 'current' &&
+      whatChanged?.title &&
       (whatChanged.changeType === 'learner-progress' ||
         whatChanged.changeType === 'learning-priority' ||
         whatChanged.changeType === 'both')
@@ -172,7 +182,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const visibleFeedback = selectCurrentFeedback(student.teacherFeedback)
   const profileImage = resolveStudentProfileAsset(student.studentId, session.user.image)
   const nextAction = projection.nextAction
-  const scheduleLabel = String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')
+  const scheduleLabel = studentState.dataFreshness === 'current'
+    ? String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')
+    : 'Schedule is not verified in current Neon records.'
   const learningLinks = resolveCanonicalManageSpaceLinks(student.studentEmail, student.manageSpace)
 
   return (
@@ -180,6 +192,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       {studentState.isPreviewingAnotherStudent ? (
         <section className="rounded-2xl border border-blue-300 bg-blue-100 px-4 py-3 text-sm text-blue-950 shadow-sm">
           <span className="font-bold">Admin preview active.</span> Viewing {student.studentEmail} while signed in as {studentState.viewerEmail}.
+        </section>
+      ) : null}
+      {studentState.isPreviewingAnotherStudent && studentState.dataFreshness === 'historical' ? (
+        <section role="status" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+          <strong>Historical learning snapshot.</strong> This learner&apos;s retained repository records are not verified as the current state. Do not interpret the displayed level, priorities or lesson history as current until corresponding PLIE records are confirmed as published in Neon.
         </section>
       ) : null}
 
@@ -194,10 +211,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </div>
           <div className="min-w-0 max-w-4xl space-y-3">
             <p className="text-sm font-bold text-blue-700">Your PRIME learning dashboard</p>
-            <h2 className="break-words text-3xl font-bold tracking-tight text-[#0a235c] md:text-4xl">What matters now, <span className="text-blue-700">{student.studentName}.</span></h2>
-            <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A focused view of where you are now, what matters next, your recent lessons and useful learning memory.</p>
+            <h2 className="break-words text-3xl font-bold tracking-tight text-[#0a235c] md:text-4xl">Your learning history, <span className="text-blue-700">{student.studentName}.</span></h2>
+            <p className="max-w-3xl text-sm leading-6 text-slate-700 md:text-base">A retained reference to previously recorded learning information. This view is not a live assessment of current progress.</p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} attended lesson{attendedLessons.length === 1 ? '' : 's'}</span>
+              <span className="rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-950">{attendedLessons.length} recorded lesson{attendedLessons.length === 1 ? '' : 's'}</span>
               {pendingAttendance.length ? <span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-950">{pendingAttendance.length} record to confirm{pendingAttendance.length === 1 ? '' : 's'}</span> : null}
               <span className="rounded-full border border-violet-300 bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-950">Learning history available below</span>
             </div>
@@ -206,14 +223,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </section>
 
       <section className="space-y-4">
-        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">NOW</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Current State</h3></div>
+        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">HISTORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Last recorded snapshot</h3></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {current.level ? <CurrentStateCard label="Your English now" field={current.level} /> : null}
-          {current.targetLevel ? <CurrentStateCard label="Where you're heading" field={current.targetLevel} /> : null}
-          {current.objective ? <CurrentStateCard label="Your goal" field={current.objective} /> : null}
-          {current.focus ? <CurrentStateCard label="Focus now" field={current.focus} /> : null}
+          {current.level ? <CurrentStateCard label="Last recorded level" field={current.level} /> : null}
+          {current.targetLevel ? <CurrentStateCard label="Previously recorded target" field={current.targetLevel} /> : null}
+          {current.objective ? <CurrentStateCard label="Previously recorded goal" field={current.objective} /> : null}
+          {current.focus ? <CurrentStateCard label="Previously recorded focus" field={current.focus} /> : null}
         </div>
-        <DevelopmentTrajectory current={current.level} target={current.targetLevel} />
+        {studentState.dataFreshness === 'current' ? <DevelopmentTrajectory current={current.level} target={current.targetLevel} /> : null}
       </section>
 
       <section className="grid gap-5 xl:grid-cols-2">
@@ -227,36 +244,36 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         ) : null}
 
         <article className="rounded-[24px] border border-amber-200 bg-amber-50/70 p-5 shadow-sm ring-1 ring-amber-100">
-          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">NOW</p><h3 className="text-xl font-bold text-[#0a235c]">What Matters Now</h3></div></div>
+          <div className="flex items-center gap-3"><Compass className="h-5 w-5 text-amber-700" /><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">HISTORY</p><h3 className="text-xl font-bold text-[#0a235c]">Previously recorded priorities</h3></div></div>
           <div className="mt-5 space-y-3">
             {visiblePriorities.length ? visiblePriorities.map((priority, index) => {
               const item = priority as { id?: string; title?: string; why?: string; evidence?: string; status?: ProjectionEvidenceStatus }
               return <div key={item.id ?? `priority-${index}`} className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0a235c] text-xs font-bold text-white">{index + 1}</span><div className="min-w-0"><h4 className="font-bold text-[#0a235c]">{learnerFacingText(item.title, 'Learning priority')}</h4><p className="mt-1.5 text-sm leading-6 text-slate-700">{learnerFacingText(item.why, 'Keep building this skill in your next lessons.')}</p></div></div></div>
-            }) : <p className="text-sm text-slate-600">Your current priorities will appear here when they are ready.</p>}
+            }) : <p className="text-sm text-slate-600">Previously recorded priorities are not confirmed as current.</p>}
           </div>
         </article>
       </section>
 
-      <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} />
+      {studentState.dataFreshness === 'current' ? <NextActionCard title={nextAction?.title} description={nextAction?.description} destination={nextAction?.destination ?? undefined} /> : null}
 
       <section className="rounded-[28px] border border-blue-200 bg-blue-50/50 p-4 shadow-sm md:p-5">
-        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">RECENT</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Attended Lessons</h3><p className="mt-1 text-sm text-slate-700">Your latest attended lessons.</p></div>
+        <div className="mb-4"><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">HISTORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Historical lesson records</h3><p className="mt-1 text-sm text-slate-700">Retained lesson records; this is not a live attendance statement.</p></div>
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
           <div className="min-w-0 space-y-4">
             <section id="attendance-overview" className="space-y-3">
-              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'Lesson summary available in your learning history.')}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No recent attended lesson is available yet.</p>}
+              {recentAttendance.length ? <div className="grid gap-3 lg:grid-cols-2">{recentAttendance.map((lesson) => <article key={lesson.id} className="rounded-2xl border border-blue-200 bg-white p-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-base font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold leading-5 text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-900">{lesson.status === 'present' ? 'attended' : lesson.status}</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'Lesson summary available in your learning history.')}</p></article>)}</div> : <p className="rounded-2xl border border-blue-200 bg-white p-4 text-sm text-slate-600">No attended lesson appears in the retained snapshot.</p>}
             </section>
             {pendingAttendance.length ? <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-800">RECORDS TO CONFIRM</p><h4 className="mt-1 text-lg font-bold text-[#0a235c]">Needs confirmation</h4><p className="mt-1 text-sm leading-6 text-slate-700">These records stay separate until the lesson details can be confirmed.</p></div><div className="mt-3 grid gap-3">{pendingAttendance.map((lesson) => <article key={`pending-${lesson.id}`} className="rounded-xl border border-amber-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-bold text-[#0a235c]">{lesson.date}</p><p className="mt-1 text-sm font-semibold text-[#2f4b78]">{learnerFacingText(lesson.title, 'Lesson')}</p></div><span className="rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-amber-900">pending</span></div><p className="mt-3 text-sm leading-6 text-slate-700">{learnerFacingText(lesson.summary, 'This lesson record is waiting to be confirmed.')}</p></article>)}</div></section> : null}
           </div>
-          <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} /></div>
+          <div className="xl:sticky xl:top-5"><AttendanceSummary lessons={attendedLessons} scheduleLabel={scheduleLabel} historical={studentState.dataFreshness === 'historical'} /></div>
         </div>
       </section>
 
             <section className="rounded-[28px] border border-slate-300 bg-slate-100/70 p-4 shadow-sm md:p-5">
-        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Your learning history, useful patterns, vocabulary, grammar and teacher feedback stay together here.</p></div>
+        <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">MEMORY</p><h3 className="mt-1 text-2xl font-bold text-[#0a235c]">Learner Memory</h3><p className="mt-1 text-sm text-slate-700">Historical learning memory, vocabulary, grammar and teacher feedback are retained here for reference.</p></div>
         {allReports.length ? <section id="class-reports" className="mt-5 rounded-[24px] border border-violet-200 bg-violet-50/60 p-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">Learning history</p><h4 className="mt-1 text-xl font-bold text-[#0a235c]">Class Reports</h4><p className="mt-1 text-sm text-slate-700">Tap a class to open the full report.</p></div><div className="mt-4 space-y-3">{allReports.map((report) => { const notes = reportLearningNotes(report.teacherInsight); return <details key={report.id} className="group rounded-2xl border border-violet-200 bg-white shadow-sm"><summary className="cursor-pointer list-none p-4 [&::-webkit-details-marker]:hidden"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">{report.date}</p><h4 className="mt-1 text-base font-bold leading-6 text-[#0a235c]">{learnerReportTitle(report.title)}</h4></div><span className="shrink-0 text-xs font-bold text-violet-700 group-open:hidden">Open</span><span className="hidden shrink-0 text-xs font-bold text-violet-700 group-open:inline">Close</span></div></summary><div className="border-t border-violet-100 px-4 pb-4 pt-3"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What you worked on</p><p className="mt-2 text-sm leading-6 text-slate-700">{learnerFacingText(report.summary, 'Lesson summary available.')}</p></div>{report.focus.length ? <div className="mt-3 flex flex-wrap gap-2">{report.focus.slice(0, DASHBOARD_DISPLAY_BUDGET.reportFocusItems).map((item) => { const safeItem = learnerFacingText(item); return safeItem ? <span key={item} className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-900">{safeItem}</span> : null })}</div> : null}{report.vocabulary.length ? <p className="mt-3 text-xs leading-5 text-slate-600">Vocabulary: {report.vocabulary.slice(0, DASHBOARD_DISPLAY_BUDGET.reportVocabularyItems).map((item) => learnerFacingText(item)).filter(Boolean).join(', ')}</p> : null}{notes.noticed ? <div className="mt-4 border-t border-violet-100 pt-3"><p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-700">What we noticed</p><p className="mt-2 text-sm leading-6 text-[#3d5578]">{notes.noticed}</p></div> : null}</div></details>})}</div></section> : null}
         {visibleProgress.length ? <section id="progress-tracker" className="mt-4 grid gap-4 lg:grid-cols-2">{visibleProgress.map((item) => { const state = normalizeProgressState(item.status); return <article key={item.id} className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><h4 className="text-lg font-bold text-[#0a235c]">{item.title}</h4><ProgressStateBadge status={state} /></div>{state === 'Not Assessed' ? <p className="mt-2.5 text-sm leading-6 text-slate-500">We do not have enough information yet to describe this skill.</p> : <p className="mt-2.5 text-sm leading-6 text-slate-700">{learnerFacingText(item.insight, 'Keep building this skill through real use in lessons.')}</p>}</article> })}</section> : null}
-        {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Vocabulary to Reuse</h4><p className="mt-1 text-sm text-slate-700">Choose a word and use it in a sentence of your own.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
+        {activeVocabulary.length ? <section id="vocabulary-bank" className="mt-6 space-y-3"><div><h4 className="text-lg font-bold text-[#0a235c]">Previously recorded vocabulary</h4><p className="mt-1 text-sm text-slate-700">These items are retained learning references; confirm current relevance with your teacher.</p></div><VocabularyReuseGrid studentEmail={student.studentEmail} items={activeVocabulary} /></section> : null}
         {visibleGrammar.length ? <section id="grammar-overview" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">{student.grammarOverview.title}</h4><p className="text-sm leading-7 text-slate-700">{learnerFacingText(student.grammarOverview.summary, 'Useful language patterns from your recent lessons.')}</p><ul className="grid gap-3 lg:grid-cols-2">{visibleGrammar.map((point) => { const safePoint = learnerFacingText(point); return safePoint ? <li key={point} className="rounded-2xl border border-slate-300 bg-white px-4 py-4 text-sm leading-6 text-[#334b6d] shadow-sm">{safePoint}</li> : null })}</ul></section> : null}
         {visibleFeedback.length ? <section id="teacher-feedback" className="mt-6 space-y-3"><h4 className="text-lg font-bold text-[#0a235c]">Learning Notes</h4><div className="grid gap-3">{visibleFeedback.map((feedback) => <article key={feedback.id} className="rounded-[24px] border border-slate-300 bg-white p-5 shadow-sm"><div className="flex items-center gap-3"><MessageSquareQuote className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">{learnerFacingText(feedback.title, 'Learning note')}</h4><p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600">Learning note</p></div></div><p className="mt-4 text-sm leading-7 text-slate-700">{learnerFacingText(feedback.body, 'A useful learning note will appear here when there is something worth highlighting.')}</p></article>)}</div></section> : null}
         {learningLinks.length ? <section id="manage-space" className="mt-6 rounded-[24px] border border-blue-200 bg-blue-50 p-5"><div className="flex items-center gap-3"><BookOpen className="h-5 w-5 text-blue-700" /><div><h4 className="text-lg font-bold text-[#0a235c]">My Learning Links</h4><p className="text-xs text-slate-600">Open your portfolio, book a lesson or contact Prime Support.</p></div></div><div className="mt-4 grid gap-3 md:grid-cols-2">{learningLinks.slice(0, 3).map((link) => <a key={link.id} href={link.href} className="rounded-xl border border-blue-200 bg-white p-4 text-sm shadow-sm transition hover:border-blue-400 hover:shadow-md"><p className="font-bold text-[#0a235c]">{link.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{link.id === 'portfolio' ? 'Open your learning portfolio.' : link.id === 'calendar' ? 'Book your next lesson.' : link.id === 'support' ? 'Get help with access, links or class logistics.' : 'Open this learning resource.'}</p></a>)}</div></section> : null}

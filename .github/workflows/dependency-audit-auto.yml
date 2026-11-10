@@ -11,6 +11,8 @@ on:
       - package.json
       - package-lock.json
       - .github/workflows/dependency-audit-auto.yml
+      - scripts/npm-audit-delta.mjs
+      - scripts/dependency-audit-workflow-self-test.mjs
   workflow_dispatch:
   schedule:
     - cron: "23 7 * * 1"
@@ -116,23 +118,48 @@ jobs:
             ].join('\n') + '\n');
           NODE
 
-      - name: Upload raw audit report
+      - name: Compare audit findings with the PR base
+        if: >-
+          github.event_name == 'pull_request' &&
+          steps.dependency-scope.outputs.manifests_changed == 'true'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_AUDIT_EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_dir="$RUNNER_TEMP/npm-audit-base-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          cleanup() {
+            git worktree remove --force "$base_dir" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          git worktree add --detach "$base_dir" "$BASE_SHA"
+          (
+            cd "$base_dir"
+            npm ci
+            set +e
+            npm audit --omit=dev --json > "$GITHUB_WORKSPACE/npm-audit-base.json"
+            base_exit_code=$?
+            set -e
+            printf '%s' "$base_exit_code" > "$GITHUB_WORKSPACE/npm-audit-base.exit"
+          )
+          node scripts/npm-audit-delta.mjs \
+            npm-audit-base.json \
+            npm-audit-report.json \
+            "$(cat npm-audit-base.exit)" \
+            "$HEAD_AUDIT_EXIT_CODE"
+
+      - name: Upload raw audit reports
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: npm-audit-report-${{ github.run_id }}-${{ github.run_attempt }}
-          path: npm-audit-report.json
+          path: |
+            npm-audit-report.json
+            npm-audit-base.json
+            npm-audit-base.exit
           if-no-files-found: ignore
           retention-days: 30
-
-      - name: Enforce high/critical findings on dependency-change PRs
-        if: >-
-          github.event_name == 'pull_request' &&
-          steps.dependency-scope.outputs.manifests_changed == 'true' &&
-          steps.validate.outputs.has_high_or_critical == 'true'
-        run: |
-          echo "High or critical production dependency vulnerabilities must be resolved through a reviewed dependency PR."
-          exit 1
 
   update-security-issues:
     name: Upsert high/critical dependency issues
