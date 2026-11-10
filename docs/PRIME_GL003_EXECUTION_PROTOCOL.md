@@ -219,5 +219,24 @@ HISTORICAL GOLDEN TRACE MODIFICATION: PROHIBITED
 
 ---
 
-**Status:** `ACTIVE — GL-003 MAY BE AUTOMATICALLY OR MANUALLY TRIGGERED IN PRODUCTION`  
+**Status:** `ACTIVE — protocol requirements are defined; current execution authority is controlled by the latest release gate in Issue #112`  
 **Canonical principle:** `Manual trigger is allowed; manual contamination is not.`
+
+
+---
+
+## 10. Current execution authority override — 2026-11-10
+
+The trigger language in Section 9 describes technically valid protocol modes. It is **not** a standing Production authorization. This dated section supersedes any broader reading of the earlier `AUTOMATIC GL-003 TRIGGER: AUTHORIZED` and `MANUAL PRODUCTION TRIGGER: AUTHORIZED` lines.
+
+### Two separate witness lanes
+
+1. **Gustavo — 2026-09-29 — historical-source shared-Machine lineage/backfill:** `OPEN / NOT VERIFIED`. This is not GL-003. Preserve the canonical Drive source and any existing Teacher Authority / CLR. Do not manually assemble payloads or candidates, do not create a PipelineRun, and do not trigger this source under the current monitoring authority.
+2. **GL-003 — new real lesson/source:** `OPEN / NOT VERIFIED`. It requires a genuinely new real lesson/source and runtime-generated identifiers under this protocol. Reprocessing Rafael or Gustavo and relabelling the replay as GL-003 is prohibited.
+
+### Current release hold
+
+- `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged.
+- Issue #112 is the active operational acceptance tracker. Its current release controls do not authorize a Production trigger, OAuth re-consent, deployment, merge, learner/attendance/database mutation, Teacher Authority action, projection change, or unfreeze.
+- No automatic or manual Production execution is authorized by this monitoring task. A future execution requires a separate explicit owner release decision naming the environment, actor, source, route, expected mutation, rollback/stop conditions, and authorized test identities; that decision must be recorded in Issue #112.
+- Until that decision exists, both witness lanes remain `OPEN / NOT VERIFIED`. Do not treat this protocol, an old authorization line, a green CI run, or a Preview status as current execution authority.
