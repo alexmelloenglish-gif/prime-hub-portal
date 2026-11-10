@@ -61,7 +61,14 @@ export default async function DashboardLayout({
       <Sidebar isAdmin={adminUser} />
       <div className="min-h-dvh md:ml-64">
         <Topbar user={topbarUser} />
-        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-8">{children}</main>
+        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-8">
+          {studentState.dataFreshness === 'historical' ? (
+            <section role="status" className="mb-5 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+              <strong>Historical learning snapshot.</strong> The profile includes retained repository records and is not verified as the learner&apos;s current state. Treat levels, attendance, priorities and lesson summaries as historical reference until the corresponding PLIE records are confirmed as published in Neon.
+            </section>
+          ) : null}
+          {children}
+        </main>
       </div>
     </div>
   )
