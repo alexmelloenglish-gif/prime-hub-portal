@@ -7,6 +7,7 @@ import { authOptions } from '@/lib/auth'
 import { getStudentDashboardState, isAdminUser } from '@/lib/student-data'
 import { isAuthorizedLearner } from '@/lib/learner-eligibility'
 import { resolveStudentProfileAsset } from '@/lib/canonical-dashboard'
+import { DataAvailabilityNotice } from '@/components/dashboard/data-availability-notice'
 
 export default async function DashboardLayout({
   children,
@@ -61,7 +62,10 @@ export default async function DashboardLayout({
       <Sidebar isAdmin={adminUser} />
       <div className="min-h-dvh md:ml-64">
         <Topbar user={topbarUser} />
-        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-8">{children}</main>
+        <main className="min-w-0 p-4 pb-24 md:p-5 md:pb-8">
+          {studentState.student ? <DataAvailabilityNotice status={studentState.dataStatus} /> : null}
+          {children}
+        </main>
       </div>
     </div>
   )

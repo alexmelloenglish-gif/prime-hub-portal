@@ -1,6 +1,5 @@
 import { cache } from 'react'
 import type { Session } from 'next-auth'
-import type { DocumentData } from 'firebase-admin/firestore'
 import rafaelProfile from '@/data/students/rafael-copolillo.firestore.json'
 import louiseProfile from '@/data/students/louise-d-silva-nogueira.firestore.json'
 import italoProfile from '@/data/students/italo-pires-gmail-com.firestore.json'
@@ -11,10 +10,10 @@ import diegoProfile from '@/data/students/diegodasiro-gmail-com.firestore.json'
 import claudioProfile from '@/data/students/claudio-bit-gmail-com.firestore.json'
 import valeriaProfile from '@/data/students/vcrlima89-gmail-com.firestore.json'
 import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.json'
-import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase-admin'
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
+import { buildLearningDataStatus, type DashboardMergeStatus, type LearningDataStatus } from '@/lib/student-data-status'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -175,10 +174,11 @@ export type StudentDashboardData = {
 
 export type StudentDashboardState = {
   hasAccess: boolean
-  source: 'firestore' | 'repository' | 'preview'
+  source: 'repository' | 'preview'
   student: StudentDashboardData | null
   isPreviewingAnotherStudent: boolean
   viewerEmail: string | null
+  dataStatus: LearningDataStatus
 }
 
 const portfolioHrefMap: Record<string, string> = {
@@ -193,7 +193,7 @@ function normalizePortfolioHref(href: string) {
   return portfolioHrefMap[href] ?? href
 }
 
-function normalizeEmailToDocId(email: string) {
+function normalizeStudentId(email: string) {
   return email.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
 
@@ -201,19 +201,19 @@ export function normalizeEmail(email?: string | null) {
   return typeof email === 'string' ? email.trim().toLowerCase() : ''
 }
 
-const verifiedRepositoryProfiles: Record<string, DocumentData> = {
-  'rafael.copolillo@gmail.com': rafaelProfile as unknown as DocumentData,
-  'louise_nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
-  'louise.nogueira@hotmail.com': louiseProfile as unknown as DocumentData,
-  'itallopires17@gmail.com': italoProfile as unknown as DocumentData,
-  'midias83@hotmail.com': eduardaProfile as unknown as DocumentData,
-  'lauramgcstemp@gmail.com': lauraProfile as unknown as DocumentData,
-  'galvaonanda28@gmail.com': mariaFernandaProfile as unknown as DocumentData,
-  'diegodasiro@gmail.com': diegoProfile as unknown as DocumentData,
-  'claudio.bit@gmail.com': claudioProfile as unknown as DocumentData,
-  'vcrlima89@gmail.com': valeriaProfile as unknown as DocumentData,
-  'carolvdrummond@gmail.com': gustavoProfile as unknown as DocumentData,
-  'gugasalgado7@gmail.com': gustavoProfile as unknown as DocumentData,
+const verifiedRepositoryProfiles: Record<string, Record<string, unknown>> = {
+  'rafael.copolillo@gmail.com': rafaelProfile as unknown as Record<string, unknown>,
+  'louise_nogueira@hotmail.com': louiseProfile as unknown as Record<string, unknown>,
+  'louise.nogueira@hotmail.com': louiseProfile as unknown as Record<string, unknown>,
+  'itallopires17@gmail.com': italoProfile as unknown as Record<string, unknown>,
+  'midias83@hotmail.com': eduardaProfile as unknown as Record<string, unknown>,
+  'lauramgcstemp@gmail.com': lauraProfile as unknown as Record<string, unknown>,
+  'galvaonanda28@gmail.com': mariaFernandaProfile as unknown as Record<string, unknown>,
+  'diegodasiro@gmail.com': diegoProfile as unknown as Record<string, unknown>,
+  'claudio.bit@gmail.com': claudioProfile as unknown as Record<string, unknown>,
+  'vcrlima89@gmail.com': valeriaProfile as unknown as Record<string, unknown>,
+  'carolvdrummond@gmail.com': gustavoProfile as unknown as Record<string, unknown>,
+  'gugasalgado7@gmail.com': gustavoProfile as unknown as Record<string, unknown>,
 }
 
 function getAdminPreviewEmails() {
@@ -621,12 +621,6 @@ function buildRepositoryStudent(email: string, name?: string | null): StudentDas
   return parseStudentDocument(profile, profileEmail, profileName)
 }
 
-function buildExplicitRepositoryStudent(email: string, name?: string | null): StudentDashboardData | null {
-  const normalizedEmail = normalizeEmail(email)
-  const profile = verifiedRepositoryProfiles[normalizedEmail]
-  if (asString(profile?.dashboardSourcePolicy) !== 'authorized_repository_snapshot') return null
-  return buildRepositoryStudent(normalizedEmail, name)
-}
 
 function buildPreviewStudent(email: string, name?: string | null): StudentDashboardData {
   return {
@@ -659,20 +653,7 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
   }
 }
 
-async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
-  let timeoutHandle: ReturnType<typeof setTimeout> | undefined
-  const timeout = new Promise<never>((_, reject) => {
-    timeoutHandle = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
-  })
-
-  try {
-    return await Promise.race([promise, timeout])
-  } finally {
-    if (timeoutHandle) clearTimeout(timeoutHandle)
-  }
-}
-
-async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<StudentDashboardData> {
+async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
   try {
     const normalizedEmail = normalizeEmail(email)
     const prisma = getPrismaClient()
@@ -848,7 +829,16 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       if (!teacherFeedback.some((existing) => existing.id === feedback.id)) teacherFeedback.push(feedback)
     }
 
-    if (!reportEntries.length && !projectionVocabulary.length && !correctionCount) return student
+    if (!reportEntries.length && !projectionVocabulary.length && !correctionCount) {
+      return {
+        student,
+        status: {
+          databaseAvailable: true,
+          hasCurrentProjection: Boolean(portfolioProjection),
+          asOf: null,
+        },
+      }
+    }
 
     const presentCount = attendanceOverview.filter((lesson) => lesson.status === 'present').length
     const pipelineSummary = `${reportEntries.length} published class report${reportEntries.length === 1 ? '' : 's'}, ${vocabularyBank.length} vocabulary item${vocabularyBank.length === 1 ? '' : 's'} and ${correctionCount} correction${correctionCount === 1 ? '' : 's'} recorded in the authorized learning record.`
@@ -864,7 +854,12 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       ],
     }
 
+    const asOf = publishedReports
+      .map((report) => report.generatedAt)
+      .sort((a, b) => b.getTime() - a.getTime())[0]
+      ?.toISOString() || null
     return {
+      student: {
       ...student,
       attendanceRate:
         student.attendanceRate.toLowerCase().includes('pending') && attendanceOverview.length
@@ -890,15 +885,24 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       },
       teacherFeedback,
       cumulativeImpact,
+      },
+      status: {
+        databaseAvailable: true,
+        hasCurrentProjection: Boolean(portfolioProjection) || reportEntries.length > 0,
+        asOf,
+      },
     }
   } catch {
-    return student
+    return {
+      student,
+      status: { databaseAvailable: false, hasCurrentProjection: false, asOf: null },
+    }
   }
 }
 
 
-async function mergeCanonicalProjection(student: StudentDashboardData): Promise<StudentDashboardData> {
-  if (!student.studentId) return student
+async function mergeCanonicalProjection(student: StudentDashboardData): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
+  if (!student.studentId) return { student, status: { databaseAvailable: true, hasCurrentProjection: false, asOf: null } }
 
   try {
     const prisma = getPrismaClient()
@@ -936,23 +940,43 @@ async function mergeCanonicalProjection(student: StudentDashboardData): Promise<
       verifiedPortfolioRecordIds.has(row.canonicalRecordId)
     )
 
-    if (!fullyVerifiedRows.length) return student
-    return mergeCanonicalLearningIntelligenceRows(student, fullyVerifiedRows)
+    if (!fullyVerifiedRows.length) return { student, status: { databaseAvailable: true, hasCurrentProjection: false, asOf: null } }
+    const asOf = fullyVerifiedRows
+      .map((row) => row.verifiedAt || row.createdAt)
+      .filter(Boolean)
+      .map((value) => value instanceof Date ? value : new Date(value as string))
+      .sort((a, b) => b.getTime() - a.getTime())[0]
+      ?.toISOString() || null
+    return {
+      student: mergeCanonicalLearningIntelligenceRows(student, fullyVerifiedRows),
+      status: { databaseAvailable: true, hasCurrentProjection: true, asOf },
+    }
   } catch (error) {
     console.warn('[student-dashboard] Canonical read bridge unavailable; preserving existing bounded sources', {
       studentId: student.studentId,
       errorName: error instanceof Error ? error.name : 'UnknownError',
     })
-    return student
+    return {
+      student,
+      status: { databaseAvailable: false, hasCurrentProjection: false, asOf: null },
+    }
   }
 }
 
 async function mergeDashboardSources(
   email: string,
   student: StudentDashboardData,
-): Promise<StudentDashboardData> {
-  const pipelineMerged = await mergePipelineProjection(email, student)
-  return mergeCanonicalProjection(pipelineMerged)
+): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
+  const pipeline = await mergePipelineProjection(email, student)
+  const canonical = await mergeCanonicalProjection(pipeline.student)
+  return {
+    student: canonical.student,
+    status: {
+      databaseAvailable: pipeline.status.databaseAvailable && canonical.status.databaseAvailable,
+      hasCurrentProjection: pipeline.status.hasCurrentProjection || canonical.status.hasCurrentProjection,
+      asOf: canonical.status.asOf || pipeline.status.asOf,
+    },
+  }
 }
 
 function parseCanonicalLessons(value: unknown, studentId: string): CanonicalLesson[] {
@@ -979,14 +1003,14 @@ function parseCanonicalLessons(value: unknown, studentId: string): CanonicalLess
 }
 
 export function parseStudentDocument(
-  data: DocumentData,
+  data: Record<string, unknown>,
   email: string,
   name?: string | null
 ): StudentDashboardData {
   const root = asObject(data.dashboard) ?? (data as Record<string, unknown>)
 
   return {
-    studentId: asString(root.studentId, normalizeEmailToDocId(email)),
+    studentId: asString(root.studentId, normalizeStudentId(email)),
     experienceMode: asString(root.dashboardExperience) === 'young-learner' ? 'young-learner' : 'standard',
     profileStatus: asString(root.profileStatus, 'active'),
     identityVersion: asString(root.identityVersion, 'legacy-email-v1'),
@@ -1002,7 +1026,7 @@ export function parseStudentDocument(
     portfolioNavigation: parsePortfolioNavigation(root.portfolioNavigation),
     progressTracker: parseProgressTracker(root.progressTracker),
     attendanceOverview: parseAttendance(root.attendanceOverview),
-    lessonRecords: parseCanonicalLessons(root.lessonRecords, asString(root.studentId, normalizeEmailToDocId(email))),
+    lessonRecords: parseCanonicalLessons(root.lessonRecords, asString(root.studentId, normalizeStudentId(email))),
     classReports: parseClassReports(root.classReports),
     goals: parseGoals(root.goals),
     vocabularyBank: parseVocabulary(root.vocabularyBank),
@@ -1020,90 +1044,23 @@ export function parseStudentDocument(
 
 const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
-    if (!isFirebaseConfigured) {
-      const repositoryStudent = buildRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'preview',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
-    }
-
-    try {
-      const firestore = getFirebaseFirestore()
-      const collectionName = process.env.FIREBASE_STUDENT_COLLECTION || 'students'
-      const normalizedEmail = email.trim().toLowerCase()
-      const directDoc = await withTimeout(
-        firestore.collection(collectionName).doc(normalizeEmailToDocId(normalizedEmail)).get(),
-        8000,
-        'Firestore direct student lookup'
-      )
-
-      if (directDoc.exists) {
-        return {
-          hasAccess: true,
-          source: 'firestore',
-          student: await mergeDashboardSources(normalizedEmail, parseStudentDocument(directDoc.data() ?? {}, normalizedEmail, name)),
-          isPreviewingAnotherStudent: false,
-          viewerEmail: email,
-        }
-      }
-
-      const querySnapshot = await withTimeout(
-        firestore.collection(collectionName).where('studentEmail', '==', normalizedEmail).limit(1).get(),
-        8000,
-        'Firestore email student lookup'
-      )
-
-      if (!querySnapshot.empty) {
-        return {
-          hasAccess: true,
-          source: 'firestore',
-          student: await mergeDashboardSources(normalizedEmail, parseStudentDocument(querySnapshot.docs[0].data(), normalizedEmail, name)),
-          isPreviewingAnotherStudent: false,
-          viewerEmail: email,
-        }
-      }
-
-      const repositoryStudent = buildExplicitRepositoryStudent(normalizedEmail, name)
-      const mergedStudent = repositoryStudent ? await mergeDashboardSources(normalizedEmail, repositoryStudent) : null
-      if (mergedStudent) {
-        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
-          studentId: mergedStudent.studentId,
-          reason: 'firestore_document_not_found',
-        })
-      }
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'firestore',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
-    } catch (error) {
-      const repositoryStudent = buildExplicitRepositoryStudent(email, name)
-      const mergedStudent = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
-      if (mergedStudent) {
-        console.warn('[student-dashboard] Using explicitly authorized repository snapshot', {
-          studentId: mergedStudent.studentId,
-          reason: 'firestore_unavailable',
-          errorName: error instanceof Error ? error.name : 'UnknownError',
-        })
-      }
-      return {
-        hasAccess: Boolean(mergedStudent),
-        source: mergedStudent ? 'repository' : 'firestore',
-        student: mergedStudent,
-        isPreviewingAnotherStudent: false,
-        viewerEmail: email,
-      }
+    const repositoryStudent = buildRepositoryStudent(email, name)
+    const merged = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
+    return {
+      hasAccess: Boolean(merged?.student),
+      source: merged?.student ? 'repository' : 'preview',
+      student: merged?.student || null,
+      isPreviewingAnotherStudent: false,
+      viewerEmail: email,
+      dataStatus: buildLearningDataStatus({
+        repositoryFound: Boolean(repositoryStudent),
+        databaseAvailable: merged?.status.databaseAvailable ?? false,
+        hasCurrentProjection: merged?.status.hasCurrentProjection ?? false,
+        asOf: merged?.status.asOf,
+      }),
     }
   }
 )
-
 export async function getStudentDashboardState(
   user: AuthenticatedUser,
   requestedStudentEmail?: string | null
@@ -1115,6 +1072,7 @@ export async function getStudentDashboardState(
       student: null,
       isPreviewingAnotherStudent: false,
       viewerEmail: null,
+      dataStatus: buildLearningDataStatus({ repositoryFound: false, databaseAvailable: false, hasCurrentProjection: false }),
     }
   }
 
