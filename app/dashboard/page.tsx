@@ -182,7 +182,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const visibleFeedback = selectCurrentFeedback(student.teacherFeedback)
   const profileImage = resolveStudentProfileAsset(student.studentId, session.user.image)
   const nextAction = projection.nextAction
-  const scheduleLabel = studentState.dataFreshness === 'current'\n    ? String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')\n    : 'Schedule is not verified in current Neon records.'
+  const scheduleLabel = studentState.dataFreshness === 'current'
+    ? String((projection.schedule as { label?: unknown }).label ?? 'Schedule information is not available.')
+    : 'Schedule is not verified in current Neon records.'
   const learningLinks = resolveCanonicalManageSpaceLinks(student.studentEmail, student.manageSpace)
 
   return (
