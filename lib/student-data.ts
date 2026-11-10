@@ -13,6 +13,7 @@ import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.j
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
+import { buildLearningDataStatus, type DashboardMergeStatus, type LearningDataStatus } from '@/lib/student-data-status'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -177,6 +178,7 @@ export type StudentDashboardState = {
   student: StudentDashboardData | null
   isPreviewingAnotherStudent: boolean
   viewerEmail: string | null
+  dataStatus: LearningDataStatus
 }
 
 const portfolioHrefMap: Record<string, string> = {
@@ -651,7 +653,7 @@ function buildPreviewStudent(email: string, name?: string | null): StudentDashbo
   }
 }
 
-async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<StudentDashboardData> {
+async function mergePipelineProjection(email: string, student: StudentDashboardData): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
   try {
     const normalizedEmail = normalizeEmail(email)
     const prisma = getPrismaClient()
@@ -827,7 +829,16 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       if (!teacherFeedback.some((existing) => existing.id === feedback.id)) teacherFeedback.push(feedback)
     }
 
-    if (!reportEntries.length && !projectionVocabulary.length && !correctionCount) return student
+    if (!reportEntries.length && !projectionVocabulary.length && !correctionCount) {
+      return {
+        student,
+        status: {
+          databaseAvailable: true,
+          hasCurrentProjection: Boolean(portfolioProjection),
+          asOf: null,
+        },
+      }
+    }
 
     const presentCount = attendanceOverview.filter((lesson) => lesson.status === 'present').length
     const pipelineSummary = `${reportEntries.length} published class report${reportEntries.length === 1 ? '' : 's'}, ${vocabularyBank.length} vocabulary item${vocabularyBank.length === 1 ? '' : 's'} and ${correctionCount} correction${correctionCount === 1 ? '' : 's'} recorded in the authorized learning record.`
@@ -843,7 +854,12 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       ],
     }
 
+    const asOf = publishedReports
+      .map((report) => report.generatedAt)
+      .sort((a, b) => b.getTime() - a.getTime())[0]
+      ?.toISOString() || null
     return {
+      student: {
       ...student,
       attendanceRate:
         student.attendanceRate.toLowerCase().includes('pending') && attendanceOverview.length
@@ -869,15 +885,24 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       },
       teacherFeedback,
       cumulativeImpact,
+      },
+      status: {
+        databaseAvailable: true,
+        hasCurrentProjection: Boolean(portfolioProjection) || reportEntries.length > 0,
+        asOf,
+      },
     }
   } catch {
-    return student
+    return {
+      student,
+      status: { databaseAvailable: false, hasCurrentProjection: false, asOf: null },
+    }
   }
 }
 
 
-async function mergeCanonicalProjection(student: StudentDashboardData): Promise<StudentDashboardData> {
-  if (!student.studentId) return student
+async function mergeCanonicalProjection(student: StudentDashboardData): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
+  if (!student.studentId) return { student, status: { databaseAvailable: true, hasCurrentProjection: false, asOf: null } }
 
   try {
     const prisma = getPrismaClient()
@@ -915,23 +940,43 @@ async function mergeCanonicalProjection(student: StudentDashboardData): Promise<
       verifiedPortfolioRecordIds.has(row.canonicalRecordId)
     )
 
-    if (!fullyVerifiedRows.length) return student
-    return mergeCanonicalLearningIntelligenceRows(student, fullyVerifiedRows)
+    if (!fullyVerifiedRows.length) return { student, status: { databaseAvailable: true, hasCurrentProjection: false, asOf: null } }
+    const asOf = fullyVerifiedRows
+      .map((row) => row.verifiedAt || row.createdAt)
+      .filter(Boolean)
+      .map((value) => value instanceof Date ? value : new Date(value as string))
+      .sort((a, b) => b.getTime() - a.getTime())[0]
+      ?.toISOString() || null
+    return {
+      student: mergeCanonicalLearningIntelligenceRows(student, fullyVerifiedRows),
+      status: { databaseAvailable: true, hasCurrentProjection: true, asOf },
+    }
   } catch (error) {
     console.warn('[student-dashboard] Canonical read bridge unavailable; preserving existing bounded sources', {
       studentId: student.studentId,
       errorName: error instanceof Error ? error.name : 'UnknownError',
     })
-    return student
+    return {
+      student,
+      status: { databaseAvailable: false, hasCurrentProjection: false, asOf: null },
+    }
   }
 }
 
 async function mergeDashboardSources(
   email: string,
   student: StudentDashboardData,
-): Promise<StudentDashboardData> {
-  const pipelineMerged = await mergePipelineProjection(email, student)
-  return mergeCanonicalProjection(pipelineMerged)
+): Promise<{ student: StudentDashboardData; status: DashboardMergeStatus }> {
+  const pipeline = await mergePipelineProjection(email, student)
+  const canonical = await mergeCanonicalProjection(pipeline.student)
+  return {
+    student: canonical.student,
+    status: {
+      databaseAvailable: pipeline.status.databaseAvailable && canonical.status.databaseAvailable,
+      hasCurrentProjection: pipeline.status.hasCurrentProjection || canonical.status.hasCurrentProjection,
+      asOf: canonical.status.asOf || pipeline.status.asOf,
+    },
+  }
 }
 
 function parseCanonicalLessons(value: unknown, studentId: string): CanonicalLesson[] {
@@ -1000,13 +1045,19 @@ export function parseStudentDocument(
 const getStudentDashboardStateCached = cache(
   async (email: string, name?: string | null): Promise<StudentDashboardState> => {
     const repositoryStudent = buildRepositoryStudent(email, name)
-    const mergedStudent = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
+    const merged = repositoryStudent ? await mergeDashboardSources(email, repositoryStudent) : null
     return {
-      hasAccess: Boolean(mergedStudent),
-      source: mergedStudent ? 'repository' : 'preview',
-      student: mergedStudent,
+      hasAccess: Boolean(merged?.student),
+      source: merged?.student ? 'repository' : 'preview',
+      student: merged?.student || null,
       isPreviewingAnotherStudent: false,
       viewerEmail: email,
+      dataStatus: buildLearningDataStatus({
+        repositoryFound: Boolean(repositoryStudent),
+        databaseAvailable: merged?.status.databaseAvailable ?? false,
+        hasCurrentProjection: merged?.status.hasCurrentProjection ?? false,
+        asOf: merged?.status.asOf,
+      }),
     }
   }
 )
@@ -1021,6 +1072,7 @@ export async function getStudentDashboardState(
       student: null,
       isPreviewingAnotherStudent: false,
       viewerEmail: null,
+      dataStatus: buildLearningDataStatus({ repositoryFound: false, databaseAvailable: false, hasCurrentProjection: false }),
     }
   }
 

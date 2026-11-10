@@ -27,8 +27,8 @@ This runbook covers recovery of the human administrator, Google Workspace/Drive/
 
 1. Confirm the repository branch and commit intended for the change.
 2. Run `npm ci`, Prisma generation/validation, TypeScript checks, self-tests, and `npm run build`.
-3. Confirm the dashboard source contract is explicit: `repository` for authorized snapshots and `preview` for unknown/unauthenticated views.
-4. Confirm the admin dashboard reads its directory from repository snapshots enriched by Neon/PostgreSQL pipeline state.
+3. Confirm the dashboard source contract is explicit: `repository`/`preview` controls access, while `dataStatus` identifies `neon/current`, `historical_snapshot/historical`, or `historical_snapshot/unavailable`.
+4. Confirm the admin dashboard keeps historical snapshot counts separate from Neon `publishedReportCount` and labels unavailable Neon state instead of presenting history as current.
 5. Confirm Drive/Docs reconciliation still imports `google-auth-library` and `@vercel/oidc` through `lib/drive-reconciliation.ts`.
 6. Review the exact diff and publish only the isolated branch; do not push directly to `main`.
 
@@ -38,4 +38,4 @@ The former Firebase Admin module, Firestore dashboard route, and Firestore upser
 
 ## Incident handling
 
-If access is lost, use the second trusted administrator and the documented Google/Vercel/GitHub recovery mechanisms. If the Drive pipeline fails, inspect the WIF issuer, audience, project number, service-account binding, and pipeline logs without exposing secrets. If the dashboard lacks a learner profile, return to the explicit `preview`/`repository` contract; never substitute another learner's data.
+If access is lost, use the second trusted administrator and the documented Google/Vercel/GitHub recovery mechanisms. If the Drive pipeline fails, inspect the WIF issuer, audience, project number, service-account binding, and pipeline logs without exposing secrets. If Neon is unavailable, preserve the explicit historical/unavailable label and do not treat the repository snapshot as current. If the dashboard lacks a learner profile, return to the explicit `preview`/`repository` contract; never substitute another learner's data.

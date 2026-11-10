@@ -184,7 +184,8 @@ assert.ok(!progressTrackerSource.includes("statusConfig['Developing']"))
 assert.ok(!studentDataSource.includes('AI Class Report Draft'))
 assert.ok(!studentDataSource.includes('pipeline-draft-'))
 assert.ok(!/firebase-admin|FIREBASE_|getFirebase|source: 'firestore'|firestore_unavailable/.test(studentDataSource))
-assert.ok(studentDataSource.includes("source: mergedStudent ? 'repository' : 'preview'"))
+assert.ok(studentDataSource.includes("source: merged?.student ? 'repository' : 'preview'"))
+assert.ok(studentDataSource.includes('dataStatus: buildLearningDataStatus'))
 
 console.log('Student Dashboard Presentation Contract v1 self-test passed: NOW/RECENT/MEMORY + Eduarda pedagogical What Changed + learner-facing authority labels + hidden technical evidence language + preserved learning history.')
 
