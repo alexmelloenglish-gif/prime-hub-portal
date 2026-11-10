@@ -159,6 +159,8 @@ rangeChangeAudit.vulnerabilities.postcss.via[0].range = '<8.5.11'
 assert.ok(compareAuditReports(baselineAudit, rangeChangeAudit).regressions.some((item) => item.type === 'affected-range-change'))
 const workflowSource = (await import('node:fs')).readFileSync('.github/workflows/dependency-audit-auto.yml', 'utf8');
 assert.ok(workflowSource.includes('npm-audit-delta.mjs'))
+assert.ok(workflowSource.includes('git worktree add --detach'))
+assert.ok(workflowSource.includes('BASE_SHA'))
 assert.doesNotMatch(workflowSource, /github\.rest\.search\.issuesAndPullRequests/);
 assert.doesNotMatch(workflowSource, /findIssueMatches\(fingerprint\)/);
 assert.ok(!workflowSource.includes('Enforce high/critical findings on dependency-change PRs'))
