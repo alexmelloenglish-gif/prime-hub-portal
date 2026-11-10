@@ -207,7 +207,7 @@ jobs:
             }
 
             function fingerprintFromIssue(issue) {
-              const titleMatch = String(issue.title || '').match(/\\[dependency-audit:([a-f0-9]{16})\\]/i);
+              const titleMatch = String(issue.title || '').match(/\[dependency-audit:([a-f0-9]{16})\]/i);
               if (titleMatch) return titleMatch[1].toLowerCase();
               const bodyMatch = String(issue.body || '').match(/Stable fingerprint: ([a-f0-9]{16})/i);
               return bodyMatch ? bodyMatch[1].toLowerCase() : null;
