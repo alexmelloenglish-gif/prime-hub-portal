@@ -207,6 +207,8 @@ assert.ok(adminPageSource.includes('Snapshot level (historical)'))
 assert.ok(adminPageSource.includes('Published reports (Neon)'))
 assert.ok(adminTeacherPageSource.includes('Historical snapshot'))
 assert.ok(adminTeacherPageSource.includes('Published in Neon'))
+assert.ok(adminTeacherPageSource.includes('decisionPackage.decisionDate'))
+assert.ok(adminTeacherPageSource.includes('Teacher-authorized package on file'))
 assert.ok(!adminTeacherPageSource.includes('learningRecordLabel'))
 assert.ok(!adminTeacherPageSource.includes('canonicalReportCount'))
 
