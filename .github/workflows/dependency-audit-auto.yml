@@ -11,6 +11,8 @@ on:
       - package.json
       - package-lock.json
       - .github/workflows/dependency-audit-auto.yml
+      - scripts/npm-audit-delta.mjs
+      - scripts/dependency-audit-workflow-self-test.mjs
   workflow_dispatch:
   schedule:
     - cron: "23 7 * * 1"
@@ -126,7 +128,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base_dir="$(mktemp -d "$RUNNER_TEMP/npm-audit-base.XXXXXX")"
+          base_dir="$RUNNER_TEMP/npm-audit-base-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           cleanup() {
             git worktree remove --force "$base_dir" >/dev/null 2>&1 || true
           }
