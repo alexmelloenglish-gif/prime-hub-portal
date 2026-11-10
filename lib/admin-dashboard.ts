@@ -25,7 +25,7 @@ export type StudentDirectoryEntry = {
   historicalReportCount?: number
   publishedReportCount?: number
   latestPipelineStatus?: string | null
-  dataSource?: 'repository'
+  identitySource?: 'repository'
 }
 
 export type PipelineActivityEntry = {
@@ -77,7 +77,7 @@ function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] 
   console.warn(`[admin-dashboard] Using the repository student directory: ${reason}`)
   return repositoryStudentDirectory
     .filter((student) => isAuthorizedLearner(student.studentEmail))
-    .map((student) => ({ ...student, dataSource: 'repository' as const }))
+    .map((student) => ({ ...student, identitySource: 'repository' as const }))
 }
 
 async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
