@@ -175,7 +175,7 @@ jobs:
                 ].join('|');
                 const fingerprint = crypto.createHash('sha256').update(identity).digest('hex').slice(0, 16);
                 const title = `[dependency-audit:${fingerprint}] ${packageName} — ${severity}`;
-                const query = `repo:${owner}/${repo} is:issue in:title dependency-audit:${fingerprint}`;
+                const query = `repo:${owner}/${repo} is:issue in:title ${fingerprint}`;
                 const search = await github.rest.search.issuesAndPullRequests({ q: query });
                 const match = (search.data.items || []).find(item => item.title === title);
                 const now = new Date().toISOString();
