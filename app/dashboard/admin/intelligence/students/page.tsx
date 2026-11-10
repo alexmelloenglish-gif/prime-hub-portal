@@ -32,7 +32,7 @@ export default async function TeacherStudentsPage() {
                   {decisionPackage ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-300/35 bg-blue-300/15 px-2.5 py-1 text-xs font-semibold text-blue-100">
                       <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                      Teacher confirmed
+                      Teacher-authorized package on file
                     </span>
                   ) : null}
                 </div>
@@ -52,8 +52,8 @@ export default async function TeacherStudentsPage() {
 
                 {decisionPackage ? (
                   <div className="mt-4 rounded-xl border border-blue-300/30 bg-blue-300/10 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-100/90">Teacher-confirmed learning update</p>
-                    <p className="mt-1 text-xs leading-5 text-prime-cream/65">A teacher-reviewed learning state, priority and next-step package is available for this learner.</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-100/90">Recorded teacher-authorized package</p>
+                    <p className="mt-1 text-xs leading-5 text-prime-cream/65">Decision dated {decisionPackage.decisionDate}; verify no later update before treating this package as the learner’s current state.</p>
                   </div>
                 ) : null}
 
