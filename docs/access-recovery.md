@@ -20,15 +20,15 @@ This runbook covers recovery of the human administrator, Google Workspace/Drive/
 1. Use two trusted human administrators with independent recovery factors; never share passwords.
 2. Keep secrets in Vercel/Google-managed storage and never commit keys, tokens, cookies, or private credentials.
 3. Preserve the Drive/Docs pipeline and its WIF/OIDC configuration.
-4. Treat `data/students/*.firestore.json` as local historical snapshots/fixtures; do not delete or publish them as part of application recovery.
+4. Treat `data/students/*.firestore.json` as retained historical snapshots that are still read by the current dashboard code. Do not present their learning fields as current, and do not delete them as part of application recovery.
 5. Do not delete databases, service accounts, WIF pools/providers, IAM bindings, webhooks, cron jobs, secrets, or external records in this code-only workflow.
 
 ## Application recovery checklist
 
 1. Confirm the repository branch and commit intended for the change.
 2. Run `npm ci`, Prisma generation/validation, TypeScript checks, self-tests, and `npm run build`.
-3. Confirm the dashboard source contract is explicit: `repository` for authorized snapshots and `preview` for unknown/unauthenticated views.
-4. Confirm the admin dashboard reads its directory from repository snapshots enriched by Neon/PostgreSQL pipeline state.
+3. Confirm identity authorization separately from learning-data freshness. `repository` identifies a retained profile; snapshot-derived learning data must be marked `historical`, never assumed current.
+4. Confirm the admin dashboard labels snapshot levels and historical report counts as historical; published report counts must come only from Neon and remain unavailable when Neon cannot be queried.
 5. Confirm Drive/Docs reconciliation still imports `google-auth-library` and `@vercel/oidc` through `lib/drive-reconciliation.ts`.
 6. Review the exact diff and publish only the isolated branch; do not push directly to `main`.
 
