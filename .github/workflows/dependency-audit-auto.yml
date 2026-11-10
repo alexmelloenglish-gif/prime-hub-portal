@@ -1,47 +1,294 @@
-name: Dependency Audit Auto Fix
+name: Dependency Audit Report
 
 on:
   push:
     branches:
-      - '**'
+      - main
+  pull_request:
+    branches:
+      - main
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/dependency-audit-auto.yml
   workflow_dispatch:
+  schedule:
+    - cron: "23 7 * * 1"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: dependency-audit-auto-${{ github.ref }}
-  cancel-in-progress: false
+  group: dependency-audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  audit-fix:
-    if: "!startsWith(github.event.head_commit.message, 'fix(deps): npm audit fix') && !startsWith(github.event.head_commit.message, 'ci(deps):')"
+  audit:
+    name: Read-only production dependency audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      has_high_or_critical: ${{ steps.validate.outputs.has_high_or_critical }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci || npm install
-
-      - name: Run npm audit fix
-        run: npm audit fix --omit=dev
-
-      - name: Commit dependency fixes
+      - name: Detect dependency manifest changes
+        id: dependency-scope
+        if: github.event_name == 'pull_request'
+        shell: bash
         run: |
-          git config user.name "PRIME DIGITAL HUB"
-          git config user.email "alexmello.english@gmail.com"
-          git add package.json package-lock.json
-          if git diff --cached --quiet; then
-            echo "No dependency changes to commit."
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
+            | grep -Eq '^(package\.json|package-lock\.json)$'; then
+            echo "manifests_changed=true" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "fix(deps): npm audit fix for production advisories"
-            git push origin HEAD:${{ github.ref_name }}
+            echo "manifests_changed=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run npm audit (capture exit status)
+        id: audit
+        shell: bash
+        run: |
+          set +e
+          npm audit --omit=dev --json > npm-audit-report.json
+          audit_exit_code=$?
+          set -e
+          echo "exit_code=$audit_exit_code" >> "$GITHUB_OUTPUT"
+
+      - name: Validate report and summarize findings
+        id: validate
+        env:
+          AUDIT_EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const report = JSON.parse(fs.readFileSync('npm-audit-report.json', 'utf8'));
+          if (!report || typeof report.vulnerabilities !== 'object' || report.vulnerabilities === null) {
+            throw new Error('npm audit returned JSON without the expected vulnerabilities object.');
+          }
+
+          const counts = { info: 0, low: 0, moderate: 0, high: 0, critical: 0 };
+          for (const item of Object.values(report.vulnerabilities)) {
+            if (counts[item.severity] !== undefined) counts[item.severity]++;
+          }
+          const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
+          const highOrCritical = counts.high + counts.critical > 0;
+          const exitCode = Number(process.env.AUDIT_EXIT_CODE);
+
+          if (!Number.isInteger(exitCode) || exitCode < 0) {
+            throw new Error('npm audit exit status was not captured.');
+          }
+          if (exitCode > 1 || (exitCode === 1 && total === 0)) {
+            throw new Error(`npm audit technical failure (exit ${exitCode}); this is not being classified as a vulnerability finding.`);
+          }
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            `has_high_or_critical=${highOrCritical}\n`);
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            [
+              '## Production dependency audit',
+              '',
+              `- npm audit exit code: ${exitCode}`,
+              `- Vulnerable package count: ${total}`,
+              `- Critical: ${counts.critical}`,
+              `- High: ${counts.high}`,
+              `- Moderate: ${counts.moderate}`,
+              `- Low: ${counts.low}`,
+              `- Info: ${counts.info}`,
+              '',
+              'The JSON report is retained as a workflow artifact.',
+              'Findings are not automatically fixed and no lockfile or branch is modified.'
+            ].join('\n') + '\n');
+          NODE
+
+      - name: Upload raw audit report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: npm-audit-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: npm-audit-report.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Enforce high/critical findings on dependency-change PRs
+        if: >-
+          github.event_name == 'pull_request' &&
+          steps.dependency-scope.outputs.manifests_changed == 'true' &&
+          steps.validate.outputs.has_high_or_critical == 'true'
+        run: |
+          echo "High or critical production dependency vulnerabilities must be resolved through a reviewed dependency PR."
+          exit 1
+
+  update-security-issues:
+    name: Upsert high/critical dependency issues
+    needs: audit
+    if: >-
+      needs.audit.outputs.has_high_or_critical == 'true' &&
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Download audit report
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: npm-audit-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: audit-report
+
+      - name: Create or update stable advisory issues
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            const fs = require('node:fs');
+            const crypto = require('node:crypto');
+            const report = JSON.parse(fs.readFileSync('audit-report/npm-audit-report.json', 'utf8'));
+            const { owner, repo } = context.repo;
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+            const vulnerabilities = report.vulnerabilities || {};
+            const processedFingerprints = new Set();
+            let upserted = 0;
+            let closedMatches = 0;
+            let duplicateMatches = 0;
+
+            function normalizeAdvisories(vulnerability, packageName) {
+              const candidates = Array.isArray(vulnerability.via) ? vulnerability.via : [];
+              const viaDependencies = [...new Set(candidates.filter((item) => typeof item === 'string'))].sort();
+              const advisories = candidates
+                .filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+                .map((item) => ({
+                  source: item.source || item.url || item.name || 'npm-audit-unspecified',
+                  name: item.name || packageName,
+                  severity: item.severity || vulnerability.severity,
+                  range: item.range || vulnerability.range || 'unspecified',
+                  url: item.url || ''
+                }))
+                .filter((item) => ['high', 'critical'].includes(item.severity));
+
+              const normalized = advisories.length ? advisories : [{
+                source: 'npm-audit-package-aggregate',
+                name: packageName,
+                severity: vulnerability.severity,
+                range: vulnerability.range || 'unspecified',
+                url: ''
+              }].filter((item) => ['high', 'critical'].includes(item.severity));
+
+              return { advisories: normalized, viaDependencies };
+            }
+
+            function advisoryIdentity(packageName, advisory) {
+              return [
+                `${owner}/${repo}`,
+                packageName,
+                String(advisory.source || advisory.url || advisory.name || 'npm-audit-unspecified'),
+                String(advisory.severity),
+                String(advisory.range || 'unspecified')
+              ].join('|');
+            }
+
+            function fingerprintFor(packageName, advisory) {
+              return crypto.createHash('sha256')
+                .update(advisoryIdentity(packageName, advisory))
+                .digest('hex')
+                .slice(0, 16);
+            }
+
+            async function findIssueMatches(fingerprint) {
+              const search = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue ${fingerprint}`
+              });
+              return (search.data.items || [])
+                .filter((item) => !item.pull_request)
+                .filter((item) => item.title.includes(`[dependency-audit:${fingerprint}]`)
+                  || item.body?.includes(`Stable fingerprint: ${fingerprint}`))
+                .sort((a, b) => a.number - b.number);
+            }
+
+            function chooseMatch(matches, title) {
+              const exactTitle = matches.filter((item) => item.title === title);
+              const open = exactTitle.filter((item) => item.state === 'open');
+              if (open.length) return { match: open[0], duplicateCount: open.length - 1 };
+              const openAny = matches.filter((item) => item.state === 'open');
+              if (openAny.length) return { match: openAny[0], duplicateCount: openAny.length - 1 };
+              const closed = matches.filter((item) => item.state === 'closed');
+              return { match: closed[0], duplicateCount: Math.max(0, closed.length - 1) };
+            }
+
+            for (const [packageName, vulnerability] of Object.entries(vulnerabilities)) {
+              if (!['high', 'critical'].includes(vulnerability.severity)) continue;
+              const paths = [...new Set((vulnerability.nodes || []).map(String))].sort();
+
+              const { advisories, viaDependencies } = normalizeAdvisories(vulnerability, packageName);
+              for (const advisory of advisories) {
+                const fingerprint = fingerprintFor(packageName, advisory);
+                if (processedFingerprints.has(fingerprint)) {
+                  core.info(`Skipped repeated advisory fingerprint ${fingerprint} in the same run.`);
+                  continue;
+                }
+                processedFingerprints.add(fingerprint);
+
+                const title = `[dependency-audit:${fingerprint}] ${packageName} — ${advisory.severity}`;
+                const matches = await findIssueMatches(fingerprint);
+                const { match, duplicateCount } = chooseMatch(matches, title);
+                duplicateMatches += duplicateCount;
+                const now = new Date().toISOString();
+                const firstDetected = match?.body?.match(/First detected: (.+)/)?.[1] || now;
+                const body = [
+                  '## Dependency advisory',
+                  '',
+                  `- Repository: ${owner}/${repo}`,
+                  `- Package: ${packageName}`,
+                  `- Severity: **${advisory.severity}**`,
+                  `- Advisory identifier: ${advisory.source || advisory.name}`,
+                  `- Advisory URL: ${advisory.url || 'not supplied by npm audit'}`,
+                  `- Affected range: ${advisory.range || 'unspecified'}`,
+                  `- Dependency paths: ${paths.length ? paths.join(', ') : 'not supplied by npm audit'}`,
+                  `- viaDependencies (related package names, not advisory IDs): ${viaDependencies.length ? viaDependencies.join(', ') : 'none'}`,
+                  `- Stable fingerprint: ${fingerprint}`,
+                  `- First detected: ${firstDetected}`,
+                  `- Latest detected: ${now}`,
+                  `- Latest audit report: ${runUrl}`,
+                  '',
+                  '## Handling policy',
+                  '',
+                  '- This record is generated from a read-only `npm audit --omit=dev` report.',
+                  '- No automatic dependency fix, commit, push, lockfile mutation, or deployment is performed.',
+                  '- Resolve the finding in a separate reviewed pull request.',
+                  '- This workflow does not close or reopen Issues automatically.',
+                  ''
+                ].join('\n');
+
+                if (match && match.state === 'open') {
+                  await github.rest.issues.update({
+                    owner, repo, issue_number: match.number, body
+                  });
+                  core.info(`Updated ${title} (#${match.number}); retained ${duplicateCount} duplicate match(es) untouched.`);
+                  upserted++;
+                } else if (match && match.state === 'closed') {
+                  core.warning(`Matching issue #${match.number} is closed; it was not reopened and no duplicate was created.`);
+                  closedMatches++;
+                } else {
+                  const created = await github.rest.issues.create({ owner, repo, title, body });
+                  core.info(`Created ${title} (#${created.data.number}).`);
+                  upserted++;
+                }
+              }
+            }
+
+            core.summary
+              .addHeading('Dependency advisory issue synchronization')
+              .addRaw(`Created/updated: ${upserted}\n\nClosed matches left unchanged: ${closedMatches}\n\nRepeated fingerprints skipped: ${duplicateMatches}`)
+              .write();
