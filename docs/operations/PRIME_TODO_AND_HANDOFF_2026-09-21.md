@@ -1409,3 +1409,90 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-11 — canonical live-state reconciliation
+
+This is an append-only correction to the live status. Preserve all earlier dated snapshots. Current `main` is `fa2e0282af9d358a8580f5316e619023977de772` (PR #167 merge, 2026-11-10 05:22:02 UTC). Issue #112 is the active operational acceptance tracker; Issue #58 remains the historical reconciliation record. The latest Issue #58 comment observed is [#6755681900](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6755681900), by @alexmelloenglish-gif; no later Issue #58 comment was present in this read-back.
+
+The current-main read-back confirms that the Drive cron route exists but is not scheduled in `vercel.json`; the webhook acknowledges verified events with 204 while frozen without a durable event receipt; the cron and automatic ingest paths return 503 while `PIPELINE_AUTOMATION_FROZEN=true`; and the manual Admin route requires session/admin but bypasses the freeze check and accepts a payload fallback. These are implementation facts, not permission to execute. See the 2026-11-11 addendum in `docs/drive-event-trigger.md` and the current authority override in `docs/PRIME_GL003_EXECUTION_PROTOCOL.md`.
+
+### Single current status matrix
+
+| Workstream | Status | Reproducible evidence / boundary |
+|---|---|---|
+| Item 1 — legacy retry eligibility | **CLOSED** | PR #108 exact head `9c430335a92d96c09e6fb4e707609e4753c6439e`; run [#42874933151](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42874933151), job `Retry legacy eligibility` — SUCCESS. CI only. |
+| Item 2 — shared retry concurrency | **CLOSED** | Same exact head/run; job `Shared retry concurrent Postgres claim` — SUCCESS. Job log checks out `9c430335...`; PostgreSQL disposable test TAP 1/1 PASS, one winning claim. Not Production. |
+| Item 3 — Teacher Authority contract | **CLOSED** | Golden Runtime Witness [#42672579020](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42672579020), SHA `a3ba2d503f109b9b63d66ca0cffd78c25a890a85`; synthetic fixture only. Real GL-003 remains NOT VERIFIED. |
+| Item 4 — dashboard isolation | **CLOSED** | PostgreSQL 16 disposable service/resolver test [#42172312618](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42172312618): 9/9 PASS. Not authenticated browser/HTTP/NextAuth E2E or guardian Production proof. |
+| Item 5 — Shared Learning Machine witness | **CLOSED** | Golden Runtime Witness [#42672579020](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42672579020), SHA `a3ba2d503f109b9b63d66ca0cffd78c25a890a85`; synthetic IDs, mocked provider, `productionTouched=false`. No real source/Production run. |
+| Item 6 — current-main dependency audit | **OPEN** | Main SHA `fa2e0282af9d358a8580f5316e619023977de772`; [run #42761687684](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42761687684), artifact `13737258907`: 24 production vulnerable-package records — 12 high, 11 moderate, 1 low, 0 critical. Audit workflow SUCCESS is not a clean audit. |
+| Item 7 — canonical documentation | **OPEN** | PR #101 merged at `f6ebe00f5f854c643ffcd5759d2c267317dd4c4c`, but current-main Drive-cron and GL-003 authority wording still needed correction. PR #108 contains corrections on a broad/stale mixed branch; this append-only documentation branch awaits review. |
+| Item 8 — operational acceptance | **BLOCKED** | Issue #112 Gates A/B/C remain BLOCKED / NOT STARTED; no authorized staging/test identities, learner fixture, Meet event, organizer OAuth, human login/MFA or authenticated read-back evidence. |
+| Gustavo 2026-09-29 historical-source shared-Machine lineage/backfill | **NOT VERIFIED** | Separate historical-source lane, not GL-003. No trigger under this task; preserve existing Teacher Authority/CLR. |
+| GL-003 — new real lesson/source | **NOT VERIFIED** | Requires a genuinely new real source and runtime-generated IDs under the protocol. No trigger is authorized. |
+| Google/NextAuth Owner/Admin login | **NOT VERIFIED** | No authenticated Production session artifact with account/role, deployment SHA, timestamp, navigation and read-back. |
+| Learner A→A/A→B and guardian authorization | **NOT VERIFIED** | Synthetic service/resolver tests do not prove authenticated HTTP/browser behavior or Production authorization. |
+| Production deployment / official alias / served SHA / runtime | **NOT VERIFIED** | Vercel team listing returned zero teams; direct project, deployment, deployment-list and domain reads returned HTTP 403 for scope `prime-digital-hun-dasboard`. No current Production read-back. |
+| PR #100 — privacy/retention | **OPEN** | OPEN / UNMERGED; only COMMENTED review, no APPROVED review. Retention periods remain proposals; no deletion, anonymization, migration or TTL is authorized. |
+| PR #96 — infrastructure access recovery | **CLOSED** | PR CLOSED / NOT MERGED. `docs/operations/INFRA_ACCESS_RECOVERY.md` exists on main at blob `8c6c48784b3e66403b6f37286c81ee2ccad162eb`; PR #101 includes the file. No separate recovery PR is needed. |
+| PR #113 — ADR-004 documentation | **OPEN** | OPEN / UNMERGED; head `3221f0031cce482a1ac94c1887ffa32c7acf85e2`, base snapshot `8b864fa6e831788a2868d4fc73070113210afd37`; no formal review. Owner authorization comment #6757020167 covers only the two ADR files at that exact old head/base. |
+| PR #108 — PRIME Engine closure | **OPEN** | OPEN / DRAFT / UNMERGED; head `9c430335a92d96c09e6fb4e707609e4753c6439e`; 78 commits ahead / 10 behind current main, 36 changed files, mixed code/tests/workflows/dependencies/docs; GitHub reports mergeable=false. No formal review. Do not merge as a documentation-only change. |
+| PR #168 — dependency remediation candidate | **OPEN** | OPEN / UNMERGED; base current main `fa2e0282...`, head `52a792169310db28b4616a1d881e86cec5b080a2`. Candidate report run #42769864240: 8 moderate production records and 14 moderate full-tree records, 0 high/critical; this is not current-main evidence. Latest commit changes only the audit document; package tree unchanged from audited `db42921a...`. |
+
+### Current PR and access decisions
+
+- PR #101 is merged at `f6ebe00f5f854c643ffcd5759d2c267317dd4c4c`; its recovery document exists in main at blob `8c6c48784b3e66403b6f37286c81ee2ccad162eb`. PR #96 is closed without merge and no longer needs a separate document port.
+- PR #108 remains a mixed 36-file branch, 78 ahead / 10 behind current main, OPEN / DRAFT / UNMERGED. Its exact-head run #42874933151 completed five jobs successfully, including the PostgreSQL retry test at 1/1 PASS on SHA `9c430335a92d96c09e6fb4e707609e4753c6439e`; this does not authorize merging the broad branch.
+- PR #113 remains a separate two-file ADR PR, OPEN / UNMERGED, with no formal review. Owner authorization is restricted to its two ADR files at its old exact head/base.
+- PR #100 remains OPEN / UNMERGED / not approved. Retention periods remain proposals.
+- PR #168 is an OPEN / UNMERGED dependency candidate. Its 8 moderate production findings are candidate-only; current main still has 12 high, 11 moderate and 1 low production package records in audit artifact #13737258907.
+- The previous dependency auto-push risk is closed on current main by PRs #115 and #147; current workflow blob `86c811c39296e1b905db6e2365a9c27d438d0c25` is read-only for repository contents.
+
+### Safe next actions
+
+1. Review the new documentation-only reconciliation PR against current `main`; do not merge it from this executor.
+2. Keep PR #108 separate until a maintainer decides how to handle its 78-commit mixed scope and 10-commit lag.
+3. Keep PR #100 open pending an authorized retention-policy decision; do not delete, anonymize, migrate or apply TTL.
+4. Keep Gates A/B/C blocked until an authorized human provisions the environment, identities, learner fixture, Meet event and organizer OAuth, then performs the authenticated read-back.
+5. Keep Gustavo 29/09 and new-source GL-003 as separate NOT VERIFIED lanes. Do not trigger either under this task.
+6. Keep Production NOT VERIFIED until direct Vercel deployment, alias and runtime read-back is available.
+
+`PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No Production, Neon, learner, attendance, projection, secret, OAuth or configuration mutation was performed.
+
+---
+
+## 2026-11-13 — exact-head validation and governance update
+
+This append-only entry supersedes the 2026-11-11 queued/in-progress status and latest-comment reference. Preserve all prior dated snapshots.
+
+- Current main remains fa2e0282af9d358a8580f5316e619023977de772.
+- Latest Issue #58 comment after the reference request is [#6831961751](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6831961751), by @alexmelloenglish-gif, **2026-11-12 18:12:00 UTC**. It is an executor progress report submitted through the ChatGPT Codex Connector, not an independent reply from an identified execution agent. No later Issue #58 comment was returned.
+- PR #171 pre-refresh head c8478fedbd87e244618af1999fdb38cfd4ee5661 was 6 ahead / 0 behind current main, OPEN / DRAFT / UNMERGED, with no formal review or inline review thread. Its exact-head workflows all completed SUCCESS: Student Dashboard Contract [#43277173649](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173649), Golden Runtime Witness [#43277173773](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173773), Coordination Runtime Witness [#43277173659](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173659). Vercel status was SUCCESS and bot comment [#6803816145](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/171#issuecomment-6803816145), updated 2026-11-12 18:12:49 UTC, reported Preview READY. These results apply only to pre-refresh SHA c8478fed; the new documentation commit requires fresh exact-head checks. Preview is not Production.
+- GitHub's main branch API reports protected=false, protection disabled, required status-check enforcement off and no required contexts. No branch-protection change was made. Required-check enforcement is **OPEN / ADMIN ACTION REQUIRED**.
+- PR #100 remains OPEN / UNMERGED, 4 ahead / 32 behind, with one COMMENTED review and no approval. Retention durations remain proposals pending owner policy approval.
+- PR #96 is CLOSED / NOT MERGED; docs/operations/INFRA_ACCESS_RECOVERY.md exists on main at blob 8c6c48784b3e66403b6f37286c81ee2ccad162eb.
+- PR #108 remains OPEN / DRAFT / UNMERGED, 78 ahead / 10 behind, 36 mixed code/test/workflow/dependency/doc files; do not integrate it as a documentation-only change.
+- PR #113 remains OPEN / UNMERGED, 2 ahead / 9 behind, two ADR files and no formal review; base is stale.
+- PR #168 remains OPEN / UNMERGED, 7 ahead / 0 behind, head 52a792169310db28b4616a1d881e86cec5b080a2. The last commit relative to package-tree SHA db42921a323eb6ac618dee12809a70db8fb5c122 changes only the audit document. Candidate exact-head CI succeeded; candidate audit reports 8 moderate production and 14 moderate full-tree records, 0 high/critical. This does not change current main.
+- Current-main dependency audit remains **OPEN**: [run #42761687684](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42761687684), artifact 13737258907, reports 12 high, 11 moderate, 1 low, 0 critical production package records.
+- Vercel team listing returned zero teams; direct project and deployment reads returned HTTP 403 for scope prime-digital-hun-dasboard. Current Production SHA, READY state, official alias and runtime remain **NOT VERIFIED**.
+
+### Current status matrix
+
+| Workstream | Status | Evidence boundary |
+|---|---|---|
+| Items 1–5 — retry, shared retry, synthetic Teacher Authority, service-level isolation and synthetic Shared Learning Machine | **CLOSED** | Only within the exact CI/disposable-fixture or service/resolver test boundaries cited in the 2026-11-11 addendum; not Production acceptance. |
+| Item 6 — dependency audit on current main | **OPEN** | 12 high, 11 moderate, 1 low production package records in artifact 13737258907. |
+| Item 7 — canonical documentation | **OPEN** | PR #171 awaits maintainer review/merge; new head requires exact-head revalidation. |
+| Item 8 — operational acceptance | **BLOCKED** | Issue #112 Gates A/B/C remain BLOCKED / NOT STARTED. |
+| Gustavo 2026-09-29 lineage/backfill | **NOT VERIFIED** | Separate historical-source lane; no trigger. |
+| GL-003 new real source | **NOT VERIFIED** | New genuine lesson/source and runtime-generated IDs required; no trigger. |
+| Owner/Admin authentication, learner A/B HTTP/browser isolation, guardian authorization | **NOT VERIFIED** | No authenticated Production evidence. |
+| Production deployment / alias / served SHA / runtime | **NOT VERIFIED** | Vercel scope access denied; Preview READY is not Production. |
+| Main required-check enforcement | **OPEN / ADMIN ACTION REQUIRED** | Main branch is not protected and has no required status checks. |
+| PR #100 privacy/retention | **OPEN** | No policy approval; no destructive action. |
+
+PIPELINE_AUTOMATION_FROZEN=true remains unchanged. No real source, PipelineRun/candidate, Teacher Authority action, learner-state mutation, database write/migration, secret/OAuth/configuration change, deployment, merge or unfreeze occurred.
