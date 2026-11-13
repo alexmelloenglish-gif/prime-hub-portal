@@ -415,3 +415,64 @@ The earlier “no commit/push/PR/deployment” text is the pre-publication snaps
 ### Safety / non-actions
 
 `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No webhook, cron, ingest or manual Admin route was invoked. No real Gustavo or GL-003 source was triggered; no PipelineRun/candidate was created; no Teacher Authority action, learner/attendance/projection mutation, database write/migration, secret/OAuth change, Production configuration change, merge or deployment occurred.
+
+---
+
+## 2026-11-13 — exact-head validation and repository governance read-back (append-only)
+
+This checkpoint supersedes only the 2026-11-11 queued/in-progress workflow and Preview state, and the prior latest-comment reference. Earlier chronology and historical claims remain preserved.
+
+### Issue activity and attribution
+
+- Latest Issue #58 comment after the reference request is [#6831961751](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6831961751), by **@alexmelloenglish-gif**, created **2026-11-12 18:12:00 UTC**. GitHub identifies the account and the ChatGPT Codex Connector app that submitted the report; this is not an independent substantive reply from an identifiable execution/integration agent. No later Issue #58 comment was present in this read-back.
+- The previous latest-comment reference [#6755681900](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6755681900) is superseded as the latest activity. The latest observed Issue #112 comment remains [#6775679051](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/112#issuecomment-6775679051), by the same GitHub account; no later Issue #112 comment was returned.
+
+### Current main and repository governance
+
+- Current main remains **fa2e0282af9d358a8580f5316e619023977de772** (PR #167 merge, 2026-11-10 05:22:02 UTC).
+- GitHub's branch endpoint reports protected=false, protection.enabled=false, required_status_checks.enforcement_level=off, and an empty required-check context list. No branch-protection setting was changed. Treat required-check enforcement on main as **OPEN / ADMIN ACTION REQUIRED**; passing CI does not mean GitHub is enforcing those checks before a direct update.
+
+### PR #171 — exact-head verification before this addendum
+
+- PR #171 is **OPEN / DRAFT / UNMERGED**, base main at fa2e0282af9d358a8580f5316e619023977de772, head c8478fedbd87e244618af1999fdb38cfd4ee5661; compare confirms **6 commits ahead / 0 behind** and GitHub reports mergeable.
+- Formal review submissions: **none**. Inline review threads: **none**.
+- Exact-head GitHub workflows completed **3/3 SUCCESS** on c8478fed:
+  - [Student Dashboard Contract #43277173649](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173649)
+  - [Golden Runtime Witness #43277173773](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173773)
+  - [Coordination Runtime Witness #43277173659](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173659)
+- The Golden job's exact-head steps initialized disposable containers/PostgreSQL, applied migrations to the disposable database, executed the Golden witness and retry-state witness, and uploaded synthetic evidence. This is CI fixture evidence only; it is not a real Production, Gustavo or GL-003 execution.
+- The combined commit status reports Vercel **SUCCESS**. Vercel bot comment [#6803816145](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/171#issuecomment-6803816145), updated **2026-11-12 18:12:49 UTC**, reports a **READY Preview** at [the preview URL](https://prime-hub-portal-git-docs-iss-22464a-prime-digital-hun-dasboard.vercel.app). This is Preview only, not Production.
+- These workflow and Preview results apply to the exact pre-addendum head c8478fed. The append-only refresh now being committed to this same branch creates a new head and requires fresh exact-head checks; do not carry these results forward to the new head.
+
+### Related PR dispositions — current read-back
+
+- **PR #100:** OPEN / UNMERGED; 4 commits ahead / 32 behind current main; one COMMENTED review and no APPROVED review. The review explicitly treats the proposed 12/24-month, 90-day and 180-day retention periods as proposals requiring owner approval. No destructive retention action is authorized.
+- **PR #96:** CLOSED / NOT MERGED. docs/operations/INFRA_ACCESS_RECOVERY.md exists on current main at blob 8c6c48784b3e66403b6f37286c81ee2ccad162eb; no duplicate recovery PR is needed.
+- **PR #108:** OPEN / DRAFT / UNMERGED; head 9c430335a92d96c09e6fb4e707609e4753c6439e; 78 commits ahead / 10 behind current main, 36 changed files across code, tests, workflows, dependencies and docs; GitHub reports mergeable=false. Do not treat it as a documentation-only merge.
+- **PR #113:** OPEN / UNMERGED; head 3221f0031cce482a1ac94c1887ffa32c7acf85e2; 2 commits ahead / 9 behind current main; two ADR files; no formal review. Its base is stale and its existing authorization remains limited to those ADR files.
+- **PR #168:** OPEN / UNMERGED; head 52a792169310db28b4616a1d881e86cec5b080a2; 7 commits ahead / 0 behind current main. Its latest commit after audited package-tree SHA db42921a323eb6ac618dee12809a70db8fb5c122 changes only docs/audits/LOT-H-EXECUTION-2026-11-10.md; the candidate dependency tree is unchanged from that audited tree. Exact-head candidate runs [#42769864240](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769864240), [#42769864173](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769864173), [#42769864178](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769864178), and [#42769864289](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42769864289) succeeded. Candidate audit reports 8 moderate production package records and 14 moderate full-tree records, 0 high/critical. This is candidate-only; it does not remediate current main.
+
+### Current status matrix
+
+| Workstream | Status | Evidence boundary |
+|---|---|---|
+| Item 1 — legacy retry eligibility | **CLOSED** | Exact-head CI evidence on PR #108; CI/contract scope only. |
+| Item 2 — shared retry concurrency | **CLOSED** | Disposable PostgreSQL concurrent-claim witness; not Production. |
+| Item 3 — Teacher Authority contract | **CLOSED** | Synthetic Golden Runtime Witness only; real GL-003 remains NOT VERIFIED. |
+| Item 4 — dashboard isolation | **CLOSED** | PostgreSQL-backed service/resolver test, 9/9 PASS; not authenticated browser/HTTP/NextAuth E2E or guardian Production proof. |
+| Item 5 — Shared Learning Machine witness | **CLOSED** | Synthetic IDs/provider and disposable DB; no real source or Production run. |
+| Item 6 — dependency audit on current main | **OPEN** | Main audit [#42761687684](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42761687684), artifact 13737258907: 12 high, 11 moderate, 1 low, 0 critical production package records. PR #168 is a separate candidate. |
+| Item 7 — canonical documentation | **OPEN** | PR #171 remains unmerged and unapproved; new head requires exact-head revalidation. |
+| Item 8 — operational acceptance | **BLOCKED** | Issue #112 Gates A/B/C remain BLOCKED / NOT STARTED; authorized environment, test identities/learner fixture, Meet organizer OAuth and human authenticated read-back are absent. |
+| Gustavo 2026-09-29 historical-source lineage/backfill | **NOT VERIFIED** | Separate from GL-003; no trigger or real PipelineRun under this task. |
+| GL-003 — genuinely new real lesson/source | **NOT VERIFIED** | Requires new source and runtime-generated IDs under its protocol; no execution authorized. |
+| Google/NextAuth Owner/Admin, learner A→A/A→B, guardian | **NOT VERIFIED** | No accepted authenticated Production session/route evidence. |
+| Production deployment SHA / READY / official alias / runtime | **NOT VERIFIED** | Vercel team list returned zero; project and deployment reads returned HTTP 403 for prime-digital-hun-dasboard. Preview READY is not Production evidence. |
+| main required-check enforcement | **OPEN / ADMIN ACTION REQUIRED** | Branch API reports unprotected branch and no required status-check contexts. |
+| PR #100 retention policy | **OPEN** | No APPROVED review or owner policy decision; periods remain proposals. |
+
+### Access and safety
+
+Direct Vercel read-only access remains unavailable: list_teams returned zero teams; get_project and get_deployment returned HTTP 403 for scope prime-digital-hun-dasboard. Current Production deployment SHA, READY state, official alias binding and runtime remain NOT VERIFIED. No Production configuration or access setting was changed.
+
+PIPELINE_AUTOMATION_FROZEN=true remains unchanged. No webhook, cron, ingest or manual Admin route was invoked; no Gustavo/GL-003 source, PipelineRun or candidate was created; no Teacher Authority action, learner/attendance/projection mutation, database write/migration, secret/OAuth change, Production deployment, merge or unfreeze occurred.
