@@ -1461,3 +1461,38 @@ The current-main read-back confirms that the Drive cron route exists but is not 
 6. Keep Production NOT VERIFIED until direct Vercel deployment, alias and runtime read-back is available.
 
 `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No Production, Neon, learner, attendance, projection, secret, OAuth or configuration mutation was performed.
+
+---
+
+## 2026-11-13 — exact-head validation and governance update
+
+This append-only entry supersedes the 2026-11-11 queued/in-progress status and latest-comment reference. Preserve all prior dated snapshots.
+
+- Current main remains fa2e0282af9d358a8580f5316e619023977de772.
+- Latest Issue #58 comment after the reference request is [#6831961751](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6831961751), by @alexmelloenglish-gif, **2026-11-12 18:12:00 UTC**. It is an executor progress report submitted through the ChatGPT Codex Connector, not an independent reply from an identified execution agent. No later Issue #58 comment was returned.
+- PR #171 pre-refresh head c8478fedbd87e244618af1999fdb38cfd4ee5661 was 6 ahead / 0 behind current main, OPEN / DRAFT / UNMERGED, with no formal review or inline review thread. Its exact-head workflows all completed SUCCESS: Student Dashboard Contract [#43277173649](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173649), Golden Runtime Witness [#43277173773](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173773), Coordination Runtime Witness [#43277173659](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43277173659). Vercel status was SUCCESS and bot comment [#6803816145](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/171#issuecomment-6803816145), updated 2026-11-12 18:12:49 UTC, reported Preview READY. These results apply only to pre-refresh SHA c8478fed; the new documentation commit requires fresh exact-head checks. Preview is not Production.
+- GitHub's main branch API reports protected=false, protection disabled, required status-check enforcement off and no required contexts. No branch-protection change was made. Required-check enforcement is **OPEN / ADMIN ACTION REQUIRED**.
+- PR #100 remains OPEN / UNMERGED, 4 ahead / 32 behind, with one COMMENTED review and no approval. Retention durations remain proposals pending owner policy approval.
+- PR #96 is CLOSED / NOT MERGED; docs/operations/INFRA_ACCESS_RECOVERY.md exists on main at blob 8c6c48784b3e66403b6f37286c81ee2ccad162eb.
+- PR #108 remains OPEN / DRAFT / UNMERGED, 78 ahead / 10 behind, 36 mixed code/test/workflow/dependency/doc files; do not integrate it as a documentation-only change.
+- PR #113 remains OPEN / UNMERGED, 2 ahead / 9 behind, two ADR files and no formal review; base is stale.
+- PR #168 remains OPEN / UNMERGED, 7 ahead / 0 behind, head 52a792169310db28b4616a1d881e86cec5b080a2. The last commit relative to package-tree SHA db42921a323eb6ac618dee12809a70db8fb5c122 changes only the audit document. Candidate exact-head CI succeeded; candidate audit reports 8 moderate production and 14 moderate full-tree records, 0 high/critical. This does not change current main.
+- Current-main dependency audit remains **OPEN**: [run #42761687684](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/42761687684), artifact 13737258907, reports 12 high, 11 moderate, 1 low, 0 critical production package records.
+- Vercel team listing returned zero teams; direct project and deployment reads returned HTTP 403 for scope prime-digital-hun-dasboard. Current Production SHA, READY state, official alias and runtime remain **NOT VERIFIED**.
+
+### Current status matrix
+
+| Workstream | Status | Evidence boundary |
+|---|---|---|
+| Items 1–5 — retry, shared retry, synthetic Teacher Authority, service-level isolation and synthetic Shared Learning Machine | **CLOSED** | Only within the exact CI/disposable-fixture or service/resolver test boundaries cited in the 2026-11-11 addendum; not Production acceptance. |
+| Item 6 — dependency audit on current main | **OPEN** | 12 high, 11 moderate, 1 low production package records in artifact 13737258907. |
+| Item 7 — canonical documentation | **OPEN** | PR #171 awaits maintainer review/merge; new head requires exact-head revalidation. |
+| Item 8 — operational acceptance | **BLOCKED** | Issue #112 Gates A/B/C remain BLOCKED / NOT STARTED. |
+| Gustavo 2026-09-29 lineage/backfill | **NOT VERIFIED** | Separate historical-source lane; no trigger. |
+| GL-003 new real source | **NOT VERIFIED** | New genuine lesson/source and runtime-generated IDs required; no trigger. |
+| Owner/Admin authentication, learner A/B HTTP/browser isolation, guardian authorization | **NOT VERIFIED** | No authenticated Production evidence. |
+| Production deployment / alias / served SHA / runtime | **NOT VERIFIED** | Vercel scope access denied; Preview READY is not Production. |
+| Main required-check enforcement | **OPEN / ADMIN ACTION REQUIRED** | Main branch is not protected and has no required status checks. |
+| PR #100 privacy/retention | **OPEN** | No policy approval; no destructive action. |
+
+PIPELINE_AUTOMATION_FROZEN=true remains unchanged. No real source, PipelineRun/candidate, Teacher Authority action, learner-state mutation, database write/migration, secret/OAuth/configuration change, deployment, merge or unfreeze occurred.
