@@ -428,3 +428,38 @@ Append-only live-state correction. It supersedes the 2026-11-11 queued/in-progre
 | PR #100 retention policy | **OPEN** | No owner policy approval; no deletion/anonymization/migration/TTL. |
 
 PIPELINE_AUTOMATION_FROZEN=true remains unchanged. No source was triggered, no PipelineRun/candidate created, no Teacher Authority action, learner/attendance/projection mutation, database write/migration, secret/OAuth/configuration change, Production deployment, merge or unfreeze occurred.
+
+
+---
+
+## 2026-11-15 — atualização de evidência e status da Issue #58
+
+Este registro complementa o checkpoint de 13/11 sem substituir os fatos históricos nem ampliar o escopo de qualquer fechamento.
+
+- Main HEAD confirmado: fa2e0282af9d358a8580f5316e619023977de772.
+- Issue #58: comentário mais recente após a referência [#6831961751](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6831961751), @alexmelloenglish-gif, 2026-11-12 18:12 UTC; nenhum posterior na leitura atual. Não atribuir a um agente individual sem identificação.
+- PR #171: head anterior a este addendum cd0711551e9168be6ced6a16a53166b1a45dd710; base main fa2e028...; 9 ahead / 0 behind; seis arquivos documentais; OPEN / READY FOR REVIEW / UNMERGED, sem review formal ou inline thread. O comentário automatizado do Codex sem findings não é aprovação.
+- Checks no head exato cd071155...: Student Dashboard Contract [#43481921041](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481921041), Golden Runtime Witness [#43481921042](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481921042), Coordination Runtime Witness [#43481920976](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481920976) — todos SUCCESS. Os logs confirmam checkout exato; os witnesses usam PostgreSQL descartável e declaram productionTouched=false. Vercel SUCCESS/Preview READY é apenas Preview.
+- Production permanece NOT VERIFIED: leitura Vercel de projeto retorna HTTP 403 para prime-digital-hun-dasboard; deployment SHA, READY, aliases e runtime atuais não foram lidos independentemente.
+
+| Workstream | Status | Evidência / limite |
+|---|---|---|
+| Item 1 — legacy retry | **CLOSED** | CI/contract, não Production. |
+| Item 2 — shared retry concurrency | **CLOSED** | PostgreSQL descartável, provider mockado; não Production. |
+| Item 3 — Teacher Authority contract | **CLOSED** | Fixture sintética; GL-003 real permanece NOT VERIFIED. |
+| Item 4 — dashboard isolation | **CLOSED** | PostgreSQL-backed service/resolver 9/9; não browser/HTTP/NextAuth Production E2E. |
+| Item 5 — Shared Learning Machine | **CLOSED** | Golden witness sintética; productionTouched=false; sem fonte real. |
+| Item 6 — dependency audit em main | **OPEN** | Artifact #13737258907: 12 high, 11 moderate, 1 low, 0 critical. |
+| Item 7 — documentação canônica | **OPEN** | PR #171 aguarda review formal e merge; o novo head deste addendum exige revalidação exata. |
+| Item 8 — aceitação operacional | **BLOCKED** | Issue #112 Gates A/B/C BLOCKED / NOT STARTED. |
+| Gustavo 2026-09-29 lineage/backfill | **NOT VERIFIED** | Lane histórica distinta; nenhum trigger. |
+| GL-003 nova aula/fonte | **NOT VERIFIED** | Exige fonte nova e IDs gerados pelo runtime; nenhum trigger. |
+| Owner/Admin, learner A→A/A→B e guardian | **NOT VERIFIED** | Sem prova autenticada Production. |
+| Production deployment / alias / served SHA / runtime | **NOT VERIFIED** | Vercel 403; não usar Preview ou histórico como substituto. |
+| Main required-check enforcement | **OPEN / ADMIN ACTION REQUIRED** | Branch API informa protected=false, sem contexts obrigatórios. |
+| PR #100 retenção | **OPEN** | Sem aprovação de política; prazos são propostas; nenhuma ação destrutiva autorizada. |
+| PR #96 infra recovery | **CLOSED** | CLOSED / NOT MERGED; arquivo já em main com blob 8c6c48784b3e66403b6f37286c81ee2ccad162eb. |
+
+PR #100 permanece OPEN / UNMERGED, 4 ahead / 32 behind, com somente review COMMENTED; o Golden Runtime Witness do head 097c61d falhou (#42165135953), portanto não promover seu estado. PR #108 permanece OPEN / DRAFT / UNMERGED, 78 ahead / 10 behind, 36 arquivos mistos, mergeable=false; não é trilha documental segura.
+
+PIPELINE_AUTOMATION_FROZEN=true permanece preservado. Nenhuma execução real, PipelineRun/candidate, Teacher Authority, mutação learner/attendance/projection, escrita/migration de banco, alteração de secret/OAuth/configuração, deployment Production, merge ou unfreeze foi realizada.
