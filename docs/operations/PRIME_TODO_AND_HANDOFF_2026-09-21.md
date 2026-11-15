@@ -1496,3 +1496,31 @@ This append-only entry supersedes the 2026-11-11 queued/in-progress status and l
 | PR #100 privacy/retention | **OPEN** | No policy approval; no destructive action. |
 
 PIPELINE_AUTOMATION_FROZEN=true remains unchanged. No real source, PipelineRun/candidate, Teacher Authority action, learner-state mutation, database write/migration, secret/OAuth/configuration change, deployment, merge or unfreeze occurred.
+
+
+---
+
+## 2026-11-15 — atualização de estado da reconciliação Issue #58
+
+- main confirmado pela API GitHub: fa2e0282af9d358a8580f5316e619023977de772.
+- Último comentário da Issue #58 após a referência: [#6831961751](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-6831961751), @alexmelloenglish-gif, 2026-11-12 18:12 UTC. Nenhum comentário posterior foi encontrado; autoria individual do agente não é identificável apenas pelo login.
+- PR [#171](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/171): head verificado cd0711551e9168be6ced6a16a53166b1a45dd710, base main fa2e028..., 9 ahead / 0 behind, seis docs, **OPEN / READY FOR REVIEW / UNMERGED**, sem review formal. O resumo Codex é automatizado, não aprovação.
+- Checks no SHA exato: Student Dashboard Contract [#43481921041](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481921041), Golden Runtime Witness [#43481921042](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481921042) e Coordination Runtime Witness [#43481920976](https://github.com/alexmelloenglish-gif/prime-hub-portal/actions/runs/43481920976) — **3/3 SUCCESS**. Logs confirmam checkout exato; Golden/Coordination usam PostgreSQL descartável e productionTouched=false. Vercel status SUCCESS / Preview READY; não é Production.
+- Vercel Production: **NOT VERIFIED** — leitura direta de projeto retorna HTTP 403 para prime-digital-hun-dasboard; SHA servido, READY, alias e runtime não foram lidos independentemente.
+- PR #100: OPEN / UNMERGED, 4 ahead / 32 behind main, somente COMMENTED review; Golden Runtime Witness no head 097c61d falhou (#42165135953). Prazos de retenção continuam propostas, sem exclusão/anonymização/migration/TTL.
+- PR #96: CLOSED / NOT MERGED; único arquivo de recovery já existe em main com blob 8c6c48784b3e66403b6f37286c81ee2ccad162eb.
+- PR #108: OPEN / DRAFT / UNMERGED, 78 ahead / 10 behind, 36 arquivos mistos e mergeable=false; não integrar como documentação.
+
+| Frente | Estado atual | Evidência / limite |
+|---|---|---|
+| Itens 1–5 — retry, retry compartilhado, contrato sintético Teacher Authority, isolamento no serviço/resolver, Machine sintética | **CLOSED** | Apenas CI/fixtures/PostgreSQL descartável ou serviço/resolver; não Production E2E. |
+| Item 6 — dependências em main | **OPEN** | Artefato #13737258907: 12 high, 11 moderate, 1 low, 0 critical. |
+| Item 7 — documentos canônicos | **OPEN** | PR #171 aguarda review formal e merge humano; novo head após este addendum exige novos checks. |
+| Item 8 — aceitação operacional | **BLOCKED** | Issue #112 Gates A/B/C BLOCKED / NOT STARTED. |
+| Gustavo 29/09 lineage/backfill | **NOT VERIFIED** | Lane separada; não disparar nem criar PipelineRun real. |
+| GL-003 nova fonte real | **NOT VERIFIED** | Nova aula e IDs runtime exigidos; não disparar. |
+| Owner/Admin, A→A/A→B autenticado, guardian | **NOT VERIFIED** | Sem sessão Production e identidades autorizadas. |
+| Production SHA / READY / alias / runtime | **NOT VERIFIED** | Vercel 403; Preview não prova Production. |
+| Proteção main / required checks | **OPEN / ADMIN ACTION REQUIRED** | Branch API indica proteção desabilitada e nenhum check obrigatório. |
+
+PIPELINE_AUTOMATION_FROZEN=true permanece inalterado. Nenhuma operação real de Machine, Teacher Authority, learner, attendance, banco, migration, secret, OAuth, Production, deploy ou merge foi executada.
