@@ -1580,3 +1580,23 @@ This addendum supersedes only the live-state fields in earlier snapshots. Preser
 | PR #96 infrastructure recovery | **CLOSED / NOT MERGED** | Document is already present in main with the identical blob; branch is stale and carries no unique change. |
 
 `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No webhook, cron, ingest or manual Admin route was invoked; no Gustavo/GL-003 source, PipelineRun/candidate, Teacher Authority action, learner/attendance/projection mutation, database write/migration, secret/OAuth/configuration change, Production deployment, approval, merge or unfreeze occurred.
+
+---
+
+## 2026-11-16 — supersession after the final documentation-only status commit
+
+The preceding “final exact-head reconciliation” records the validated snapshot at `c94199aa5c9df6b135928723459dda13f9e73a1b`. Three subsequent commits only synchronized this same status matrix into the latest handoff, Canonical TODO and Closure Ledger. They did not change application code, tests, dependencies, workflows, schema, secrets, environment variables, database or runtime configuration.
+
+Do **not** carry the earlier 3/3 workflow SUCCESS, Vercel SUCCESS or Codex no-findings result forward as proof for the newer documentation-only PR head. The exact current SHA and its fresh checks are the live values on [PR #171](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/171). The new head must pass its own exact-SHA GitHub workflows and Vercel check; Codex automation is not maintainer approval. This note intentionally does not hard-code its own commit SHA.
+
+All other status boundaries in the preceding matrix remain unchanged:
+- Items 1–5 are CLOSED only within their synthetic/CI/service-test scopes.
+- Item 6 remains OPEN pending a current-main production dependency audit.
+- Item 7 remains OPEN pending exact-head validation and maintainer review/merge.
+- Item 8 remains BLOCKED by Issue #112 Gates A/B/C.
+- Gustavo 2026-09-29 historical-source lineage/backfill and new-source GL-003 remain separate and NOT VERIFIED.
+- Owner/Admin login, authenticated learner A/B isolation, guardian authorization and Production deployment/alias/runtime remain NOT VERIFIED.
+- Main required-check enforcement remains OPEN / ADMIN ACTION REQUIRED; the branch API read reports `protected=false`, enforcement off and no required contexts.
+- PR #100 remains OPEN / UNMERGED with retention periods as proposals. PR #96 remains CLOSED / NOT MERGED with its only document identical to the copy in main.
+
+`PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No real source, route, PipelineRun/candidate, Teacher Authority action, learner/attendance/projection mutation, database write/migration, secret/OAuth/configuration change, Production deployment, approval, merge or unfreeze occurred.
