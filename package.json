@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev": "next dev",
+    "test:prime-engine": "npx --yes tsx@4.20.6 --test tests/pipeline/*.spec.ts tests/auth/*.spec.ts tests/integration/*.spec.ts",
+    "audit:prime-engine": "node scripts/audit-prime-engine.mjs",
     "teacher-intelligence:self-test": "node scripts/teacher-intelligence-self-test.mjs && node scripts/pipeline-attempts-self-test.mjs",
     "student-dashboard:self-test": "node --experimental-strip-types scripts/student-facing-language-policy-self-test.mjs && node scripts/student-dashboard-contract-self-test.mjs && node scripts/canonical-dashboard-projection-self-test.mjs && node scripts/canonical-student-consistency-audit.mjs && node scripts/student-dashboard-contract-regression-self-test.mjs",
     "portfolio:truth-audit": "node scripts/portfolio-class-report-truth-audit.mjs",
