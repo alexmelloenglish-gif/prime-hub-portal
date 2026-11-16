@@ -15,7 +15,7 @@
     "eligibility:self-test": "node scripts/eligibility-boundary-self-test.mjs",
     "canonical:validate": "node scripts/canonical-consistency-validator.mjs",
     "canonical:validate:strict": "node scripts/canonical-consistency-validator.mjs --strict",
-    "build": "node scripts/rebuild-landing-assets.mjs && npm run drive-transcript:self-test && npm run model-provider:self-test && npm run teacher-intelligence:self-test && npm run status-color:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && npm run canonical-learning-intelligence:g5:self-test && npm run g6:account-learner:self-test && npm run learning-narrative:self-test && prisma generate && next build",
+    "build": "node scripts/rebuild-landing-assets.mjs && npm run drive-transcript:self-test && npm run model-provider:self-test && npm run providers-health:self-test && npm run teacher-intelligence:self-test && npm run status-color:self-test && npm run student-dashboard:self-test && npm run eligibility:self-test && npm run canonical:validate:strict && npm run canonical-readback:g3:self-test && npm run canonical-independent-projection:g4:self-test && npm run canonical-learning-intelligence:g5:self-test && npm run g6:account-learner:self-test && npm run learning-narrative:self-test && prisma generate && next build",
     "vercel-build": "npm run build",
     "start": "next start",
     "lint": "next lint",
@@ -38,7 +38,10 @@
     "shared-learning-machine:self-test": "node scripts/shared-learning-machine-self-test.mjs && node --experimental-strip-types scripts/shared-learning-machine-behavioral-self-test.mjs",
     "drive-transcript:self-test": "node --experimental-strip-types scripts/drive-transcript-tab-self-test.mjs",
     "status-color:self-test": "node scripts/status-color-contract-self-test.mjs",
-    "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs"
+    "model-provider:self-test": "node scripts/model-provider-pool-self-test.mjs",
+    "providers-health:self-test": "node scripts/providers-health-self-test.mjs",
+    "providers-health:witness": "node --experimental-strip-types scripts/providers-health-witness.ts",
+    "audit:prime-engine": "node scripts/prime-dependency-audit.mjs"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
