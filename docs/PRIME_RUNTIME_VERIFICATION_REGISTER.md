@@ -720,3 +720,48 @@ Historical Golden Traces remain immutable witnesses unless an explicit forensic 
 **Status:** `ACTIVE — POST-GATE / AWAITING GL-003`  
 **Authoritative reference:** this document describes the runtime verification boundary; it does not replace the canonical architecture/domain specifications.  
 **Last canonical checkpoint:** Production deployment of `4b1df7c6a51db9b7d8293d6c33e7a87b21363523`.
+
+---
+
+## 2026-11-12 — current release-authority and witness-lane reconciliation
+
+This dated addendum supersedes only the live-authority interpretation of the earlier statements **“Next authorized verification: GL-003”** and **“ACTIVE — POST-GATE / AWAITING GL-003”**. It does not erase the historical GL-001/GL-002 findings or change the technical evidence requirements in this register.
+
+### Historical traces remain distinct
+
+- **GL-001 — Rafael, 2026-08-25:** historical false-success trace; frozen / rejected as a valid E2E golden trace.
+- **GL-002 — Gustavo, 2026-08-25:** historical false-success trace; frozen / rejected as a valid E2E golden trace.
+- The historical Production deployment and READY metadata recorded in earlier sections refer to the checkpoint around commit `4b1df7c6a51db9b7d8293d6c33e7a87b21363523`. They are not a read-back of the current Production deployment, official-domain alias, served SHA or runtime.
+
+### Two separate open witness lanes
+
+1. **Gustavo — 2026-09-29 — historical-source shared PRIME Learning Machine lineage/backfill:** `OPEN / NOT VERIFIED`. This is a separate target recorded in Issue comments [#5939113394](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-5939113394) and [#5939285950](https://github.com/alexmelloenglish-gif/prime-hub-portal/issues/58#issuecomment-5939285950). It is not GL-002 and is not GL-003. Preserve the canonical Drive source and existing Teacher Authority / CLR state. Do not manually assemble a payload or candidate, create a real PipelineRun, trigger this source, or invoke Teacher Authority under the current monitoring authority.
+2. **GL-003 — a genuinely new real lesson/source:** `OPEN / NOT VERIFIED`. It remains subject to the source, provenance, runtime-generated identifier, persisted-artifact and complete-trace requirements in this protocol. Reprocessing Rafael or Gustavo and relabelling that replay/backfill as GL-003 is prohibited.
+
+### Current operational authority
+
+Issue #112 is the active operational acceptance tracker. Its current hold supersedes the historical “next authorized verification” wording above: no Production or manual Admin trigger, OAuth re-consent, database/learner/attendance mutation, Teacher Authority action, projection change, deployment, merge or unfreeze is authorized by this monitoring task.
+
+`PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. The existing manual Admin route's session/admin guard and its ability to bypass the global freeze are implementation facts, not execution authorization. Do not invoke it. The automatic Drive webhook/cron/ingest paths remain frozen.
+
+The Golden Runtime Witness GitHub workflow uses disposable PostgreSQL and synthetic fixtures; its success (including `productionTouched=false`) proves CI fixture behavior only. It does not prove the Gustavo 2026-09-29 witness, GL-003, a real Production run, or current Production deployment state.
+
+Current Production deployment SHA, READY state, official alias binding and runtime remain `NOT VERIFIED` in this executor because direct Vercel project/deployment/domain reads return HTTP 403 for team scope `prime-digital-hun-dasboard`. Do not reuse historical READY metadata as current evidence.
+
+A future execution requires a separate explicit owner release decision naming the environment, actor, source, route, expected mutation, stop/rollback conditions and authorized test identities, recorded in Issue #112. Until then both witness lanes remain `OPEN / NOT VERIFIED`.
+
+**Safety:** no source was triggered, no PipelineRun/candidate was created, no Teacher Authority action or learner-state mutation occurred, no database/Production write or migration occurred, no secrets/configuration changed, and no deployment or merge was performed.
+
+---
+
+## 2026-11-16 — Admin route identity clarification
+
+This correction resolves the ambiguous phrase “manual Admin route” in the 2026-11-11 addenda. The two Admin endpoints are distinct:
+
+- **Manual Shared Learning Machine:** `POST /api/admin/learning-machine/run`, file `app/api/admin/learning-machine/run/route.ts`, blob `997340f5c20000fe58288e280ba14ec5726f41bf`. It checks request origin, NextAuth session and administrator role; it reads JSON, uses `sourceFileId` through `prepareDriveTranscriptPayload` when supplied, otherwise accepts `parseTranscriptPayload(body)`, and calls `executeSharedLearningMachine`. It does **not** import or check `PIPELINE_AUTOMATION_FROZEN`.
+- **Drive CTA endpoint:** `POST /api/admin/process-drive`, file `app/api/admin/process-drive/route.ts`, blob `2afbc350c520445d92341fd9e718050f56740f3a`. It checks request origin, NextAuth session and administrator role, then returns HTTP 503 while the freeze is true; it does not read or execute a transcript payload. Even with the freeze false, the current handler returns 503 “Drive processing is unavailable.”
+- `lib/pipeline-freeze.ts`, blob `76bf178b1cd03dd36e7e1abbf3d3e1f1b95e731f`, sets `PIPELINE_AUTOMATION_FROZEN = true`.
+
+The automated review correctly describes `/api/admin/process-drive`; it does not describe the separate `/api/admin/learning-machine/run` route cited by blob `997340f...`. The earlier generic wording was ambiguous and is superseded by this path-level distinction.
+
+These are source-code facts, not execution authorization. Neither endpoint was invoked. Do not use the payload fallback to construct a real-source witness. Any future authorized manual witness must use the canonical `sourceFileId` and a separately recorded owner decision. Automatic Drive webhook/cron/ingest paths remain frozen. `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged.

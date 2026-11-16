@@ -221,3 +221,19 @@ HISTORICAL GOLDEN TRACE MODIFICATION: PROHIBITED
 
 **Status:** `ACTIVE — GL-003 MAY BE AUTOMATICALLY OR MANUALLY TRIGGERED IN PRODUCTION`  
 **Canonical principle:** `Manual trigger is allowed; manual contamination is not.`
+
+
+---
+
+## 2026-11-11 — current release-authority override
+
+This dated section supersedes any broader operational reading of the generic trigger language in Section 9. It does not erase the protocol's technical trigger modes or historical approvals.
+
+The current repository baseline is `main` SHA `fa2e0282af9d358a8580f5316e619023977de772`. Issue #112 is the active operational acceptance tracker and currently withholds authorization for Production triggers, OAuth re-consent, database/learner/attendance mutation, deployment, merge, Teacher Authority actions, projection changes, or unfreezing. A technically valid trigger mode in this protocol is not a standing release authorization.
+
+Keep two independent witness lanes:
+
+1. **Gustavo — 2026-09-29 — historical-source shared-Machine lineage/backfill:** `OPEN / NOT VERIFIED`. This is not GL-003. Preserve the canonical Drive source and all existing Teacher Authority / CLR state. Do not manually assemble payloads or candidates, create a PipelineRun, invoke Teacher Authority, or trigger this source under the current monitoring authority.
+2. **GL-003 — new real lesson/source:** `OPEN / NOT VERIFIED`. It requires a genuinely new real lesson/source and runtime-generated identifiers under this protocol. Reprocessing Rafael or Gustavo and relabelling the replay as GL-003 remains prohibited.
+
+`PIPELINE_AUTOMATION_FROZEN=true` remains unchanged. No automatic or manual Production execution is authorized by this monitoring task. A future execution requires a separate explicit owner release decision naming the environment, actor, source, route, expected mutation, stop/rollback conditions, and authorized test identities, recorded in Issue #112. Until then, both witness lanes remain `OPEN / NOT VERIFIED`.
