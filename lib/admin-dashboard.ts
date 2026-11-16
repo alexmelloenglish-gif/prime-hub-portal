@@ -12,6 +12,7 @@ import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.j
 import { normalizeEmail } from '@/lib/student-data'
 import { isAuthorizedLearner } from '@/lib/learner-eligibility'
 import { getPrismaClient } from '@/lib/prisma'
+import { classifyAdminDataAvailability } from '@/lib/student-data-status'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -22,12 +23,14 @@ export type StudentDirectoryEntry = {
   currentLevel: string
   targetLevel: string
   attendanceRate: string
-  learningRecordStatus?: 'ready' | 'partial'
+  learningRecordStatus?: 'ready' | 'partial' | 'unavailable'
+  dataAvailability?: 'current' | 'historical' | 'unavailable'
+  historicalReportCount?: number
   learningRecordLabel?: string
   canonicalReportCount?: number
   publishedReportCount?: number
   latestPipelineStatus?: string | null
-  dataSource?: 'firestore' | 'repository'
+  dataSource?: 'repository'
 }
 
 export type PipelineActivityEntry = {
@@ -44,34 +47,34 @@ export type PipelineActivityEntry = {
 
 const repositoryStudentDirectory: StudentDirectoryEntry[] = [
   {
-    id: 'rafael-copolillo-gmail-com', studentEmail: normalizeEmail(String(rafaelProfile.studentEmail)), studentName: String(rafaelProfile.studentName), currentLevel: String(rafaelProfile.currentLevel), targetLevel: String(rafaelProfile.targetLevel), attendanceRate: String(rafaelProfile.attendanceRate), canonicalReportCount: rafaelProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'rafael-copolillo-gmail-com', studentEmail: normalizeEmail(String(rafaelProfile.studentEmail)), studentName: String(rafaelProfile.studentName), currentLevel: String(rafaelProfile.currentLevel), targetLevel: String(rafaelProfile.targetLevel), attendanceRate: String(rafaelProfile.attendanceRate), canonicalReportCount: rafaelProfile.classReports?.length ?? 0, historicalReportCount: rafaelProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'louise-nogueira-hotmail-com', studentEmail: normalizeEmail(String(louiseProfile.studentEmail)), studentName: String(louiseProfile.studentName), currentLevel: String(louiseProfile.currentLevel), targetLevel: String(louiseProfile.targetLevel), attendanceRate: String(louiseProfile.attendanceRate), canonicalReportCount: louiseProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'louise-nogueira-hotmail-com', studentEmail: normalizeEmail(String(louiseProfile.studentEmail)), studentName: String(louiseProfile.studentName), currentLevel: String(louiseProfile.currentLevel), targetLevel: String(louiseProfile.targetLevel), attendanceRate: String(louiseProfile.attendanceRate), canonicalReportCount: louiseProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'italo-pires-gmail-com', studentEmail: normalizeEmail(String(italoProfile.studentEmail)), studentName: String(italoProfile.studentName), currentLevel: String(italoProfile.currentLevel), targetLevel: String(italoProfile.targetLevel), attendanceRate: String(italoProfile.attendanceRate), canonicalReportCount: italoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
+    id: 'italo-pires-gmail-com', studentEmail: normalizeEmail(String(italoProfile.studentEmail)), studentName: String(italoProfile.studentName), currentLevel: String(italoProfile.currentLevel), targetLevel: String(italoProfile.targetLevel), attendanceRate: String(italoProfile.attendanceRate), canonicalReportCount: italoProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'eduarda-coelho-gabriel-hotmail-com', studentEmail: normalizeEmail(String(eduardaProfile.studentEmail)), studentName: String(eduardaProfile.studentName), currentLevel: String(eduardaProfile.currentLevel), targetLevel: String(eduardaProfile.targetLevel), attendanceRate: String(eduardaProfile.attendanceRate), canonicalReportCount: eduardaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'eduarda-coelho-gabriel-hotmail-com', studentEmail: normalizeEmail(String(eduardaProfile.studentEmail)), studentName: String(eduardaProfile.studentName), currentLevel: String(eduardaProfile.currentLevel), targetLevel: String(eduardaProfile.targetLevel), attendanceRate: String(eduardaProfile.attendanceRate), canonicalReportCount: eduardaProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'lauramgcstemp-gmail-com', studentEmail: normalizeEmail(String(lauraProfile.studentEmail)), studentName: String(lauraProfile.studentName), currentLevel: String(lauraProfile.currentLevel), targetLevel: String(lauraProfile.targetLevel), attendanceRate: String(lauraProfile.attendanceRate), canonicalReportCount: lauraProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'lauramgcstemp-gmail-com', studentEmail: normalizeEmail(String(lauraProfile.studentEmail)), studentName: String(lauraProfile.studentName), currentLevel: String(lauraProfile.currentLevel), targetLevel: String(lauraProfile.targetLevel), attendanceRate: String(lauraProfile.attendanceRate), canonicalReportCount: lauraProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'galvaonanda28-gmail-com', studentEmail: normalizeEmail(String(mariaFernandaProfile.studentEmail)), studentName: String(mariaFernandaProfile.studentName), currentLevel: String(mariaFernandaProfile.currentLevel), targetLevel: String(mariaFernandaProfile.targetLevel), attendanceRate: String(mariaFernandaProfile.attendanceRate), canonicalReportCount: mariaFernandaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
+    id: 'galvaonanda28-gmail-com', studentEmail: normalizeEmail(String(mariaFernandaProfile.studentEmail)), studentName: String(mariaFernandaProfile.studentName), currentLevel: String(mariaFernandaProfile.currentLevel), targetLevel: String(mariaFernandaProfile.targetLevel), attendanceRate: String(mariaFernandaProfile.attendanceRate), canonicalReportCount: mariaFernandaProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'diegodasiro-gmail-com', studentEmail: normalizeEmail(String(diegoProfile.studentEmail)), studentName: String(diegoProfile.studentName), currentLevel: String(diegoProfile.currentLevel), targetLevel: String(diegoProfile.targetLevel), attendanceRate: String(diegoProfile.attendanceRate), canonicalReportCount: diegoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'diegodasiro-gmail-com', studentEmail: normalizeEmail(String(diegoProfile.studentEmail)), studentName: String(diegoProfile.studentName), currentLevel: String(diegoProfile.currentLevel), targetLevel: String(diegoProfile.targetLevel), attendanceRate: String(diegoProfile.attendanceRate), canonicalReportCount: diegoProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'claudio-bit-gmail-com', studentEmail: normalizeEmail(String(claudioProfile.studentEmail)), studentName: String(claudioProfile.studentName), currentLevel: String(claudioProfile.currentLevel), targetLevel: String(claudioProfile.targetLevel), attendanceRate: String(claudioProfile.attendanceRate), canonicalReportCount: claudioProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
+    id: 'claudio-bit-gmail-com', studentEmail: normalizeEmail(String(claudioProfile.studentEmail)), studentName: String(claudioProfile.studentName), currentLevel: String(claudioProfile.currentLevel), targetLevel: String(claudioProfile.targetLevel), attendanceRate: String(claudioProfile.attendanceRate), canonicalReportCount: claudioProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'vcrlima89-gmail-com', studentEmail: normalizeEmail(String(valeriaProfile.studentEmail)), studentName: String(valeriaProfile.studentName), currentLevel: String(valeriaProfile.currentLevel), targetLevel: String(valeriaProfile.targetLevel), attendanceRate: String(valeriaProfile.attendanceRate), canonicalReportCount: valeriaProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Learning record ready',
+    id: 'vcrlima89-gmail-com', studentEmail: normalizeEmail(String(valeriaProfile.studentEmail)), studentName: String(valeriaProfile.studentName), currentLevel: String(valeriaProfile.currentLevel), targetLevel: String(valeriaProfile.targetLevel), attendanceRate: String(valeriaProfile.attendanceRate), canonicalReportCount: valeriaProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
   {
-    id: 'carolvdrummond-gmail-com', studentEmail: normalizeEmail(String(gustavoProfile.studentEmail)), studentName: String(gustavoProfile.studentName), currentLevel: String(gustavoProfile.currentLevel), targetLevel: String(gustavoProfile.targetLevel), attendanceRate: String(gustavoProfile.attendanceRate), canonicalReportCount: gustavoProfile.classReports?.length ?? 0, learningRecordStatus: 'ready', learningRecordLabel: 'Longitudinal learning record ready',
+    id: 'carolvdrummond-gmail-com', studentEmail: normalizeEmail(String(gustavoProfile.studentEmail)), studentName: String(gustavoProfile.studentName), currentLevel: String(gustavoProfile.currentLevel), targetLevel: String(gustavoProfile.targetLevel), attendanceRate: String(gustavoProfile.attendanceRate), canonicalReportCount: gustavoProfile.classReports?.length ?? 0, learningRecordStatus: 'partial', learningRecordLabel: 'Historical snapshot; current Neon state not yet confirmed',
   },
 ]
 
@@ -79,7 +82,7 @@ function getRepositoryStudentDirectory(reason: string): StudentDirectoryEntry[] 
   console.warn(`[admin-dashboard] Using the repository student directory: ${reason}`)
   return repositoryStudentDirectory
     .filter((student) => isAuthorizedLearner(student.studentEmail))
-    .map((student) => ({ ...student, dataSource: 'repository' as const }))
+    .map((student) => ({ ...student, historicalReportCount: student.historicalReportCount ?? student.canonicalReportCount ?? 0, dataSource: 'repository' as const }))
 }
 
 async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
@@ -94,14 +97,17 @@ async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
 
         return {
           ...student,
-          publishedReportCount: Math.max(student.canonicalReportCount ?? 0, publishedReportCount),
+          publishedReportCount,
           latestPipelineStatus: latestRun?.status ?? null,
+          dataAvailability: classifyAdminDataAvailability({ databaseAvailable: true, publishedReportCount, latestPipelineStatus: latestRun?.status }),
+          learningRecordStatus: publishedReportCount > 0 || latestRun?.status ? 'ready' as const : 'partial' as const,
+          learningRecordLabel: publishedReportCount > 0 || latestRun?.status ? 'Current Neon pipeline state available' : 'No published Neon projection; historical snapshot only',
         }
       })
     )
   } catch (error) {
     console.warn('[admin-dashboard] Pipeline status unavailable', { errorName: error instanceof Error ? error.name : 'UnknownError' })
-    return students.map((student) => ({ ...student, publishedReportCount: student.canonicalReportCount ?? 0 }))
+    return students.map((student) => ({ ...student, publishedReportCount: 0, latestPipelineStatus: null, dataAvailability: 'unavailable' as const, learningRecordStatus: 'unavailable' as const, learningRecordLabel: 'Neon status unavailable; historical snapshot retained' }))
   }
 }
 

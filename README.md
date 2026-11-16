@@ -28,11 +28,6 @@ Copy `.env.example` to `.env.local` and fill in:
 ```env
 DATABASE_URL=
 DATABASE_URL_UNPOOLED=
-FIREBASE_PROJECT_ID=
-FIREBASE_CLIENT_EMAIL=
-FIREBASE_PRIVATE_KEY=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_STUDENT_COLLECTION=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 NEXTAUTH_SECRET=
@@ -43,9 +38,9 @@ Notes:
 
 - `DATABASE_URL` is the primary Prisma connection string.
 - `DATABASE_URL_UNPOOLED` is recommended for direct schema operations on hosted PostgreSQL providers.
-- `FIREBASE_*` variables are used by the server-side Firestore integration that unlocks personalized student dashboards by Google email.
-- If both database variables are blank, authentication still starts with Google and the dashboard falls back to mock data.
-- If Firebase is not configured yet, the main dashboard still renders in preview mode so the UI can be approved before the Firestore collection is populated.
+- Student dashboards use the authorized repository snapshots plus Neon/PostgreSQL pipeline projections; Firestore is not a dashboard runtime dependency.
+- If both database variables are blank, authentication still starts with Google, but any preserved profile is explicitly labeled historical/unavailable rather than presented as current Neon data.
+- A known repository profile is reported as `repository`; an unknown or unauthenticated viewer remains `preview`. `dataStatus` distinguishes current Neon data from historical snapshots and Neon outages. There is no hidden Firestore fallback.
 
 ## Local development
 
@@ -70,55 +65,13 @@ For production, add:
 - `https://primedigitalhub.com.br`
 - `https://primedigitalhub.com.br/api/auth/callback/google`
 
-## Firestore student collection
-
-The personalized dashboard reads from a Firestore collection named `students` by default.
-
-Recommended document strategy:
-
-- collection: `students`
-- document id: normalized email such as `rafael-copolino-gmail-com`
-- required top-level fields:
-  - `studentEmail`
-  - `studentName`
-  - `currentLevel`
-  - `targetLevel`
-  - `focus`
-  - `attendanceRate`
-  - `attendanceLabel`
-- structured arrays:
-  - `manageSpace`
-  - `progressTracker`
-  - `attendanceOverview`
-  - `goals`
-  - `vocabularyBank`
-  - `teacherFeedback`
-- object:
-  - `grammarOverview`
-
-You can also place the same shape inside a `dashboard` field; the server accepts either format.
-
-### Firebase setup checklist
-
-1. Create a new Firebase project in the shared Prime account.
-2. Enable Firestore in production mode.
-3. Create a service account in `Project settings` -> `Service accounts`.
-4. Copy the following values into `.env.local` and Vercel:
-   - `FIREBASE_PROJECT_ID`
-   - `FIREBASE_CLIENT_EMAIL`
-   - `FIREBASE_PRIVATE_KEY`
-   - `FIREBASE_STORAGE_BUCKET`
-   - `FIREBASE_STUDENT_COLLECTION`
-5. Seed Rafael's record with:
-
-```bash
-npm run firestore:seed:rafael
-```
+## Student data sources
+The dashboard contract is explicit: authorized historical repository snapshots are exposed as `repository`, while unauthenticated or unknown profiles are exposed as `preview`. `dataStatus.source: neon` and `availability: current` are required before a profile is described as current. Otherwise the UI labels `historical_snapshot/historical` or `historical_snapshot/unavailable`. Pipeline-backed learning records are read from Neon/PostgreSQL through Prisma. Historical files under `data/students/*.firestore.json` are retained as local snapshots and fixtures; their filenames do not imply active Firestore access.
 
 ## Vercel deployment
 
 1. Import the repository into Vercel.
-2. Configure the environment variables listed above.
+2. Configure the PostgreSQL, Google OAuth, pipeline, and OIDC/WIF variables from `.env.example`.
 3. If PostgreSQL is enabled, run `npx prisma db push` against the production database.
 4. Redeploy after database changes.
 
@@ -127,8 +80,8 @@ npm run firestore:seed:rafael
 - Google sign-in is the only supported authentication method.
 - `/dashboard` is protected by middleware and server-side session checks.
 - When the database is available, authenticated users can be synchronized into PostgreSQL automatically.
-- When Firebase is configured, only students whose Google email exists in Firestore can access the personalized dashboard.
-- When Firebase is not configured yet, the dashboard stays usable through preview data instead of crashing.
+- Authorized repository snapshots provide continuity only; published or verified Neon/PostgreSQL projections are required for the current-data label.
+- Unknown profiles remain in explicit preview mode; they never receive another learner's data through a Firestore fallback.
 
 
 ## Drive transcript compatibility test — Louise
