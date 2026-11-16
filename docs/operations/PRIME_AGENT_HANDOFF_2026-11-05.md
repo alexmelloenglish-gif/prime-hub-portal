@@ -346,3 +346,69 @@ Nenhuma ingestão foi executada; nenhum dado de learner foi alterado; nenhuma Te
 ### Safety invariants
 
 `PIPELINE_AUTOMATION_FROZEN` remains unchanged. No Production secrets/config, deploy, merge, DB mutation, migration, learner replay, Teacher Authority action, attendance mutation, deletion or anonymization was performed in this checkpoint. Issue #58 remains OPEN.
+
+
+---
+
+## 2026-11-15 — atualização documental e ponto de retomada
+
+Esta seção é a reconciliação documental mais recente deste handoff. Os checkpoints anteriores permanecem preservados como histórico; quando houver divergência, esta seção deve ser comparada com o `main` e com a evidência de produção indicada abaixo.
+
+### Baseline verificado
+
+- `main` atual: `fa2e0282af9d358a8580f5316e619023977de772`.
+- Deployment Production mais recente observado: `dpl_CxijiWjnj5R8RhCV7L3eNLgN6YeL`, estado `READY`, associado ao mesmo SHA.
+- Domínio oficial: `https://www.primedigitalhub.com.br`.
+- Projeto Vercel: `prj_97TXOV8QcAMgFZUbbZ0MaSNjvSXX`.
+- Node no projeto Vercel: `20.x`; engine declarada no repositório: `22.x`. Divergência registrada para decisão/validação, sem alteração nesta atualização.
+
+### Mudanças mescladas desde o checkpoint anterior
+
+- PR #101 e PR #102 reconciliaram o handoff/Issue #58 e portaram a recuperação de infraestrutura sem secrets.
+- PR #103 alinhou o healthcheck Gemini à precedência de modelo usada pela produção.
+- PR #105 corrigiu o tratamento de transcript órfão/retry e redigiu witness sintético.
+- PR #115 adicionou auditoria de dependências somente leitura; PR #147 corrigiu a consulta de issues contra rate limit.
+- PR #165 atualizou Next/Sharp para remediação crítica; PR #166 atualizou `next-auth`; PR #167 atualizou `websocket-driver`.
+- O `main` também recebeu o workflow de auditoria contínua de dependências e stacks de fontes offline.
+
+Essas mudanças comprovam evolução de código, testes e governança. Não comprovam, sozinhas, uma execução pedagógica real em produção.
+
+### Smoke tests públicos em 15/11
+
+- `/` respondeu `200`.
+- `/api/seed` respondeu `410`.
+- `/dashboard`, as jornadas de Gustavo e Cláudio e o portfolio de Gustavo responderam `307` para autenticação.
+- Headers observados: HSTS, COOP, CORP, Referrer-Policy, nosniff, X-Frame-Options e Permissions-Policy.
+
+Esses testes foram realizados sem credenciais e comprovam apenas o comportamento para visitantes não autenticados.
+
+### Estado que permanece aberto ou não verificado
+
+- Login Google/Owner/Admin em produção.
+- Isolamento aluno A→A e tentativa negativa A→B.
+- Autorização de responsável/guardian.
+- Witness real `source → transcript → PipelineRun → provider provenance → Evidence → Signal → Insight → Teacher Authority → CLR → dashboard/Portfolio read-back`.
+- Reautorização OAuth e read-back idempotente do Meet attendance cron.
+- Retenção/anonimização/exclusão e migração de áudio para storage privado.
+- Estado final do inventário de advisories e decisão Node 20/22.
+- Visibilidade administrativa do projeto Neon pelo conector de gestão.
+
+`PIPELINE_AUTOMATION_FROZEN = true` permanece intocado. Não executar retry de learner real, não aplicar Teacher Authority, não mover ou apagar arquivos do Drive e não alterar secrets/banco sem autorização e protocolo específicos.
+
+### PRs abertas relevantes em 15/11
+
+PRs abertas não são conclusão: #171 (reconciliação de estado), #113 (ADR automação × Learning Machine), #108/#109/#110/#111 (fechamento e witnesses da Engine), #100/#107 (privacidade), #168 (dependências), #169 (isolamento Firebase histórico) e #170 (snapshots históricos). Ver o ponto único de retomada para os links e a ordem recomendada.
+
+### Ponto único de retomada
+
+O documento simplificado e atual para Alexandre ou para outro executor é:
+
+`docs/operations/PRIME_CURRENT_RETURN_POINT_2026-11-15.md`
+
+Ele deve ser lido antes de criar branch, reimplementar componente, pedir credencial ou reabrir uma investigação. O relatório executivo correspondente está em:
+
+`docs/executive/PRIME_EXECUTIVE_STATUS_2026-11-15.md`
+
+### Próxima ação autorizável
+
+Preparar, sem executar ainda, um único witness GL-003 com fonte real autorizada. A execução só deve ocorrer depois de confirmar identidade de teste, provider/modelo, deployment, IDs de rastreabilidade e autorização docente. O objetivo é obter a primeira evidência operacional completa ou localizar o primeiro breakpoint; não é descongelar a automação global.
