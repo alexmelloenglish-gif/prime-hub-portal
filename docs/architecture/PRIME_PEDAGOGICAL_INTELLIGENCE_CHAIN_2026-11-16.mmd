@@ -1,0 +1,91 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "Inter, Arial, sans-serif",
+    "fontSize": "18px",
+    "primaryTextColor": "#102A43",
+    "lineColor": "#627D98",
+    "clusterBkg": "#F5F7FA",
+    "clusterBorder": "#BCCCDC"
+  },
+  "flowchart": {
+    "htmlLabels": true,
+    "curve": "basis",
+    "nodeSpacing": 42,
+    "rankSpacing": 58,
+    "padding": 18
+  }
+}}%%
+flowchart LR
+    classDef source fill:#E8F1FB,stroke:#2F6B9A,stroke-width:2px,color:#102A43
+    classDef evidence fill:#D9F2EA,stroke:#2D8A6E,stroke-width:2px,color:#123B32
+    classDef signal fill:#FFF3D6,stroke:#C98A16,stroke-width:2px,color:#5B3A00
+    classDef insight fill:#FBE4EC,stroke:#B84A70,stroke-width:2px,color:#5A1832
+    classDef authority fill:#E8DDF8,stroke:#7A55A5,stroke-width:2px,color:#351A52
+    classDef record fill:#DCE8FF,stroke:#3B67B0,stroke-width:2px,color:#172B4D
+    classDef surface fill:#E6F0E2,stroke:#5D8A4F,stroke-width:2px,color:#203B1B
+    classDef gate fill:#FFF0F0,stroke:#B42318,stroke-width:2px,stroke-dasharray: 7 4,color:#7A271A
+    classDef loop fill:#EEF2F6,stroke:#627D98,stroke-width:2px,color:#243B53
+
+    subgraph L1[1 · Captura e proveniência]
+      S["<b>Aula real</b><br/>Google Meet / Drive<br/>fonte autorizada"]:::source
+      T["<b>Transcript</b><br/>conteúdo + data + identidade<br/>sourceFileId / hash / origem"]:::source
+      S -->|ingestão| T
+    end
+
+    subgraph L2[2 · Evidência e interpretação assistida]
+      E["<b>Evidence</b><br/>observação contextualizada<br/><i>o que foi dito ou feito</i>"]:::evidence
+      LS["<b>Learning Signal</b><br/>padrão, mudança ou necessidade<br/><i>o que a evidência sugere</i>"]:::signal
+      TI["<b>Teacher Insight</b><br/>hipótese pedagógica explicável<br/><i>por que isso importa</i>"]:::insight
+      T -->|parser + contratos| E
+      E -->|interpretação| LS
+      LS -->|síntese pedagógica| TI
+    end
+
+    subgraph L3[3 · Governança e decisão]
+      TA["<b>Teacher Authority</b><br/>revisão / aceitação / correção<br/><i>o professor decide</i>"]:::authority
+      CLR["<b>Canonical Learning Record</b><br/>registro durável, versionado e rastreável<br/><i>o que passa a valer</i>"]:::record
+      TI -->|submissão para revisão| TA
+      TA -->|decisão autorizada| CLR
+    end
+
+    subgraph L4[4 · Projeção para públicos diferentes]
+      D["<b>Dashboard</b><br/>estado operacional atual<br/>prioridade + próxima ação"]:::surface
+      P["<b>Portfólio</b><br/>memória longitudinal<br/>histórico + evolução + narrativa"]:::surface
+      CLR -->|read-back atual| D
+      CLR -->|acúmulo longitudinal| P
+    end
+
+    subgraph L5[5 · Ciclo seguinte]
+      N["<b>Próxima intervenção</b><br/>planejamento docente<br/>nova aula / nova evidência"]:::loop
+      D --> N
+      P --> N
+      N -.->|feedback pedagógico| S
+    end
+
+    subgraph Q[Quality gates transversais]
+      G1["<b>Proveniência</b><br/>origem e identidade"]:::gate
+      G2["<b>Idempotência</b><br/>sem duplicação ou perda"]:::gate
+      G3["<b>Privacidade</b><br/>permissão e retenção"]:::gate
+      G4["<b>Prova E2E</b><br/>trace real ainda pendente"]:::gate
+    end
+
+    G1 -.-> E
+    G2 -.-> CLR
+    G3 -.-> D
+    G4 -.-> TA
+
+    subgraph M[Camada de modelos — substituível]
+      MP["<b>Provider / modelo</b><br/>Gemini, OpenAI ou outro<br/>mesmos contratos + provenance"]:::loop
+    end
+    LS -. prompt/execução .-> MP
+    MP -. resultado estruturado .-> TI
+
+    S:::source
+    style L1 fill:#F5F9FD,stroke:#8FB6D9,stroke-width:1px
+    style L2 fill:#F8FCFA,stroke:#8BC7B3,stroke-width:1px
+    style L3 fill:#FCF9FF,stroke:#BBA4D5,stroke-width:1px
+    style L4 fill:#FAFCF9,stroke:#A6C79A,stroke-width:1px
+    style L5 fill:#F8FAFC,stroke:#A9B9C9,stroke-width:1px
+    style Q fill:#FFF9F9,stroke:#E3A19A,stroke-width:1px
+    style M fill:#F8FAFC,stroke:#A9B9C9,stroke-width:1px
