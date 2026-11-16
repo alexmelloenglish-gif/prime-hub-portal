@@ -71,3 +71,17 @@ On current `main` baseline `fa2e0282af9d358a8580f5316e619023977de772`:
 - The manual Admin route (blob `997340f5c20000fe58288e280ba14ec5726f41bf`) requires a NextAuth session and administrator authorization, but does not consult the global freeze constant. It accepts either a canonical `sourceFileId` or a transcript payload fallback. This is implementation behavior, not execution authorization; do not use the payload fallback to assemble a real-source witness.
 
 Issue #112 remains the active operational acceptance tracker. Its current hold does not authorize a Production trigger, OAuth reauthorization, database/learner/attendance mutation, deployment, merge, Teacher Authority action, projection change, or unfreeze. Keep `PIPELINE_AUTOMATION_FROZEN=true`; do not invoke the webhook, cron, ingest, or manual Admin route under this monitoring task.
+
+---
+
+## 2026-11-16 — Admin route identity clarification
+
+This correction resolves the ambiguous phrase “manual Admin route” in the 2026-11-11 addenda. The two Admin endpoints are distinct:
+
+- **Manual Shared Learning Machine:** `POST /api/admin/learning-machine/run`, file `app/api/admin/learning-machine/run/route.ts`, blob `997340f5c20000fe58288e280ba14ec5726f41bf`. It checks request origin, NextAuth session and administrator role; it reads JSON, uses `sourceFileId` through `prepareDriveTranscriptPayload` when supplied, otherwise accepts `parseTranscriptPayload(body)`, and calls `executeSharedLearningMachine`. It does **not** import or check `PIPELINE_AUTOMATION_FROZEN`.
+- **Drive CTA endpoint:** `POST /api/admin/process-drive`, file `app/api/admin/process-drive/route.ts`, blob `2afbc350c520445d92341fd9e718050f56740f3a`. It checks request origin, NextAuth session and administrator role, then returns HTTP 503 while the freeze is true; it does not read or execute a transcript payload. Even with the freeze false, the current handler returns 503 “Drive processing is unavailable.”
+- `lib/pipeline-freeze.ts`, blob `76bf178b1cd03dd36e7e1abbf3d3e1f1b95e731f`, sets `PIPELINE_AUTOMATION_FROZEN = true`.
+
+The automated review correctly describes `/api/admin/process-drive`; it does not describe the separate `/api/admin/learning-machine/run` route cited by blob `997340f...`. The earlier generic wording was ambiguous and is superseded by this path-level distinction.
+
+These are source-code facts, not execution authorization. Neither endpoint was invoked. Do not use the payload fallback to construct a real-source witness. Any future authorized manual witness must use the canonical `sourceFileId` and a separately recorded owner decision. Automatic Drive webhook/cron/ingest paths remain frozen. `PIPELINE_AUTOMATION_FROZEN=true` remains unchanged.
