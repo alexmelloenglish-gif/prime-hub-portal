@@ -133,9 +133,35 @@ assert.equal(duplicateSelection.match.number, 201, 'selection remains determinis
 assert.equal(duplicateSelection.duplicateCount, 1, 'only additional open matches count as duplicates');
 const closedIndex = indexIssueMatches([{ number: 301, state: 'closed', title, body: `Stable fingerprint: ${fingerprint}` }]);
 assert.equal(chooseMatch(closedIndex.get(fingerprint), title).match.state, 'closed', 'closed match remains closed and is not treated as missing');
+const { compareAuditReports } = await import('./npm-audit-delta.mjs')
+const baselineAudit = { vulnerabilities: {
+  postcss: {
+    severity: 'high',
+    range: '<8.5.10',
+    via: [{ source: 'GHSA-postcss', severity: 'high', range: '<8.5.10' }],
+    nodes: ['node_modules/postcss', 'node_modules/next/node_modules/postcss']
+  }
+} }
+const unchangedAudit = structuredClone(baselineAudit)
+assert.deepEqual(compareAuditReports(baselineAudit, unchangedAudit).regressions, [],
+  'pre-existing advisories and paths must not fail the delta gate')
+const addedPathAudit = structuredClone(baselineAudit)
+addedPathAudit.vulnerabilities.postcss.nodes.push('node_modules/another-package/node_modules/postcss')
+assert.ok(compareAuditReports(baselineAudit, addedPathAudit).regressions.some((item) => item.type === 'new-vulnerable-path'))
+const newAdvisoryAudit = structuredClone(baselineAudit)
+newAdvisoryAudit.vulnerabilities.postcss.via.push({ source: 'GHSA-new', severity: 'high', range: '<8.5.10' })
+assert.ok(compareAuditReports(baselineAudit, newAdvisoryAudit).regressions.some((item) => item.type === 'new-advisory'))
+const severityIncreaseAudit = structuredClone(baselineAudit)
+severityIncreaseAudit.vulnerabilities.postcss.via[0].severity = 'critical'
+assert.ok(compareAuditReports(baselineAudit, severityIncreaseAudit).regressions.some((item) => item.type === 'severity-increase'))
+const rangeChangeAudit = structuredClone(baselineAudit)
+rangeChangeAudit.vulnerabilities.postcss.via[0].range = '<8.5.11'
+assert.ok(compareAuditReports(baselineAudit, rangeChangeAudit).regressions.some((item) => item.type === 'affected-range-change'))
 const workflowSource = (await import('node:fs')).readFileSync('.github/workflows/dependency-audit-auto.yml', 'utf8');
-assert.match(workflowSource, /github\.paginate\(github\.rest\.issues\.listForRepo/);
-assert.match(workflowSource, /state: 'all', per_page: 100/);
+assert.ok(workflowSource.includes('npm-audit-delta.mjs'))
+assert.ok(workflowSource.includes('git worktree add --detach'))
+assert.ok(workflowSource.includes('BASE_SHA'))
 assert.doesNotMatch(workflowSource, /github\.rest\.search\.issuesAndPullRequests/);
 assert.doesNotMatch(workflowSource, /findIssueMatches\(fingerprint\)/);
+assert.ok(!workflowSource.includes('Enforce high/critical findings on dependency-change PRs'))
 console.log('dependency-audit-workflow-self-test: all assertions passed');

@@ -32,28 +32,28 @@ export default async function TeacherStudentsPage() {
                   {decisionPackage ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-300/35 bg-blue-300/15 px-2.5 py-1 text-xs font-semibold text-blue-100">
                       <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                      Teacher confirmed
+                      Teacher-authorized package on file
                     </span>
                   ) : null}
                 </div>
 
                 <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/70">Learning record</p>
-                  <p className="mt-1 text-sm font-semibold text-white">{student.learningRecordLabel || 'Learning record available'}</p>
-                  <p className="mt-1 text-xs text-prime-cream/55">{student.canonicalReportCount ?? 0} class report{(student.canonicalReportCount ?? 0) === 1 ? '' : 's'} · {student.attendanceRate}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-amber-100/80">Historical snapshot</p>
+                  <p className="mt-1 text-sm font-semibold text-white">Retained profile; current learning state is not verified here.</p>
+                  <p className="mt-1 text-xs text-prime-cream/55">{student.historicalReportCount ?? 0} historical report{(student.historicalReportCount ?? 0) === 1 ? '' : 's'} · {student.publishedReportCount === undefined ? 'Neon unavailable' : student.publishedReportCount + ' published in Neon'}</p>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-prime-cream/55">
-                  <p>Current level: <span className="text-prime-cream/80">{student.currentLevel}</span></p>
-                  <p>Target: <span className="text-prime-cream/80">{student.targetLevel}</span></p>
-                  <p>Class reports: <span className="text-prime-cream/80">{student.canonicalReportCount ?? 0}</span></p>
-                  <p>Attendance: <span className="text-prime-cream/80">{student.attendanceRate}</span></p>
+                  <p>Snapshot level: <span className="text-prime-cream/80">{student.currentLevel}</span></p>
+                  <p>Snapshot target: <span className="text-prime-cream/80">{student.targetLevel}</span></p>
+                  <p>Historical reports: <span className="text-prime-cream/80">{student.historicalReportCount ?? 0}</span></p>
+                  <p>Published in Neon: <span className="text-prime-cream/80">{student.publishedReportCount === undefined ? 'Unavailable' : student.publishedReportCount}</span></p>
                 </div>
 
                 {decisionPackage ? (
                   <div className="mt-4 rounded-xl border border-blue-300/30 bg-blue-300/10 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-100/90">Teacher-confirmed learning update</p>
-                    <p className="mt-1 text-xs leading-5 text-prime-cream/65">A teacher-reviewed learning state, priority and next-step package is available for this learner.</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-blue-100/90">Recorded teacher-authorized package</p>
+                    <p className="mt-1 text-xs leading-5 text-prime-cream/65">Decision dated {decisionPackage.decisionDate}; verify no later update before treating this package as the learner’s current state.</p>
                   </div>
                 ) : null}
 
