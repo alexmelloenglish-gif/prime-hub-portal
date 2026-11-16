@@ -5,12 +5,14 @@
 > **STOP. READ THIS FIRST.** This document is the canonical return point for the current implementation state. Facts marked **PROVEN / DONE / LOCKED / FROZEN** must not be rebuilt or re-litigated without new contradictory runtime evidence or an explicit product decision.
 
 **Date:** 2026-09-11  
-**Status:** CANONICAL / CURRENT / FROZEN CHECKPOINT  
+**Status:** HISTORICAL FROZEN CHECKPOINT — SEE CURRENT RETURN POINT
 **Repository:** `alexmelloenglish-gif/prime-hub-portal`  
 **Canonical branch:** `main`  
 **Production:** `www.primedigitalhub.com.br`
 
 The prior 2026-08-31 forensic checkpoint remains historical evidence in Git history and in the dated forensic documents. This file supersedes it as the **current operational return point**.
+
+> **Current-state correction (2026-11-15):** this dated snapshot is no longer the freshest return point. Use [`docs/operations/PRIME_CURRENT_RETURN_POINT_2026-11-15.md`](operations/PRIME_CURRENT_RETURN_POINT_2026-11-15.md) first, then reconcile against the handoff and closure ledger. Do not treat the 2026-09-11 date or statements below as a current production baseline without checking `main` and Vercel evidence.
 
 ---
 
@@ -614,4 +616,3 @@ NO REQUIRED READ-BACK = NOT CLOSED
 ```
 
 **STATUS: CURRENT CANONICAL RETURN POINT — 2026-10-05.**
-

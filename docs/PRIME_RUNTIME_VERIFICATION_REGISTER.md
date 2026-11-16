@@ -11,6 +11,8 @@
 **Deployment state:** `READY`  
 **Register purpose:** establish runtime truth, preserve historical evidence, and define the next authorized verification boundary.
 
+> **Current return point (2026-11-15):** this register preserves historical runtime evidence and is not the freshest project snapshot. Start with [`docs/operations/PRIME_CURRENT_RETURN_POINT_2026-11-15.md`](operations/PRIME_CURRENT_RETURN_POINT_2026-11-15.md), then use this register for the proof ladder and GL-003 boundary. The Learning Intelligence chain remains not fully E2E runtime-verified.
+
 > **Specification establishes intent. Implementation establishes existence. Execution establishes operation. Expected output establishes behavioral conformity. Persistence establishes durable state. Provenance establishes causality. Only a complete trace establishes runtime verification.**
 
 > **No implementation change is authorized by this register. Its purpose is to establish runtime truth and define the next verification boundary.**
