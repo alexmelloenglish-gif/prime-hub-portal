@@ -46,6 +46,9 @@ jobs:
       - name: Canonical strict gate
         run: npm run canonical:validate:strict
 
+      - name: Retry API and provider health contracts
+        run: npm run teacher-intelligence:self-test && npm run model-provider:self-test
+
       - name: G6 authority gate
         run: npm run g6:account-learner:self-test
 

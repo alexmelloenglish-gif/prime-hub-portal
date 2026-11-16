@@ -99,6 +99,32 @@ async function meetGet<T>(token: string, path: string): Promise<T> {
   return response.json() as Promise<T>
 }
 
+
+export type MeetAttendanceProviderHealth = {
+  ok: true
+  provider: 'google_meet'
+  httpStatus: 200
+  apiReachable: true
+  checkedAt: string
+}
+
+/**
+ * Bounded, read-only Meet API probe for an authenticated admin healthcheck.
+ * getMeetAccessToken may refresh an expired organizer token and persist the
+ * replacement token; it never creates attendance records or validation tasks.
+ */
+export async function checkMeetAttendanceProviderHealth(): Promise<MeetAttendanceProviderHealth> {
+  const token = await getMeetAccessToken()
+  await meetGet<ConferenceListResponse>(token, '/conferenceRecords?pageSize=1')
+  return {
+    ok: true,
+    provider: 'google_meet',
+    httpStatus: 200,
+    apiReachable: true,
+    checkedAt: new Date().toISOString(),
+  }
+}
+
 async function listConferences(token: string, start: Date, end: Date, meetingSpace?: string): Promise<ConferenceRecord[]> {
   const records: ConferenceRecord[] = []
   let pageToken: string | undefined

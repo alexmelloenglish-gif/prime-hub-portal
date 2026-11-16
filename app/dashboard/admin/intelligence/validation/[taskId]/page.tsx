@@ -3,6 +3,8 @@ import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPrismaClient } from '@/lib/prisma'
+import { finalizeSharedLearningMachineAfterTeacherAuthority } from '@/lib/pipeline/run'
+import { recordTeacherAuthorityDecision } from '@/lib/teacher-authority-decision'
 import { runG2RuntimeProof } from '@/lib/g2-runtime-proof'
 import { runG3RuntimeProof } from '@/lib/g3-runtime-proof'
 import { runG4RuntimeProof } from '@/lib/g4-runtime-proof'
@@ -168,6 +170,11 @@ async function executeG5RuntimeProof(formData: FormData) {
   if (!taskId) return
 
   const result = await runG5RuntimeProof(taskId)
+  const prisma = getPrismaClient()
+  const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
+  const completion = task?.type === 'canonical_learning_record_authority' && task.entityType === 'PipelineRun'
+    ? await finalizeSharedLearningMachineAfterTeacherAuthority({ validationTaskId: task.id })
+    : null
   const params = new URLSearchParams({
     g5Proof: result.projectionStatus === 'VERIFIED' ? 'pass' : 'fail',
     g5ProjectionId: result.projectionId,
@@ -180,6 +187,10 @@ async function executeG5RuntimeProof(formData: FormData) {
     g5Replay: result.idempotentReplay ? 'pass' : 'fail',
     g5CompositeCount: String(result.proofCompositeCount),
     g5Mismatches: result.mismatchFields.join(','),
+    ...(completion ? {
+      learningMachineCompleted: completion.status === 'completed' ? 'true' : 'false',
+      pipelineRunId: completion.pipelineRunId,
+    } : {}),
   })
 
   redirect(`/dashboard/admin/intelligence/validation/${taskId}?${params.toString()}`)
@@ -200,16 +211,26 @@ async function decideValidation(formData: FormData) {
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) return
 
-  await prisma.validationTask.update({
-    where: { id: taskId },
-    data: {
-      status: decision,
-      decision,
+  const reason = String(formData.get('reason') || '').trim()
+  if (task.type === 'canonical_learning_record_authority') {
+    await recordTeacherAuthorityDecision({
+      taskId,
       reviewerId: session.user.id,
-      reviewedAt: new Date(),
-      reason: String(formData.get('reason') || '').trim() || null,
-    },
-  })
+      decision: decision as 'approved' | 'rejected',
+      reason,
+    })
+  } else {
+    await prisma.validationTask.update({
+      where: { id: taskId },
+      data: {
+        status: decision,
+        decision,
+        reviewerId: session.user.id,
+        reviewedAt: new Date(),
+        reason: reason || null,
+      },
+    })
+  }
 
   if (task.type === 'attendance_reconciliation' && decision === 'approved') {
     await prisma.attendanceRecord.update({
@@ -243,6 +264,12 @@ export default async function ValidationTaskPage({
   const prisma = getPrismaClient()
   const task = await prisma.validationTask.findUnique({ where: { id: taskId } })
   if (!task) notFound()
+  const sharedPipelineRun = task.type === 'canonical_learning_record_authority' && task.entityType === 'PipelineRun'
+    ? await prisma.pipelineRun.findUnique({
+        where: { id: task.entityId },
+        select: { id: true, status: true, finalManifest: true, completedAt: true, authorityStatus: true },
+      })
+    : null
 
   const existingCanonicalization =
     task.type === 'canonical_learning_record_authority'
@@ -290,6 +317,20 @@ export default async function ValidationTaskPage({
         <h1 className="mt-2 text-3xl font-bold text-slate-950">{task.title}</h1>
         <p className="mt-2 text-slate-600">{task.description}</p>
       </header>
+
+      {sharedPipelineRun?.status === 'completed' && sharedPipelineRun.finalManifest ? (
+        <section className="rounded-2xl border border-emerald-300 bg-emerald-50 p-6 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Shared Learning Machine completed</p>
+          <h2 className="mt-1 text-xl font-bold text-slate-950">Teacher decision consumed; audited lesson output finalized</h2>
+          <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+            <div><dt className="font-semibold text-slate-600">PipelineRun</dt><dd className="break-all text-slate-900">{sharedPipelineRun.id}</dd></div>
+            <div><dt className="font-semibold text-slate-600">Completed</dt><dd className="text-slate-900">{sharedPipelineRun.completedAt?.toISOString() || 'Persisted'}</dd></div>
+            <div><dt className="font-semibold text-slate-600">Authority</dt><dd className="text-slate-900">{sharedPipelineRun.authorityStatus}</dd></div>
+            <div><dt className="font-semibold text-slate-600">Final manifest</dt><dd className="text-slate-900">Persisted</dd></div>
+          </dl>
+          <p className="mt-3 text-sm text-slate-700">G2 canonicalization, G3 read-back, G4 Portfolio projection, G5 Learning Intelligence projection, and the publication/read-back boundary have completed for this run.</p>
+        </section>
+      ) : null}
 
       {task.type === 'canonical_learning_record_authority' ? (() => {
         const summary = authoritySummary(task.suggestedValue)

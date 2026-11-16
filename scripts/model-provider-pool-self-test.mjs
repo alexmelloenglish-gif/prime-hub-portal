@@ -43,4 +43,17 @@ assert.match(env, /OPENAI_API_KEY=/, 'OpenAI resource slot must be documented')
 assert.match(env, /PERPLEXITY_API_KEY=/, 'Perplexity resource slot must be documented')
 assert.match(env, /PRIME_META_API_KEY=/, 'Meta-compatible resource slot must be documented')
 
+
+const meetHealthcheck = readFileSync('app/api/admin/meet-healthcheck/route.ts', 'utf8')
+const meetCollector = readFileSync('lib/meet-attendance-collector.ts', 'utf8')
+
+assert.match(meetHealthcheck, /getServerSession\(authOptions\)/, 'Meet healthcheck must require a real authenticated session')
+assert.match(meetHealthcheck, /isAdminUser\(session\.user\)/, 'Meet healthcheck must be admin-only')
+assert.match(meetHealthcheck, /checkMeetAttendanceProviderHealth/, 'Meet healthcheck must execute the provider probe')
+assert.match(meetHealthcheck, /meet_provider_healthcheck_failed/, 'Meet provider failures must emit a structured runtime alert event')
+assert.match(meetHealthcheck, /status: 503/, 'Unavailable Meet integration must return a failing health status')
+assert.match(meetCollector, /MEET_SCOPE = 'https:\/\/www\.googleapis\.com\/auth\/meetings\.space\.readonly'/, 'Meet health must enforce the organizer read-only scope')
+assert.match(meetCollector, /conferenceRecords\?pageSize=1/, 'Meet health must probe the read-only conference-record list endpoint')
+assert.match(meetCollector, /export async function checkMeetAttendanceProviderHealth/, 'Meet provider health probe must be reusable and testable')
+
 console.log('Model provider pool static contract self-test: PASS')
