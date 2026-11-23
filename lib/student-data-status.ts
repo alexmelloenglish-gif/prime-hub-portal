@@ -1,5 +1,5 @@
-export type LearningDataSource = 'neon' | 'historical_snapshot' | 'none'
-export type LearningDataAvailability = 'current' | 'historical' | 'unavailable'
+export type LearningDataSource = 'neon' | 'historical_snapshot' | 'mixed' | 'none'
+export type LearningDataAvailability = 'current' | 'mixed' | 'historical' | 'unavailable'
 export type LearningDataReason = 'database_unavailable' | 'no_published_projection' | 'no_authorized_profile'
 
 export type LearningDataStatus = {
@@ -41,8 +41,8 @@ export function buildLearningDataStatus(input: {
     }
   }
   return {
-    source: 'neon',
-    availability: 'current',
+    source: 'mixed',
+    availability: 'mixed',
     asOf: input.asOf || null,
   }
 }
@@ -51,8 +51,10 @@ export function classifyAdminDataAvailability(input: {
   databaseAvailable: boolean
   publishedReportCount: number
   latestPipelineStatus?: string | null
-}): 'current' | 'historical' | 'unavailable' {
+}): 'current' | 'mixed' | 'historical' | 'unavailable' {
   if (!input.databaseAvailable) return 'unavailable'
-  if (input.publishedReportCount > 0 || Boolean(input.latestPipelineStatus)) return 'current'
+  // The directory profile is still snapshot-backed. A live published report
+  // makes the record mixed, not wholly current.
+  if (input.publishedReportCount > 0) return 'mixed'
   return 'historical'
 }
