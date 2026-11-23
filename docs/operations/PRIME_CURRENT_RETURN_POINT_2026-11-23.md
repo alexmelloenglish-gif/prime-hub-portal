@@ -39,7 +39,7 @@
 
 - [PR #176](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/176): congela todas as entradas administrativas de execução/retry, corrige a contagem publicada e alinha GL-003 à Issue #112. GitHub Actions passaram; Preview do commit de código `e201bb8` ficou `READY`.
 - [PR #177](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/177): porta o Lote H de dependências para o `main` atual. Auditoria do candidato: 0 critical, 0 high, 8 moderate. GitHub Actions passaram; Preview ainda em validação.
-- [PR #178](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/178): remove o runtime Firestore, adiciona estado misto Neon + snapshot e aviso learner-facing. Inclui PR #176 como base; CI e Preview em execução na última leitura.
+- [PR #178](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/178): remove o runtime Firestore, adiciona estado misto Neon + snapshot e aviso learner-facing. Inclui as correções do PR #176 e o lockfile/dependency floors do PR #177. Student Dashboard, Golden Runtime, Coordination Runtime, Agent Coordination e Dependency Audit passaram; Vercel Preview ainda em BUILDING na última leitura.
 
 O estado `mixed` é deliberadamente conservador: há dados publicados/verificados no Neon, mas o perfil ainda preserva campos do snapshot histórico. Não deve ser rotulado como totalmente atual.
 
@@ -47,8 +47,8 @@ O estado `mixed` é deliberadamente conservador: há dados publicados/verificado
 
 1. Concluir e inspecionar os resultados de CI e Vercel Preview do PR #176.
 2. Revisar o diff e integrar as correções somente após os checks e a revisão exigida; manter a autorização de release separada da aprovação de código.
-3. Concluir CI/Preview do PR #178; depois reconciliar o lockfile para retirar a dependência direta `firebase-admin` sem perder as correções de segurança do PR #177.
-4. Concluir CI/Preview do PR #177 e revisar o delta de vulnerabilidades da árvore candidata.
+3. Concluir o Preview do PR #178 e revisar as duas advertências de consistência histórica do snapshot Rafael; não fazer backfill sem fonte de evidência.
+4. Após aprovação dos candidatos, retirar a dependência direta `firebase-admin` e sua cadeia do lockfile mantendo os dependency floors do Lote H.
 5. Corrigir a divergência Node 20/22 após validação do build Preview.
 6. Solicitar ao proprietário da conta organizadora a reautorização OAuth Meet com o escopo de leitura necessário; depois verificar o cron sem alterar registros de alunos.
 7. Recuperar acesso administrativo à organização/projeto Neon correto e realizar read-only audit de schema, migrations e registros de execução/evidência.
