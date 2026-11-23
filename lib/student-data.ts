@@ -13,7 +13,7 @@ import gustavoProfile from '@/data/students/carolvdrummond-gmail-com.firestore.j
 import { getPrismaClient } from '@/lib/prisma'
 import type { CanonicalLesson } from '@/lib/canonical-student-projection'
 import { mergeCanonicalLearningIntelligenceRows } from '@/lib/canonical-dashboard-bridge'
-import { buildLearningDataStatus, type DashboardMergeStatus, type LearningDataStatus } from '@/lib/student-data-status'
+import { buildLearningDataStatus, isPortfolioProjectionBackedByPublishedReport, type DashboardMergeStatus, type LearningDataStatus } from '@/lib/student-data-status'
 
 type AuthenticatedUser = Session['user'] | null | undefined
 
@@ -667,6 +667,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         select: {
           id: true,
           reportId: true,
+          pipelineRunId: true,
           lessonId: true,
           generatedAt: true,
           content: true,
@@ -676,7 +677,6 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       }),
     ])
 
-    const root = asObject(portfolioProjection?.projection)
     const reportRecords = publishedReports
       .map((projection) => {
         const content = asObject(projection.content)
@@ -700,6 +700,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         return {
           id: `pipeline-${reportId}`,
           reportId,
+          pipelineRunId: projection.pipelineRunId,
           lessonId: projection.lessonId,
           date: asString(
             reportContext?.class_date,
@@ -721,6 +722,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         ): item is {
           id: string
           reportId: string
+          pipelineRunId: string
           lessonId: string
           date: string
           title: string
@@ -733,6 +735,10 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
           attendanceSource: string
         } => Boolean(item)
       )
+
+    const publishedRunIds = new Set(reportRecords.filter((report) => report.contentStatus === 'published').map((report) => report.pipelineRunId))
+    const portfolioProjectionIsPublished = isPortfolioProjectionBackedByPublishedReport(portfolioProjection?.sourceRunId, publishedRunIds)
+    const root = portfolioProjectionIsPublished ? asObject(portfolioProjection?.projection) : null
 
     // Student surfaces receive only published, non-placeholder projections.
     // Pipeline drafts and awaiting-validation material remain teacher-side.
@@ -804,7 +810,8 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
     const projectionCorrections = Object.values(asObject(root?.corrections) ?? {})
       .map((value) => asObject(value))
       .filter((value): value is Record<string, unknown> => Boolean(value))
-    const reportCorrections = publishedReports.flatMap((projection) => {
+    const publishedReportIds = new Set(reportEntries.map((report) => report.reportId))
+    const reportCorrections = publishedReports.filter((projection) => publishedReportIds.has(projection.reportId)).flatMap((projection) => {
       const content = asObject(projection.content)
       return Array.isArray(content?.corrections) ? content.corrections : []
     })
@@ -834,7 +841,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
         student,
         status: {
           databaseAvailable: true,
-          hasCurrentProjection: Boolean(portfolioProjection),
+          hasCurrentProjection: false,
           asOf: null,
         },
       }
@@ -855,6 +862,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
     }
 
     const asOf = publishedReports
+      .filter((report) => publishedReportIds.has(report.reportId))
       .map((report) => report.generatedAt)
       .sort((a, b) => b.getTime() - a.getTime())[0]
       ?.toISOString() || null
@@ -888,7 +896,7 @@ async function mergePipelineProjection(email: string, student: StudentDashboardD
       },
       status: {
         databaseAvailable: true,
-        hasCurrentProjection: Boolean(portfolioProjection) || reportEntries.length > 0,
+        hasCurrentProjection: reportEntries.length > 0,
         asOf,
       },
     }
