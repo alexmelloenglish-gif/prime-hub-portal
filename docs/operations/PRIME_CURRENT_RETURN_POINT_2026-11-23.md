@@ -15,7 +15,7 @@
 - A Issue #112 é o tracker operacional vigente. Gates A/B/C permanecem BLOCKED / NOT STARTED. Não há autorização para merge, deploy, alteração de dados de produção, reautorização OAuth ou execução GL-003.
 - O runtime Meet registrou `MEET_SCOPE_REAUTH_REQUIRED`; a correção depende do proprietário autorizado da conta organizadora.
 - O projeto Neon não apareceu na organização visível ao conector. Isso não prova ausência ou exclusão do banco; o projeto/organização correto ainda precisa ser disponibilizado.
-- A configuração do projeto Vercel foi alinhada para Node `22.x`, em conformidade com `package.json`; a leitura posterior confirmou `nodeVersion: 22.x`. O build Preview da branch continua em validação.
+- A configuração do projeto Vercel foi alinhada para Node `22.x`, em conformidade com `package.json`; a leitura posterior confirmou `nodeVersion: 22.x`. O Preview do candidato de correção operacional concluiu `READY`.
 
 ## Correções implementadas no PR #176
 
@@ -35,12 +35,20 @@
 - Vercel Preview: deployment criado para a branch; estado BUILDING na última leitura.
 - Nenhum deployment de produção, merge, execução GL-003, mutação de banco ou reautorização OAuth foi realizado.
 
+## PRs de continuidade abertos em 23/11
+
+- [PR #176](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/176): congela todas as entradas administrativas de execução/retry, corrige a contagem publicada e alinha GL-003 à Issue #112. GitHub Actions passaram; Preview do commit de código `e201bb8` ficou `READY`.
+- [PR #177](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/177): porta o Lote H de dependências para o `main` atual. Auditoria do candidato: 0 critical, 0 high, 8 moderate. GitHub Actions passaram; Preview ainda em validação.
+- [PR #178](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/178): remove o runtime Firestore, adiciona estado misto Neon + snapshot e aviso learner-facing. Inclui PR #176 como base; CI e Preview em execução na última leitura.
+
+O estado `mixed` é deliberadamente conservador: há dados publicados/verificados no Neon, mas o perfil ainda preserva campos do snapshot histórico. Não deve ser rotulado como totalmente atual.
+
 ## Próximas frentes, em ordem
 
 1. Concluir e inspecionar os resultados de CI e Vercel Preview do PR #176.
 2. Revisar o diff e integrar as correções somente após os checks e a revisão exigida; manter a autorização de release separada da aprovação de código.
-3. Reconciliar PR #169 e #170 com o main atual, preservando snapshots históricos e aplicando separação explícita entre dados atuais do Neon, histórico e indisponibilidade. Não fazer merge cego das branches antigas.
-4. Reconciliar PR #168 com o main atual e confirmar o delta de vulnerabilidades da árvore efetivamente candidata.
+3. Concluir CI/Preview do PR #178; depois reconciliar o lockfile para retirar a dependência direta `firebase-admin` sem perder as correções de segurança do PR #177.
+4. Concluir CI/Preview do PR #177 e revisar o delta de vulnerabilidades da árvore candidata.
 5. Corrigir a divergência Node 20/22 após validação do build Preview.
 6. Solicitar ao proprietário da conta organizadora a reautorização OAuth Meet com o escopo de leitura necessário; depois verificar o cron sem alterar registros de alunos.
 7. Recuperar acesso administrativo à organização/projeto Neon correto e realizar read-only audit de schema, migrations e registros de execução/evidência.
