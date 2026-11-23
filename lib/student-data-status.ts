@@ -15,6 +15,13 @@ export type DashboardMergeStatus = {
   asOf: string | null
 }
 
+export function isPortfolioProjectionBackedByPublishedReport(
+  sourceRunId: string | null | undefined,
+  publishedRunIds: ReadonlySet<string>,
+): boolean {
+  return Boolean(sourceRunId && publishedRunIds.has(sourceRunId))
+}
+
 export function buildLearningDataStatus(input: {
   repositoryFound: boolean
   databaseAvailable: boolean
