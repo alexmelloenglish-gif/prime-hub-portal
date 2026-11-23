@@ -39,6 +39,8 @@ assert.match(source.machineAction, /prepareDriveTranscriptPayload/, 'Manual Proc
 assert.match(source.machineAction, /executeSharedLearningMachine/, 'Manual Process must invoke the shared Learning Machine')
 assert.match(source.machineAction, /triggerOrigin: 'manual'/, 'Manual Process must differ from automation only by trigger origin')
 assert.match(source.machineAction, /isAdminUser\(session\.user\)/, 'Manual Process must require administrator authority')
+assert.match(source.machineAction, /PIPELINE_AUTOMATION_FROZEN/, 'Manual Process server action must preserve the global operational freeze')
+assert.match(source.machineInbox, /PIPELINE_AUTOMATION_FROZEN/, 'Learning Machine inbox must reflect the operational freeze')
 assert.match(source.machineSource, /listDriveTranscriptSourceQueue/, 'Machine inbox must enumerate canonical Drive intake sources')
 assert.match(source.machineSource, /sourceFileId: \{ in: selected\.map/, 'Drive intake queue must reconcile sources against persisted transcript lineage')
 assert.match(source.sidebar, /const menuItems = isAdmin/, 'Admin navigation must depend on admin authority, not learner-preview state')
