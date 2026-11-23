@@ -40,7 +40,7 @@ Notes:
 - `DATABASE_URL_UNPOOLED` is recommended for direct schema operations on hosted PostgreSQL providers.
 - Student dashboards use the authorized repository snapshots plus Neon/PostgreSQL pipeline projections; Firestore is not a dashboard runtime dependency.
 - If both database variables are blank, authentication still starts with Google, but any preserved profile is explicitly labeled historical/unavailable rather than presented as current Neon data.
-- A known repository profile is reported as `repository`; an unknown or unauthenticated viewer remains `preview`. `dataStatus` distinguishes current Neon data from historical snapshots and Neon outages. There is no hidden Firestore fallback.
+- A known repository profile is reported as `repository`; an unknown or unauthenticated viewer remains `preview`. `dataStatus` distinguishes mixed Neon updates plus historical profile fields, historical snapshots without current projections, and Neon outages; a partial Neon projection does not make the whole profile fully current. There is no hidden Firestore fallback.
 
 ## Local development
 
@@ -66,7 +66,7 @@ For production, add:
 - `https://primedigitalhub.com.br/api/auth/callback/google`
 
 ## Student data sources
-The dashboard contract is explicit: authorized historical repository snapshots are exposed as `repository`, while unauthenticated or unknown profiles are exposed as `preview`. `dataStatus.source: neon` and `availability: current` are required before a profile is described as current. Otherwise the UI labels `historical_snapshot/historical` or `historical_snapshot/unavailable`. Pipeline-backed learning records are read from Neon/PostgreSQL through Prisma. Historical files under `data/students/*.firestore.json` are retained as local snapshots and fixtures; their filenames do not imply active Firestore access.
+The dashboard contract is explicit: authorized historical repository snapshots are exposed as `repository`, while unauthenticated or unknown profiles are exposed as `preview`. `dataStatus` labels a snapshot-backed profile as mixed when some published/verified Neon updates are present, historical when no current projection exists, and unavailable when the Neon read fails. The fully current label is reserved for a fully Neon-sourced profile. Pipeline-backed learning records are read from Neon/PostgreSQL through Prisma. Historical files under `data/students/*.firestore.json` are retained as local snapshots and fixtures; their filenames do not imply active Firestore access.
 
 ## Vercel deployment
 
