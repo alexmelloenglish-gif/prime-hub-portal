@@ -24,7 +24,7 @@ export type StudentDirectoryEntry = {
   targetLevel: string
   attendanceRate: string
   learningRecordStatus?: 'ready' | 'partial' | 'unavailable'
-  dataAvailability?: 'current' | 'historical' | 'unavailable'
+  dataAvailability?: 'current' | 'mixed' | 'historical' | 'unavailable'
   historicalReportCount?: number
   learningRecordLabel?: string
   canonicalReportCount?: number
@@ -100,8 +100,8 @@ async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
           publishedReportCount,
           latestPipelineStatus: latestRun?.status ?? null,
           dataAvailability: classifyAdminDataAvailability({ databaseAvailable: true, publishedReportCount, latestPipelineStatus: latestRun?.status }),
-          learningRecordStatus: publishedReportCount > 0 || latestRun?.status ? 'ready' as const : 'partial' as const,
-          learningRecordLabel: publishedReportCount > 0 || latestRun?.status ? 'Current Neon pipeline state available' : 'No published Neon projection; historical snapshot only',
+          learningRecordStatus: publishedReportCount > 0 ? 'ready' as const : 'partial' as const,
+          learningRecordLabel: publishedReportCount > 0 ? 'Published Neon reports available; remaining profile fields are historical' : 'No published Neon projection; historical snapshot only',
         }
       })
     )
