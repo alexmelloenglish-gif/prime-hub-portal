@@ -39,7 +39,7 @@
 
 - [PR #176](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/176): congela todas as entradas administrativas de execução/retry, corrige a contagem publicada e alinha GL-003 à Issue #112. GitHub Actions passaram; Preview do commit de código `e201bb8` ficou `READY`.
 - [PR #177](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/177): porta o Lote H de dependências para o `main` atual. Auditoria do candidato: 0 critical, 0 high, 8 moderate. GitHub Actions passaram; Preview ainda em validação.
-- [PR #178](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/178): remove o runtime Firestore, adiciona estado misto Neon + snapshot e aviso learner-facing. Inclui as correções do PR #176 e o lockfile/dependency floors do PR #177. Student Dashboard, Golden Runtime, Coordination Runtime, Agent Coordination e Dependency Audit passaram; Vercel Preview ainda em BUILDING na última leitura.
+- [PR #178](https://github.com/alexmelloenglish-gif/prime-hub-portal/pull/178): remove o runtime Firestore, adiciona estado misto Neon + snapshot e aviso learner-facing. Inclui as correções do PR #176 e o lockfile/dependency floors do PR #177. Student Dashboard, Golden Runtime, Coordination Runtime, Agent Coordination e Dependency Audit passaram no SHA `0f8dd110`. A regra adicional impede que PortfolioProjection de execução draft/sem ClassReportProjection publicada alimente campos learner-facing ou marque o perfil como misto. Vercel Preview ainda em BUILDING; endpoint de eventos retornou 403.
 
 O estado `mixed` é deliberadamente conservador: há dados publicados/verificados no Neon, mas o perfil ainda preserva campos do snapshot histórico. Não deve ser rotulado como totalmente atual.
 
