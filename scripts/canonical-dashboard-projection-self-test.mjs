@@ -16,7 +16,6 @@ function load(relative) {
   mod.filename = filename
   mod.require = (name) => {
     if (name === 'react') return { cache: (fn) => fn }
-    if (name === '@/lib/firebase-admin') return { isFirebaseConfigured: false }
     if (name === '@/lib/prisma') return { getPrismaClient() { throw new Error('Unexpected database access in pure projection test') } }
     if (name.startsWith('@/')) {
       if (name.endsWith('.json')) return JSON.parse(fs.readFileSync(path.join(root, name.slice(2)), 'utf8'))
