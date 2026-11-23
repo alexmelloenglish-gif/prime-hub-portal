@@ -31,7 +31,7 @@ Therefore the PRIME Learning Engine must **not yet be described as fully E2E run
 
 ### Current stop point
 
-> **Gate system implemented in `4b1df7c`, present on `main`, and deployed successfully to Production. The historical false-success path is now blocked by quality gates that require Gemini provenance and Evidence before publication. Historical Golden Traces remain unchanged. The next authorized verification event is GL-003.**
+> **Gate system implemented in `4b1df7c`, present on `main`, and deployed successfully to Production. The historical false-success path is now blocked by quality gates that require Gemini provenance and Evidence before publication. Historical Golden Traces remain unchanged. GL-003 remains the next verification target, but it is NOT AUTHORIZED to run until Issue #112 Gates A/B/C are completed and the environment/account owner provides separate explicit Production authorization.**
 
 ---
 
@@ -686,8 +686,8 @@ NOT PROVEN
 Learning State transition:
 NOT PROVEN
 
-Next authorized verification:
-GL-003
+Next verification target:
+GL-003 — NOT AUTHORIZED pending Issue #112 Gates A/B/C and separate Production authorization
 
 Implementation change authorized by this register:
 NO
