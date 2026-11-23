@@ -104,10 +104,11 @@ export default async function DashboardAdminPage() {
                   </div>
                   <div className="rounded-2xl border border-slate-100 bg-[#f8fbff] p-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7184a1]">Class reports</p>
-                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.canonicalReportCount ?? 0}</p>
+                    <p className="mt-1 text-sm font-semibold text-[#0a235c]">{student.dataAvailability === 'current' ? (student.publishedReportCount ?? 0) : (student.historicalReportCount ?? 0)}</p>
                   </div>
                 </div>
 
+                <p className="mt-3 text-xs font-semibold text-[#60718d]">{student.dataAvailability === 'current' ? 'Current Neon state' : student.dataAvailability === 'unavailable' ? 'Neon unavailable · historical snapshot shown' : 'Historical snapshot · no published Neon state'}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link href={previewHref} className="inline-flex items-center gap-2 rounded-xl bg-prime-red px-3 py-2 text-sm font-bold text-white hover:bg-[#8f1b13]">
                     <Eye aria-hidden="true" className="h-4 w-4" />
