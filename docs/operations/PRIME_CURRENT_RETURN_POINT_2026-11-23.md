@@ -15,7 +15,7 @@
 - A Issue #112 é o tracker operacional vigente. Gates A/B/C permanecem BLOCKED / NOT STARTED. Não há autorização para merge, deploy, alteração de dados de produção, reautorização OAuth ou execução GL-003.
 - O runtime Meet registrou `MEET_SCOPE_REAUTH_REQUIRED`; a correção depende do proprietário autorizado da conta organizadora.
 - O projeto Neon não apareceu na organização visível ao conector. Isso não prova ausência ou exclusão do banco; o projeto/organização correto ainda precisa ser disponibilizado.
-- O Vercel informa Node `20.x`, enquanto `package.json` declara Node `22.x`. A divergência está identificada; alteração da configuração deve seguir após a validação do build Preview.
+- A configuração do projeto Vercel foi alinhada para Node `22.x`, em conformidade com `package.json`; a leitura posterior confirmou `nodeVersion: 22.x`. O build Preview da branch continua em validação.
 
 ## Correções implementadas no PR #176
 
