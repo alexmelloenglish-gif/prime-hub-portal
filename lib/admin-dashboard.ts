@@ -94,14 +94,14 @@ async function enrichWithPipelineState(students: StudentDirectoryEntry[]) {
 
         return {
           ...student,
-          publishedReportCount: Math.max(student.canonicalReportCount ?? 0, publishedReportCount),
+          publishedReportCount,
           latestPipelineStatus: latestRun?.status ?? null,
         }
       })
     )
   } catch (error) {
     console.warn('[admin-dashboard] Pipeline status unavailable', { errorName: error instanceof Error ? error.name : 'UnknownError' })
-    return students.map((student) => ({ ...student, publishedReportCount: student.canonicalReportCount ?? 0 }))
+    return students.map((student) => ({ ...student, publishedReportCount: undefined }))
   }
 }
 
