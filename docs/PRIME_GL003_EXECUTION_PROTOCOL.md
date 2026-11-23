@@ -83,15 +83,15 @@ Everything downstream remains **NOT PROVEN**.
 
 ---
 
-## 3. Manual execution is allowed
+## 3. Manual execution requires operational authorization
 
-Waiting for the next scheduled or event-driven execution is **not required** if a real new lesson/source is already available.
+A manual GL-003 trigger is technically supported by the existing route, but technical capability is not operational authorization. The trigger is **not authorized** while Issue #112 Gates A/B/C remain BLOCKED / NOT STARTED.
 
-A manually initiated GL-003 is valid and may be preferable when it accelerates verification, provided that the manual action only initiates the same Production processing path.
+Execution may be considered only after the environment, authorized test accounts, test learner/source, organizer OAuth, authenticated read-back, and release authority have been independently established and recorded. A separate explicit authorization from the environment/account owner is required before any Production trigger.
 
-### Acceptable manual execution
+### Conditions required before a manual trigger can be authorized
 
-A manual trigger is acceptable when all of the following remain true:
+A manual trigger may be authorized only after all Issue #112 operational gates are satisfied and separately approved, and all of the following remain true:
 
 - the source is a genuine new real lesson;
 - the source content is not edited to improve the test outcome;
@@ -206,18 +206,19 @@ Do not use `complete cognitive learning trace` unless Signal, human validation/d
 ## 9. Current authorization
 
 ```text
-NEW IMPLEMENTATION BEFORE GL-003: NOT AUTHORIZED BY THIS PROTOCOL
-
-AUTOMATIC GL-003 TRIGGER: AUTHORIZED
-
-MANUAL PRODUCTION TRIGGER OF THE SAME EXISTING PIPELINE: AUTHORIZED
-
+ISSUE #112 GATES A/B/C: BLOCKED / NOT STARTED
+AUTOMATIC GL-003 TRIGGER: NOT AUTHORIZED
+MANUAL PRODUCTION GL-003 TRIGGER: NOT AUTHORIZED
+PRODUCTION DB / LEARNER / ATTENDANCE MUTATION: NOT AUTHORIZED
+OAUTH REAUTHORIZATION: NOT AUTHORIZED BY THIS PROTOCOL
+MERGE / DEPLOY / AUTOMATION UNFREEZE: REQUIRES SEPARATE EXPLICIT RELEASE AUTHORIZATION
 MANUAL DATA/EVIDENCE/STATE REPAIR DURING GL-003: PROHIBITED
-
 HISTORICAL GOLDEN TRACE MODIFICATION: PROHIBITED
 ```
 
+The existence of a manual route establishes implementation capability only. It does not override Issue #112 or authorize a Production operation. Reassess this section only after the operational gates and the environment/account owner's separate approval are recorded.
+
 ---
 
-**Status:** `ACTIVE — GL-003 MAY BE AUTOMATICALLY OR MANUALLY TRIGGERED IN PRODUCTION`  
-**Canonical principle:** `Manual trigger is allowed; manual contamination is not.`
+**Status:** `ACTIVE — GL-003 AWAITING GATES A/B/C AND SEPARATE PRODUCTION AUTHORIZATION`  
+**Canonical principle:** `Preserve the trace; trigger only after authorization; never contaminate evidence.`
