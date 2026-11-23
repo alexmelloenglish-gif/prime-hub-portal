@@ -5,12 +5,17 @@ import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prepareDriveTranscriptPayload } from '@/lib/drive-reconciliation'
 import { executeSharedLearningMachine } from '@/lib/learning-machine/shared-runner'
+import { PIPELINE_AUTOMATION_FROZEN } from '@/lib/pipeline-freeze'
 import { isAdminUser } from '@/lib/student-data'
 
 export async function processDriveTranscriptSource(formData: FormData) {
   const session = await getServerSession(authOptions)
   if (!session?.user || !isAdminUser(session.user)) {
     redirect('/dashboard/admin/intelligence/machine?error=Administrator%20access%20required')
+  }
+
+  if (PIPELINE_AUTOMATION_FROZEN) {
+    redirect('/dashboard/admin/intelligence/machine?error=Pipeline%20automation%20is%20frozen')
   }
 
   const sourceFileId = String(formData.get('sourceFileId') || '').trim()

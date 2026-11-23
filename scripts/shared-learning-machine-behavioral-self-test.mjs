@@ -238,6 +238,7 @@ const automaticRoute = readFileSync('app/api/pipeline/ingest/route.ts', 'utf8')
 const driveEventRoute = readFileSync('app/api/webhooks/drive-events/route.ts', 'utf8')
 const driveCronRoute = readFileSync('app/api/cron/drive-transcripts/route.ts', 'utf8')
 const manualRoute = readFileSync('app/api/admin/learning-machine/run/route.ts', 'utf8')
+const manualAction = readFileSync('app/dashboard/admin/intelligence/machine/actions.ts', 'utf8')
 const driveReconciliation = readFileSync('lib/drive-reconciliation.ts', 'utf8')
 const retryRoute = readFileSync('app/api/admin/pipeline/retry/route.ts', 'utf8')
 const retryEligibility = readFileSync('lib/pipeline/retry-eligibility.ts', 'utf8')
@@ -337,10 +338,15 @@ assert.doesNotMatch(
   /Drive reconciliation is unavailable/,
   'Scheduled reconciliation must not terminate at the old unavailable placeholder',
 )
-assert.doesNotMatch(
+assert.match(
   manualRoute,
   /PIPELINE_AUTOMATION_FROZEN/,
-  'Explicit administrator-triggered execution must remain usable while automation is frozen',
+  'Admin API execution must preserve the operational freeze',
+)
+assert.match(
+  manualAction,
+  /PIPELINE_AUTOMATION_FROZEN/,
+  'Learning Machine server action must preserve the operational freeze',
 )
 assert.match(
   manualRoute,
@@ -357,10 +363,10 @@ assert.match(
   /manual-drive-source-v1/,
   'Manual Drive acquisition must persist a distinct trigger/acquisition provenance mode while using the same Learning Machine',
 )
-assert.doesNotMatch(
+assert.match(
   retryRoute,
   /PIPELINE_AUTOMATION_FROZEN/,
-  'Explicit administrator retry must remain usable while automation is frozen',
+  'Admin retry must preserve the operational freeze',
 )
 assert.match(
   retryRoute,

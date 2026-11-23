@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, ExternalLink, PlayCircle, RefreshCcw } from 'lucide-react'
 import { listDriveTranscriptSourceQueue } from '@/lib/drive-reconciliation'
 import { processDriveTranscriptSource } from './actions'
+import { PIPELINE_AUTOMATION_FROZEN } from '@/lib/pipeline-freeze'
 
 function formatDate(value: string | null) {
   if (!value) return 'Date unavailable'
@@ -52,8 +53,10 @@ export default async function LearningMachineInboxPage({
         <p className="mt-3 max-w-4xl text-sm leading-7 text-[#526783]">
           Manual means manual trigger only. PRIME reads the canonical Drive source, verifies the transcript/learner identity, and sends it through the same shared Learning Machine used by automation.
         </p>
-        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f8fbff] p-4 text-sm leading-6 text-[#60718d]">
-          Automatic ingestion remains a separate trigger into the same Machine. Teacher Authority is still required wherever the Machine reaches an authority boundary.
+        <div className={`mt-4 rounded-2xl border p-4 text-sm leading-6 ${PIPELINE_AUTOMATION_FROZEN ? 'border-amber-200 bg-amber-50 text-amber-950' : 'border-slate-200 bg-[#f8fbff] text-[#60718d]'}`}>
+          {PIPELINE_AUTOMATION_FROZEN
+            ? 'Processing is currently paused by the PRIME operational freeze. Sources remain visible for inspection; no manual or automatic run can be started.'
+            : 'Automatic ingestion remains a separate trigger into the same Machine. Teacher Authority is still required wherever the Machine reaches an authority boundary.'}
         </div>
       </header>
 
@@ -107,7 +110,7 @@ export default async function LearningMachineInboxPage({
                         </a>
                       ) : null}
 
-                      {source.state === 'not_ingested' ? (
+                      {source.state === 'not_ingested' && !PIPELINE_AUTOMATION_FROZEN ? (
                         <form action={processDriveTranscriptSource}>
                           <input type="hidden" name="sourceFileId" value={source.sourceFileId} />
                           <button
