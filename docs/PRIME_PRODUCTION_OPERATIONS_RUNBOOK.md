@@ -12,7 +12,7 @@
 | Area | Required behavior |
 |---|---|
 | Student isolation | Resolve only an authorized repository snapshot or an explicit authenticated profile; never substitute another learner. |
-| Dashboard source | Keep `StudentDashboardState.source` for access compatibility, and use `dataStatus` to distinguish `neon/current`, `historical_snapshot/historical`, and `historical_snapshot/unavailable`. There is no hidden Firestore fallback. |
+| Dashboard source | Keep `StudentDashboardState.source` for access compatibility, and use `dataStatus` to distinguish `mixed` (published/verified Neon updates plus snapshot-backed profile fields), `historical_snapshot/historical`, and `historical_snapshot/unavailable`; `current` is reserved for a fully Neon-sourced profile. There is no hidden Firestore fallback. |
 | Pipeline authority | Use Prisma/Neon projections and explicit review/publication gates for student-visible learning records. |
 | Drive/Docs | Preserve Google Drive/Docs capture, `google-auth-library`, `@vercel/oidc`, and WIF for the pipeline identity. |
 | Secrets | Keep credentials in managed secret storage; never commit or print secret values. |
@@ -43,12 +43,12 @@ prime-drive-pipeline-worker@prime-hub-portal.iam.gserviceaccount.com
 ## 3. Dashboard data contract
 
 - `lib/student-data.ts` loads authorized repository snapshots and merges published Prisma/Neon projections.
-- `StudentDashboardState.source` remains `repository` or `preview` for the access contract. `StudentDashboardState.dataStatus` is the authority for freshness: `source: neon` plus `availability: current` means a published or verified Neon projection was read; `source: historical_snapshot` means the preserved repository record is being shown; `availability: unavailable` means the current Neon read failed and the snapshot must not be described as current.
+- `StudentDashboardState.source` remains `repository` or `preview` for the access contract. `StudentDashboardState.dataStatus` is the authority for freshness: `source: mixed` plus `availability: mixed` means published/verified Neon updates are combined with snapshot-backed profile fields; `source: historical_snapshot` means the preserved repository record is shown without a current projection; `availability: unavailable` means the Neon read failed. Do not describe a mixed profile as wholly current.
 - `lib/admin-dashboard.ts` returns the repository learner directory enriched with pipeline state from Prisma.
 - Unknown profiles remain unavailable/preview; the application never reads or writes Firestore.
 - Files named `data/students/*.firestore.json` are retained as historical local snapshots and fixtures.
 
-The dashboard may preserve a historical snapshot for continuity, but it must display the historical or unavailable state whenever no current Neon projection is confirmed. The admin directory keeps historical report counts separate from `publishedReportCount`; a database error never converts a snapshot count into a published count.
+The dashboard may preserve a historical snapshot for continuity. It must display historical, mixed, or unavailable state according to the actual projection coverage; a single Neon projection must not make the entire snapshot-backed profile appear fully current. The admin directory keeps historical report counts separate from `publishedReportCount`; a database error never converts a snapshot count into a published count.
 
 ## 4. Drive/Docs pipeline continuity
 
