@@ -27,7 +27,7 @@ This runbook covers recovery of the human administrator, Google Workspace/Drive/
 
 1. Confirm the repository branch and commit intended for the change.
 2. Run `npm ci`, Prisma generation/validation, TypeScript checks, self-tests, and `npm run build`.
-3. Confirm the dashboard source contract is explicit: `repository`/`preview` controls access, while `dataStatus` identifies `neon/current`, `historical_snapshot/historical`, or `historical_snapshot/unavailable`.
+3. Confirm the dashboard source contract is explicit: `repository`/`preview` controls access, while `dataStatus` distinguishes `mixed` (Neon updates plus historical profile fields), `historical_snapshot/historical`, and `historical_snapshot/unavailable`; fully current is reserved for a fully Neon-sourced profile.
 4. Confirm the admin dashboard keeps historical snapshot counts separate from Neon `publishedReportCount` and labels unavailable Neon state instead of presenting history as current.
 5. Confirm Drive/Docs reconciliation still imports `google-auth-library` and `@vercel/oidc` through `lib/drive-reconciliation.ts`.
 6. Review the exact diff and publish only the isolated branch; do not push directly to `main`.
