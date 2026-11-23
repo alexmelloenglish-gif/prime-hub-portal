@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { retryFailedPipelineRun } from '@/lib/pipeline/run'
+import { PIPELINE_AUTOMATION_FROZEN, pipelineFreezePayload } from '@/lib/pipeline-freeze'
 import { isAdminUser } from '@/lib/student-data'
 import { rejectCrossOriginMutation } from '@/lib/request-security'
 
@@ -19,6 +20,11 @@ export async function POST(request: Request) {
   }
   if (!isAdminUser(session.user)) {
     return NextResponse.json({ error: 'Administrator access required' }, { status: 403 })
+  }
+
+  if (PIPELINE_AUTOMATION_FROZEN) {
+    console.warn(JSON.stringify({ event: 'pipeline_retry_blocked', code: 'PIPELINE_AUTOMATION_FROZEN' }))
+    return NextResponse.json(pipelineFreezePayload('admin-pipeline-retry'), { status: 503 })
   }
 
   try {
